@@ -1,6 +1,6 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html','utf8');
+const html = fs.readFileSync(__dirname + '/../index.html','utf8');
 const results = [];
 const check = (n, ok, d) => { results.push(ok); console.log(ok?'✅':'❌', n, d!=null?'— '+d:''); };
 
@@ -21,7 +21,7 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
   check('Language toggles to English before start', w.eval('S.lang')==='en' && d.documentElement.dir==='ltr');
   d.getElementById('btnStart').click();
   const opening = d.getElementById('thread').children[0].textContent;
-  check('Opening line is in English', /I don't know anything about you yet/.test(opening), opening.slice(0,60));
+  check('Opening line is in English', /First — thank you/.test(opening), opening.slice(0,60));
 
   const send = async (dd, t) => { dd.getElementById('input').value=t; dd.getElementById('btnSend').click(); await wait(300); };
   await send(d, "I served three years in armor in Gaza, then two more in reserves.");
