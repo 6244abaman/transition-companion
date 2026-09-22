@@ -1357,6 +1357,19 @@ function stopListening(){ if (rec) { try{ rec.stop(); }catch(e){} } listening=fa
 let voicesReady = false;
 if (window.speechSynthesis) window.speechSynthesis.getVoices();
 
+/* No gender field exists on Web Speech API voices, so this matches
+   against common female voice names across Windows, macOS, iOS,
+   Android and Google Chrome OS/Hebrew voice packs. Falls back to the
+   first voice for the language if nothing matches, so it never picks
+   a wrong-language voice just to satisfy the female preference. */
+const FEMALE_VOICE_RX = /female|zira|hazel|susan|eva|aria|jenny|sonia|libby|maisie|samantha|victoria|karen|moira|tessa|fiona|ava|serena|salli|joanna|kimberly|kendra|ivy|amy|emma|amelia|catherine|olivia|nicky|carmit|היל[ה]|נעמ[הי]|שיר[ה]|רות|מיה|תמר|כרמית/i;
+function pickDefaultVoice(wantLangPrefix){
+  const voices = window.speechSynthesis.getVoices();
+  const matching = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(wantLangPrefix));
+  const pool = matching.length ? matching : voices;
+  return pool.find(v => FEMALE_VOICE_RX.test(v.name)) || pool[0] || null;
+}
+
 function speak(text){
   if (!window.speechSynthesis) return;
   stopSpeaking();
@@ -1366,6 +1379,9 @@ function speak(text){
   u.pitch = S.pitch != null ? S.pitch : 1;
   if (S.voiceURI){
     const v = window.speechSynthesis.getVoices().find(x => x.voiceURI === S.voiceURI);
+    if (v) u.voice = v;
+  } else {
+    const v = pickDefaultVoice(S.lang === "he" ? "he" : "en");
     if (v) u.voice = v;
   }
   /* Chrome/Chromium bug workarounds, both silent (no error thrown):
