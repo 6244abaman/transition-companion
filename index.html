@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Guided Transition Companion — V2</title>
+
+<!-- Phone app: lets soldiers add this to their home screen (Android + iPhone) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FBF9F5">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Transition">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -183,7 +193,7 @@ html[dir="rtl"] .turn.me .body{border-radius:var(--r) var(--r) var(--r) 4px}
   transform:translateX(110%);transition:transform .22s ease;display:flex;flex-direction:column
 }
 html[dir="rtl"] .drawer{transform:translateX(-110%)}
-.drawer.on{transform:none}
+.drawer.on,html[dir="rtl"] .drawer.on{transform:none}  /* rtl rule must be listed too, or Hebrew drawers never open */
 .dhead{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
 .dhead h2{font-family:'Frank Ruhl Libre',serif;font-size:18px;font-weight:500;margin-inline-end:auto}
 .dbody{overflow-y:auto;padding:16px;flex:1}
@@ -201,6 +211,25 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
 .sup span{color:var(--olive);font-size:15px}
 .danger{color:var(--clay);font-size:13.5px;background:var(--clay-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
 .linkish{color:var(--ink-2);font-size:13.5px;text-decoration:underline;background:none;padding:4px 0}
+
+/* ---------- phone app: install bar + my data ---------- */
+.bar{padding-top:calc(10px + env(safe-area-inset-top))}
+.installbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--olive-soft);border-bottom:1px solid var(--line);font-size:14px;color:var(--ink)}
+.installbar[hidden]{display:none}
+.installbar p{flex:1;line-height:1.35}
+.installbar .chip.on{white-space:nowrap}
+.meter{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;padding:3px 0}
+.meter span{color:var(--ink-2)}
+.meter b{font-weight:500;white-space:nowrap;unicode-bidi:isolate}
+.steps{margin:6px 0 0;padding-inline-start:20px;font-size:14.5px;color:var(--ink-2)}
+.steps li{margin-bottom:4px}
+.pass{width:100%;margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;color:var(--ink)}
+.pass:focus{outline:none;border-color:var(--olive)}
+.act{display:block;width:100%;margin-top:10px;padding:12px;border-radius:10px;background:var(--ink);color:var(--stone);font-weight:500}
+.act.quiet{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.act:disabled{opacity:.45}
+.warnline{font-size:13px;color:var(--clay);margin-top:8px}
+.okline{font-size:13px;color:var(--olive);margin-top:8px}
 @media (max-width:420px){ .hello{font-size:25px} .turn.them .body{font-size:17.5px} }
 </style>
 </head>
@@ -214,6 +243,13 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
   <button class="chip" id="btnHelp">Support</button>
 </header>
 
+<!-- Shown once, until the app is on the home screen -->
+<div class="installbar" id="installBar" hidden>
+  <p id="installText"></p>
+  <button class="chip on" id="installGo"></button>
+  <button class="chip" id="installX" aria-label="Close">✕</button>
+</div>
+
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
@@ -223,6 +259,7 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
     <div class="note"><h3 id="w1t"></h3><p id="w1p"></p></div>
     <div class="note"><h3 id="w2t"></h3><p id="w2p"></p></div>
     <div class="note privacy"><h3 id="w3t"></h3><p id="w3p"></p></div>
+    <p><button class="linkish" id="btnMyDataW"></button></p>
 
     <h3 style="font-size:14px;font-weight:500;margin-top:20px" id="wModeQ"></h3>
     <div class="choices" id="modes">
@@ -799,7 +836,7 @@ function openProfile(){
   const t = L(), b = $("dBody"); $("dTitle").textContent = t.dProfile; b.innerHTML = "";
   const p = S.profile;
   if (!p.strengths.length && !p.costs.length && !p.open.length && !p.directions.length){
-    b.appendChild(el("div","empty", t.emptyP)); openDrawer(); return;
+    b.appendChild(el("div","empty", t.emptyP)); b.appendChild(myDataLink()); openDrawer(); return;
   }
   const block = (title, items, render) => {
     if (!items.length) return;
@@ -818,12 +855,7 @@ function openProfile(){
     const e = el("div","entry"); e.appendChild(el("b",null,d.title));
     if (d.why) e.appendChild(el("q",null,d.why)); return e;
   });
-  const reset = el("button","linkish", S.lang==="he" ? "מחיקת השיחה והפרופיל מהדפדפן" : "Delete this conversation and profile from the browser");
-  reset.onclick = () => {
-    if (!confirm(S.lang==="he" ? "למחוק הכול? אי אפשר לשחזר." : "Delete everything? This cannot be undone.")) return;
-    localStorage.removeItem(KEY); location.reload();
-  };
-  b.appendChild(reset);
+  b.appendChild(myDataLink());   // backup, restore and delete live in "My data"
   openDrawer();
 }
 
@@ -1018,6 +1050,295 @@ $("btnVoice").addEventListener("pointerdown", () => { pressTimer = setTimeout(op
 $("btnVoice").addEventListener("contextmenu", e => { e.preventDefault(); openVoiceSettings(); });
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {};
 function stopSpeaking(){ if (window.speechSynthesis) window.speechSynthesis.cancel(); }
+
+/* ==========================================================================
+   13. PHONE APP + MY DATA
+   Everything that makes this work as a private app on the soldier's phone:
+   - "Add to home screen" (Android shows an Install button; iPhone shows steps)
+   - asks the browser not to clear the data automatically
+   - locked (encrypted) backup file + restore, for changing phones
+   - delete everything
+   The conversation itself stays where it always was: localStorage, under KEY.
+   ========================================================================== */
+const PT = {
+  en: {
+    myData: "My data and backup",
+    barText: "Add this app to your home screen so your conversation stays safe on this phone.",
+    install: "Install", how: "Show me how",
+    whereT: "Where your data is",
+    whereP: "Your conversation and profile are saved only on this phone. Each message you send is passed to the AI to write a reply, and is not kept on our server.",
+    sizeConv: "Your conversation and profile", sizeApp: "App files saved for offline use",
+    protected: "Protected from automatic clearing", yes: "Yes", notYet: "Not yet",
+    homeT: "Keep it on your home screen",
+    installed: "Installed. The app opens from your home screen, even without internet.",
+    iosSteps: ["Open this page in Safari.", "Tap the Share button at the bottom of the screen.", "Choose “Add to Home Screen”, then tap Add."],
+    iosWhy: "On iPhone, Safari can clear a website's saved data if it isn't opened for 7 days. Apps added to the home screen are not cleared this way.",
+    andSteps: ["Open the browser menu (⋮) at the top right.", "Tap “Install app” or “Add to Home screen”."],
+    backT: "Back up",
+    backP: "Saves a locked copy you can keep in Files, Google Drive, or send to yourself. Use it if you change phones.",
+    passPh: "Choose a passcode (6+ characters)",
+    passWarn: "Write this passcode down. Without it, the backup can't be opened — not by you, and not by us.",
+    saveBackup: "Save locked backup", saved: "Backup saved.",
+    passShort: "The passcode needs at least 6 characters.",
+    restT: "Restore from a backup",
+    restP: "Replaces what's on this phone with a backup file you saved earlier.",
+    choose: "Choose backup file", enterPass: "Passcode for this backup", restore: "Restore",
+    notOurs: "This file isn't a Transition Companion backup.",
+    wrongPass: "Wrong passcode, or the file is damaged. Check the passcode and try again.",
+    confirmRestore: d => "Replace everything on this phone with the backup from " + d + "?",
+    delT: "Delete",
+    delBtn: "Delete my conversation and profile from this phone",
+    confirmDel: "Delete everything? This cannot be undone unless you have a backup.",
+    noCrypto: "This browser can't make locked backups. Open the app from its web address (https) in Chrome or Safari."
+  },
+  he: {
+    myData: "הנתונים שלי וגיבוי",
+    barText: "כדאי להוסיף את האפליקציה למסך הבית, כדי שהשיחה תישמר בבטחה בטלפון.",
+    install: "התקנה", how: "איך עושים את זה",
+    whereT: "איפה הנתונים שלך",
+    whereP: "השיחה והפרופיל נשמרים רק בטלפון הזה. כל הודעה שנשלחת עוברת לבינה המלאכותית כדי לכתוב תשובה, ולא נשמרת בשרת שלנו.",
+    sizeConv: "השיחה והפרופיל שלך", sizeApp: "קבצי האפליקציה לשימוש בלי אינטרנט",
+    protected: "מוגן ממחיקה אוטומטית", yes: "כן", notYet: "עדיין לא",
+    homeT: "להשאיר במסך הבית",
+    installed: "האפליקציה מותקנת. היא נפתחת ממסך הבית, גם בלי אינטרנט.",
+    iosSteps: ["פותחים את הדף הזה בספארי.", "מקישים על כפתור השיתוף בתחתית המסך.", "בוחרים „הוסף למסך הבית”, ואז „הוסף”."],
+    iosWhy: "באייפון, ספארי עלול למחוק נתונים של אתר שלא נפתח 7 ימים. אפליקציות שנוספו למסך הבית לא נמחקות כך.",
+    andSteps: ["פותחים את תפריט הדפדפן (⋮) למעלה.", "מקישים על „התקנת אפליקציה” או „הוספה למסך הבית”."],
+    backT: "גיבוי",
+    backP: "שומר עותק נעול שאפשר לשמור בקבצים, בגוגל דרייב או לשלוח לעצמך. שימושי כשמחליפים טלפון.",
+    passPh: "בחירת קוד (לפחות 6 תווים)",
+    passWarn: "כדאי לרשום את הקוד. בלעדיו אי אפשר לפתוח את הגיבוי — לא את/ה ולא אנחנו.",
+    saveBackup: "שמירת גיבוי נעול", saved: "הגיבוי נשמר.",
+    passShort: "הקוד צריך להיות באורך 6 תווים לפחות.",
+    restT: "שחזור מגיבוי",
+    restP: "מחליף את מה שיש בטלפון בקובץ גיבוי ששמרת קודם.",
+    choose: "בחירת קובץ גיבוי", enterPass: "הקוד של הגיבוי הזה", restore: "שחזור",
+    notOurs: "הקובץ הזה אינו גיבוי של האפליקציה.",
+    wrongPass: "הקוד שגוי או שהקובץ פגום. כדאי לבדוק את הקוד ולנסות שוב.",
+    confirmRestore: d => "להחליף את כל מה שבטלפון בגיבוי מתאריך " + d + "?",
+    delT: "מחיקה",
+    delBtn: "מחיקת השיחה והפרופיל מהטלפון",
+    confirmDel: "למחוק הכול? אי אפשר לשחזר בלי גיבוי.",
+    noCrypto: "הדפדפן הזה לא יכול ליצור גיבוי נעול. יש לפתוח את האפליקציה מכתובת האינטרנט שלה (https) בכרום או בספארי."
+  }
+};
+const P = k => (PT[S.lang] || PT.en)[k];
+
+const isStandalone = () =>
+  window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+const isIOS = () =>
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+function fmtBytes(n){
+  if (n == null) return "—";
+  if (n < 1024) return n + " B";
+  if (n < 1024*1024) return (n/1024).toFixed(n < 10240 ? 1 : 0) + " KB";
+  return (n/1024/1024).toFixed(1) + " MB";
+}
+
+/* ---- Ask the browser to keep our data (not clear it when space runs low) ---- */
+async function requestPersist(){
+  try {
+    if (!navigator.storage || !navigator.storage.persist) return false;
+    if (await navigator.storage.persisted()) return true;
+    return await navigator.storage.persist();
+  } catch(e){ return false; }
+}
+
+/* ---- Install: Android gives us a prompt to show later; iPhone needs steps ---- */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; showInstallBar(); });
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null; S.installHint = "done"; save(); showInstallBar(); requestPersist();
+});
+
+async function runInstall(){
+  if (deferredPrompt){
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch(e){}
+    deferredPrompt = null; showInstallBar();
+  } else {
+    openMyData();
+  }
+}
+
+function showInstallBar(){
+  const bar = $("installBar");
+  const want = S.started && !isStandalone() && !S.installHint && (deferredPrompt || isIOS());
+  bar.hidden = !want;
+  if (!want) return;
+  $("installText").textContent = P("barText");
+  $("installGo").textContent = deferredPrompt ? P("install") : P("how");
+}
+$("installGo").onclick = runInstall;
+$("installX").onclick = () => { S.installHint = "dismissed"; save(); showInstallBar(); };
+
+/* ---- Locked backup: AES-GCM encryption, key made from the passcode ---- */
+const toB64 = bytes => { let s = ""; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s); };
+const fromB64 = str => Uint8Array.from(atob(str), c => c.charCodeAt(0));
+
+async function keyFromPass(pass, salt){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt, iterations: 250000, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["encrypt","decrypt"]);
+}
+
+async function makeBackup(pass){
+  save();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+  const key  = await keyFromPass(pass, salt);
+  const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key,
+                 new TextEncoder().encode(JSON.stringify(S)));
+  const file = {
+    app: "transition-companion", format: 1, created: new Date().toISOString(),
+    salt: toB64(salt), iv: toB64(iv), data: toB64(new Uint8Array(data))
+  };
+  const name = "transition-backup-" + file.created.slice(0,10) + ".json";
+  const blob = new Blob([JSON.stringify(file)], { type: "application/json" });
+
+  // On phones, the share sheet lets them save to Files / Drive / WhatsApp.
+  const asFile = new File([blob], name, { type: "application/json" });
+  if (navigator.canShare && navigator.canShare({ files: [asFile] })){
+    try { await navigator.share({ files: [asFile], title: name }); return true; }
+    catch(e){ if (e.name === "AbortError") return false; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  return true;
+}
+
+async function readBackup(text, pass){
+  let file;
+  try { file = JSON.parse(text); } catch(e){ throw new Error(P("notOurs")); }
+  if (!file || file.app !== "transition-companion" || !file.data) throw new Error(P("notOurs"));
+  let state;
+  try {
+    const key = await keyFromPass(pass, fromB64(file.salt));
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(file.iv) }, key, fromB64(file.data));
+    state = JSON.parse(new TextDecoder().decode(plain));
+  } catch(e){ throw new Error(P("wrongPass")); }
+  if (!state || !Array.isArray(state.messages) || !state.profile) throw new Error(P("notOurs"));
+  return { state, created: file.created };
+}
+
+/* ---- The "My data" drawer ---- */
+function myDataLink(){
+  const b = el("button","linkish", P("myData"));
+  b.style.marginTop = "14px";
+  b.onclick = openMyData;
+  return b;
+}
+
+async function openMyData(){
+  const b = $("dBody"); $("dTitle").textContent = P("myData");
+  b.innerHTML = "";
+  const block = title => { const w = el("div","block"); w.appendChild(el("h3",null,title)); b.appendChild(w); return w; };
+  const steps = list => { const ol = el("ol","steps"); list.forEach(x => ol.appendChild(el("li",null,x))); return ol; };
+  const line = (w, cls, txt) => { const p = el("p", cls, txt); w.appendChild(p); return p; };
+
+  // 1. Where the data is, and how much space it takes
+  const w1 = block(P("whereT"));
+  const e1 = el("div","entry"); const wp = el("p",null,P("whereP")); wp.style.cssText = "font-size:14.5px;color:var(--ink-2);margin-bottom:8px"; e1.appendChild(wp);
+  const m = (label, val) => { const r = el("div","meter"); r.appendChild(el("span",null,label)); const v = el("b",null,val); v.dir = "auto"; r.appendChild(v); return r; };
+  const convBytes = new Blob([localStorage.getItem(KEY) || ""]).size;
+  const rConv = m(P("sizeConv"), fmtBytes(convBytes)); rConv.lastChild.dir = "ltr";
+  const rApp  = m(P("sizeApp"), "…");
+  const rPers = m(P("protected"), "…");
+  [rConv, rApp, rPers].forEach(r => e1.appendChild(r));
+  w1.appendChild(e1);
+  try {
+    const est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null;
+    rApp.lastChild.textContent = est ? fmtBytes(est.usage) : "—"; rApp.lastChild.dir = "ltr";
+  } catch(e){ rApp.lastChild.textContent = "—"; }
+  const pers = await requestPersist();
+  rPers.lastChild.textContent = (pers || isStandalone()) ? P("yes") : P("notYet");
+
+  // 2. Home screen
+  const w2 = block(P("homeT"));
+  if (isStandalone()){
+    line(w2, "okline", P("installed"));
+  } else if (deferredPrompt){
+    const go = el("button","act", P("install")); go.onclick = runInstall; w2.appendChild(go);
+  } else if (isIOS()){
+    w2.appendChild(steps(P("iosSteps")));
+    line(w2, "tiny", P("iosWhy")).style.textAlign = "start";
+  } else {
+    w2.appendChild(steps(P("andSteps")));
+  }
+
+  // 3. Back up
+  const w3 = block(P("backT"));
+  line(w3, "empty", P("backP"));
+  if (!window.crypto || !crypto.subtle){
+    line(w3, "warnline", P("noCrypto"));
+  } else {
+    const pass = el("input","pass"); pass.type = "password"; pass.placeholder = P("passPh"); pass.autocomplete = "new-password";
+    const msg = el("p","warnline", P("passWarn"));
+    const go = el("button","act", P("saveBackup"));
+    go.onclick = async () => {
+      if (pass.value.length < 6){ msg.className = "warnline"; msg.textContent = P("passShort"); pass.focus(); return; }
+      go.disabled = true;
+      try {
+        if (await makeBackup(pass.value)){ msg.className = "okline"; msg.textContent = P("saved"); pass.value = ""; }
+      } catch(e){ msg.className = "warnline"; msg.textContent = String(e.message || e); }
+      go.disabled = false;
+    };
+    [pass, msg, go].forEach(x => w3.appendChild(x));
+  }
+
+  // 4. Restore
+  const w4 = block(P("restT"));
+  line(w4, "empty", P("restP"));
+  const picker = el("input"); picker.type = "file"; picker.accept = ".json,application/json"; picker.hidden = true;
+  const pick = el("button","act quiet", P("choose"));
+  const rpass = el("input","pass"); rpass.type = "password"; rpass.placeholder = P("enterPass"); rpass.hidden = true;
+  const rgo = el("button","act", P("restore")); rgo.hidden = true;
+  const rmsg = el("p","warnline", "");
+  let fileText = null;
+  pick.onclick = () => picker.click();
+  picker.onchange = async () => {
+    const f = picker.files && picker.files[0]; if (!f) return;
+    fileText = await f.text();
+    pick.textContent = f.name; rpass.hidden = false; rgo.hidden = false; rmsg.textContent = ""; rpass.focus();
+  };
+  rgo.onclick = async () => {
+    rgo.disabled = true; rmsg.textContent = "";
+    try {
+      const { state, created } = await readBackup(fileText, rpass.value);
+      const d = new Date(created).toLocaleDateString(S.lang === "he" ? "he-IL" : "en-GB");
+      if (confirm(P("confirmRestore")(d))){
+        localStorage.setItem(KEY, JSON.stringify(state)); location.reload(); return;
+      }
+    } catch(e){ rmsg.textContent = e.message; }
+    rgo.disabled = false;
+  };
+  [picker, pick, rpass, rgo, rmsg].forEach(x => w4.appendChild(x));
+
+  // 5. Delete
+  const w5 = block(P("delT"));
+  const del = el("button","linkish", P("delBtn"));
+  del.onclick = () => { if (!confirm(P("confirmDel"))) return; localStorage.removeItem(KEY); location.reload(); };
+  w5.appendChild(del);
+
+  openDrawer();
+}
+
+/* ---- Hook into existing screens (no changes needed inside them) ---- */
+const _paintStatic = paintStatic;
+paintStatic = function(){ _paintStatic(); $("btnMyDataW").textContent = P("myData"); showInstallBar(); };
+const _enterChat = enterChat;
+enterChat = function(){ _enterChat(); showInstallBar(); if (isStandalone()) requestPersist(); };
+$("btnMyDataW").onclick = openMyData;
+
+/* ---- Offline support: only works when the app is on a web address, not a local file ---- */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
+}
 
 /* ==========================================================================
    12. BOOT
