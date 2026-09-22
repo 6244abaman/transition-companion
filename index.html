@@ -4,16 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Guided Transition Companion — V2</title>
-
-<!-- Phone app: lets soldiers add this to their home screen (Android + iPhone) -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FBF9F5">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Transition">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -26,6 +16,14 @@
 
      CONFIG: everything you may need to change is in one place,
      in the config block immediately below.
+
+     MOMENTUM REFERENCE LAYER (section 2b in the script): the deeper
+     material from the two Momentum files (63 Skills Service Mapping
+     Framework + Frontline and Combat-Support Program) lives in this same
+     file. The companion looks things up in it ONLY when needed — when the
+     person asks for a CV, interview stories, a work direction or a study
+     option, or once it knows what kind of service they did. Nothing extra
+     is sent during the opening conversation.
      ============================================================ -->
 
 <script id="config">
@@ -40,8 +38,18 @@ const CONFIG = {
   // Lower = cheaper, less memory of earlier turns. 12 is a good balance.
   HISTORY_TURNS: 12,
 
-  // Max tokens per reply. Replies are meant to be short.
-  MAX_TOKENS: 700,
+  // Max tokens per reply. Replies are a short explanation plus one question,
+  // and Hebrew uses more tokens per word, so this leaves room for both.
+  MAX_TOKENS: 900,
+
+  // Bigger allowance for CV material, interview stories and direction lists,
+  // which run longer than a normal reply. Used only on those turns.
+  MAX_TOKENS_DOCUMENT: 1600,
+
+  // The Momentum reference material (section 2b) is added to a request only
+  // when it is needed. This caps how much can be added (about 4 characters
+  // = 1 token). Lower it to spend less; raise it to give the companion more.
+  REF_BUDGET_CHARS: 8000,
 
   // If the proxy cannot be reached, the app falls back to Practice Mode
   // (a built-in scripted engine) so the whole flow stays testable.
@@ -193,7 +201,7 @@ html[dir="rtl"] .turn.me .body{border-radius:var(--r) var(--r) var(--r) 4px}
   transform:translateX(110%);transition:transform .22s ease;display:flex;flex-direction:column
 }
 html[dir="rtl"] .drawer{transform:translateX(-110%)}
-.drawer.on,html[dir="rtl"] .drawer.on{transform:none}  /* rtl rule must be listed too, or Hebrew drawers never open */
+.drawer.on,html[dir="rtl"] .drawer.on{transform:none}
 .dhead{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
 .dhead h2{font-family:'Frank Ruhl Libre',serif;font-size:18px;font-weight:500;margin-inline-end:auto}
 .dbody{overflow-y:auto;padding:16px;flex:1}
@@ -211,25 +219,14 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
 .sup span{color:var(--olive);font-size:15px}
 .danger{color:var(--clay);font-size:13.5px;background:var(--clay-soft);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
 .linkish{color:var(--ink-2);font-size:13.5px;text-decoration:underline;background:none;padding:4px 0}
-
-/* ---------- phone app: install bar + my data ---------- */
-.bar{padding-top:calc(10px + env(safe-area-inset-top))}
-.installbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--olive-soft);border-bottom:1px solid var(--line);font-size:14px;color:var(--ink)}
-.installbar[hidden]{display:none}
-.installbar p{flex:1;line-height:1.35}
-.installbar .chip.on{white-space:nowrap}
-.meter{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;padding:3px 0}
-.meter span{color:var(--ink-2)}
-.meter b{font-weight:500;white-space:nowrap;unicode-bidi:isolate}
-.steps{margin:6px 0 0;padding-inline-start:20px;font-size:14.5px;color:var(--ink-2)}
-.steps li{margin-bottom:4px}
-.pass{width:100%;margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;color:var(--ink)}
-.pass:focus{outline:none;border-color:var(--olive)}
-.act{display:block;width:100%;margin-top:10px;padding:12px;border-radius:10px;background:var(--ink);color:var(--stone);font-weight:500}
-.act.quiet{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
-.act:disabled{opacity:.45}
-.warnline{font-size:13px;color:var(--clay);margin-top:8px}
-.okline{font-size:13px;color:var(--olive);margin-top:8px}
+.lvl{display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px;margin-top:9px;font-size:12.5px}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--olive)}
+.lvln{color:var(--olive);font-weight:500}
+.lvld{flex-basis:100%;color:var(--dust)}
+.copy{margin-top:8px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--ink-2);background:var(--paper);transition:.15s}
+.copy:hover{border-color:var(--ink-2)}
 @media (max-width:420px){ .hello{font-size:25px} .turn.them .body{font-size:17.5px} }
 </style>
 </head>
@@ -243,13 +240,6 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
   <button class="chip" id="btnHelp">Support</button>
 </header>
 
-<!-- Shown once, until the app is on the home screen -->
-<div class="installbar" id="installBar" hidden>
-  <p id="installText"></p>
-  <button class="chip on" id="installGo"></button>
-  <button class="chip" id="installX" aria-label="Close">✕</button>
-</div>
-
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
@@ -259,7 +249,6 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
     <div class="note"><h3 id="w1t"></h3><p id="w1p"></p></div>
     <div class="note"><h3 id="w2t"></h3><p id="w2p"></p></div>
     <div class="note privacy"><h3 id="w3t"></h3><p id="w3p"></p></div>
-    <p><button class="linkish" id="btnMyDataW"></button></p>
 
     <h3 style="font-size:14px;font-weight:500;margin-top:20px" id="wModeQ"></h3>
     <div class="choices" id="modes">
@@ -318,7 +307,7 @@ en:{
   pStr:"Built in service", pCost:"What it cost", pOpen:"Still open", pDir:"Directions raised",
   offline:"⚠ PRACTICE MODE — the AI is NOT connected. These replies come from a fixed script and do NOT respond to what you write. This is not how the app really behaves. Tap Check connection on the start screen to fix it.",
   sendFail:"That message didn't go through. Tap send again to retry.",
-  concern:"It sounds heavy right now. These people answer 24/7, and I'm still here after.",
+  concern:"This is a lot to carry. These people answer 24/7, and I'm still here after.",
   callit:"Call",
   diag:"Check connection to the AI service",
   diagRun:"Checking…",
@@ -328,7 +317,20 @@ en:{
   diag500:"Reached the server, but it errored (500). The proxy is running but something failed inside it — check its logs on Render.",
   diagCORS:"Couldn't reach it from this page. Either the server is asleep or down, or it isn't allowing requests from this page (CORS). If it's on Render's free tier, wait ~30s and try again.",
   diagShape:"Connected, but the reply wasn't in the expected shape. The proxy answered with something other than Anthropic's usual content array.",
-  diagNote:"Practice Mode still works regardless — this only affects the live AI conversation."
+  diagNote:"Practice Mode still works regardless — this only affects the live AI conversation.",
+  lvl:["","Exposed","Practiced","Proficient","Led or taught"],
+  lvlD:["","You had some experience with this.","You used this repeatedly.","You were trusted to do this independently in demanding situations.","You guided others, set standards, or improved how the work was done."],
+  useT:"Use what you've built",
+  useHint:"Each of these works from your confirmed strengths and your real examples — nothing gets made up.",
+  useCV:"Write my CV material", useCVs:"Summary, evidence bullets, keywords",
+  useInt:"Prepare interview stories", useInts:"Situation, your part, action, result, learning",
+  useJob:"Explore work directions", useJobs:"Up to three, with what to test first",
+  useEdu:"Explore study or training", useEdus:"What you already have, what is missing",
+  msgCV:"Help me write CV material from the strengths I've confirmed.",
+  msgInt:"Help me prepare interview stories from my real examples.",
+  msgJob:"Help me explore which kinds of work and careers fit what I've built.",
+  msgEdu:"Help me explore study or training options that fit.",
+  copy:"Copy", copied:"Copied"
 },
 he:{
   dir:"rtl", other:"English", mark:"מלווה המעבר", markSub:"שיחה, לא טופס",
@@ -347,7 +349,7 @@ he:{
   pStr:"מה נבנה בשירות", pCost:"מה זה עלה", pOpen:"עדיין פתוח", pDir:"כיוונים שעלו",
   offline:"⚠ מצב תרגול — ה‑AI לא מחובר. התשובות האלה מגיעות מתסריט קבוע ולא מגיבות למה שכתבת. זו לא ההתנהגות האמיתית של האפליקציה. לחץ על בדיקת חיבור במסך הפתיחה כדי לתקן.",
   sendFail:"ההודעה לא נשלחה. לחץ שוב על שליחה כדי לנסות שוב.",
-  concern:"נשמע כבד עכשיו. האנשים האלה עונים מסביב לשעון, ואני כאן גם אחרי.",
+  concern:"זה הרבה לשאת. האנשים האלה עונים מסביב לשעון, ואני כאן גם אחרי.",
   callit:"חיוג",
   diag:"בדיקת חיבור לשירות ה‑AI",
   diagRun:"בודק…",
@@ -357,7 +359,20 @@ he:{
   diag500:"הגענו לשרת, אבל הוא נפל (500). הפרוקסי רץ אבל משהו נכשל בתוכו — כדאי לבדוק לוגים ב‑Render.",
   diagCORS:"לא הצלחנו להגיע אליו מהדף הזה. או שהשרת ישן או כבוי, או שהוא לא מאשר בקשות מהדף הזה (CORS). אם זה Render בחינם — חכה כ‑30 שניות ונסה שוב.",
   diagShape:"מחובר, אבל התשובה לא הגיעה במבנה הצפוי. הפרוקסי החזיר משהו אחר ממה ש‑Anthropic מחזירה בדרך כלל.",
-  diagNote:"מצב תרגול עובד בכל מקרה — זה משפיע רק על השיחה החיה מול ה‑AI."
+  diagNote:"מצב תרגול עובד בכל מקרה — זה משפיע רק על השיחה החיה מול ה‑AI.",
+  lvl:["","נחשפת","תרגלת","שולט","הובלת או לימדת"],
+  lvlD:["","היה לך ניסיון מסוים בזה.","השתמשת בזה שוב ושוב.","סמכו עליך לעשות את זה לבד, במצבים תובעניים.","הנחית אחרים, קבעת סטנדרטים, או שיפרת את הדרך שבה עובדים."],
+  useT:"להשתמש במה שבנית",
+  useHint:"כל אחד מאלה נבנה מהחוזקות שאישרת ומהדוגמאות האמיתיות שלך — שום דבר לא נכתב מהדמיון.",
+  useCV:"לכתוב חומר לקורות חיים", useCVs:"תקציר, נקודות מבוססות ראיות, מילות מפתח",
+  useInt:"להכין סיפורים לראיון עבודה", useInts:"מצב, החלק שלך, פעולה, תוצאה, לקח",
+  useJob:"לחקור כיווני עבודה", useJobs:"עד שלושה, ומה כדאי לבדוק קודם",
+  useEdu:"לחקור לימודים או הכשרה", useEdus:"מה כבר יש לך ומה חסר",
+  msgCV:"עזור לי לכתוב חומר לקורות חיים מהחוזקות שאישרתי.",
+  msgInt:"עזור לי להכין סיפורים לראיון עבודה מהדוגמאות האמיתיות שלי.",
+  msgJob:"עזור לי לחקור אילו סוגי עבודה וקריירה מתאימים למה שבניתי.",
+  msgEdu:"עזור לי לחקור אפשרויות לימודים או הכשרה מקצועית שמתאימות.",
+  copy:"העתק", copied:"הועתק"
 }};
 
 /* ==========================================================================
@@ -409,6 +424,298 @@ const SKILLS = [
 ];
 const skillById = id => SKILLS.find(s => s[0] === +id);
 const skillName = (id,lang) => { const s = skillById(id); return s ? (lang==="he"?s[3]:s[2]) : ""; };
+
+
+/* ==========================================================================
+   2b. MOMENTUM REFERENCE LAYER
+   The deeper material from the two Momentum files:
+     - "63 Skills Service Mapping Framework" (what each service family tends
+       to build, the question that tests each skill, how to write a CV from
+       evidence, how to turn skills into work and study directions)
+     - "Frontline and Combat-Support Program" (how to surface, test and level
+       skills; commander/instructor overlay; civilian outputs)
+   It is NOT sent with every message. buildReference() (below) picks only what
+   the moment needs and adds it to the instructions for that one request.
+   ========================================================================== */
+/* --- data: taken from the Momentum files (Skills Service Mapping Framework v1) --- */
+// Original Momentum skill: [original name, what it can mean in practice, refinement question]
+const REF_SKILLS = {
+ 1:["Finishing the Job", "Maintaining ownership until the objective is truly closed", "Tell me about something you stayed responsible for until every loose end was resolved."],
+ 2:["Work Under Pressure", "Functioning effectively when time, risk, workload, or emotion is high", "What pressure were you under, and what helped you continue to perform accurately?"],
+ 3:["Completing Tasks", "Reliably carrying assigned work through to the required standard", "What kinds of tasks could others trust you to complete without reminders?"],
+ 4:["Planning", "Turning an objective into steps, resources, timing, contingencies, and ownership", "Describe a plan you helped build. What did you anticipate and what changed?"],
+ 5:["Time Management", "Allocating limited time across duties and deadlines", "How did you organize competing deadlines or a demanding shift?"],
+ 6:["Quick Reaction — 0 to 100", "Shifting rapidly from routine to effective action", "When did you have to react immediately, and how did you avoid acting carelessly?"],
+ 7:["Improvise", "Creating a workable response when the normal plan or resources were insufficient", "What did you adapt when the original plan or equipment was not enough?"],
+ 8:["Administration Skills", "Managing records, schedules, forms, approvals, and follow-through", "Which administrative processes did you own, and how did you keep them accurate?"],
+ 9:["Technological Know-How", "Learning and using technical tools or equipment effectively", "Which systems did you learn, how advanced was your use, and did you help others?"],
+ 10:["Work in Harsh Conditions", "Sustaining performance despite physical or environmental difficulty", "What conditions did you regularly function in, and what did you learn about maintaining performance?"],
+ 11:["Prioritize", "Deciding what matters first when everything cannot be done at once", "Give an example of two urgent demands. How did you decide which came first?"],
+ 12:["Take Risks", "Accepting calculated exposure for a worthwhile objective", "What risk did you evaluate, what safeguards did you use, and why was it justified?"],
+ 13:["Work with Systems", "Understanding how people, procedures, information, and technology connect", "What system did you operate within, and how did one part affect another?"],
+ 14:["Leading Processes", "Moving multi-step work across people and stages toward an outcome", "What process did you coordinate from beginning to end?"],
+ 15:["Operate Independently", "Performing reliably without continuous supervision", "What decisions or work were you trusted to handle alone?"],
+ 16:["Leadership", "Creating direction, standards, confidence, and accountability", "When did people follow your direction because of how you led, not merely your rank?"],
+ 17:["Teamwork", "Coordinating, supporting, and adapting for shared performance", "What did you contribute that made the team function better?"],
+ 18:["Leading People", "Assigning, supervising, developing, and caring for others", "How many people depended on you, and what did you do when someone struggled?"],
+ 19:["Teaching Skills", "Explaining, demonstrating, checking understanding, and correcting performance", "What did you teach, to whom, and how did you know they had learned it?"],
+ 20:["Getting Friends", "Building rapport, belonging, and supportive peer relationships", "How did you build connection in a new or difficult group?"],
+ 21:["Work with Different People", "Collaborating across backgrounds, personalities, expertise, or beliefs", "Tell me about someone very different from you whom you learned to work with well."],
+ 22:["Contribute to Others", "Helping others succeed beyond one's minimum duty", "When did you make another person's work or situation meaningfully better?"],
+ 23:["Customer Service Skills", "Understanding needs and providing responsive, respectful service", "Who were the people you served, and how did you handle dissatisfaction or urgency?"],
+ 24:["Organize & Manage", "Coordinating people, resources, schedules, and standards", "What did you organize, how complex was it, and what result followed?"],
+ 25:["Discipline", "Following standards and routines even when motivation is low", "Which demanding standard did you maintain consistently, and why did it matter?"],
+ 26:["Resilience", "Recovering, adapting, and continuing after strain or adversity", "What setback did you recover from, and what helped you regain functioning?"],
+ 27:["Emotional Regulation", "Managing emotion so it informs but does not control behavior", "When did you feel strongly but still respond in a measured, useful way?"],
+ 28:["Dealing with Failures", "Learning and changing after an unsuccessful result", "Describe a failure. What did you change afterward?"],
+ 29:["Dealing with Fears", "Acting thoughtfully despite fear, without denying risk", "What were you afraid of, and how did you function without pretending the fear was absent?"],
+ 30:["Dealing with Challenges", "Engaging persistently with difficult demands", "What sustained challenge required you to grow rather than simply endure?"],
+ 31:["Hakol Barosh", "Using mindset, interpretation, and inner direction to influence performance", "When did changing the way you thought about a situation change what you could do?"],
+ 32:["Dealing with Frustrations", "Staying constructive amid delay, obstacles, or bureaucracy", "What repeatedly frustrated you, and how did you prevent it from damaging your work?"],
+ 33:["Coping with Stress", "Using habits, support, and judgment to function under ongoing strain", "What signs told you stress was building, and what helped you manage it?"],
+ 34:["Dealing with Loss", "Continuing life and responsibility while processing meaningful loss", "Without sharing more than you want, what helped you carry loss while continuing to function?"],
+ 35:["Coping with Uncertainties", "Acting responsibly without complete information or control", "What did you do when you could not know what would happen next?"],
+ 36:["Feeling of Success", "Recognizing progress, competence, and earned achievement", "Which accomplishment felt genuinely earned, and what ability did it reveal?"],
+ 37:["Being Alone", "Maintaining judgment and stability during isolation or independent duty", "What did you learn about functioning when support or companionship was limited?"],
+ 38:["Decision Making", "Selecting and owning a course of action based on available evidence", "What options did you consider, how did you decide, and what was the outcome?"],
+ 39:["Problem Solving", "Defining a problem, finding causes, testing options, and resolving it", "Describe a problem others could not immediately solve. What was your method?"],
+ 40:["Thinking Outside the Box", "Generating a useful non-obvious approach", "What unconventional idea did you propose or use, and why did it work?"],
+ 41:["Seizing Opportunities", "Recognizing and acting on a timely opening", "What opportunity did you notice that others might have missed?"],
+ 42:["Intuition", "Using pattern-based judgment built through experience", "When did you sense something important before you could fully explain it, and how did you verify it?"],
+ 43:["Adapting to Change", "Updating plans, roles, or behavior when circumstances shift", "What major change forced you to learn or work differently?"],
+ 44:["Insistence", "Advocating firmly and constructively for a needed action or standard", "When did you have to keep pushing for something important despite resistance?"],
+ 45:["Everything-Is-Possible Mindset", "Looking for a path forward before accepting that a goal is impossible", "When did you find a viable route after others had given up?"],
+ 46:["Thinking Big", "Connecting immediate work to a larger possibility or system", "What broader improvement or future possibility did you see beyond the immediate task?"],
+ 47:["Flexibility", "Shifting approach without losing the objective", "When did you change your method because another person or situation required it?"],
+ 48:["Trustworthiness", "Protecting confidence and doing what one promised", "What responsibilities or information were entrusted to you, and how did you earn that trust?"],
+ 49:["Hard Work", "Sustained effort over demanding periods", "What did prolonged effort look like in your role—not just one intense day?"],
+ 50:["High Work Ethic", "Consistent quality, initiative, and integrity", "What did you do even when no one was checking?"],
+ 51:["Responsibility", "Owning duties, consequences, people, or equipment", "What outcome was personally yours to protect or deliver?"],
+ 52:["Passion", "Bringing sustained energy and interest to meaningful work", "Which part of your service drew out your strongest energy and curiosity?"],
+ 53:["Working for Meaning", "Connecting effort to a purpose beyond convenience or reward", "What purpose helped you continue when the work was difficult?"],
+ 54:["Devotion", "Maintaining deep commitment to people, mission, or values", "What commitment did you continue to honor at personal cost?"],
+ 55:["Professionalism", "Applying standards, competence, respect, and discretion", "What professional standard did you protect even under pressure?"],
+ 56:["Determination", "Continuing toward a goal despite resistance", "What goal required repeated effort over time?"],
+ 57:["Care & Giving", "Noticing needs and acting for another person's welfare", "When did someone benefit because you noticed and responded to what they needed?"],
+ 58:["Communication & Expression", "Conveying information clearly and appropriately to the audience", "What difficult or important information did you have to communicate clearly?"],
+ 59:["Creativity", "Producing useful new ideas, methods, or expression", "What did you create or redesign, and what changed because of it?"],
+ 60:["Appreciating Small Things", "Noticing ordinary sources of value, relief, or gratitude", "What small things became important to you during service, and how does that affect you now?"],
+ 61:["Letting Go of Judgment", "Replacing quick evaluation with curiosity and perspective", "When did you revise an early judgment about a person or situation?"],
+ 62:["Persistence", "Continuing repeated effort despite slow progress", "What required you to keep trying after several setbacks?"],
+ 63:["Professionalism (duplicate in source list)", "Repeats #55 in the Momentum source list; the intended skill is not yet confirmed. Treat as #55 Professionalism until it is.", "What professional standard did you protect even under pressure?"],
+};
+// Service families, framework section 4: n = number, t = title, x = skills and civilian relevance
+const REF_FAMS = [
+ {n:1,t:"Regular Infantry — Golani, Givati, Nahal, Kfir, Paratroopers; reconnaissance battalions",x:"Strongest: Work Under Pressure (2); Completing Tasks (3); Work in Harsh Conditions (10); Prioritize (11); Teamwork (17); Discipline (25); Resilience (26); Emotional Regulation (27); Dealing with Fears (29); Coping with Stress (33); Adapting to Change (43); Responsibility (51); Determination (56); Persistence (62).\nAlso likely: Quick Reaction (6); Improvise (7); Take Risks (12); Operate Independently (15); Decision Making (38); Problem Solving (39); Trustworthiness (48); Communication & Expression (58).\nRole-dependent additions: Commanders—Leadership (16), Leading People (18), Teaching Skills (19), Organize & Manage (24), Leading Processes (14). Reconnaissance—planning, observation, information collection, navigation, concealment, reporting, and operating with incomplete information.\nCivilian relevance: operations, emergency services, field work, construction/site operations, security, logistics, team supervision, project execution, outdoor professions, entrepreneurship."},
+ {n:2,t:"Armored Corps",x:"Strongest: Teamwork (17); Work with Systems (13); Technological Know-How (9); Work Under Pressure (2); Work in Harsh Conditions (10); Quick Reaction (6); Discipline (25); Responsibility (51); Professionalism (55); Communication & Expression (58).\nAlso likely: Planning (4); Prioritize (11); Problem Solving (39); Adaptability (43); Trustworthiness (48); technical troubleshooting and equipment checks.\nRole-dependent: Tank commanders add leadership, multi-task coordination, risk judgment, instruction, and accountability.\nCivilian relevance: industrial operations, technical systems, fleet/equipment work, field service, maintenance, operations control, safety-critical teamwork."},
+ {n:3,t:"Combat Engineering and Yahalom",x:"Strongest: Planning (4); Work Under Pressure (2); Technological Know-How (9); Take Risks (12); Work with Systems (13); Problem Solving (39); Thinking Outside the Box (40); Adaptability (43); Professionalism (55); Responsibility (51).\nAlso likely: Completing Tasks (3); Attention to procedure; risk assessment; technical equipment operation; teamwork; precision; troubleshooting.\nYahalom emphasis: advanced technology, robotics/drones, complex technical missions, experimentation, and integration of engineering with field operations.\nCivilian relevance: engineering, infrastructure, safety, technical project work, robotics, construction, field operations, emergency response."},
+ {n:4,t:"Border Infantry — Karakal, Bardelas, Arayot Hayarden, Lavi HaBika, Panther; Plugat Pereh",x:"Strongest: Discipline (25); Teamwork (17); Work Under Pressure (2); Quick Reaction (6); Communication (58); Responsibility (51); Coping with Uncertainty (35); Professionalism (55).\nAlso likely: observation, patrol planning, information collection, working with diverse people (21), conflict restraint, judgment, and long-duration vigilance.\nCivilian relevance: public safety, operations, monitoring, emergency response, security, field coordination, public-facing work."},
+ {n:5,t:"Combat Intelligence / Field Collection",x:"Strongest: Planning (4); Time Management (5); Technological Know-How (9); Work with Systems (13); Operate Independently (15); Discipline (25); Emotional Regulation (27); Decision Making (38); Problem Solving (39); Intuition (42); Persistence (62).\nDomain strengths: sustained observation, information collection, pattern recognition, anomaly detection, concise reporting, source reliability, use of drones/observation technology, information handover.\nAlso likely: Being Alone (37); coping with uncertainty (35); attention to detail; teamwork; patience.\nCivilian relevance: intelligence/research, data quality, fraud/risk monitoring, operations centers, investigations, QA, remote systems, field research."},
+ {n:6,t:"Artillery; Moran and Rochev Shamayim",x:"Strongest: Work with Systems (13); Technological Know-How (9); Planning (4); Teamwork (17); Discipline (25); Professionalism (55); Work Under Pressure (2); Responsibility (51); Completing Tasks (3).\nSpecial-unit emphasis: UAV operation, precise systems, information interpretation, technical accuracy, safety procedures, cross-unit coordination.\nCivilian relevance: technical operations, aviation/UAV fields, industrial control, logistics, precision systems, operations rooms, technical training."},
+ {n:7,t:"Search and Rescue / Home Front Command",x:"Strongest: Work Under Pressure (2); Planning (4); Quick Reaction (6); Improvise (7); Prioritize (11); Teamwork (17); Contribute to Others (22); Emotional Regulation (27); Problem Solving (39); Care & Giving (57).\nDomain strengths: emergency response, rescue procedures, hazard identification, triage support, structural awareness, interagency coordination.\nCivilian relevance: emergency management, rescue, health and safety, municipalities, NGOs, disaster response, construction safety, social-impact work."},
+ {n:8,t:"Checkpoint Security / Military Police",x:"Strongest: Discipline (25); Communication & Expression (58); Emotional Regulation (27); Decision Making (38); Work with Different People (21); Responsibility (51); Professionalism (55); Quick Reaction (6).\nDomain strengths: identity/document review, interviewing/questioning, observation, anomaly detection, rule enforcement, public interaction, incident documentation.\nCivilian relevance: compliance, public service, law enforcement, security, customer-facing operations, fraud prevention, regulated environments."},
+ {n:9,t:"Border Police and Yamas",x:"Strongest: Quick Reaction (6); Work Under Pressure (2); Emotional Regulation (27); Decision Making (38); Communication (58); Teamwork (17); Risk Taking (12); Discipline (25); Adaptability (43).\nYamas emphasis: discretion, situational judgment, cultural/language fluency, role adaptability, precise coordination, and high-consequence decisions.\nCivilian relevance: policing, investigations, emergency response, protective services, crisis operations, public safety."},
+ {n:10,t:"Air Defense",x:"Strongest: Work with Systems (13); Technological Know-How (9); Quick Reaction (6); Work Under Pressure (2); Discipline (25); Teamwork (17); Responsibility (51); Professionalism (55).\nDomain strengths: monitoring, technical readiness, maintenance, checklist discipline, escalation, real-time incident response, coordination with other systems.\nCivilian relevance: operations centers, aerospace/defense industries, infrastructure monitoring, technical support, incident management, safety-critical systems."},
+ {n:11,t:"Counterterrorism Instructors (Lotar) and other military instructors",x:"Strongest: Teaching Skills (19); Leadership (16); Communication & Expression (58); Planning (4); Organize & Manage (24); Professionalism (55); Responsibility (51); Creativity (59).\nDomain strengths: needs assessment, lesson planning, demonstration, feedback, performance assessment, adapting instruction, safety supervision.\nCivilian relevance: training, education, coaching, facilitation, learning and development, safety instruction, fitness and sports."},
+ {n:12,t:"Combat Mobility / Operational Drivers",x:"Strongest: Work Under Pressure (2); Quick Reaction (6); Technological Know-How (9); Prioritize (11); Responsibility (51); Professionalism (55); Teamwork (17); Problem Solving (39).\nDomain strengths: vehicle operation, route and contingency planning, equipment readiness, casualty/supply transport, navigation, field logistics.\nCivilian relevance: fleet operations, logistics, transport, emergency driving, field service, supply-chain operations."},
+ {n:13,t:"Oketz",x:"Strongest: Operate Independently (15); Responsibility (51); Discipline (25); Patience/persistence (62); Emotional Regulation (27); Teamwork (17); Professionalism (55); Care & Giving (57).\nDomain strengths: animal handling, behavioral observation, training routines, working as an attached specialist, briefing other teams, maintaining readiness.\nCivilian relevance: animal training/care, specialist field work, security, instruction, operations, roles requiring patience and observation."},
+ {n:14,t:"Unit 504 and other HUMINT roles",x:"Strongest: Communication & Expression (58); Intuition (42); Work with Different People (21); Emotional Regulation (27); Decision Making (38); Adaptability (43); Trustworthiness (48); Professionalism (55).\nDomain strengths: human-source interaction, interviewing, relationship building, cultural awareness, information assessment, discretion, synthesis, concise reporting.\nCivilian relevance: research, diplomacy, investigations, interviewing, stakeholder relations, recruitment, negotiation, risk analysis. Only non-sensitive, general evidence should be used."},
+ {n:15,t:"Refa'im / Multi-Domain Unit",x:"Strongest: Thinking Outside the Box (40); Technological Know-How (9); Work with Systems (13); Leading Processes (14); Problem Solving (39); Adapting to Change (43); Thinking Big (46); Creativity (59).\nDomain strengths: experimentation, rapid learning, cross-domain integration, prototyping, testing, feedback loops, technology adoption.\nCivilian relevance: product development, innovation, startups, R&D, systems integration, operations design."},
+ {n:16,t:"Commando Brigade — Duvdevan, Egoz, Maglan",x:"Shared strongest: Planning (4); Work Under Pressure (2); Operate Independently (15); Teamwork (17); Emotional Regulation (27); Decision Making (38); Adaptability (43); Trustworthiness (48); Determination (56); Persistence (62).\nDuvdevan emphasis: urban judgment, communication, adaptability, precise coordination.\nEgoz emphasis: navigation, sustained field operations, harsh conditions, improvisation.\nMaglan emphasis: technology/systems, intelligence integration, precision, planning.\nCivilian relevance: complex operations, emergency/security work, leadership, field projects, technical operations, entrepreneurship."},
+ {n:17,t:"Tier-One Units — 669, Sayeret Matkal, Shaldag, Shayetet 13",x:"Shared strongest: high-level planning, teamwork, self-management, adaptability, responsibility, professional discipline, decision-making with incomplete information, resilience, rapid learning, and trustworthiness.\n669 emphasis: rescue, emergency medicine/evacuation coordination, care, prioritization, multi-team operations.\nSayeret Matkal emphasis: field intelligence, planning, discretion, independent judgment, information synthesis.\nShaldag emphasis: cross-domain coordination, raids, navigation, planning, rapid adaptation.\nShayetet 13 emphasis: maritime systems, physical/mental endurance, precision, small-team execution, operating in harsh conditions.\nCivilian relevance: leadership pipelines, complex operations, emergency management, technical/field programs, high-accountability roles. Do not use unit prestige as evidence; validate actual behavior."},
+ {n:18,t:"Navy — Missile Boats, Snapir, YALTAM, Naval Security Flotillas, Submarines",x:"Shared strongest: Teamwork (17); Work with Systems (13); Technological Know-How (9); Discipline (25); Professionalism (55); Communication (58); Responsibility (51); Work in Harsh Conditions (10).\nMissile boats: integrated weapons/radar/defense systems, navigation, watchkeeping, technical teamwork.\nSnapir: rapid response, small-boat operation, port security, diving/navigation, interagency coordination.\nYALTAM: diving, underwater technical work, installation/testing, rescue/recovery, advanced equipment.\nNaval security: patrol, navigation, monitoring, cross-domain coordination, threat response.\nSubmarines: precision, confidentiality, technical systems, teamwork in confined conditions, sustained concentration, resilience.\nCivilian relevance: maritime industries, technical systems, operations control, maintenance, shipping, diving, infrastructure, safety-critical teams."},
+ {n:19,t:"Ship Commanders / Naval Officers",x:"Strongest: Leadership (16); Leading People (18); Planning (4); Decision Making (38); Work with Systems (13); Organize & Manage (24); Responsibility (51); Professionalism (55); Communication (58); Thinking Big (46).\nDomain strengths: navigation, team and asset command, resource allocation, technical readiness, risk management, training, operations planning.\nCivilian relevance: management, maritime operations, engineering/technology leadership, project management, safety, organizational leadership."},
+ {n:20,t:"Combat Communications Officers",x:"Strongest: Technological Know-How (9); Work with Systems (13); Leadership (16); Planning (4); Problem Solving (39); Professionalism (55); Responsibility (51); Leading Processes (14).\nDomain strengths: communications infrastructure, hardware/software integration, troubleshooting, service availability, technical-team leadership, user support.\nCivilian relevance: IT, networks, telecom, systems engineering, technical operations, service delivery, technical project management."},
+ {n:21,t:"Battalion Intelligence Officers",x:"Strongest: Planning (4); Prioritize (11); Leadership (16); Decision Making (38); Problem Solving (39); Intuition (42); Communication (58); Responsibility (51); Professionalism (55).\nDomain strengths: information collection plans, analysis/synthesis, briefings, uncertainty management, decision support, team coordination, written reporting.\nCivilian relevance: research, analytics, risk, strategy, consulting, operations planning, business intelligence."},
+ {n:22,t:"Combat Medics, Paramedics, and Physicians",x:"Strongest: Work Under Pressure (2); Quick Reaction (6); Prioritize (11); Responsibility (51); Care & Giving (57); Emotional Regulation (27); Decision Making (38); Professionalism (55); Teamwork (17).\nDomain strengths: assessment, triage, treatment, documentation, patient communication, medical-team coordination, ethical judgment, instruction.\nCivilian relevance: health professions, emergency care, public health, clinical operations, medical technology, care coordination."},
+ {n:23,t:"Pilots and Aircrew",x:"Strongest: Planning (4); Time Management (5); Quick Reaction (6); Work with Systems (13); Decision Making (38); Emotional Regulation (27); Professionalism (55); Responsibility (51); Problem Solving (39).\nDomain strengths: systems mastery, procedural discipline, situational awareness, risk management, briefing/debriefing, continuous learning, precision.\nCivilian relevance: aviation, engineering, operations, technology, safety, leadership, complex decision-making."},
+ {n:24,t:"Erez and other officer-development tracks",x:"Strongest: Leadership (16); Leading People (18); Leading Processes (14); Planning (4); Organize & Manage (24); Decision Making (38); Teaching (19); Responsibility (51); Thinking Big (46); Communication (58).\nCivilian relevance: management, public leadership, project/program management, operations, entrepreneurship, organizational development."},
+ {n:25,t:"Intelligence Analysis, SIGINT, Visual Intelligence, Research",x:"Strongest Momentum skills: Technological Know-How (9); Work with Systems (13); Operate Independently (15); Decision Making (38); Problem Solving (39); Intuition (42); Adaptability (43); Professionalism (55); Communication (58); Persistence (62).\nDomain strengths: information processing, source evaluation, pattern recognition, hypothesis testing, research, analysis, synthesis, writing, briefing, language, geospatial/visual analysis, data tools.\nCivilian relevance: data and business analysis, research, risk/fraud, consulting, product analytics, investigations, policy, finance, journalism."},
+ {n:26,t:"Cyber, Software, Data, C4I, and Technical Development",x:"Strongest Momentum skills: Technological Know-How (9); Work with Systems (13); Problem Solving (39); Thinking Outside the Box (40); Adaptability (43); Creativity (59); Professionalism (55); Persistence (62); Operate Independently (15).\nDomain strengths: programming, testing, debugging, cybersecurity, systems architecture, networking, automation, data analysis, product teamwork, documentation, incident response.\nCivilian relevance: software, cyber, data, IT, product, QA, engineering, startups, technical consulting."},
+ {n:27,t:"Logistics, Supply, Maintenance, Transport, and Quartermaster Roles",x:"Strongest Momentum skills: Finishing the Job (1); Completing Tasks (3); Planning (4); Time Management (5); Administration Skills (8); Prioritize (11); Work with Systems (13); Organize & Manage (24); Responsibility (51); Professionalism (55).\nDomain strengths: inventory, procurement, scheduling, distribution, asset control, maintenance planning, vendor coordination, service continuity, records, process improvement.\nCivilian relevance: operations, supply chain, procurement, warehouse/fleet management, facilities, project coordination."},
+ {n:28,t:"Human Resources, Welfare, Placement, and Personnel Administration",x:"Strongest Momentum skills: Administration Skills (8); Work with Different People (21); Contribute to Others (22); Customer Service (23); Organize & Manage (24); Communication (58); Care & Giving (57); Responsibility (51); Trustworthiness (48).\nDomain strengths: interviewing, personnel records, placement, case coordination, policy application, welfare support, sensitive conversations, stakeholder service, event/process administration.\nCivilian relevance: HR, recruitment, people operations, social services, customer success, administration, nonprofit work."},
+ {n:29,t:"Education Corps, Command Instruction, and Training Development",x:"Strongest Momentum skills: Teaching Skills (19); Communication (58); Creativity (59); Leadership (16); Planning (4); Organize & Manage (24); Work with Different People (21); Contribute to Others (22).\nDomain strengths: curriculum and lesson design, facilitation, learner assessment, presentation, feedback, group management, educational content.\nCivilian relevance: education, training, facilitation, instructional design, youth work, organizational learning, content development."},
+ {n:30,t:"Administration, Finance, Legal, Media, and Public-Service Roles",x:"Strongest Momentum skills: Administration (8); Time Management (5); Completing Tasks (3); Work with Systems (13); Customer Service (23); Professionalism (55); Communication (58); Responsibility (51); Trustworthiness (48).\nDomain strengths vary: budgeting/accounting, compliance, policy, writing/editing, design/content, stakeholder communication, records, scheduling, office systems, public inquiries.\nCivilian relevance: direct transfer to finance, legal support, government, communications, marketing, administration, customer operations, nonprofit roles."},
+];
+// Role-specific evidence questions, framework section 6
+const REF_DQ = {
+ info:["What kinds of information did you receive, and what did you have to produce from it?", "Did you collect, clean, verify, compare, analyze, summarize, visualize, or brief information?", "How did you distinguish an important signal from routine noise?", "How did you express uncertainty or conflicting evidence?", "Who used your output to make decisions?"],
+ tech:["What tools, languages, platforms, networks, or equipment did you use?", "Did you configure, operate, maintain, build, test, debug, secure, or improve them?", "What type of failure did you diagnose?", "Did you document your work or support other users?", "What scale, reliability, or response-time expectations did you work under?"],
+ hr:["Did you interview, place, support, advise, document, or coordinate people?", "How many cases or people did you manage at a time?", "How did you protect privacy and handle sensitive conversations?", "Did you apply policy mechanically, or did you also need judgment?", "What improved for the person or unit because of your action?"],
+ log:["What people, equipment, inventory, budget, transport, facilities, or schedules did you coordinate?", "What volume or frequency did you manage?", "How did you prevent shortages, delays, errors, or loss?", "Which records or systems did you maintain?", "Did you improve a process, turnaround time, or accuracy?"],
+ edu:["Who were the learners, and what did they need to be able to do?", "Did you design content or deliver material created by others?", "How did you adapt to different abilities or motivation?", "How did you assess performance and give feedback?", "What measurable change occurred in knowledge, behavior, or performance?"],
+ med:["What level of assessment, treatment, documentation, or support were you qualified to provide?", "What decisions did you make independently and what required escalation?", "How did you communicate with distressed people or families?", "Did you manage supplies, records, shifts, training, or teams?", "Which abilities are formally certified, and which are experience-based?"],
+};
+// Occupational skills beyond the 63 (framework section 2, Layer B)
+const REF_LAYER_B = ["Information collection and processing", "Intelligence analysis and synthesis", "Research and source evaluation", "Pattern recognition and anomaly detection", "Data analysis and visualization", "Software development, testing, and debugging", "Cybersecurity and information security", "Network, communications, or systems administration", "Technical maintenance and troubleshooting", "Project and product coordination", "Logistics, inventory, procurement, and supply-chain work", "Human resources, placement, welfare, and personnel administration", "Teaching, curriculum development, facilitation, and assessment", "Medical, clinical, emergency-care, and patient-support skills", "Written reporting, documentation, and knowledge management", "Language, translation, and cross-cultural communication", "Finance, budgeting, and compliance", "Customer/public service and stakeholder management", "Operations-room monitoring, dispatch, and incident coordination", "Media, design, communications, and content production", "Legal, policy, and regulatory work"];
+
+/* Which family's role-specific questions apply (framework section 6) */
+const FAM_DQ = {5:"info",14:"info",21:"info",25:"info", 6:"tech",10:"tech",20:"tech",26:"tech",
+                28:"hr", 12:"log",27:"log", 11:"edu",29:"edu", 7:"med",22:"med"};
+const FAM_DQ_TITLE = {info:"intelligence and information processing", tech:"technology, software, cyber, systems",
+  hr:"human resources and welfare", log:"logistics and administration", edu:"instruction and education", med:"medical and care roles"};
+
+/* --------------------------------------------------------------------------
+   Matching what the person says to a service family (Hebrew + English).
+   Most specific first: on a tie, the earlier one wins. A role is only ever a
+   HYPOTHESIS — the companion still has to test it with a real example.
+   Hebrew quote marks are normalised first (see norm), so מ"כ / מ״כ both work.
+   -------------------------------------------------------------------------- */
+const FAM_RX = [
+ [16,/duvdevan|egoz|maglan|commando|דובדבן|אגוז|מגלן|קומנדו/gi],
+ [17,/\b669\b|sayeret matkal|matkal|shaldag|shayetet\s*13|flotilla 13|סיירת מטכ"ל|סיירת מטכל|שלדג|שייטת\s?13|יחידת 669|יחידה 669/gi],
+ [15,/refa'?im|multi-?domain|רפאים|רב.זירת/gi],
+ [4, /karakal|caracal|bardelas|arayot|panther|pereh|border (infantry|defen[cs]e)|קרקל|ברדלס|אריות הירדן|לביא|פנתר|פלוגת פרח|הגנת הגבול/gi],
+ [9, /border police|yamas|undercover|mista'?arvim|magav|מג"ב|משמר הגבול|ימ"ס|מסתערב/gi],
+ [1, /infantry|golani|givati|nahal|kfir|paratroop|reconnaissance|\brecon\b|combat soldier|frontline|front line|fighter|חי"ר|גולני|גבעתי|צנחנ|סיירת|סיירים|לוחם|לוחמת|כפיר/gi],
+ [2, /\barmou?r(ed)?\b|\btanks?\b|merkava|שריון|טנק|מרכבה|חרמ"ש/gi],
+ [3, /combat engineer|engineering corps|yahalom|sapper|demolition|\beod\b|הנדסה קרבית|חיל ההנדסה|יהלום|יהל"ום|חבלן|חבלה|פלס"ם/gi],
+ [6, /artillery|moran|rochev|\buav\b|drone operator|תותחן|ארטילריה|מורן|רוכב שמיים|כטב"ם|כטבם|רחפן/gi],
+ [10,/air defen[cs]e|iron dome|david'?s sling|patriot|הגנה אווירית|כיפת ברזל|קלע דוד|פטריוט|מערכת חץ|נ"מ/gi],
+ [7, /search and rescue|home front|rescue|פיקוד העורף|חילוץ|חיפוש והצלה/gi],
+ [22,/medic|paramedic|physician|doctor|nurse|corpsman|חובש|פראמדיק|רופא|רפואה קרבית|מד"א/gi],
+ [5, /field intelligence|combat intelligence|observer|observation|lookout|surveillance|תצפית|מודיעין שדה|מודיעין קרבי|לוחמת מודיעין/gi],
+ [21,/intelligence officer|battalion intelligence|\bs2\b|קמ"ן|קמן|קצין מודיעין|קצינת מודיעין/gi],
+ [14,/\b504\b|humint|human intelligence|source handling|interrogat|יחידה 504|חומינט|ניהול מקורות|חקירות|מפעיל סוכנים/gi],
+ [25,/\b8200\b|sigint|visint|visual intelligence|intelligence|\bintel\b|אמ"ן|ויזינט|סיגינט|ניתוח מודיעין|מחקר|מודיעין/gi],
+ [26,/cyber|software|developer|programmer|programming|data (scientist|analyst|engineer)|c4i|mamram|talpiot|unit 81|סייבר|תוכנה|מתכנת|תכנות|ממר"ם|תלפיות|יחידה 81|דאטה|מערכות מידע|מחשוב|תקשוב/gi],
+ [20,/communications? officer|signals? officer|קצין קשר|קצינת קשר|קשר קרבי|חיל הקשר/gi],
+ [19,/ship commander|naval officer|מפקד ספינה|קצין ים|קצינת ים|קצין חיל הים/gi],
+ [18,/\bnavy\b|naval|missile boat|snapir|yaltam|submarine|dvora|חיל הים|טילית|סנפיר|יל"תם|צוללת|צוללות|דבור|ספינה|ספינות|שייטת(?!\s?13)/gi],
+ [23,/pilot|aircrew|air crew|navigator|flight school|helicopter|טייס|קורס טיס|מסוק|צוות אוויר|חיל האוויר/gi],
+ [13,/oketz|k-?9|dog handler|canine|עוקץ|כלבן|קינולוג/gi],
+ [8, /checkpoint|military police|\bmp\b|מחסום|מחסומים|משטרה צבאית|מצ"ח/gi],
+ [12,/\bdriver\b|driving|convoy|combat mobility|heavy vehicle|truck|(?:^|[^א-ת])[הבלשכו]{0,3}נהג|נהיגה|שיירה|משאית|רכב כבד/gi],
+ [11,/instructor|lotar|counter-?terror(ism)? (instructor|school)|מדריכ|לוט"ר|לוטר|קורס מדריכים|הדרכה/gi],
+ [29,/education corps|teacher soldier|teaching soldier|curriculum|training development|חיל החינוך|מורה חיילת|מורות חיילות|חינוך|פיתוח הדרכה/gi],
+ [24,/officer (course|school|track|candidate|training)|bahad|erez program|cadet|קורס קצינים|קצונה|בה"ד|תוכנית ארז|תכנית ארז/gi],
+ [28,/human resources|\bhr\b|welfare|placement|personnel|adjutant|social worker|ת"ש|שלישות|משאבי אנוש|רווחה|עו"ס/gi],
+ [27,/logistic|supply|quartermaster|maintenance|mechanic|technician|warehouse|armory|ordnance|לוגיסטיק|אפסנא|אחזקה|תחזוקה|טכנאי|טכנאית|מכונאי|מחסן|חימוש|חטל"ג|אספקה/gi],
+ [30,/\badmin|clerk|finance|accounting|accountant|legal|lawyer|paralegal|media|spokes|army radio|galei|newspaper|מנהלה|פקיד|לשכה|כספים|חשבות|פרקליט|עורך דין|עורכת דין|דוברות|דובר צה"ל|גלי צה"ל|גלגלצ|עיתון/gi]
+];
+
+/* Did they lead or train people? Then the commander/instructor overlay applies. */
+const RX_COMMANDER = /commander|team leader|squad leader|platoon|company commander|\bnco\b|sergeant|instructor|trainer|מפקד|מ"כ|מ"מ|מ"פ|סמל|קצין|קצינה|מדריכ|פיקדתי/i;
+
+/* What the person is asking for right now. Checked over their last four messages. */
+const RX = {
+  cv: /\b(cv|resume|résumé|curriculum vitae|cover letter|linkedin)\b|קורות חיים|קו"ח|מכתב מקדים|לינקדאין|לינקדין/i,
+  interview: /interview|ראיון|ראיונות|להתראיין/i,
+  job: /job (search|hunt|market|interview|application|offer|opening|posting)|(find|get|land) (a |my first )?job|looking for (a )?(job|work)|civilian jobs?|jobs? (after|outside)|career|employer|recruiter|recruitment|hiring|apply(ing)? (to|for)|job application|application (to|for)|type of work|kind of work|line of work|work direction|\bprofessions?\b|\boccupations?\b|which jobs|what jobs|משרה|משרות|קריירה|מעסיק|תעסוקה|מועמדות|לחפש עבודה|חיפוש עבודה|כיווני עבודה|סוגי עבודה|סוג עבודה|תחום עבודה|(?:^|[^א-ת])[הבלמשכו]{0,3}מקצוע(?![א-ת])|גיוס לעבודה|להתקבל לעבודה/i,
+  edu: /\bstud(y|ies|ying)\b|degree in|a degree|bachelor|master'?s|universit|college|apprentice|certification|bootcamp|psychometric|vocational|professional training|civilian training|לימודים|תואר|אוניברסיט|מכללה|הכשרה מקצועית|הסמכה|מכינה|פסיכומטרי/i
+};
+
+const norm = s => (s||"").replace(/[״“”]/g,'"').replace(/[׳‘’]/g,"'").toLowerCase();
+
+function matchFamilies(text){
+  const hits = [];
+  FAM_RX.forEach(([n,re],i) => {
+    const c = (text.match(re)||[]).length;
+    if (c) hits.push({ n, c: Math.min(c,3), i });
+  });
+  hits.sort((a,b) => b.c-a.c || a.i-b.i);
+  return hits.slice(0,2).map(h => REF_FAMS.find(f => f.n === h.n)).filter(Boolean);
+}
+
+function refContext(){
+  const users = S.messages.filter(m => m.role === "user").map(m => norm(m.text));
+  const recent = users.slice(-4);
+  const any = re => recent.some(t => re.test(t));
+  const all = users.slice(-40).join("\n");
+  return {
+    fams: matchFamilies(all),
+    commander: RX_COMMANDER.test(all),
+    cv: any(RX.cv), interview: any(RX.interview), job: any(RX.job), edu: any(RX.edu)
+  };
+}
+
+/* --------------------------------------------------------------------------
+   The guidance the companion follows when it writes things for the person.
+   To change how CV help, interview help or direction help behaves, edit here.
+   -------------------------------------------------------------------------- */
+const DOC_MODE = `DOCUMENT MODE — they are asking for CV material, interview stories, a work direction or a study option. When your reply actually produces that material, the usual length rule (70 to 120 words, no lists) is suspended for that reply: write it out, up to about 300 words, as short lines with "• " bullets, then end with ONE question or ONE next action, and set "document":true. For a CV or interview stories, draft what their own words support and mark missing numbers or details in [brackets] — never invent them — and ask for the most valuable missing detail. For work or study directions, if you still know very little about them, do not list options yet: ask the one question that matters most. Ask which language the CV is for (Hebrew or English) if that is unclear. If they are only mentioning the topic in passing, answer in your normal style.`;
+
+const CV_GUIDE = `CV GUIDE — Build only from what they confirmed or described; never invent numbers, scope or achievements. Ask for safe quantities when missing (people, shifts, cases, reports, systems, courses, assets, projects). Ask the target (kind of job or sector) before finalising; with no target, draft a general version and say so. Formula for every bullet: civilian action verb + what they did + scope or conditions + result or purpose. Avoid: combat jargon; inflated claims; empty adjectives (leader, resilient, hard-working, works under pressure) with no behavior shown; unit prestige as proof; anything classified or identifying (names, places, dates, methods, targets, system specifications). Deliver, concisely: (1) a two or three line summary, (2) three to five evidence bullets, (3) keywords suited to the target, (4) tools, certifications or systems that can safely be named. When explaining a confirmed skill, give three levels: plain strength → civilian competency → evidence statement. Illustrative patterns only — always use THEIR facts. Weak: "Combat commander; strong leadership under pressure." Strong: "Led and supported a team through demanding field assignments, coordinating preparation, task allocation, safety and after-action learning under changing conditions." Weak: "Served in intelligence." Strong: "Analyzed information from multiple sources, identified relevant patterns, and produced concise written and verbal briefings for time-sensitive decisions." Weak: "Responsible for equipment." Strong: "Coordinated equipment readiness and inventory records for a multi-team operation, resolving shortages and maintaining continuity under tight deadlines." Support, technical, care and administrative roles must show their real occupational skills — never present them as lesser, and never as frontline work if they were not.`;
+
+const INTERVIEW_GUIDE = `INTERVIEW STORIES — Structure: situation → responsibility (their own part) → action → result → learning; first person, about 60 to 90 seconds spoken. Useful types: solving a problem; working with a team; taking responsibility; adapting to change; leading or teaching (only if they did); learning from a mistake. Draft from their confirmed evidence. If a part is missing (their own action, the result), ask for that one part rather than filling it in. No operational detail.`;
+
+const DIRECTION_GUIDE = `WORK AND STUDY DIRECTIONS — Offer at most three plausible directions, as possibilities and not prescriptions. For each: the strengths that transfer now (from their confirmed evidence); what is missing (knowledge, credential, portfolio, civilian vocabulary); one low-risk test (a conversation, short course, volunteer task, shadowing, small project, entry role); one next action. Also weigh interests, values, health, education so far, family situation, money needs, location and lifestyle — ask about the ones you do not know. Pattern examples: systems + technical learning + troubleshooting → engineering, IT, operations, technical training; information processing + writing + judgment → research, analysis, policy, consulting, finance; leadership + teaching + care → education, training, HR, coaching, community leadership; planning + execution + logistics → operations, supply chain, project coordination, events, field programs; emotional regulation + rapid prioritising + care → healthcare, emergency response, crisis support; field execution + teamwork + responsibility → operations, site work, logistics, emergency services, security, outdoor programs; observation + concentration + reporting → monitoring, QA, investigations, operations centers, risk or fraud work. Never promise a job or an admission, and do not recommend expensive education on generic salary claims. Deadlines, tuition, benefits and admission rules change: do not quote them from memory — say they must be checked with the official source.`;
+
+const EDU_ADD = ` For study or training, compare the realistic routes — degree, certificate, vocational track, apprenticeship, direct employment — and for each say what they already have, what is missing, and (only where you are sure) time and cost; suggest a low-risk way to test interest before committing.`;
+
+const FAMILY_HEAD = `SERVICE-FAMILY HYPOTHESES — from what they said about their service. A role suggests where skills MAY have developed; it proves none of them, and unit prestige is never evidence. "Strongest" means commonly demanded often; "Also likely" depends on the assignment. When you surface candidates: no more than six at a time, most likely first; invite them to pick the three that feel most true, reject any, and add one you missed. Then test one at a time: a concrete example (nothing classified), their own part, how often, guided or independent or led others, and the result. If their real work fits another family better (a support, technical or administrative role, say), follow their real duties instead.`;
+
+const COMMANDER_OVERLAY = `COMMANDER / INSTRUCTOR OVERLAY — only if their duties show they led or trained people. Also test: Planning (4), Time Management (5), Prioritize (11), Leading Processes (14), Leadership (16), Leading People (18), Teaching Skills (19), Work with Different People (21), Organize & Manage (24), Decision Making (38), Trustworthiness (48), Responsibility (51), Communication (58). For evidence ask about team size, training responsibility, decisions they owned, resources coordinated, feedback given, conflicts managed and outcomes. People without formal command can also show leadership, teaching and initiative — ask, don't assume from rank.`;
+
+const OCCUPATIONAL_NOTE = `Civilian skills most easily understood by employers and schools: responsibility and reliability; team coordination; problem-solving; adaptability; planning and prioritisation; communication; independent work and initiative; technical or systems competence; leadership and teaching (when demonstrated); emotional regulation under ordinary pressure. Turn "resilience", "discipline", "hard work" and "working under pressure" into visible behaviors.`;
+
+/* --------------------------------------------------------------------------
+   buildReference(): choose ONLY what this moment needs. Nothing is added to
+   ordinary conversation in the opening and foundation stages, so the running
+   cost stays what it was. Blocks are listed in priority order; anything that
+   would push past CONFIG.REF_BUDGET_CHARS is left out.
+   -------------------------------------------------------------------------- */
+function buildReference(){
+  const out = { text:"", doc:false, labels:[] };
+  const c = refContext();
+  const wantsDoc = c.cv || c.interview || c.job || c.edu;
+  const phaseOK = /^(discovery|direction|open)$/.test(S.phase);
+  const blocks = [];
+  const add = (label, text) => blocks.push({ label, text });
+  const nm = id => "#"+id+" "+skillName(id,"en")+" (Momentum: "+REF_SKILLS[id][0]+")";
+
+  if (wantsDoc) add("document mode", DOC_MODE);
+  if (c.cv) add("CV guide", CV_GUIDE);
+  if (c.interview) add("interview-story guide", INTERVIEW_GUIDE);
+  if (c.job || c.edu) add(c.job ? "work & study guide" : "study guide", DIRECTION_GUIDE + (c.edu ? EDU_ADD : ""));
+
+  const known = S.profile.strengths.filter(s => REF_SKILLS[s.id]).slice(0,6);
+  if (wantsDoc && known.length)
+    add("meaning of confirmed skills", "WHAT THEIR CONFIRMED SKILLS MEAN IN PRACTICE (use to translate; do not quote):\n" +
+        known.map(s => "- "+nm(s.id)+": "+REF_SKILLS[s.id][1]+".").join("\n"));
+
+  if (c.fams.length && (wantsDoc || phaseOK))
+    add("service family: " + c.fams.map(f => f.t.split(" — ")[0]).join(" + "),
+        FAMILY_HEAD + "\n" + c.fams.map(f => "• "+f.t+"\n"+f.x).join("\n"));
+
+  if (c.commander && (wantsDoc || phaseOK)) add("commander/instructor overlay", COMMANDER_OVERLAY);
+
+  const last = [...S.messages].reverse().find(m => m.role === "assistant");
+  const ids = (last && last.surfaced ? last.surfaced : []).map(x => +x.id).filter(id => REF_SKILLS[id]).slice(0,3);
+  if (ids.length)
+    add("evidence questions: "+ids.join(", "), "EVIDENCE QUESTIONS FOR THE SKILLS BEING TESTED (pick one, in your own words, one at a time):\n" +
+        ids.map(id => "- "+nm(id)+" — means: "+REF_SKILLS[id][1]+". Ask: "+REF_SKILLS[id][2]).join("\n"));
+
+  const dk = c.fams[0] && FAM_DQ[c.fams[0].n];
+  if (dk && (wantsDoc || phaseOK))
+    add("role questions: "+dk, "ROLE-SPECIFIC EVIDENCE QUESTIONS ("+FAM_DQ_TITLE[dk]+"):\n" + REF_DQ[dk].map(q => "- "+q).join("\n"));
+
+  if (wantsDoc)
+    add("occupational skills list", "OCCUPATIONAL SKILLS BEYOND THE 63 — name these as well when their duties show them; do not force them into the 63: " + REF_LAYER_B.join("; ") + ".\n" + OCCUPATIONAL_NOTE);
+
+  let used = 0; const kept = [];
+  blocks.forEach(b => { if (used + b.text.length <= CONFIG.REF_BUDGET_CHARS){ kept.push(b); used += b.text.length; } });
+  if (!kept.length) return out;
+
+  out.text = "REFERENCE — background from the Momentum service-to-skills framework. It describes what roles commonly build and how to translate it into civilian terms. It is never a fact about this person until they confirm it with their own example.\n\n" +
+             kept.map(b => b.text).join("\n\n");
+  out.labels = kept.map(b => b.label);
+  out.doc = kept.some(b => b.label === "document mode");
+  return out;
+}
+
+/* Copy button for CV / interview drafts */
+function copyText(text, btn){
+  const done = () => { btn.textContent = L().copied; setTimeout(() => { btn.textContent = L().copy; }, 1400); };
+  const fallback = () => {
+    const t = document.createElement("textarea"); t.value = text; t.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(t); t.select();
+    try { document.execCommand("copy"); } catch(e){}
+    t.remove(); done();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+  else fallback();
+}
 
 /* ==========================================================================
    3. STATE
@@ -522,10 +829,15 @@ function turnNode(m, idx){
   const wrap = el("div","turn "+(m.role==="user"?"me":m.role==="system"?"sys":"them"));
   const body = el("div","body", m.text);
   wrap.appendChild(body);
+  if (m.doc && m.role === "assistant"){
+    const cb = el("button","copy", L().copy);
+    cb.onclick = () => copyText(m.text, cb);
+    wrap.appendChild(cb);
+  }
 
   if (m.surfaced && m.surfaced.length){
     const s = el("div","surface");
-    s.appendChild(el("h4", null, S.lang==="he" ? "מה שאני שומע מתוך מה שתיארת — נבדוק:" : "What I'm hearing in what you described — let's check it:"));
+    s.appendChild(el("h4", null, S.lang==="he" ? "חוזקות ששווה לבדוק — תגיד אם זה מתאים:" : "Possible strengths worth checking — tell me if these fit:"));
     const row = el("div","row");
     m.surfaced.forEach(c => row.appendChild(el("span","tag", skillName(c.id,S.lang) || c.label || "")));
     s.appendChild(row); wrap.appendChild(s);
@@ -564,12 +876,13 @@ function hideThinking(){ const n=$("thinking"); if(n) n.remove(); }
    This is where the behaviour required by the brief is encoded.
    Kept compact on purpose — it is sent with every request.
    ========================================================================== */
-function systemPrompt(){
+function systemPrompt(ref){
+  ref = ref || buildReference();
   const names = SKILLS.map(s => s[0]+":"+s[2]).join(", ");
   const p = S.profile;
   const state =
     "PHASE: "+S.phase+
-    "\nCONFIRMED STRENGTHS: "+(p.strengths.map(x=>x.id+" ("+x.evidence+")").join("; ")||"none yet")+
+    "\nCONFIRMED STRENGTHS: "+(p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet")+
     "\nCOSTS NAMED: "+(p.costs.join("; ")||"none yet")+
     "\nOPEN QUESTIONS: "+(p.open.join("; ")||"none yet")+
     "\nDIRECTIONS RAISED: "+(p.directions.map(d=>d.title).join("; ")||"none yet")+
@@ -579,32 +892,37 @@ function systemPrompt(){
   return `You are a transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Speak plainly, like a sharp person who has sat with many soldiers — not a coach, not a therapist, not a cheerleader.
 
 HOW YOU TALK
-- Short. Two or three sentences, then ONE question. Never a list of questions.
+- Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions, never bullet points.
+- Never open by restating, summarising or quoting what they just said. Do not use "I hear", "I heard", "what I'm hearing", "it sounds like", "so you're saying", "you mentioned", or their own phrases echoed back. Start with the substance: your read, the explanation, or the answer. They know what they said.
 - Never flatter. Never say "amazing", "incredible", "you're a natural". No praise without evidence.
 - Never assume. Role, unit, or rank is a HYPOTHESIS, never a conclusion. Two people in the same role built different things.
 - Do not offer a menu of services or modules. What is needed emerges from what they say.
 - If they are vague about an event or a fact, ask for one concrete moment: what happened, what did you actually do, what did it cost.
 - If they are vague about a feeling — "I don't know", "what do you think", "it's hard to explain" — you may venture ONE plain-spoken guess at what's underneath, built from what they've actually told you so far, not a generic guess. State it clearly as a guess, not a fact ("maybe it's more X than Y" — never "you feel X"), and ask if that's close. If they correct it, drop your guess immediately and go with theirs — do not defend it or re-argue it.
 
+RESPOND TO WHAT THEY SAID BY BUILDING ON IT, NOT REPEATING IT
+Every reply must engage the specific content of their last message — but by adding to it, never by echoing it. If they said "excited but uncertain", "I just want to be free", or "strange", do not hand those words back. Explain what is usually going on underneath that state, and connect it to the specifics they gave. Never ask a generic next question that would make sense regardless of what they just told you; that is the single worst failure mode of this app.
+When they express uncertainty, restlessness, wanting freedom, numbness, or not knowing what to do, treat that as the subject, not as an obstacle to getting through your questions. Explain plainly what is common for people leaving service — the sudden absence of structure, the gap between relief and emptiness, friends scattering, money pressure, family not understanding — say why it happens, and connect it to what THEY specifically said. Keep it a short, grounded explanation, not a lecture, then one question that follows from it.
+
 PHASES (move when the person is ready, not on a timer)
 1 opening — establish, early and explicitly: where they served, their ACTUAL ROLE and rank (combat, commander, officer, support, technical), how long, and where they are now. Then how it is actually sitting with them and what is on their mind. Get role early — you need it as a hypothesis — but never treat it as the conclusion about what they built.
-
-RESPOND TO WHAT THEY ACTUALLY SAID
-Every reply must visibly engage the specific content of their last message. Reflect the actual words and feelings they used before you ask anything new — if they said "excited but uncertain", "I just want to be free", "strange", name that back and engage it. Never ask a generic next question that would make sense regardless of what they just told you; that is the single worst failure mode of this app.
-When they express uncertainty, restlessness, wanting freedom, numbness, or not knowing what to do, treat that as the subject, not as an obstacle to getting through your questions. Say plainly what is common for people leaving service — the sudden absence of structure, the gap between relief and emptiness, friends scattering, money pressure, family not understanding — and connect it to what THEY specifically said. Do not lecture; two or three sentences, then one question that follows from their words.
 2 foundation — the transition foundation conversation: what their service actually required of them; what it took from them; what it required them to become; how it changed what they can do, what they trust themselves with, what responsibility means to them, and how they see the world. Hold both sides: service is sacrifice AND it built things. Do not resolve that tension prematurely.
 3 discovery — surface possible strengths from what they described, then TEST each one by asking for a concrete example. A strength enters the profile only with the person's own evidence.
 4 direction — what they are weighing next: work, study, money, relationships, rest, meaning.
 5 open — ongoing. Keep analysing, keep following up on what was decided.
 
 ACKNOWLEDGE ONCE, GROUNDED IN THEIR OWN WORDS
-If SERVICE ACKNOWLEDGED is "no" and they have just told you something concrete about their service — what unit, how long, how intense — acknowledge the weight of exactly what they told you in one sincere sentence built from their own specifics (the years, the intensity), not a generic compliment about their unit or character. Do NOT repeat the welcome framing (gratitude, "I am here for you", human support) — the opening message already said all of it, and repeating it sounds scripted. Just acknowledge the weight of their specifics, briefly, then continue. Set "ack":true on this reply. Do this once only; after that do not repeat it, and never let it become praise of their capability — that still needs their own evidence to earn a place in the profile.
+If SERVICE ACKNOWLEDGED is "no" and they have just told you something concrete about their service — what unit, how long, how intense — acknowledge in one sincere sentence what carrying that much, for that long, weighs — without listing their details back to them and without a generic compliment about their unit or character. Do NOT repeat the welcome framing (gratitude, "I am here for you", human support) — the opening message already said all of it, and repeating it sounds scripted. Acknowledge the weight briefly, then continue with real substance. Set "ack":true on this reply. Do this once only; after that do not repeat it, and never let it become praise of their capability — that still needs their own evidence to earn a place in the profile.
 
 NAME THE SHIFT, WHEN IT'S ACTUALLY HAPPENING
 If SHIFT NAMED is "no" and they ask you to decide for them, or say they don't know what to do with no one left to ask — that is usually the real thing in the room: in service most decisions this size were made above them, and right now nobody is deciding this one but them. Say so plainly in one sentence — this not-knowing is the first rep of deciding for yourself, not a delay before the real thing starts — then hand the decision straight back with a real question. Set "shift":true on this reply. Only when the pattern is actually present, not as a stock line, and only once. Do NOT fire this when they've also named concrete constraints (money, housing, health, family) in the same message — naming real constraints and asking for input is ordinary problem-solving, not the orders-dependence pattern; just answer the actual question with real alternatives instead.
 
 STRENGTH FRAMEWORK (discovery aid, never a checklist, never shown as a list to tick)
 ${names}
+
+LEVELS — when you confirm a strength, also set its level from THEIR example: 1 exposed (some experience, close guidance), 2 practiced (used it repeatedly), 3 proficient (trusted to do it independently in demanding situations), 4 led or taught (guided others, set standards, or improved how the work was done). Judge from frequency, autonomy, complexity, scope and result; say briefly why you chose it and drop it if they correct you. Rank and unit prestige never raise a level.
+
+REFERENCE — a REFERENCE section may appear near the end of these instructions. Use it to ask sharper evidence questions and to write CV, interview, work and study material.
 
 BEHAVIOUR THAT NEVER STOPS, in every phase including long after orientation:
 Understand before answering. Analyse, don't just reflect back. When they raise a choice, generate at least two real alternatives they did not mention, state the trade-offs honestly including cost and time, and give a recommendation when you have enough to justify one — say what would change your mind. Disagree when you disagree. Do not simply agree to be agreeable. Follow up on things they said they would do.
@@ -613,10 +931,10 @@ BOUNDARIES
 You are not a clinician. If there is real distress — hopelessness, not sleeping, not functioning, thoughts of hurting themselves — set concern:true, say plainly that talking to a person would help, and keep talking with them. Never replace a professional, never diagnose.
 
 OUTPUT — reply with JSON only, no markdown fences:
-{"reply":"your words","phase":"opening|foundation|discovery|direction|open","candidates":[{"id":17,"why":"one line, in the reply language"}],"confirmed":[{"id":17,"evidence":"their own concrete example, 10 words max, their language"}],"costs":["something the service took, in their words"],"open":["something unresolved worth returning to"],"proposals":[{"title":"short action they could take next","why":"one line"}],"concern":false,"ack":false,"shift":false}
-Include only the fields that apply. candidates only when you are about to test them. confirmed only with real evidence they gave. proposals only when a direction genuinely emerged — never as an opening menu. ack:true and shift:true only on the one turn each is described above.
+{"reply":"your words","phase":"opening|foundation|discovery|direction|open","candidates":[{"id":17,"why":"one line, in the reply language"}],"confirmed":[{"id":17,"level":2,"evidence":"their own concrete example, 10 words max, their language"}],"costs":["something the service took, in their words"],"open":["something unresolved worth returning to"],"proposals":[{"title":"short action they could take next","why":"one line"}],"concern":false,"ack":false,"shift":false,"document":false}
+Include only the fields that apply. candidates only when you are about to test them. confirmed only with real evidence they gave. proposals only when a direction genuinely emerged — never as an opening menu. ack:true and shift:true only on the one turn each is described above. level only with confirmed. document:true only when the reply is CV material, interview stories, or a work or study comparison written out in full.
 
-CURRENT STATE
+${ref.text ? ref.text + "\n\n" : ""}CURRENT STATE
 ${state}`;
 }
 
@@ -629,8 +947,10 @@ async function askModel(){
     .slice(-CONFIG.HISTORY_TURNS)
     .map(m => ({ role: m.role, content: m.text }));
 
-  const sys = systemPrompt();
+  const ref = buildReference();
+  const sys = systemPrompt(ref);
   DIAG.source = "live API";
+  DIAG.refs = ref.labels; DIAG.refChars = ref.text.length;
   DIAG.sentTurns = hist.length;
   DIAG.sysChars = sys.length;
   DIAG.estPromptTokens = Math.round((sys.length + hist.reduce((a,m)=>a+m.content.length,0)) / 4);
@@ -641,7 +961,7 @@ async function askModel(){
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       model: CONFIG.MODEL,
-      max_tokens: CONFIG.MAX_TOKENS,
+      max_tokens: ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,
       system: sys,
       messages: hist
     })
@@ -658,12 +978,35 @@ async function askModel(){
 }
 
 /* Live diagnostics — what the last turn actually did. Not persisted. */
-const DIAG = { source:"—", raw:"", parsed:null, parsedOK:null, sentTurns:0, sysChars:0, estPromptTokens:0, usage:null, error:null, at:"—", triggers:[] };
+const DIAG = { source:"—", raw:"", parsed:null, parsedOK:null, sentTurns:0, sysChars:0, estPromptTokens:0, usage:null, error:null, at:"—", triggers:[], refs:[], refChars:0 };
 
+/* A raw line break inside a JSON string is invalid JSON. Long replies such as
+   CV drafts sometimes arrive that way, so put the break back as \n. */
+function fixBreaksInStrings(t){
+  let out = "", inStr = false, esc = false;
+  for (const ch of t){
+    if (inStr){
+      if (esc){ esc = false; out += ch; continue; }
+      if (ch === "\\"){ esc = true; out += ch; continue; }
+      if (ch === '"'){ inStr = false; out += ch; continue; }
+      if (ch === "\n"){ out += "\\n"; continue; }
+      if (ch === "\r"){ continue; }
+      if (ch === "\t"){ out += "\\t"; continue; }
+      out += ch;
+    } else { if (ch === '"') inStr = true; out += ch; }
+  }
+  return out;
+}
 function parseReply(raw){
   let txt = raw.replace(/```json|```/g,"").trim();
   const a = txt.indexOf("{"), b = txt.lastIndexOf("}");
-  if (a > -1 && b > a) { try { return JSON.parse(txt.slice(a,b+1)); } catch(e){} }
+  if (a > -1 && b > a) {
+    const body = txt.slice(a,b+1);
+    try { return JSON.parse(body); } catch(e){}
+    try { return JSON.parse(fixBreaksInStrings(body)); } catch(e){}
+    const m = body.match(/"reply"\s*:\s*"([\s\S]*?)"\s*(?:,\s*"(?:phase|candidates|confirmed|costs|open|proposals|concern|ack|shift|document)"|\}\s*$)/);
+    if (m) return { reply: m[1].replace(/\\n/g,"\n").replace(/\\"/g,'"').replace(/\\\\/g,"\\") };
+  }
   return { reply: txt || "…" };   // fall back to plain text, never break the conversation
 }
 
@@ -684,25 +1027,25 @@ const HINTS = [
 ];
 const SCRIPT = {
   he:[
- "ומה מרגיש הכי לא ברור עכשיו? לא מה שאמורים להרגיש — מה שבאמת.",
- "עכשיו בוא נחזור אחורה רגע. מה השירות באמת דרש ממך ביום־יום? לא התיאור הרשמי — מה בפועל עשית.",
- "ומה זה לקח ממך? לשירות יש מחיר, וזה לא סותר את מה שהוא בנה.",
- "תן לי מקרה אחד קונקרטי. מה קרה, ומה אתה עשית שם בפועל?",
- "מה מזה אתה סומך על עצמך שתעשה שוב גם בלי מדים?",
- "בוא נסתכל קדימה. מה עומד על הפרק — עבודה, לימודים, כסף, מנוחה?",
- "מה מעכב אותך מלעשות את הצעד הראשון בכיוון הזה?"],
+ "רוב מי שמסיים שירות מצפה להרגיש הקלה או גאווה, ובפועל מרגיש משהו פחות חד — תערובת, או סוג של קהות. זה נפוץ, וזה בדרך כלל אומר שהמסגרת שהייתה אומרת לך מה חשוב כבר לא שם.\n\nומה מרגיש הכי לא ברור עכשיו? לא מה שאמורים להרגיש — מה שבאמת.",
+ "לפני שמסתכלים קדימה, כדאי להבין מה השירות באמת בנה בך, כי התיאור הרשמי של תפקיד כמעט אף פעם לא מספר את זה. שני אנשים באותו תפקיד יכולים לצאת עם דברים שונים לגמרי.\n\nאז מה השירות באמת דרש ממך ביום־יום? לא התיאור הרשמי — מה בפועל עשית.",
+ "לשירות יש מחיר, וחשוב לקרוא לו בשמו — לא כדי להתלונן, אלא כי מה שלא נאמר נוטה לצוף מאוחר יותר, בדיוק כשמנסים להחליט מה הלאה. המחיר לא סותר את מה שהשירות בנה; שניהם נכונים יחד.\n\nאז מה זה לקח ממך?",
+ "תיאור כללי של יכולות לא שווה הרבה, כי כל אחד יכול להגיד \"אני אחראי\" או \"אני עובד טוב בצוות\". מה שמשכנע הוא רגע אחד ספציפי, ואפשר לבדוק דרכו מה באמת עמד שם.\n\nתן לי מקרה אחד קונקרטי. מה קרה, ומה אתה עשית שם בפועל?",
+ "חלק ממה שבנית במדים תלוי במסגרת שהייתה סביבך, וחלק באמת שלך. ההבחנה הזאת חשובה, כי רק על החלק השני אפשר לבנות עבודה או לימודים.\n\nמה מזה אתה סומך על עצמך שתעשה שוב גם בלי מדים?",
+ "עכשיו, כשיש קצת בסיס, אפשר להסתכל קדימה. המטרה כאן היא לא לבחור מסלול מוקדם מדי, אלא לראות מה באמת על השולחן ומה כל אפשרות עולה — בכסף, בזמן ובאנרגיה.\n\nמה עומד על הפרק — עבודה, לימודים, כסף, מנוחה?",
+ "לפעמים מה שמעכב הוא לא חוסר ידיעה מה לעשות, אלא הצעד הראשון עצמו, שנראה גדול מדי או לא ברור. פירוק שלו לדבר קטן אחד שאפשר לעשות השבוע בדרך כלל מזיז את הכול.\n\nמה מעכב אותך מלעשות את הצעד הראשון בכיוון הזה?"],
   en:[
- "What feels least clear right now? Not what you're supposed to feel — what's actually there.",
- "Let's go back a step. What did your service actually require of you day to day? Not the official description — what you really did.",
- "And what did it take from you? Service has a cost, and that doesn't cancel what it built.",
- "Give me one concrete moment. What happened, and what did you actually do there?",
- "Which of that do you trust yourself to do again out of uniform?",
- "Now forward. What's on the table — work, study, money, rest?",
- "What's stopping you from taking the first step in that direction?"]
+ "Most people finishing service expect to feel relief or pride, and instead get something less clear — a mix, or a kind of flatness. That's common, and it usually means the structure that used to tell you what mattered is no longer there.\n\nWhat feels least clear right now? Not what you're supposed to feel — what's actually there.",
+ "Before looking ahead, it's worth getting clear on what service actually built in you, because the official description of a role rarely tells you that. Two people in the same job can walk away with very different things.\n\nSo what did your service actually require of you day to day? Not the official description — what you really did.",
+ "Service has a cost, and it's worth naming it — not to complain, but because what goes unsaid tends to resurface later, right when you're trying to decide what's next. The cost doesn't cancel what service built; both are true at once.\n\nSo what did it take from you?",
+ "General claims about strengths don't count for much, since anyone can say \"I'm responsible\" or \"I work well in a team.\" A single specific moment is what makes it believable, and it lets us check what was really behind it.\n\nGive me one concrete moment. What happened, and what did you actually do there?",
+ "Some of what you built in uniform depends on the structure that was around you, and some of it is truly yours. That difference matters, because only the second part travels into work or study.\n\nWhich of that do you trust yourself to do again out of uniform?",
+ "With some of the foundation in place, we can look forward. The aim here isn't to pick a path early — it's to see what's actually on the table and what each option costs in money, time, and energy.\n\nWhat's on the table — work, study, money, rest?",
+ "Often what's holding someone back isn't not knowing what to do — it's that the first step looks too big or too vague. Cutting it down to one small thing you can do this week usually gets things moving.\n\nWhat's stopping you from taking the first step in that direction?"]
 };
 const ACK = {
-  he: "מה שתיארת עכשיו — השנים, האינטנסיביות — זה משקל אמיתי, וזה לא עובר בלי לב לב.\n\n",
-  en: "Two fronts, back to back in some cases — what you just described is a real weight, and it doesn't go unnoticed.\n\n"
+  he: "שירות כזה, בעצימות כזו ולאורך זמן כזה, הוא משקל אמיתי, וזה לא עובר בלי שמישהו שם לב.\n\n",
+  en: "Carrying that much for that long is a real weight, and it doesn't go unnoticed.\n\n"
 };
 const SHIFT_RE = /advise|what should i do|תמליץ|תמליצ|מה כדאי לי|מה אתה חושב שכדאי|מה אתה ממליץ|מה אתה מציע|מה היית מציע/i;
 const GROUNDED_RE = /money|cash|rent|apartment|place to live|job|work|health|family|כסף|דירה|עבודה|משפחה|מקום לגור|בריאות/i;
@@ -712,15 +1055,9 @@ const SHIFT_LINE = {
 };
 function practiceReply(userText){
   const i = Math.min(S.practiceStep, SCRIPT[S.lang].length-1);
-  // Practice Mode has no language understanding. It echoes one phrase back so the
-  // person isn't talking into a void, but it genuinely cannot respond to content.
-  let echo = "";
-  const t = (userText||"").trim();
-  if (t.length > 8){
-    const frag = t.split(/[.,!?\n]/).map(s=>s.trim()).filter(s=>s.length>6)[0];
-    if (frag) echo = (S.lang==="he" ? "שמעתי: \"" : "I heard: \"") + frag.slice(0,70) + "\".\n\n";
-  }
-  const out = { reply: echo + SCRIPT[S.lang][i] };
+  // Practice Mode has no language understanding, so it does not pretend to:
+  // it never echoes the person's words back, it just gives the scripted reply.
+  const out = { reply: SCRIPT[S.lang][i] };
   if (S.practiceStep === 0 && !S.ack){
     out.reply = ACK[S.lang] + out.reply;
     out.ack = true;
@@ -777,6 +1114,7 @@ async function sendUser(text){
     DIAG.raw = "(no API call — scripted reply)";
     DIAG.parsed = out; DIAG.parsedOK = null; DIAG.usage = null;
     DIAG.sentTurns = 0; DIAG.sysChars = 0; DIAG.estPromptTokens = 0;
+    DIAG.refs = []; DIAG.refChars = 0;
     DIAG.at = new Date().toLocaleTimeString();
   }
   hideThinking();
@@ -790,6 +1128,7 @@ function applyReply(out){
   if (out.candidates && out.candidates.length) DIAG.triggers.push("surfaced "+out.candidates.length+" candidate skill(s) to test");
   if (out.confirmed && out.confirmed.length) DIAG.triggers.push("confirmed "+out.confirmed.length+" strength(s) with evidence");
   if (out.proposals && out.proposals.length) DIAG.triggers.push("offered "+out.proposals.length+" direction(s)");
+  if (out.document) DIAG.triggers.push("wrote CV / interview / direction material");
   if (out.concern) DIAG.triggers.push("flagged concern → support surfaced");
   if (!DIAG.triggers.length) DIAG.triggers.push("plain conversational turn, no rules fired");
 
@@ -800,8 +1139,10 @@ function applyReply(out){
   // profile updates — confirmed strengths need evidence, that is the whole point
   (out.confirmed||[]).forEach(c => {
     if (!c || !c.id) return;
-    if (!S.profile.strengths.some(x => x.id === +c.id))
-      S.profile.strengths.push({ id:+c.id, evidence: c.evidence || "" });
+    const lv = (+c.level >= 1 && +c.level <= 4) ? Math.round(+c.level) : 0;
+    const have = S.profile.strengths.find(x => x.id === +c.id);
+    if (!have) S.profile.strengths.push({ id:+c.id, evidence: c.evidence || "", level: lv || undefined });
+    else if (lv) have.level = lv;
   });
   (out.costs||[]).forEach(c => { if (c && !S.profile.costs.includes(c)) S.profile.costs.push(c); });
   (out.open||[]).forEach(o => { if (o && !S.profile.open.includes(o)) S.profile.open.push(o); });
@@ -811,7 +1152,8 @@ function applyReply(out){
 
   pushMsg("assistant", out.reply || "…", {
     surfaced: (out.candidates||[]).filter(c=>c && c.id),
-    props: out.proposals || []
+    props: out.proposals || [],
+    doc: !!out.document
   });
 
   $("btnProfile").dataset.count = S.profile.strengths.length;
@@ -836,7 +1178,7 @@ function openProfile(){
   const t = L(), b = $("dBody"); $("dTitle").textContent = t.dProfile; b.innerHTML = "";
   const p = S.profile;
   if (!p.strengths.length && !p.costs.length && !p.open.length && !p.directions.length){
-    b.appendChild(el("div","empty", t.emptyP)); b.appendChild(myDataLink()); openDrawer(); return;
+    b.appendChild(el("div","empty", t.emptyP)); openDrawer(); return;
   }
   const block = (title, items, render) => {
     if (!items.length) return;
@@ -847,6 +1189,15 @@ function openProfile(){
     const e = el("div","entry strength");
     e.appendChild(el("b",null, skillName(s.id, S.lang)));
     if (s.evidence) e.appendChild(el("q",null,s.evidence));
+    if (s.level >= 1 && s.level <= 4){
+      const lv = el("div","lvl");
+      const dots = el("span","dots");
+      for (let i = 1; i <= 4; i++) dots.appendChild(el("i", i <= s.level ? "on" : null));
+      lv.appendChild(dots);
+      lv.appendChild(el("span","lvln", t.lvl[s.level]));
+      lv.appendChild(el("span","lvld", t.lvlD[s.level]));
+      e.appendChild(lv);
+    }
     return e;
   });
   block(t.pCost, p.costs, c => { const e = el("div","entry cost"); e.appendChild(el("b",null,c)); return e; });
@@ -855,7 +1206,24 @@ function openProfile(){
     const e = el("div","entry"); e.appendChild(el("b",null,d.title));
     if (d.why) e.appendChild(el("q",null,d.why)); return e;
   });
-  b.appendChild(myDataLink());   // backup, restore and delete live in "My data"
+  if (p.strengths.length){
+    const use = el("div","block"); use.appendChild(el("h3",null,t.useT));
+    const hint = el("div","empty",t.useHint); hint.style.marginBottom = "8px"; use.appendChild(hint);
+    const list = el("div","props");
+    [["useCV","msgCV"],["useInt","msgInt"],["useJob","msgJob"],["useEdu","msgEdu"]].forEach(([k,m]) => {
+      const btn = el("button","prop");
+      btn.appendChild(el("b",null,t[k])); btn.appendChild(el("small",null,t[k+"s"]));
+      btn.onclick = () => { closeDrawer(); sendUser(t[m]); };
+      list.appendChild(btn);
+    });
+    use.appendChild(list); b.appendChild(use);
+  }
+  const reset = el("button","linkish", S.lang==="he" ? "מחיקת השיחה והפרופיל מהדפדפן" : "Delete this conversation and profile from the browser");
+  reset.onclick = () => {
+    if (!confirm(S.lang==="he" ? "למחוק הכול? אי אפשר לשחזר." : "Delete everything? This cannot be undone.")) return;
+    localStorage.removeItem(KEY); location.reload();
+  };
+  b.appendChild(reset);
   openDrawer();
 }
 
@@ -900,6 +1268,14 @@ function openDebug(){
     ["Costs named", S.profile.costs.join(" · ")],
     ["Open questions", S.profile.open.join(" · ")],
     ["Directions", S.profile.directions.map(d=>d.title).join(" · ")]
+  ]);
+  const rc = refContext();
+  sec("Reference layer (Momentum files)", [
+    ["Added to the last request", DIAG.refs && DIAG.refs.length ? DIAG.refs.join(" · ") : "nothing extra"],
+    ["Size of what was added", DIAG.refChars ? DIAG.refChars + " chars" : "0"],
+    ["Service families matched now", rc.fams.map(f => f.t.split(" — ")[0]).join(" · ")],
+    ["Asking for right now", ["cv","interview","job","edu"].filter(k => rc[k]).join(", ")],
+    ["Commander / instructor overlay", rc.commander ? "matched" : "no"]
   ]);
   const rawBlock = el("div","block");
   rawBlock.appendChild(el("h3",null,"Raw model output (last turn)"));
@@ -1050,295 +1426,6 @@ $("btnVoice").addEventListener("pointerdown", () => { pressTimer = setTimeout(op
 $("btnVoice").addEventListener("contextmenu", e => { e.preventDefault(); openVoiceSettings(); });
 if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {};
 function stopSpeaking(){ if (window.speechSynthesis) window.speechSynthesis.cancel(); }
-
-/* ==========================================================================
-   13. PHONE APP + MY DATA
-   Everything that makes this work as a private app on the soldier's phone:
-   - "Add to home screen" (Android shows an Install button; iPhone shows steps)
-   - asks the browser not to clear the data automatically
-   - locked (encrypted) backup file + restore, for changing phones
-   - delete everything
-   The conversation itself stays where it always was: localStorage, under KEY.
-   ========================================================================== */
-const PT = {
-  en: {
-    myData: "My data and backup",
-    barText: "Add this app to your home screen so your conversation stays safe on this phone.",
-    install: "Install", how: "Show me how",
-    whereT: "Where your data is",
-    whereP: "Your conversation and profile are saved only on this phone. Each message you send is passed to the AI to write a reply, and is not kept on our server.",
-    sizeConv: "Your conversation and profile", sizeApp: "App files saved for offline use",
-    protected: "Protected from automatic clearing", yes: "Yes", notYet: "Not yet",
-    homeT: "Keep it on your home screen",
-    installed: "Installed. The app opens from your home screen, even without internet.",
-    iosSteps: ["Open this page in Safari.", "Tap the Share button at the bottom of the screen.", "Choose “Add to Home Screen”, then tap Add."],
-    iosWhy: "On iPhone, Safari can clear a website's saved data if it isn't opened for 7 days. Apps added to the home screen are not cleared this way.",
-    andSteps: ["Open the browser menu (⋮) at the top right.", "Tap “Install app” or “Add to Home screen”."],
-    backT: "Back up",
-    backP: "Saves a locked copy you can keep in Files, Google Drive, or send to yourself. Use it if you change phones.",
-    passPh: "Choose a passcode (6+ characters)",
-    passWarn: "Write this passcode down. Without it, the backup can't be opened — not by you, and not by us.",
-    saveBackup: "Save locked backup", saved: "Backup saved.",
-    passShort: "The passcode needs at least 6 characters.",
-    restT: "Restore from a backup",
-    restP: "Replaces what's on this phone with a backup file you saved earlier.",
-    choose: "Choose backup file", enterPass: "Passcode for this backup", restore: "Restore",
-    notOurs: "This file isn't a Transition Companion backup.",
-    wrongPass: "Wrong passcode, or the file is damaged. Check the passcode and try again.",
-    confirmRestore: d => "Replace everything on this phone with the backup from " + d + "?",
-    delT: "Delete",
-    delBtn: "Delete my conversation and profile from this phone",
-    confirmDel: "Delete everything? This cannot be undone unless you have a backup.",
-    noCrypto: "This browser can't make locked backups. Open the app from its web address (https) in Chrome or Safari."
-  },
-  he: {
-    myData: "הנתונים שלי וגיבוי",
-    barText: "כדאי להוסיף את האפליקציה למסך הבית, כדי שהשיחה תישמר בבטחה בטלפון.",
-    install: "התקנה", how: "איך עושים את זה",
-    whereT: "איפה הנתונים שלך",
-    whereP: "השיחה והפרופיל נשמרים רק בטלפון הזה. כל הודעה שנשלחת עוברת לבינה המלאכותית כדי לכתוב תשובה, ולא נשמרת בשרת שלנו.",
-    sizeConv: "השיחה והפרופיל שלך", sizeApp: "קבצי האפליקציה לשימוש בלי אינטרנט",
-    protected: "מוגן ממחיקה אוטומטית", yes: "כן", notYet: "עדיין לא",
-    homeT: "להשאיר במסך הבית",
-    installed: "האפליקציה מותקנת. היא נפתחת ממסך הבית, גם בלי אינטרנט.",
-    iosSteps: ["פותחים את הדף הזה בספארי.", "מקישים על כפתור השיתוף בתחתית המסך.", "בוחרים „הוסף למסך הבית”, ואז „הוסף”."],
-    iosWhy: "באייפון, ספארי עלול למחוק נתונים של אתר שלא נפתח 7 ימים. אפליקציות שנוספו למסך הבית לא נמחקות כך.",
-    andSteps: ["פותחים את תפריט הדפדפן (⋮) למעלה.", "מקישים על „התקנת אפליקציה” או „הוספה למסך הבית”."],
-    backT: "גיבוי",
-    backP: "שומר עותק נעול שאפשר לשמור בקבצים, בגוגל דרייב או לשלוח לעצמך. שימושי כשמחליפים טלפון.",
-    passPh: "בחירת קוד (לפחות 6 תווים)",
-    passWarn: "כדאי לרשום את הקוד. בלעדיו אי אפשר לפתוח את הגיבוי — לא את/ה ולא אנחנו.",
-    saveBackup: "שמירת גיבוי נעול", saved: "הגיבוי נשמר.",
-    passShort: "הקוד צריך להיות באורך 6 תווים לפחות.",
-    restT: "שחזור מגיבוי",
-    restP: "מחליף את מה שיש בטלפון בקובץ גיבוי ששמרת קודם.",
-    choose: "בחירת קובץ גיבוי", enterPass: "הקוד של הגיבוי הזה", restore: "שחזור",
-    notOurs: "הקובץ הזה אינו גיבוי של האפליקציה.",
-    wrongPass: "הקוד שגוי או שהקובץ פגום. כדאי לבדוק את הקוד ולנסות שוב.",
-    confirmRestore: d => "להחליף את כל מה שבטלפון בגיבוי מתאריך " + d + "?",
-    delT: "מחיקה",
-    delBtn: "מחיקת השיחה והפרופיל מהטלפון",
-    confirmDel: "למחוק הכול? אי אפשר לשחזר בלי גיבוי.",
-    noCrypto: "הדפדפן הזה לא יכול ליצור גיבוי נעול. יש לפתוח את האפליקציה מכתובת האינטרנט שלה (https) בכרום או בספארי."
-  }
-};
-const P = k => (PT[S.lang] || PT.en)[k];
-
-const isStandalone = () =>
-  window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-const isIOS = () =>
-  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-
-function fmtBytes(n){
-  if (n == null) return "—";
-  if (n < 1024) return n + " B";
-  if (n < 1024*1024) return (n/1024).toFixed(n < 10240 ? 1 : 0) + " KB";
-  return (n/1024/1024).toFixed(1) + " MB";
-}
-
-/* ---- Ask the browser to keep our data (not clear it when space runs low) ---- */
-async function requestPersist(){
-  try {
-    if (!navigator.storage || !navigator.storage.persist) return false;
-    if (await navigator.storage.persisted()) return true;
-    return await navigator.storage.persist();
-  } catch(e){ return false; }
-}
-
-/* ---- Install: Android gives us a prompt to show later; iPhone needs steps ---- */
-let deferredPrompt = null;
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; showInstallBar(); });
-window.addEventListener("appinstalled", () => {
-  deferredPrompt = null; S.installHint = "done"; save(); showInstallBar(); requestPersist();
-});
-
-async function runInstall(){
-  if (deferredPrompt){
-    deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch(e){}
-    deferredPrompt = null; showInstallBar();
-  } else {
-    openMyData();
-  }
-}
-
-function showInstallBar(){
-  const bar = $("installBar");
-  const want = S.started && !isStandalone() && !S.installHint && (deferredPrompt || isIOS());
-  bar.hidden = !want;
-  if (!want) return;
-  $("installText").textContent = P("barText");
-  $("installGo").textContent = deferredPrompt ? P("install") : P("how");
-}
-$("installGo").onclick = runInstall;
-$("installX").onclick = () => { S.installHint = "dismissed"; save(); showInstallBar(); };
-
-/* ---- Locked backup: AES-GCM encryption, key made from the passcode ---- */
-const toB64 = bytes => { let s = ""; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s); };
-const fromB64 = str => Uint8Array.from(atob(str), c => c.charCodeAt(0));
-
-async function keyFromPass(pass, salt){
-  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
-  return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: 250000, hash: "SHA-256" },
-    base, { name: "AES-GCM", length: 256 }, false, ["encrypt","decrypt"]);
-}
-
-async function makeBackup(pass){
-  save();
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv   = crypto.getRandomValues(new Uint8Array(12));
-  const key  = await keyFromPass(pass, salt);
-  const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key,
-                 new TextEncoder().encode(JSON.stringify(S)));
-  const file = {
-    app: "transition-companion", format: 1, created: new Date().toISOString(),
-    salt: toB64(salt), iv: toB64(iv), data: toB64(new Uint8Array(data))
-  };
-  const name = "transition-backup-" + file.created.slice(0,10) + ".json";
-  const blob = new Blob([JSON.stringify(file)], { type: "application/json" });
-
-  // On phones, the share sheet lets them save to Files / Drive / WhatsApp.
-  const asFile = new File([blob], name, { type: "application/json" });
-  if (navigator.canShare && navigator.canShare({ files: [asFile] })){
-    try { await navigator.share({ files: [asFile], title: name }); return true; }
-    catch(e){ if (e.name === "AbortError") return false; }
-  }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  return true;
-}
-
-async function readBackup(text, pass){
-  let file;
-  try { file = JSON.parse(text); } catch(e){ throw new Error(P("notOurs")); }
-  if (!file || file.app !== "transition-companion" || !file.data) throw new Error(P("notOurs"));
-  let state;
-  try {
-    const key = await keyFromPass(pass, fromB64(file.salt));
-    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(file.iv) }, key, fromB64(file.data));
-    state = JSON.parse(new TextDecoder().decode(plain));
-  } catch(e){ throw new Error(P("wrongPass")); }
-  if (!state || !Array.isArray(state.messages) || !state.profile) throw new Error(P("notOurs"));
-  return { state, created: file.created };
-}
-
-/* ---- The "My data" drawer ---- */
-function myDataLink(){
-  const b = el("button","linkish", P("myData"));
-  b.style.marginTop = "14px";
-  b.onclick = openMyData;
-  return b;
-}
-
-async function openMyData(){
-  const b = $("dBody"); $("dTitle").textContent = P("myData");
-  b.innerHTML = "";
-  const block = title => { const w = el("div","block"); w.appendChild(el("h3",null,title)); b.appendChild(w); return w; };
-  const steps = list => { const ol = el("ol","steps"); list.forEach(x => ol.appendChild(el("li",null,x))); return ol; };
-  const line = (w, cls, txt) => { const p = el("p", cls, txt); w.appendChild(p); return p; };
-
-  // 1. Where the data is, and how much space it takes
-  const w1 = block(P("whereT"));
-  const e1 = el("div","entry"); const wp = el("p",null,P("whereP")); wp.style.cssText = "font-size:14.5px;color:var(--ink-2);margin-bottom:8px"; e1.appendChild(wp);
-  const m = (label, val) => { const r = el("div","meter"); r.appendChild(el("span",null,label)); const v = el("b",null,val); v.dir = "auto"; r.appendChild(v); return r; };
-  const convBytes = new Blob([localStorage.getItem(KEY) || ""]).size;
-  const rConv = m(P("sizeConv"), fmtBytes(convBytes)); rConv.lastChild.dir = "ltr";
-  const rApp  = m(P("sizeApp"), "…");
-  const rPers = m(P("protected"), "…");
-  [rConv, rApp, rPers].forEach(r => e1.appendChild(r));
-  w1.appendChild(e1);
-  try {
-    const est = navigator.storage && navigator.storage.estimate ? await navigator.storage.estimate() : null;
-    rApp.lastChild.textContent = est ? fmtBytes(est.usage) : "—"; rApp.lastChild.dir = "ltr";
-  } catch(e){ rApp.lastChild.textContent = "—"; }
-  const pers = await requestPersist();
-  rPers.lastChild.textContent = (pers || isStandalone()) ? P("yes") : P("notYet");
-
-  // 2. Home screen
-  const w2 = block(P("homeT"));
-  if (isStandalone()){
-    line(w2, "okline", P("installed"));
-  } else if (deferredPrompt){
-    const go = el("button","act", P("install")); go.onclick = runInstall; w2.appendChild(go);
-  } else if (isIOS()){
-    w2.appendChild(steps(P("iosSteps")));
-    line(w2, "tiny", P("iosWhy")).style.textAlign = "start";
-  } else {
-    w2.appendChild(steps(P("andSteps")));
-  }
-
-  // 3. Back up
-  const w3 = block(P("backT"));
-  line(w3, "empty", P("backP"));
-  if (!window.crypto || !crypto.subtle){
-    line(w3, "warnline", P("noCrypto"));
-  } else {
-    const pass = el("input","pass"); pass.type = "password"; pass.placeholder = P("passPh"); pass.autocomplete = "new-password";
-    const msg = el("p","warnline", P("passWarn"));
-    const go = el("button","act", P("saveBackup"));
-    go.onclick = async () => {
-      if (pass.value.length < 6){ msg.className = "warnline"; msg.textContent = P("passShort"); pass.focus(); return; }
-      go.disabled = true;
-      try {
-        if (await makeBackup(pass.value)){ msg.className = "okline"; msg.textContent = P("saved"); pass.value = ""; }
-      } catch(e){ msg.className = "warnline"; msg.textContent = String(e.message || e); }
-      go.disabled = false;
-    };
-    [pass, msg, go].forEach(x => w3.appendChild(x));
-  }
-
-  // 4. Restore
-  const w4 = block(P("restT"));
-  line(w4, "empty", P("restP"));
-  const picker = el("input"); picker.type = "file"; picker.accept = ".json,application/json"; picker.hidden = true;
-  const pick = el("button","act quiet", P("choose"));
-  const rpass = el("input","pass"); rpass.type = "password"; rpass.placeholder = P("enterPass"); rpass.hidden = true;
-  const rgo = el("button","act", P("restore")); rgo.hidden = true;
-  const rmsg = el("p","warnline", "");
-  let fileText = null;
-  pick.onclick = () => picker.click();
-  picker.onchange = async () => {
-    const f = picker.files && picker.files[0]; if (!f) return;
-    fileText = await f.text();
-    pick.textContent = f.name; rpass.hidden = false; rgo.hidden = false; rmsg.textContent = ""; rpass.focus();
-  };
-  rgo.onclick = async () => {
-    rgo.disabled = true; rmsg.textContent = "";
-    try {
-      const { state, created } = await readBackup(fileText, rpass.value);
-      const d = new Date(created).toLocaleDateString(S.lang === "he" ? "he-IL" : "en-GB");
-      if (confirm(P("confirmRestore")(d))){
-        localStorage.setItem(KEY, JSON.stringify(state)); location.reload(); return;
-      }
-    } catch(e){ rmsg.textContent = e.message; }
-    rgo.disabled = false;
-  };
-  [picker, pick, rpass, rgo, rmsg].forEach(x => w4.appendChild(x));
-
-  // 5. Delete
-  const w5 = block(P("delT"));
-  const del = el("button","linkish", P("delBtn"));
-  del.onclick = () => { if (!confirm(P("confirmDel"))) return; localStorage.removeItem(KEY); location.reload(); };
-  w5.appendChild(del);
-
-  openDrawer();
-}
-
-/* ---- Hook into existing screens (no changes needed inside them) ---- */
-const _paintStatic = paintStatic;
-paintStatic = function(){ _paintStatic(); $("btnMyDataW").textContent = P("myData"); showInstallBar(); };
-const _enterChat = enterChat;
-enterChat = function(){ _enterChat(); showInstallBar(); if (isStandalone()) requestPersist(); };
-$("btnMyDataW").onclick = openMyData;
-
-/* ---- Offline support: only works when the app is on a web address, not a local file ---- */
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  window.addEventListener("load", () => navigator.serviceWorker.register("service-worker.js").catch(() => {}));
-}
 
 /* ==========================================================================
    12. BOOT
