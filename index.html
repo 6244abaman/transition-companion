@@ -1354,6 +1354,9 @@ function startListening(){
 }
 function stopListening(){ if (rec) { try{ rec.stop(); }catch(e){} } listening=false; $("btnMic").classList.remove("live"); $("hint").textContent=""; }
 
+let voicesReady = false;
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
 function speak(text){
   if (!window.speechSynthesis) return;
   stopSpeaking();
@@ -1365,7 +1368,29 @@ function speak(text){
     const v = window.speechSynthesis.getVoices().find(x => x.voiceURI === S.voiceURI);
     if (v) u.voice = v;
   }
-  window.speechSynthesis.speak(u);
+  /* Chrome/Chromium bug workarounds, both silent (no error thrown):
+     1) the very first utterance after the page loads can be dropped
+        entirely if the browser's voice list hasn't finished loading yet;
+     2) any utterance longer than ~15s gets cut off mid-sentence unless
+        kept alive with a periodic pause/resume "heartbeat". */
+  let heartbeat = null;
+  const clearHeartbeat = () => { if (heartbeat){ clearInterval(heartbeat); heartbeat = null; } };
+  u.onstart = () => {
+    clearHeartbeat();
+    heartbeat = setInterval(() => {
+      if (!window.speechSynthesis.speaking) return;
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }, 5000);
+  };
+  u.onend = clearHeartbeat;
+  u.onerror = clearHeartbeat;
+  const doSpeak = () => window.speechSynthesis.speak(u);
+  if (!voicesReady && window.speechSynthesis.getVoices().length === 0){
+    setTimeout(doSpeak, 150);
+  } else {
+    doSpeak();
+  }
 }
 
 /* Voice settings — long-press (or right-click) the speaker icon */
@@ -1424,7 +1449,7 @@ $("btnVoice").addEventListener("pointerdown", () => { pressTimer = setTimeout(op
 ["pointerup","pointerleave","pointercancel"].forEach(ev =>
   $("btnVoice").addEventListener(ev, () => clearTimeout(pressTimer)));
 $("btnVoice").addEventListener("contextmenu", e => { e.preventDefault(); openVoiceSettings(); });
-if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {};
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => { voicesReady = true; };
 function stopSpeaking(){ if (window.speechSynthesis) window.speechSynthesis.cancel(); }
 
 /* ==========================================================================
