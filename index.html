@@ -1177,9 +1177,8 @@ $("btnProfile").onclick = openProfile; $("btnHelp").onclick = openSupport;
 function openProfile(){
   const t = L(), b = $("dBody"); $("dTitle").textContent = t.dProfile; b.innerHTML = "";
   const p = S.profile;
-  if (!p.strengths.length && !p.costs.length && !p.open.length && !p.directions.length){
-    b.appendChild(el("div","empty", t.emptyP)); openDrawer(); return;
-  }
+  const empty = !p.strengths.length && !p.costs.length && !p.open.length && !p.directions.length;
+  if (empty) b.appendChild(el("div","empty", t.emptyP));
   const block = (title, items, render) => {
     if (!items.length) return;
     const wrap = el("div","block"); wrap.appendChild(el("h3",null,title));
