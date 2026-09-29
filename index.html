@@ -228,6 +228,56 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
 .copy{margin-top:8px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--ink-2);background:var(--paper);transition:.15s}
 .copy:hover{border-color:var(--ink-2)}
 @media (max-width:420px){ .hello{font-size:25px} .turn.them .body{font-size:17.5px} }
+
+/* A welcoming space for the next chapter, including narrow phone screens. */
+:root{--stone:#F4F8F6;--paper:#FFFFFF;--paper-2:#EDF5F2;--ink:#183D39;--ink-2:#49635F;--dust:#5E7470;--olive:#21695F;--olive-soft:#E3F1EA;--clay:#98634D;--line:#CEDFD7;--r:20px;--w:760px}
+body{background:radial-gradient(ellipse at 8% 0%,#E2F1E9,transparent 55%),radial-gradient(ellipse at 100% 35%,#FAEDE1,transparent 55%),var(--stone)}
+[hidden]{display:none!important}
+.bar{padding:14px max(16px,calc((100vw - 1060px)/2));gap:8px;background:rgba(255,255,255,.94);box-shadow:0 2px 16px #183D3906}
+.bar .mark{font-size:21px;line-height:1.12;min-width:150px}
+.bar .mark span{margin-top:5px;font-size:12px}
+.chip{min-height:38px;padding:7px 12px;font-size:13px}
+.pad{padding:28px 20px 40px}
+.welcome-hero{position:relative;padding:30px 28px;margin-bottom:22px;border:1px solid #C4DBCE;border-radius:28px;background:linear-gradient(125deg,#E0F0E6,#F8FCF9 70%);overflow:hidden}
+.welcome-hero:before{content:"";position:absolute;width:160px;height:160px;inset-inline-end:-75px;top:-75px;border:24px solid #FFFFFF70;border-radius:50%;pointer-events:none}
+.eyebrow{display:block;color:var(--olive);font-size:12px;font-weight:700;letter-spacing:.08em;margin-bottom:12px}
+.hello{font-size:38px;line-height:1.15;margin:0 0 16px;font-weight:700;max-width:580px}
+.lede{font-size:16px;line-height:1.7;margin:0;max-width:590px}
+.welcome-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.welcome-cards .note{margin:0;padding:20px;border-color:#D9E6DE;box-shadow:0 4px 16px #183D3904}
+.welcome-cards .note.privacy{grid-column:1/-1;background:#FFFFFFB8}
+.note h3{font-size:16px;font-weight:700}
+.note p{line-height:1.65}
+.mode-title{font-size:16px;font-weight:500;margin-top:20px}
+.choices{margin-top:12px;gap:10px}
+.choice{padding:18px 14px;min-width:0;box-shadow:0 3px 10px #183D3904}
+.choice.on{border:2px solid var(--olive);padding:17px 13px;background:#E6F3EC}
+.choice small{color:var(--ink-2)}
+.go{background:var(--olive);color:#FFF;border-radius:16px;font-size:17px;box-shadow:0 7px 20px #21695F20}
+.go:hover{background:#184F48}
+.chat-heading{margin:0 0 22px;padding:18px 20px;border:1px solid var(--line);border-radius:22px;background:#E7F2EC}
+.chat-heading h2{font-family:'Frank Ruhl Libre',serif;font-size:26px;line-height:1.2;margin-bottom:5px}
+.chat-heading p{font-size:14px;color:var(--ink-2)}
+#thread{gap:20px}
+.turn.them{padding:21px 23px;border:1px solid #DCE6DF;border-radius:22px 22px 22px 5px;background:#FFFFFFE8;box-shadow:0 5px 20px #183D3905}
+html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
+.turn.them .body{font-family:'Heebo',system-ui,sans-serif;font-size:17px;line-height:1.8}
+.turn.me .body{background:#DDEFE5;border-color:#C4DCCE;padding:13px 17px;color:var(--ink)}
+.composer{background:#FFFFFFF5;padding-top:14px}
+#input{width:0;min-width:0;background:#F6FAF8;border-radius:18px}
+.icon.mic{background:#E6F2EA;color:var(--olive);border-color:#C4DBCE;font-size:22px}
+.icon.send{background:var(--olive);color:#FFF;border-color:var(--olive);font-size:24px}
+.hint{font-size:13px;line-height:1.5}
+.guidance{margin-top:28px;padding:23px 25px;border:2px solid #B9D1C1;border-radius:22px;background:linear-gradient(120deg,#F0F7F2,#FFF9F2);box-shadow:0 4px 16px #183D3904}
+.guidance h2{font-family:'Frank Ruhl Libre',serif;font-size:25px;line-height:1.2;margin-bottom:10px}
+.guidance p{font-size:14px;line-height:1.75;color:var(--ink-2)}
+.guidance p+p{margin-top:10px}
+.guide-topics{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.guide-topics span{font-size:12px;border:1px solid #D1DFD4;border-radius:999px;padding:5px 10px;background:#FFFFFFA0;color:var(--olive)}
+.guidance .guide-emphasis{color:var(--ink);font-weight:500}
+.surface,.props{margin-top:15px}
+.drawer{box-shadow:0 0 40px #183D3920}
+@media(max-width:540px){.bar{padding:11px 12px;gap:6px}.bar .mark{flex-basis:calc(100% - 90px);font-size:20px}.pad{padding:20px 14px 30px}.welcome-hero{padding:25px 21px}.hello{font-size:32px}.welcome-cards{grid-template-columns:1fr}.welcome-cards .note.privacy{grid-column:auto}.choice{flex:1 1 85px;padding:15px 10px}.choice.on{padding:14px 9px}.choice b{font-size:14px}.choice small{font-size:12px}.turn.them{padding:18px}.turn.them .body{font-size:16px}.guidance{padding:20px}.chat-heading h2{font-size:24px}}
 </style>
 </head>
 <body>
@@ -245,14 +295,17 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
+    <div class="welcome-hero">
+    <span class="eyebrow" id="wEyebrow"></span>
     <h1 class="hello" id="wTitle"></h1>
     <p class="lede" id="wLede"></p>
-
+    </div>
+    <div class="welcome-cards">
     <div class="note"><h3 id="w1t"></h3><p id="w1p"></p></div>
     <div class="note"><h3 id="w2t"></h3><p id="w2p"></p></div>
     <div class="note privacy"><h3 id="w3t"></h3><p id="w3p"></p></div>
-
-    <h3 style="font-size:14px;font-weight:500;margin-top:20px" id="wModeQ"></h3>
+    </div>
+    <h3 class="mode-title" id="wModeQ"></h3>
     <div class="choices" id="modes">
       <button class="choice on" data-mode="type"><b id="m1"></b><small id="m1s"></small></button>
       <button class="choice" data-mode="voice"><b id="m2"></b><small id="m2s"></small></button>
@@ -263,12 +316,25 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
     <div class="note" id="diagOut" style="display:none;font-size:13.5px"></div>
+    <section class="guidance" aria-labelledby="welcomeGuideTitle">
+      <h2 class="guide-title" id="welcomeGuideTitle"></h2>
+      <div class="guide-topics"><span class="guide-cv"></span><span class="guide-job"></span><span class="guide-study"></span></div>
+      <p class="guide-direct"></p><p class="guide-emphasis"></p><p class="guide-example"></p>
+    </section>
   </div>
 </main>
 
 <!-- ============ CONVERSATION ============ -->
 <main class="screen" id="chat" hidden>
-  <div class="pad"><div id="thread"></div></div>
+  <div class="pad">
+    <div class="chat-heading"><h2 id="chatTitle"></h2><p id="chatSubtitle"></p></div>
+    <div id="thread"></div>
+    <section class="guidance" aria-labelledby="chatGuideTitle">
+      <h2 class="guide-title" id="chatGuideTitle"></h2>
+      <div class="guide-topics"><span class="guide-cv"></span><span class="guide-job"></span><span class="guide-study"></span></div>
+      <p class="guide-direct"></p><p class="guide-emphasis"></p><p class="guide-example"></p>
+    </section>
+  </div>
 </main>
 
 <div class="composer" id="composer" hidden>
@@ -277,7 +343,7 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
     <textarea id="input" rows="1" placeholder=""></textarea>
     <button class="icon send" id="btnSend" title="Send">↑</button>
   </div>
-  <div class="hint" id="hint"></div>
+  <div class="hint" id="hint" role="status" aria-live="polite"></div>
 </div>
 
 <!-- ============ DRAWER ============ -->
@@ -293,11 +359,19 @@ html[dir="rtl"] .drawer{transform:translateX(-110%)}
    ========================================================================== */
 const T = {
 en:{
+  wEyebrow:"MOMENTUM · YOUR NEXT CHAPTER",
+  chatTitle:"A little clearer, one conversation at a time",
+  chatSubtitle:"Start wherever you are. We can take the next step together.",
+  guideTitle:"Ask for help. Help me get to know you.",
+  guideCV:"CVs", guideJob:"Job applications", guideStudy:"Work & study",
+  guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask an AI’ button also opens other AI services.",
+  guideEmphasis:"For assistance that fits you, let the companion learn about your experience, goals, strengths, and what matters to you. You do not need to tell everything at once. Share only what you feel comfortable sharing.",
+  guideExample:"For example: ‘I was a team leader, I enjoy working with people, and I want help applying for my first job.’ Your real examples help turn general advice into something you can use. Avoid classified, operational, or identifying military details.",
   dir:"ltr", other:"עברית", mark:"Transition Companion", markSub:"a conversation, not a form",
-  wTitle:"Before anything else — how are you doing with all this?",
-  wLede:"This is a conversation about leaving service and what comes next. There is no questionnaire and no menu to choose from. We talk, and what you need becomes clear as we go.",
+  wTitle:"Your next chapter starts with a conversation.",
+  wLede:"Thank you for your service. Whether you have a clear plan or are still exploring, this is a place to pause, ask questions, and find a next step that fits you.",
   w1t:"What this does", w1p:"Asks about your service, what it actually required of you, and what it built. Then helps you think through what is next — with real options, real trade-offs, and follow-through.",
-  w2t:"What this is not", w2p:"Not therapy, and not a replacement for a person. If something heavy comes up, support numbers are one tap away at any point, and we keep talking.",
+  w2t:"Support along the way", w2p:"You can talk about practical decisions or how you are feeling. Human support is always one tap away. This companion offers guidance; it does not provide therapy.",
   w3t:"Your words", w3p:"The conversation is saved in this browser only. Each message you send is passed to an AI service to write a reply. If you speak, your browser handles the speech — on most browsers that means audio goes to the browser maker's servers. Nothing is stored on our server. Clear your browser data and this is gone. On a shared device, other people using this browser could open it.",
   wModeQ:"How do you want to talk?",
   m1:"Type", m1s:"Keyboard only", m2:"Speak", m2s:"Voice in, read aloud", m3:"Both", m3s:"Switch freely",
@@ -335,11 +409,19 @@ en:{
   copy:"Copy", copied:"Copied"
 },
 he:{
+  wEyebrow:"מומנטום · הפרק הבא שלך",
+  chatTitle:"קצת יותר בהירות, שיחה אחת בכל פעם",
+  chatSubtitle:"אפשר להתחיל מהמקום שבו אתה נמצא. נחשוב יחד על הצעד הבא.",
+  guideTitle:"אפשר לבקש עזרה. כדאי גם לתת לי להכיר אותך.",
+  guideCV:"קורות חיים", guideJob:"מועמדות לעבודה", guideStudy:"עבודה ולימודים",
+  guideDirect:"אפשר לשאול את המלווה ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
+  guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר למלווה ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
+  guideExample:"למשל: ׳הייתי מפקד צוות, אני אוהב לעבוד עם אנשים ורוצה עזרה בהגשת מועמדות לעבודה הראשונה שלי.׳ דוגמאות אמיתיות עוזרות להפוך עצה כללית למשהו שימושי עבורך. הימנע מפרטים צבאיים מסווגים, מבצעיים או מזהים.",
   dir:"rtl", other:"English", mark:"מלווה המעבר", markSub:"שיחה, לא טופס",
-  wTitle:"לפני הכול — איך אתה מרגיש עם כל זה?",
-  wLede:"זו שיחה על סיום השירות ועל מה שבא אחרי. אין שאלון ואין תפריט לבחור ממנו. מדברים, ומה שצריך מתברר תוך כדי.",
+  wTitle:"הפרק הבא שלך מתחיל בשיחה.",
+  wLede:"תודה על השירות שלך. בין שיש לך תוכנית ברורה ובין שאתה עדיין בודק כיוונים, זה מקום לעצור רגע, לשאול שאלות ולמצוא צעד הבא שמתאים לך.",
   w1t:"מה זה עושה", w1p:"שואל על השירות שלך, מה הוא באמת דרש ממך, ומה הוא בנה. ואז עוזר לחשוב מה הלאה — עם אפשרויות אמיתיות, יתרונות וחסרונות, ומעקב.",
-  w2t:"מה זה לא", w2p:"זה לא טיפול, וזה לא מחליף בן אדם. אם עולה משהו כבד, מספרי תמיכה נמצאים בלחיצה אחת בכל רגע, וממשיכים לדבר.",
+  w2t:"תמיכה לאורך הדרך", w2p:"אפשר לדבר על החלטות מעשיות וגם על ההרגשה שלך. תמיכה אנושית תמיד זמינה בלחיצה. המלווה מציע הכוונה ואינו מספק טיפול.",
   w3t:"המילים שלך", w3p:"השיחה נשמרת רק בדפדפן הזה. כל הודעה שאתה שולח עוברת לשירות AI כדי לכתוב תשובה. אם תדבר, הדפדפן מטפל בזיהוי הדיבור — ברוב הדפדפנים זה אומר שההקלטה עוברת לשרתים של יצרן הדפדפן. אצלנו בשרת לא נשמר כלום. ניקוי נתוני הדפדפן מוחק הכול. במכשיר משותף, מי שישתמש בדפדפן יוכל לפתוח את זה.",
   wModeQ:"איך נוח לך לדבר?",
   m1:"הקלדה", m1s:"מקלדת בלבד", m2:"דיבור", m2s:"מדברים ומקשיבים", m3:"שניהם", m3s:"מעבר חופשי",
@@ -754,9 +836,12 @@ function paintStatic(){
   $("btnVoice").title = S.lang === "he" ? "הקראה / עצירה" : "Read aloud / stop";
   $("btnVoice").setAttribute("aria-label", $("btnVoice").title);
   $("btnMic").setAttribute("aria-label", S.lang === "he" ? "דבר" : "Speak");
-  const map = {wTitle:"wTitle",wLede:"wLede",w1t:"w1t",w1p:"w1p",w2t:"w2t",w2p:"w2p",
+  const map = {wEyebrow:"wEyebrow",chatTitle:"chatTitle",chatSubtitle:"chatSubtitle",wTitle:"wTitle",wLede:"wLede",w1t:"w1t",w1p:"w1p",w2t:"w2t",w2p:"w2p",
                w3t:"w3t",w3p:"w3p",wModeQ:"wModeQ",m1:"m1",m1s:"m1s",m2:"m2",m2s:"m2s",m3:"m3",m3s:"m3s"};
   for (const k in map) $(k).textContent = t[map[k]];
+  for (const [cls,key] of Object.entries({"guide-title":"guideTitle","guide-cv":"guideCV","guide-job":"guideJob","guide-study":"guideStudy","guide-direct":"guideDirect","guide-emphasis":"guideEmphasis","guide-example":"guideExample"})) {
+    document.querySelectorAll("."+cls).forEach(n => n.textContent = t[key]);
+  }
   $("btnStart").textContent = t.start;
   $("wTiny").textContent = t.tiny;
   $("btnDiag").textContent = t.diag;
@@ -881,7 +966,10 @@ function turnNode(m, idx){
   }
   return wrap;
 }
-function scrollDown(){ const s=$("chat"); s.scrollTop = s.scrollHeight; }
+function scrollDown(){
+  const s=$("chat"), last=$("thread").lastElementChild;
+  if (last) s.scrollTop = Math.max(0, last.offsetTop + last.offsetHeight - s.clientHeight + 24);
+}
 
 function pushMsg(role, text, extra){
   const m = Object.assign({role, text}, extra||{});
