@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v1";
+const CACHE = "tc-v2-voice-ai";
 const APP_FILES = [
   "./",
   "./index.html",
