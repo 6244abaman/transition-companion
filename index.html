@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Guided Transition Companion — V2</title>
+<title>Guided Transition Assistant — V2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -292,7 +292,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 .topic-panel summary{padding:12px 16px;font-weight:700;cursor:pointer;color:var(--ink)}
 .topic-panel nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 12px 12px;max-height:28vh;overflow:auto}
 .topic-panel button{padding:10px 12px;text-align:start;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);font-size:14px;min-height:44px}
-.topic-panel button:hover,.topic-panel button:focus-visible{background:var(--olive-soft);border-color:var(--olive)}
+.topic-panel button[aria-pressed="true"]{background:var(--olive-soft);border-color:var(--olive);font-weight:700}\n.topic-panel button:hover,.topic-panel button:focus-visible{background:var(--olive-soft);border-color:var(--olive)}
 .topic-panel p{padding:0 14px 10px;font-size:12px;color:var(--ink-2)}
 .screen{min-height:0}
 @media(min-width:1100px){body{padding-inline-end:258px}.topic-panel{position:fixed;inset-inline-end:14px;top:112px;bottom:18px;width:230px;margin:0;overflow:auto}.topic-panel nav{grid-template-columns:1fr;max-height:none}.topic-panel summary{list-style:none;pointer-events:none}}
@@ -302,7 +302,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <body>
 
 <header class="bar">
-  <div class="mark" id="mark">Transition Companion<span id="markSub">a conversation, not a form</span></div>
+  <div class="mark" id="mark">Transition Assistant<span id="markSub">a conversation, not a form</span></div>
   <button class="chip" id="btnLang" title="Language">עברית</button>
   <button class="chip" id="btnVoice" title="Read replies aloud">🔊</button>
   <button class="chip" id="btnAI">Ask an AI</button>
@@ -314,7 +314,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
-    <section class="mentor-portrait" aria-label="Your Transition Companion">
+    <section class="mentor-portrait" aria-label="Your Transition Assistant">
       <div class="mentor-face" aria-hidden="true"><img src="./companion-mentor.jpeg" alt="" width="1215" height="1295" fetchpriority="high" decoding="async"></div>
       <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
     </section>
@@ -399,7 +399,7 @@ en:{
   guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask an AI’ button also opens other AI services.",
   guideEmphasis:"For assistance that fits you, let the companion learn about your experience, goals, strengths, and what matters to you. You do not need to tell everything at once. Share only what you feel comfortable sharing.",
   guideExample:"For example: ‘I was a team leader, I enjoy working with people, and I want help applying for my first job.’ Your real examples help turn general advice into something you can use. Avoid classified, operational, or identifying military details.",
-  dir:"ltr", other:"עברית", mark:"Transition Companion", markSub:"a conversation, not a form",
+  dir:"ltr", other:"עברית", mark:"Transition Assistant", markSub:"a conversation, not a form",
   wTitle:"Your next chapter starts with a conversation.",
   wLede:"Thank you for your service. Whether you have a clear plan or are still exploring, this is a place to pause, ask questions, and find a next step that fits you.",
   w1t:"What this does", w1p:"Asks about your service, what it actually required of you, and what it built. Then helps you think through what is next — with real options, real trade-offs, and follow-through.",
@@ -446,14 +446,14 @@ he:{
   chatSubtitle:"אפשר להתחיל מהמקום שבו אתה נמצא. נחשוב יחד על הצעד הבא.",
   guideTitle:"אפשר לבקש עזרה. כדאי גם לתת לי להכיר אותך.",
   guideCV:"קורות חיים", guideJob:"מועמדות לעבודה", guideStudy:"עבודה ולימודים",
-  guideDirect:"אפשר לשאול את המלווה ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
+  guideDirect:"אפשר לשאול את העוזר ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
   guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר למלווה ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
   guideExample:"למשל: ׳הייתי מפקד צוות, אני אוהב לעבוד עם אנשים ורוצה עזרה בהגשת מועמדות לעבודה הראשונה שלי.׳ דוגמאות אמיתיות עוזרות להפוך עצה כללית למשהו שימושי עבורך. הימנע מפרטים צבאיים מסווגים, מבצעיים או מזהים.",
-  dir:"rtl", other:"English", mark:"מלווה המעבר", markSub:"שיחה, לא טופס",
+  dir:"rtl", other:"English", mark:"עוזר המעבר", markSub:"שיחה, לא טופס",
   wTitle:"הפרק הבא שלך מתחיל בשיחה.",
   wLede:"תודה על השירות שלך. בין שיש לך תוכנית ברורה ובין שאתה עדיין בודק כיוונים, זה מקום לעצור רגע, לשאול שאלות ולמצוא צעד הבא שמתאים לך.",
   w1t:"מה זה עושה", w1p:"שואל על השירות שלך, מה הוא באמת דרש ממך, ומה הוא בנה. ואז עוזר לחשוב מה הלאה — עם אפשרויות אמיתיות, יתרונות וחסרונות, ומעקב.",
-  w2t:"תמיכה לאורך הדרך", w2p:"אפשר לדבר על החלטות מעשיות וגם על ההרגשה שלך. תמיכה אנושית תמיד זמינה בלחיצה. המלווה מציע הכוונה ואינו מספק טיפול.",
+  w2t:"תמיכה לאורך הדרך", w2p:"אפשר לדבר על החלטות מעשיות וגם על ההרגשה שלך. תמיכה אנושית תמיד זמינה בלחיצה. העוזר מציע הכוונה ואינו מספק טיפול.",
   w3t:"המילים שלך", w3p:"השיחה נשמרת רק בדפדפן הזה. כל הודעה שאתה שולח עוברת לשירות AI כדי לכתוב תשובה. אם תדבר, הדפדפן מטפל בזיהוי הדיבור — ברוב הדפדפנים זה אומר שההקלטה עוברת לשרתים של יצרן הדפדפן. אצלנו בשרת לא נשמר כלום. ניקוי נתוני הדפדפן מוחק הכול. במכשיר משותף, מי שישתמש בדפדפן יוכל לפתוח את זה.",
   wModeQ:"איך נוח לך לדבר?",
   m1:"הקלדה", m1s:"מקלדת בלבד", m2:"דיבור", m2s:"מדברים ומקשיבים", m3:"שניהם", m3s:"מעבר חופשי",
@@ -989,7 +989,7 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  S.messages.forEach((m,i) => box.appendChild(turnNode(m,i)));
+  S.messages.forEach((m,i) => { if(!(S.activeTopic && m.kind==="opening")) box.appendChild(turnNode(m,i)); });
   scrollDown();
 }
 function turnNode(m, idx){
@@ -1060,10 +1060,13 @@ function systemPrompt(ref){
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
 
-  return `You are a transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Speak warmly and plainly, like a thoughtful, experienced person who has sat with many soldiers and genuinely cares how this goes for them — not a coach, not a therapist, not a cheerleader, and never cold or clinical.
+  return `You are a practical transition assistant for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Speak warmly and plainly, like a thoughtful, experienced person who has sat with many soldiers and genuinely cares how this goes for them — not a coach, not a therapist, not a cheerleader, and never cold or clinical.
+
+SELECTED TOPIC: ${S.activeTopic || "general conversation"}
+When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as an assistant, not a counselor.
 
 HOW YOU TALK
-- Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions, never bullet points.
+- Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions. Use bullet points when listing skills or producing practical output.
 - Never open by restating, summarising or quoting what they just said. Do not use "I hear", "I heard", "what I'm hearing", "it sounds like", "so you're saying", "you mentioned", or their own phrases echoed back. Start with the substance: your read, the explanation, or the answer. They know what they said.
 - Don't hand out empty praise ("amazing", "incredible", "you're a natural") that isn't backed by something they actually showed you — it isn't worth anything to them if it isn't earned. But once it IS earned by their own evidence, say so warmly and specifically, don't just note it clinically.
 - Never assume. Role, unit, or rank is a HYPOTHESIS, never a conclusion. Two people in the same role built different things.
@@ -1225,6 +1228,7 @@ const SHIFT_LINE = {
   en: "In service, most decisions this size got made above you. Right now nobody's deciding this one but you — that's not a delay before the real thing starts, it's the first rep of it.\n\n"
 };
 function practiceReply(userText){
+  if(S.activeTopic) return topicPracticeReply(userText);
   const i = Math.min(S.practiceStep, SCRIPT[S.lang].length-1);
   // Practice Mode has no language understanding, so it does not pretend to:
   // it never echoes the person's words back, it just gives the scripted reply.
@@ -1261,7 +1265,7 @@ function practiceReply(userText){
 function openingText(lang){
   return lang === "he"
     ? "קודם כול — תודה. שלוש שנים, חמש, כמה שזה היה — נתת חלק מהחיים שלך למדינה הזאת, וזה לא דבר קטן.\n\nמשהו ששווה לדעת לפני שמתחילים: כמעט כל מי שמסיים שירות אינטנסיבי מרגיש סוג של אובדן. לא כי משהו לא בסדר איתך — אלא כי הכיוון, הסכנה, האנשים שהיו צריכים אותך, הכול עמד מולך כל יום, ופתאום זה לא שם. הפער הזה נורמלי, והוא בדרך כלל הדבר הקשה שאף אחד לא מכין אליו.\n\nבשביל זה אני כאן. תחשוב עליי כמישהו שאפשר לדבר איתו מתי שזה עוזר — לחשוב בקול, לשקול החלטות אמיתיות, להבין מה הלאה. ואם בשלב כלשהו תרצה בן אדם אמיתי, גם הוא במרחק לחיצה.\n\nאז ספר לי: איפה שירתת, מה היה התפקיד שלך בפועל, וכמה זמן?"
-    : "First — thank you. Three years, five, however long it was, you gave part of your life to this country, and that's not a small thing.\n\nSomething worth knowing before we start: almost everyone finishing intense service feels some kind of loss. Not because something's wrong with you — because the direction, the danger, the people who needed you, all of it was in front of you every day, and suddenly it isn't. That gap is normal, and it's usually the hard part nobody prepares you for.\n\nThat's what I'm here for. Think of me as someone you can talk to whenever it's useful — to think out loud, weigh real decisions, work out what's next. And if you ever want an actual person, that's one tap away too.\n\nSo tell me: where did you serve, what was your actual role, and how long?";
+    : "First — thank you. Three years, five, however long it was, you gave part of your life to this country, and that's not a small thing.\n\nSomething worth knowing before we start: almost everyone finishing intense service feels some kind of loss. Not because something's wrong with you — because the direction, the danger, the people who needed you, all of it was in front of you every day, and suddenly it isn't. That gap is normal, and it's usually the hard part nobody prepares you for.\n\nThat's what I'm here for. Think of me as your assistant, available whenever useful — to think out loud, weigh real decisions, work out what's next. And if you ever want an actual person, that's one tap away too.\n\nSo tell me: where did you serve, what was your actual role, and how long?";
 }
 function messageText(m){
   // Recognize openings saved by earlier versions as well as new ones.
@@ -1270,6 +1274,7 @@ function messageText(m){
   return m.text;
 }
 function openConversation(){
+  if(S.messages.some(m=>m.kind==="opening") || S.activeTopic) return;
   pushMsg("assistant", openingText(S.lang), {kind:"opening"});
 }
 
@@ -1683,47 +1688,55 @@ const TRANSITION_TOPICS = [
 function paintTopicPanel(){
  const he=S.lang==="he";
  $("topicTitle").textContent=he?"במה תרצה עזרה?":"What would you like help with?";
- $("topicHint").textContent=he?"בחר נושא. אפשר לערוך את הבקשה לפני השליחה.":"Choose a topic. You can edit the request before sending.";
+ $("topicHint").textContent=he?"בחר נושא. העוזר מגיב לנושא שבחרת.":"Choose a topic. The assistant responds to the topic you choose.";
  $("topicButtons").setAttribute("aria-label",he?"נושאים למעבר":"Transition topics");
  $("topicButtons").replaceChildren();
  TRANSITION_TOPICS.forEach(topic=>{
-  const b=el("button",null,topic[he?2:1]); b.type="button"; b.dataset.topic=topic[0];
+  const b=el("button",null,topic[he?2:1]); b.type="button"; b.dataset.topic=topic[0]; b.setAttribute("aria-pressed",String(S.activeTopic===topic[0]));
   b.onclick=()=>topic[0]==="skills"?openMySkills():prepareTopic(topic);
   $("topicButtons").appendChild(b);
  });
 }
+
+const TOPIC_RESPONSES={"cv":["A useful CV connects your actual responsibilities and achievements to the work you want. I can build a first draft with your service experience, education and confirmed skills.\n\nWhat kind of job is this CV for?","קורות חיים טובים מחברים את האחריות וההישגים שלך לעבודה שאתה רוצה. אוכל להכין טיוטה עם הניסיון מהשירות, ההשכלה והכישורים שאושרו.\n\nלאיזה סוג עבודה מיועדים קורות החיים?"],"applications":["I can help tailor an application to a specific job, including a cover letter and examples that match the requirements.\n\nCan you paste the job description or tell me which position you want?","אוכל לעזור להתאים מועמדות למשרה מסוימת, כולל מכתב פנייה ודוגמאות שמתאימות לדרישות.\n\nתוכל להדביק את תיאור המשרה או לומר לאיזה תפקיד אתה רוצה להגיש מועמדות?"],"career":["We can compare work options against your interests, experience, skills and practical needs, then choose a manageable first step.\n\nWhat kind of work interests you, even if you are still unsure?","נוכל להשוות אפשרויות עבודה לפי תחומי העניין, הניסיון, הכישורים והצרכים המעשיים שלך, ואז לבחור צעד ראשון.\n\nאיזה סוג עבודה מעניין אותך, גם אם אתה עדיין לא בטוח?"],"study":["I can help compare study routes and work backwards from your intended start date, including admission, preparation, time and costs.\n\nWhat would you like to study, or which fields are you considering?","אוכל לעזור להשוות מסלולי לימודים ולתכנן לאחור ממועד ההתחלה, כולל קבלה, הכנה, זמן ועלויות.\n\nמה תרצה ללמוד, או אילו תחומים אתה שוקל?"],"rights":["We can identify benefits to check and the documents you may need. Eligibility and deadlines must be verified with the responsible official service.\n\nAre you finishing regular service, serving in the reserves, or already discharged?","נוכל לזהות זכויות שכדאי לבדוק ומסמכים שייתכן שתצטרך. יש לאמת זכאות ומועדים מול הגוף הרשמי האחראי.\n\nאתה מסיים שירות סדיר, משרת במילואים או כבר השתחררת?"],"money":["We can make a practical budget around income, essential expenses and your next plans, then identify the first change that would help.\n\nWhat is the main money issue you want to work on?","נוכל לבנות תקציב מעשי לפי ההכנסה, ההוצאות החיוניות והתוכניות הבאות שלך, ולזהות שינוי ראשון שיעזור.\n\nמה הנושא הכלכלי העיקרי שתרצה לעבוד עליו?"],"travel":["I can help fit a trip around your budget, work or studies and important dates.\n\nWhere would you like to go, and roughly when?","אוכל לעזור להתאים טיול לתקציב, לעבודה או ללימודים ולמועדים חשובים.\n\nלאן תרצה לנסוע ובערך מתי?"],"family":["We can work on a particular conversation, changing expectations, or reconnecting with people close to you.\n\nWhich relationship or family situation would you like help with?","נוכל לעבוד על שיחה מסוימת, שינוי בציפיות או חידוש הקשר עם אנשים קרובים.\n\nבאיזה קשר או מצב משפחתי תרצה עזרה?"],"support":["You can describe what is happening at your own pace. I can help you sort through it and consider a next step; human support is also available through the Support button.\n\nWhat is weighing on you most right now?","אפשר לתאר את מה שקורה בקצב שלך. אוכל לעזור לעשות סדר ולחשוב על צעד הבא; תמיכה אנושית זמינה גם דרך כפתור התמיכה.\n\nמה הכי מכביד עליך עכשיו?"]};
+function skillsTopicText(){
+ const he=S.lang==="he", strengths=(S.profile.strengths||[]).filter(s=>SKILLS.some(row=>+row[0]===+s.id));
+ const list=strengths.map(s=>{
+  const row=SKILLS.find(row=>+row[0]===+s.id);
+  return "• "+row[he?3:2]+(s.evidence?" — "+s.evidence:"");
+ }).join("\n");
+ if(list)return (he?"הכישורים שאושרו עד עכשיו:\n":"Your confirmed skills so far:\n")+list+"\n\n"+(he?"איזה כישור תרצה להוסיף או לדייק באמצעות דוגמה מהשירות או מהחיים האזרחיים?":"Which skill would you like to add or refine using an example from your service or civilian life?");
+ return he
+  ?"עדיין לא זוהו כישורים אישיים בשיחה שלך. נוכל לבדוק כישורים כמו עבודת צוות, פתרון בעיות או מנהיגות לפי הניסיון שלך — אלה דוגמאות לבדיקה, לא קביעה שיש לך אותם.\n\nבאיזה סוג שירות שירתת, ומה היו התפקיד והדרגה שלך? אפשר לציין יחידה באופן כללי, בלי פרטים מסווגים."
+  :"No personal skills have been identified in your conversation yet. We can explore skills such as teamwork, problem-solving or leadership based on your experience — these are examples to check, not claims about your skills.\n\nWhat kind of service did you do, and what were your role and rank? You can name the unit generally, without classified details.";
+}
 function prepareTopic(topic){
- closeDrawer();
- if(!S.started){S.started=true;save();}
- enterChat();
- const draft=topic[S.lang==="he"?4:3], input=$("input");
- input.value=input.value.trim()?input.value+"\n"+draft:draft;
- input.style.height="auto";
- if(window.matchMedia("(max-width:1099px)").matches) $("topicPanel").open=false;
- input.focus();
+ if($("thinking"))return;
+ closeDrawer(); stopSpeaking();
+ S.started=true; S.activeTopic=topic[0]; S.ack=true;
+ enterChat(); paintTopicPanel();
+ const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
+ pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
+ if(window.matchMedia("(max-width:1099px)").matches)$("topicPanel").open=false;
+ $("input").focus();
 }
-function openMySkills(){
- const he=S.lang==="he", b=$("dBody");
- $("dTitle").textContent=he?"הכישורים שלי":"My Skills"; b.replaceChildren();
- b.appendChild(el("p","empty",he
-  ?"כישורים שאושרו בשיחה שלך. תפקיד או דרגה יכולים להציע כישורים לבדיקה, אך אינם מוכיחים אותם."
-  :"Skills confirmed in your conversation. A role or rank can suggest skills to explore, but does not prove them."));
- const strengths=S.profile.strengths||[];
- if(!strengths.length)b.appendChild(el("p","empty",he?"עדיין אין כישורים מאושרים. נוכל לגלות אותם יחד דרך דוגמאות.":"No confirmed skills yet. We can discover them together through real examples."));
- strengths.forEach(s=>{
-  const skill=SKILLS.find(row=>+row[0]===+s.id);
-  if(!skill)return;
-  const item=el("div","entry strength");
-  item.appendChild(el("b",null,skill[he?3:2]));
-  if(s.evidence)item.appendChild(el("q",null,s.evidence));
-  else item.appendChild(el("p",null,he?"אפשר להוסיף דוגמה שממחישה את הכישור.":"You can add an example that demonstrates this skill."));
-  if(s.level>=1&&s.level<=4)item.appendChild(el("small",null,L().lvl[s.level]));
-  b.appendChild(item);
- });
- const refine=el("button","go",he?"הוסף או דייק את הכישורים שלי":"Add or refine my skills");
- refine.onclick=()=>prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));
- b.appendChild(refine); openDrawer();
+function openMySkills(){prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));}
+function topicPracticeReply(userText){
+ const he=S.lang==="he", id=S.activeTopic;
+ if(id==="skills"){
+  const ids=[]; HINTS.forEach(([re,list])=>{if(re.test(userText))list.forEach(x=>ids.push(x));});
+  const candidates=[...new Set(ids)].slice(0,6).map(id=>({id}));
+  return {reply: candidates.length
+   ? (he?"לפי תיאור השירות שלך, אלה כישורים אפשריים שכדאי לבדוק. הם עדיין אינם כישורים מאושרים שלך.\n\nבאיזה מהם השתמשת בפועל? תן דוגמה אחת למה שעשית.":"Based on your service description, these are possible skills to explore. They are not yet confirmed as your skills.\n\nWhich did you actually use? Give one example of what you did.")
+   : (he?"כדי לזהות כישור אישי צריך דוגמה, ולא רק שם תפקיד. כשהשירות המקוון אינו זמין, איני יכול לנתח או לאשר אוטומטית את הדוגמה שלך.\n\nתוכל לתאר משימה אחת שביצעת ואיך התמודדת איתה?":"Identifying a personal skill takes an example, not just a role title. With the online service unavailable, I cannot automatically analyse or confirm your example.\n\nCan you describe one task you carried out and how you handled it?"),
+   candidates};
+ }
+ const labels=TRANSITION_TOPICS.find(t=>t[0]===id);
+ return {reply:he
+  ?"שמרתי את הפרטים שלך בנושא "+labels[2]+". שירות ה-AI אינו זמין כרגע, ולכן איני יכול להכין תשובה מותאמת לפרטים החדשים. אפשר לנסות שוב מאוחר יותר או להשתמש בכפתור ׳שאל AI׳.\n\n"+TOPIC_RESPONSES[id][1]
+  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask an AI.\n\n"+TOPIC_RESPONSES[id][0]};
 }
+
 const topicBreakpoint=window.matchMedia("(min-width:1100px)");
 function sizeTopicPanel(){ $("topicPanel").open=topicBreakpoint.matches; }
 topicBreakpoint.addEventListener("change",sizeTopicPanel);
