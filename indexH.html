@@ -291,13 +291,14 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <body>
 
 <header class="bar">
-  <div class="mark" id="mark">Transition Companion<span id="markSub">a conversation, not a form</span></div>
-  <button class="chip" id="btnVoice" title="Read replies aloud">🔊</button>
-  <button class="chip" id="btnAI">Ask an AI</button>
-  <button class="chip" id="btnVoiceSettings">Voice settings</button>
-  <button class="chip badge" id="btnProfile" data-count="0">Profile</button>
-  <button class="chip" id="btnHelp">Support</button>
+  <div class="mark" id="mark">מלווה המעבר<span id="markSub">שיחה, לא טופס</span></div>
+  <button class="chip" id="btnVoice" title="האזן לתשובה">🔊 האזן</button>
+  <button class="chip" id="btnAI">שאל AI</button>
+  <button class="chip" id="btnVoiceSettings">הגדרות קול</button>
+  <button class="chip badge" id="btnProfile" data-count="0">פרופיל</button>
+  <button class="chip" id="btnHelp">תמיכה</button>
 </header>
+<p id="voiceNotice" role="status" hidden style="padding:12px 18px;background:#EDF5F2;color:#183D39"></p>
 
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
@@ -820,7 +821,7 @@ function copyText(text, btn){
    ========================================================================== */
 const KEY = "gtc_H_state";
 let S = load() || {
-  lang: "he", mode: "type", started: false,
+  lang: "he", mode: "both", speak: true, started: false,
   phase: "opening",           // opening → foundation → discovery → direction → open
   messages: [],               // {role:'user'|'assistant', text, surfaced?, props?}
   profile: { strengths: [], costs: [], open: [], directions: [] },
@@ -830,6 +831,7 @@ function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ r
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 // This separate edition always uses Hebrew, including restored sessions.
 S.lang = "he";
+if (S.voiceEdition !== 2) { S.speak = true; S.mode = "both"; S.voiceURI = null; S.voiceEdition = 2; save(); }
 const L = () => T.he;
 
 /* ==========================================================================
@@ -848,7 +850,8 @@ function paintStatic(){
   $("btnHelp").textContent = t.support;
   $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask an AI";
   $("btnVoiceSettings").textContent = S.lang === "he" ? "הגדרות קול" : "Voice settings";
-  $("btnVoice").title = S.lang === "he" ? "הקראה / עצירה" : "Read aloud / stop";
+  $("btnVoice").textContent = "🔊 האזן";
+  $("btnVoice").title = "האזן לתשובה";
   $("btnVoice").setAttribute("aria-label", $("btnVoice").title);
   $("btnMic").setAttribute("aria-label", S.lang === "he" ? "דבר" : "Speak");
   const map = {wEyebrow:"wEyebrow",chatTitle:"chatTitle",chatSubtitle:"chatSubtitle",wTitle:"wTitle",wLede:"wLede",w1t:"w1t",w1p:"w1p",w2t:"w2t",w2p:"w2p",
@@ -878,10 +881,10 @@ document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
 });
 
 $("btnVoice").onclick = () => {
-  S.speak = !S.speak; $("btnVoice").classList.toggle("on", !!S.speak); save();
-  if (!S.speak) { stopSpeaking(); return; }
+  if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); return; }
+  S.speak = true; $("btnVoice").classList.add("on"); save();
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
-  speak(last ? messageText(last) : (S.lang === "he" ? "הקול פועל. אפשר לדבר או להקליד." : "Voice is on. You can speak or type."));
+  speak(last ? messageText(last) : "ברוכים הבאים. אני כאן בשביל השלב הבא. לחצו על התחל כדי לדבר איתי.");
 };
 $("btnVoiceSettings").onclick = openVoiceSettings;
 $("btnAI").onclick = openExternalAI;
@@ -1474,7 +1477,7 @@ const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 $("btnMic").onclick = () => listening ? stopListening() : startListening();
 
-function voiceStatus(en, he){ $("hint").textContent = S.lang === "he" ? he : en; }
+function voiceStatus(en, he){ $("hint").textContent = he; $("voiceNotice").textContent = he; $("voiceNotice").hidden = !he; }
 function startListening(){
   if (!SR) { $("hint").textContent = L().micNo; return; }
   if (!window.isSecureContext) { voiceStatus("Open the HTTPS app link to use the microphone.", "פתח את הקישור המאובטח לאפליקציה כדי להשתמש במיקרופון."); return; }
@@ -1534,13 +1537,9 @@ function speak(text){
   u.lang = S.lang === "he" ? "he-IL" : "en-US";
   u.rate = S.rate || 0.98;
   u.pitch = S.pitch != null ? S.pitch : 1;
-  if (S.voiceURI){
-    const v = window.speechSynthesis.getVoices().find(x => x.voiceURI === S.voiceURI);
-    if (v && v.lang.toLowerCase().startsWith(S.lang)) u.voice = v;
-  } else {
-    const v = pickDefaultVoice(S.lang === "he" ? "he" : "en");
-    if (v && v.lang.toLowerCase().startsWith(S.lang)) u.voice = v;
-  }
+  const selected = window.speechSynthesis.getVoices().find(v => v.voiceURI === S.voiceURI && v.lang.toLowerCase().startsWith("he"));
+  const voice = selected || pickDefaultVoice("he");
+  if (voice) u.voice = voice;
   /* Chrome/Chromium bug workarounds, both silent (no error thrown):
      1) the very first utterance after the page loads can be dropped
         entirely if the browser's voice list hasn't finished loading yet;
@@ -1558,7 +1557,18 @@ function speak(text){
   };
   u.onend = clearHeartbeat;
   u.onerror = e => { clearHeartbeat(); if (e.error !== "canceled" && e.error !== "interrupted") voiceStatus("Read-aloud failed. Open Voice settings to choose a voice; check device text-to-speech settings.", "ההקראה נכשלה. בחר קול בהגדרות הקול ובדוק את הגדרות הטקסט לדיבור במכשיר."); };
-  const doSpeak = () => window.speechSynthesis.speak(u);
+  let attempts = 0;
+  const doSpeak = () => {
+    const heVoice = window.speechSynthesis.getVoices().find(v => v.voiceURI === S.voiceURI && v.lang.toLowerCase().startsWith("he")) || pickDefaultVoice("he");
+    if (!heVoice) {
+      if (!window.speechSynthesis.getVoices().length && attempts++ < 10) { setTimeout(doSpeak, 150); return; }
+      voiceStatus("", "אין קול עברי זמין בדפדפן הזה. הוסף קול עברי בהגדרות הטקסט לדיבור במכשיר, ואז פתח מחדש את הדף ולחץ על ׳האזן׳. אפשר להמשיך בהקלדה.");
+      return;
+    }
+    u.voice = heVoice; u.lang = "he-IL";
+    voiceStatus("", "");
+    window.speechSynthesis.speak(u);
+  };
   if (!voicesReady && window.speechSynthesis.getVoices().length === 0){
     setTimeout(doSpeak, 150);
   } else {
