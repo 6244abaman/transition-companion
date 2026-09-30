@@ -17,10 +17,11 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v3-mentor-image";
+const CACHE = "tc-v4-persistent-topics";
 const APP_FILES = [
   "./",
   "./index.html",
+  "./indexH.html",
   "./companion-mentor.jpeg",
   "./manifest.json",
   "./icon-192.png",
