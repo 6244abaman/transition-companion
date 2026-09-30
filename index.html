@@ -286,6 +286,17 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 .surface,.props{margin-top:15px}
 .drawer{box-shadow:0 0 40px #183D3920}
 @media(max-width:540px){.bar{padding:11px 12px;gap:6px}.bar .mark{flex-basis:calc(100% - 90px);font-size:20px}.pad{padding:20px 14px 30px}.welcome-hero{padding:25px 21px}.hello{font-size:32px}.welcome-cards{grid-template-columns:1fr}.welcome-cards .note.privacy{grid-column:auto}.choice{flex:1 1 85px;padding:15px 10px}.choice.on{padding:14px 9px}.choice b{font-size:14px}.choice small{font-size:12px}.turn.them{padding:18px}.turn.them .body{font-size:16px}.guidance{padding:20px}.chat-heading h2{font-size:24px}}
+
+/* Persistent transition topics */
+.topic-panel{flex:0 0 auto;margin:0 14px 8px;border:2px solid #B9D1C1;border-radius:18px;background:#fff;overflow:hidden}
+.topic-panel summary{padding:12px 16px;font-weight:700;cursor:pointer;color:var(--ink)}
+.topic-panel nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 12px 12px;max-height:28vh;overflow:auto}
+.topic-panel button{padding:10px 12px;text-align:start;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);font-size:14px;min-height:44px}
+.topic-panel button:hover,.topic-panel button:focus-visible{background:var(--olive-soft);border-color:var(--olive)}
+.topic-panel p{padding:0 14px 10px;font-size:12px;color:var(--ink-2)}
+.screen{min-height:0}
+@media(min-width:1100px){body{padding-inline-end:258px}.topic-panel{position:fixed;inset-inline-end:14px;top:112px;bottom:18px;width:230px;margin:0;overflow:auto}.topic-panel nav{grid-template-columns:1fr;max-height:none}.topic-panel summary{list-style:none;pointer-events:none}}
+
 </style>
 </head>
 <body>
@@ -351,6 +362,12 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
     </section>
   </div>
 </main>
+
+<details class="topic-panel" id="topicPanel">
+<summary id="topicTitle">What would you like help with?</summary>
+<nav id="topicButtons" aria-label="Transition topics"></nav>
+<p id="topicHint"></p>
+</details>
 
 <div class="composer" id="composer" hidden>
   <div class="cwrap">
@@ -838,6 +855,7 @@ const $ = id => document.getElementById(id);
 const el = (tag, cls, txt) => { const n=document.createElement(tag); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n; };
 
 function paintStatic(){
+  if(typeof paintTopicPanel === "function") paintTopicPanel();
   const t = L();
   document.documentElement.lang = S.lang;
   document.documentElement.dir = t.dir;
@@ -1647,5 +1665,70 @@ document.querySelectorAll(".choice").forEach(b => b.classList.toggle("on", b.dat
 paintStatic();
 if (S.started){ enterChat(); if(!S.messages.length) openConversation(); }
 </script>
+
+<script>
+/* Topics use the existing conversation and never send a request without Send. */
+const TRANSITION_TOPICS = [
+ ["cv","CV","קורות חיים","Help me write or improve my CV.","עזור לי לכתוב או לשפר את קורות החיים שלי."],
+ ["applications","Job applications","מועמדות לעבודה","Help me prepare a job application.","עזור לי להכין מועמדות לעבודה."],
+ ["career","Work and career","עבודה וקריירה","Help me explore work and career options that fit my experience and goals.","עזור לי לבדוק אפשרויות עבודה וקריירה שמתאימות לניסיון ולמטרות שלי."],
+ ["skills","My Skills","הכישורים שלי","Help me identify and refine my skills using real examples from my service and civilian life. Treat skills inferred from my unit, role or rank as suggestions until I confirm them. Ask one question at a time.","עזור לי לזהות ולדייק את הכישורים שלי באמצעות דוגמאות אמיתיות מהשירות ומהחיים האזרחיים. הצג כישורים המוסקים מהיחידה, התפקיד או הדרגה כהצעות עד שאאשר אותם. שאל שאלה אחת בכל פעם."],
+ ["study","Studies","לימודים","Help me plan my studies and next steps.","עזור לי לתכנן את הלימודים ואת הצעדים הבאים."],
+ ["rights","Rights and benefits","זכויות והטבות","Help me explore rights and benefits relevant to me. Verify current details with official sources before presenting eligibility as a fact.","עזור לי לבדוק זכויות והטבות רלוונטיות. יש לאמת פרטים עדכניים במקורות רשמיים לפני קביעה שאני זכאי."],
+ ["money","Money","כסף","Help me think through my budget and financial next steps.","עזור לי לחשוב על התקציב ועל הצעדים הכלכליים הבאים."],
+ ["travel","Travel","נסיעות וטיולים","Help me plan travel alongside my other plans.","עזור לי לתכנן טיול לצד התוכניות האחרות שלי."],
+ ["family","Relationships and family","מערכות יחסים ומשפחה","Help me think through relationships and family during my transition.","עזור לי לחשוב על מערכות יחסים ומשפחה בתקופת המעבר."],
+ ["support","Emotional support","תמיכה רגשית","I would like support with how I am feeling during my transition.","אני רוצה תמיכה במה שאני מרגיש בתקופת המעבר."]
+];
+function paintTopicPanel(){
+ const he=S.lang==="he";
+ $("topicTitle").textContent=he?"במה תרצה עזרה?":"What would you like help with?";
+ $("topicHint").textContent=he?"בחר נושא. אפשר לערוך את הבקשה לפני השליחה.":"Choose a topic. You can edit the request before sending.";
+ $("topicButtons").setAttribute("aria-label",he?"נושאים למעבר":"Transition topics");
+ $("topicButtons").replaceChildren();
+ TRANSITION_TOPICS.forEach(topic=>{
+  const b=el("button",null,topic[he?2:1]); b.type="button"; b.dataset.topic=topic[0];
+  b.onclick=()=>topic[0]==="skills"?openMySkills():prepareTopic(topic);
+  $("topicButtons").appendChild(b);
+ });
+}
+function prepareTopic(topic){
+ closeDrawer();
+ if(!S.started){S.started=true;save();}
+ enterChat();
+ const draft=topic[S.lang==="he"?4:3], input=$("input");
+ input.value=input.value.trim()?input.value+"\n"+draft:draft;
+ input.style.height="auto";
+ if(window.matchMedia("(max-width:1099px)").matches) $("topicPanel").open=false;
+ input.focus();
+}
+function openMySkills(){
+ const he=S.lang==="he", b=$("dBody");
+ $("dTitle").textContent=he?"הכישורים שלי":"My Skills"; b.replaceChildren();
+ b.appendChild(el("p","empty",he
+  ?"כישורים שאושרו בשיחה שלך. תפקיד או דרגה יכולים להציע כישורים לבדיקה, אך אינם מוכיחים אותם."
+  :"Skills confirmed in your conversation. A role or rank can suggest skills to explore, but does not prove them."));
+ const strengths=S.profile.strengths||[];
+ if(!strengths.length)b.appendChild(el("p","empty",he?"עדיין אין כישורים מאושרים. נוכל לגלות אותם יחד דרך דוגמאות.":"No confirmed skills yet. We can discover them together through real examples."));
+ strengths.forEach(s=>{
+  const skill=SKILLS.find(row=>+row[0]===+s.id);
+  if(!skill)return;
+  const item=el("div","entry strength");
+  item.appendChild(el("b",null,skill[he?3:2]));
+  if(s.evidence)item.appendChild(el("q",null,s.evidence));
+  else item.appendChild(el("p",null,he?"אפשר להוסיף דוגמה שממחישה את הכישור.":"You can add an example that demonstrates this skill."));
+  if(s.level>=1&&s.level<=4)item.appendChild(el("small",null,L().lvl[s.level]));
+  b.appendChild(item);
+ });
+ const refine=el("button","go",he?"הוסף או דייק את הכישורים שלי":"Add or refine my skills");
+ refine.onclick=()=>prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));
+ b.appendChild(refine); openDrawer();
+}
+const topicBreakpoint=window.matchMedia("(min-width:1100px)");
+function sizeTopicPanel(){ $("topicPanel").open=topicBreakpoint.matches; }
+topicBreakpoint.addEventListener("change",sizeTopicPanel);
+sizeTopicPanel(); paintTopicPanel();
+</script>
+
 </body>
 </html>
