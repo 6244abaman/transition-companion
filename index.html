@@ -880,7 +880,7 @@ $("btnLang").onclick = () => {
     const welcome = S.lang === "he"
       ? "ברוכים הבאים. תודה על השירות. לחצו על הכפתור הגדול כדי להתחיל."
       : "Welcome. Thank you for your service. Press the large button to begin.";
-    setTimeout(() => speak(last ? last.text : welcome), 250);
+    setTimeout(() => speak(last ? messageText(last) : welcome), 250);
   }
 };
 
@@ -895,7 +895,7 @@ $("btnVoice").onclick = () => {
   S.speak = !S.speak; $("btnVoice").classList.toggle("on", !!S.speak); save();
   if (!S.speak) { stopSpeaking(); return; }
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
-  speak(last ? last.text : (S.lang === "he" ? "הקול פועל. אפשר לדבר או להקליד." : "Voice is on. You can speak or type."));
+  speak(last ? messageText(last) : (S.lang === "he" ? "הקול פועל. אפשר לדבר או להקליד." : "Voice is on. You can speak or type."));
 };
 $("btnVoiceSettings").onclick = openVoiceSettings;
 $("btnAI").onclick = openExternalAI;
@@ -976,7 +976,8 @@ function renderThread(){
 }
 function turnNode(m, idx){
   const wrap = el("div","turn "+(m.role==="user"?"me":m.role==="system"?"sys":"them"));
-  const body = el("div","body", m.text);
+  const body = el("div","body", messageText(m));
+  body.dir = "auto";
   wrap.appendChild(body);
   if (m.doc && m.role === "assistant"){
     const cb = el("button","copy", L().copy);
@@ -1239,11 +1240,19 @@ function practiceReply(userText){
 /* ==========================================================================
    9. CONVERSATION FLOW
    ========================================================================== */
-function openConversation(){
-  const first = S.lang === "he"
+function openingText(lang){
+  return lang === "he"
     ? "קודם כול — תודה. שלוש שנים, חמש, כמה שזה היה — נתת חלק מהחיים שלך למדינה הזאת, וזה לא דבר קטן.\n\nמשהו ששווה לדעת לפני שמתחילים: כמעט כל מי שמסיים שירות אינטנסיבי מרגיש סוג של אובדן. לא כי משהו לא בסדר איתך — אלא כי הכיוון, הסכנה, האנשים שהיו צריכים אותך, הכול עמד מולך כל יום, ופתאום זה לא שם. הפער הזה נורמלי, והוא בדרך כלל הדבר הקשה שאף אחד לא מכין אליו.\n\nבשביל זה אני כאן. תחשוב עליי כמישהו שאפשר לדבר איתו מתי שזה עוזר — לחשוב בקול, לשקול החלטות אמיתיות, להבין מה הלאה. ואם בשלב כלשהו תרצה בן אדם אמיתי, גם הוא במרחק לחיצה.\n\nאז ספר לי: איפה שירתת, מה היה התפקיד שלך בפועל, וכמה זמן?"
     : "First — thank you. Three years, five, however long it was, you gave part of your life to this country, and that's not a small thing.\n\nSomething worth knowing before we start: almost everyone finishing intense service feels some kind of loss. Not because something's wrong with you — because the direction, the danger, the people who needed you, all of it was in front of you every day, and suddenly it isn't. That gap is normal, and it's usually the hard part nobody prepares you for.\n\nThat's what I'm here for. Think of me as someone you can talk to whenever it's useful — to think out loud, weigh real decisions, work out what's next. And if you ever want an actual person, that's one tap away too.\n\nSo tell me: where did you serve, what was your actual role, and how long?";
-  pushMsg("assistant", first);
+}
+function messageText(m){
+  // Recognize openings saved by earlier versions as well as new ones.
+  if (m.kind === "opening" || (m.role === "assistant" &&
+      (m.text === openingText("he") || m.text === openingText("en")))) return openingText(S.lang);
+  return m.text;
+}
+function openConversation(){
+  pushMsg("assistant", openingText(S.lang), {kind:"opening"});
 }
 
 async function sendUser(text){
