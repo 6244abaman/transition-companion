@@ -977,7 +977,7 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  S.messages.forEach((m,i) => { const welcome = m.kind==="opening" || messageText(m)===openingText("en") || messageText(m)===openingText("he"); if(!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i)); });
+  S.messages.forEach((m,i) => { const opening = openingText(S.lang), text = messageText(m).trim(); const welcome = m.role==="assistant" && (m.kind==="opening" || text.startsWith(opening.slice(0,32))); if(!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i)); });
   scrollDown();
 }
 function turnNode(m, idx){
