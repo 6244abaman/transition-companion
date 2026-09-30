@@ -255,6 +255,8 @@ body{background:radial-gradient(ellipse at 8% 0%,#E2F1E9,transparent 55%),radial
 .choice small{color:var(--ink-2)}
 .go{background:var(--olive);color:#FFF;border-radius:16px;font-size:17px;box-shadow:0 7px 20px #21695F20}
 .go:hover{background:#184F48}
+.start-callout{margin:8px 0 18px;text-align:center;font-family:'Frank Ruhl Libre',serif;font-size:30px;line-height:1.15;font-weight:700;color:var(--ink)}
+.go{font-size:22px!important;font-weight:700!important;padding:19px 16px!important;border:3px solid #174D46!important}
 .chat-heading{margin:0 0 22px;padding:18px 20px;border:1px solid var(--line);border-radius:22px;background:#E7F2EC}
 .chat-heading h2{font-family:'Frank Ruhl Libre',serif;font-size:26px;line-height:1.2;margin-bottom:5px}
 .chat-heading p{font-size:14px;color:var(--ink-2)}
@@ -312,7 +314,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       <button class="choice" data-mode="both"><b id="m3"></b><small id="m3s"></small></button>
     </div>
 
-    <button class="go" id="btnStart"></button>
+    <div class="start-callout" id="startCallout"></div><button class="go" id="btnStart"></button>
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
     <div class="note" id="diagOut" style="display:none;font-size:13.5px"></div>
@@ -843,6 +845,7 @@ function paintStatic(){
     document.querySelectorAll("."+cls).forEach(n => n.textContent = t[key]);
   }
   $("btnStart").textContent = t.start;
+  $("startCallout").textContent = S.lang === "he" ? "מוכנים להתחיל?" : "READY TO BEGIN?";
   $("wTiny").textContent = t.tiny;
   $("btnDiag").textContent = t.diag;
   $("input").placeholder = (S.mode==="type") ? t.ph : t.phVoice;
@@ -851,7 +854,16 @@ function paintStatic(){
 
 $("btnLang").onclick = () => {
   S.lang = S.lang === "he" ? "en" : "he";
-  stopSpeaking(); save(); paintStatic(); renderThread(); if($("drawer").classList.contains("on")) closeDrawer();
+  stopSpeaking();
+  S.voiceURI = null;
+  save(); paintStatic(); renderThread(); if($("drawer").classList.contains("on")) closeDrawer();
+  if (S.speak) {
+    const last = [...S.messages].reverse().find(m => m.role === "assistant");
+    const welcome = S.lang === "he"
+      ? "ברוכים הבאים. תודה על השירות. לחצו על הכפתור הגדול כדי להתחיל."
+      : "Welcome. Thank you for your service. Press the large button to begin.";
+    setTimeout(() => speak(last ? last.text : welcome), 250);
+  }
 };
 
 document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
