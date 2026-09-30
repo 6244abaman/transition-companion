@@ -3,7 +3,7 @@
    Lets the app open without internet and makes it installable.
 
    What it does:
-   - Keeps a copy of the app's own files on the phone (about 100 KB).
+   - Keeps a copy of the app's own files on the phone (less than 1 MB).
    - Always tries the internet first, so updates you push to
      GitHub show up the next time someone opens the app online.
    - If there is no internet, it opens the saved copy.
@@ -17,10 +17,11 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v2-voice-ai";
+const CACHE = "tc-v3-mentor-image";
 const APP_FILES = [
   "./",
   "./index.html",
+  "./companion-mentor.jpeg",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
