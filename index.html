@@ -238,6 +238,11 @@ body{background:radial-gradient(ellipse at 8% 0%,#E2F1E9,transparent 55%),radial
 .bar .mark span{margin-top:5px;font-size:12px}
 .chip{min-height:38px;padding:7px 12px;font-size:13px}
 .pad{padding:28px 20px 40px}
+.mentor-portrait{display:flex;align-items:center;gap:18px;margin-bottom:18px;padding:18px;border:1px solid #C4DBCE;border-radius:24px;background:#FFFFFFC9;box-shadow:0 5px 20px #183D3907}
+.mentor-face{width:112px;height:112px;flex:0 0 112px;border-radius:50%;background:linear-gradient(145deg,#D9E8E1,#F7EDE4);display:grid;place-items:center;font-family:'Frank Ruhl Libre',serif;font-size:42px;color:var(--olive);border:4px solid #fff;box-shadow:0 3px 14px #183D3915}
+.mentor-copy h2{font-family:'Frank Ruhl Libre',serif;font-size:25px;line-height:1.2;margin-bottom:6px}.mentor-copy p{font-size:14px;line-height:1.6;color:var(--ink-2)}
+.quick-start{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}.quick-start button{padding:13px 9px;border:1px solid var(--line);border-radius:15px;background:#fff;font-weight:600}.quick-start button:hover{border-color:var(--olive);background:var(--olive-soft)}
+@media(max-width:540px){.mentor-portrait{align-items:flex-start}.mentor-face{width:82px;height:82px;flex-basis:82px;font-size:32px}.mentor-copy h2{font-size:21px}.quick-start{grid-template-columns:1fr}}
 .welcome-hero{position:relative;padding:30px 28px;margin-bottom:22px;border:1px solid #C4DBCE;border-radius:28px;background:linear-gradient(125deg,#E0F0E6,#F8FCF9 70%);overflow:hidden}
 .welcome-hero:before{content:"";position:absolute;width:160px;height:160px;inset-inline-end:-75px;top:-75px;border:24px solid #FFFFFF70;border-radius:50%;pointer-events:none}
 .eyebrow{display:block;color:var(--olive);font-size:12px;font-weight:700;letter-spacing:.08em;margin-bottom:12px}
@@ -297,6 +302,10 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
+    <section class="mentor-portrait" aria-label="Your Transition Companion">
+      <div class="mentor-face" aria-hidden="true">TC</div>
+      <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
+    </section>
     <div class="welcome-hero">
     <span class="eyebrow" id="wEyebrow"></span>
     <h1 class="hello" id="wTitle"></h1>
@@ -314,6 +323,9 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       <button class="choice" data-mode="both"><b id="m3"></b><small id="m3s"></small></button>
     </div>
 
+    <div class="quick-start">
+      <button id="quickOkay"></button><button id="quickUnsure"></button><button id="quickAsk"></button>
+    </div>
     <div class="start-callout" id="startCallout"></div><button class="go" id="btnStart"></button>
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
@@ -844,7 +856,12 @@ function paintStatic(){
   for (const [cls,key] of Object.entries({"guide-title":"guideTitle","guide-cv":"guideCV","guide-job":"guideJob","guide-study":"guideStudy","guide-direct":"guideDirect","guide-emphasis":"guideEmphasis","guide-example":"guideExample"})) {
     document.querySelectorAll("."+cls).forEach(n => n.textContent = t[key]);
   }
-  $("btnStart").textContent = t.start;
+  $("btnStart").textContent = S.lang === "he" ? "התחל — פשוט דבר איתי" : "Start — Just Talk to Me";
+  $("mentorTitle").textContent = S.lang === "he" ? "אני כאן בשביל השלב הבא." : "I'm here for what comes next.";
+  $("mentorText").textContent = S.lang === "he" ? "לא צריך לדעת בדיוק מה אתה רוצה. אפשר לדבר על עבודה, לימודים, זכויות, נסיעות, כסף, מערכות יחסים או פשוט על מה שמעסיק אותך עכשיו." : "You don't need to know exactly what you want. We can talk about work, education, rights, travel, money, relationships, or simply what's on your mind.";
+  $("quickOkay").textContent = S.lang === "he" ? "אני בסדר" : "I'm doing okay";
+  $("quickUnsure").textContent = S.lang === "he" ? "לא בטוח" : "Not sure";
+  $("quickAsk").textContent = S.lang === "he" ? "יש לי שאלה" : "I'd rather just ask something";
   $("startCallout").textContent = S.lang === "he" ? "מוכנים להתחיל?" : "READY TO BEGIN?";
   $("wTiny").textContent = t.tiny;
   $("btnDiag").textContent = t.diag;
@@ -894,7 +911,15 @@ function openExternalAI(){
   openDrawer();
 }
 
-$("btnStart").onclick = () => { S.started = true; save(); enterChat(); if(!S.messages.length) openConversation(); };
+function startWith(text){
+  S.started = true; save(); enterChat();
+  if(!S.messages.length) openConversation();
+  if(text) setTimeout(()=>sendUser(text), 120);
+}
+$("btnStart").onclick = () => startWith("");
+$("quickOkay").onclick = () => startWith(S.lang==="he" ? "אני בסדר. בוא נדבר על מה הלאה." : "I'm doing okay. Let's talk about what's next.");
+$("quickUnsure").onclick = () => startWith(S.lang==="he" ? "אני לא בטוח מה אני רוצה לעשות הלאה." : "I'm not sure what I want to do next.");
+$("quickAsk").onclick = () => startWith(S.lang==="he" ? "יש לי שאלה ספציפית." : "I have a specific question.");
 
 /* Connection diagnostic — tells apart "wrong path", "server asleep", "no key",
    and "wrong reply shape", which otherwise all look identical (silent fallback). */
