@@ -446,7 +446,7 @@ he:{
   guideTitle:"אפשר לבקש עזרה. כדאי גם לתת לי להכיר אותך.",
   guideCV:"קורות חיים", guideJob:"מועמדות לעבודה", guideStudy:"עבודה ולימודים",
   guideDirect:"אפשר לשאול את העוזר ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
-  guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר למלווה ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
+  guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר לעוזר ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
   guideExample:"למשל: ׳הייתי מפקד צוות, אני אוהב לעבוד עם אנשים ורוצה עזרה בהגשת מועמדות לעבודה הראשונה שלי.׳ דוגמאות אמיתיות עוזרות להפוך עצה כללית למשהו שימושי עבורך. הימנע מפרטים צבאיים מסווגים, מבצעיים או מזהים.",
   dir:"rtl", other:"English", mark:"עוזר המעבר", markSub:"שיחה, לא טופס",
   wTitle:"הפרק הבא שלך מתחיל בשיחה.",
@@ -977,7 +977,7 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  S.messages.forEach((m,i) => { if(!(S.activeTopic && m.kind==="opening")) box.appendChild(turnNode(m,i)); });
+  S.messages.forEach((m,i) => { const welcome = m.kind==="opening" || messageText(m)===openingText("en") || messageText(m)===openingText("he"); if(!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i)); });
   scrollDown();
 }
 function turnNode(m, idx){
@@ -1051,7 +1051,7 @@ function systemPrompt(ref){
   return `You are a practical transition assistant for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Speak warmly and plainly, like a thoughtful, experienced person who has sat with many soldiers and genuinely cares how this goes for them — not a coach, not a therapist, not a cheerleader, and never cold or clinical.
 
 SELECTED TOPIC: ${S.activeTopic || "general conversation"}
-When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as an assistant, not a counselor.
+When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
 
 HOW YOU TALK
 - Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions. Use bullet points when listing skills or producing practical output.
