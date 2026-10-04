@@ -118,3 +118,22 @@ The earlier persistent transition-topic box had been dropped from the Next inter
 - Relationships & family routes to relationship guidance
 - Emotional support routes to emotional-support guidance
 - the panel is persistent: side box on desktop, collapsible box above the composer on smaller screens
+
+
+## Context-following Practice Mode regression
+
+A real desktop test exposed a deeper degraded-mode problem: Practice Mode responded only to keywords in the current message and did not reliably treat a short reply as an answer to the previous question. This caused different answers to fall back to the same generic response.
+
+The degraded conversation now maintains an explicit local Practice Context with focus topics and the pending question.
+
+The exact reported sequence was reproduced and now passes:
+
+1. `I don't know what I want to do next.`
+2. `plan job girlfriend`
+3. `find something i feel meaningful start wanting to date`
+4. `get a job`
+5. `combat, sharp shooter protect other soldiers and was number 2 to go into a building`
+
+All five turns now produce distinct, context-following responses. The third turn is interpreted as two 90-day goals (meaningful work and dating); the fourth narrows to getting a job; the fifth is treated as an answer to the service-experience question and surfaces candidate capabilities without declaring them confirmed skills.
+
+The local-model prompt now also instructs the LLM to interpret short or fragmentary replies as answers to the previous question unless the user clearly changes topic.
