@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#1f675c">
   <title>Transition Companion Next</title>
+  <link rel="manifest" href="./manifest.webmanifest">
   <style>
     :root{--bg:#f4f8f6;--card:#fff;--ink:#173c37;--muted:#5c706c;--line:#ccddd6;--accent:#21695f;--soft:#e4f1eb;--warn:#955b46;--shadow:0 8px 28px #173c3710;--r:20px;--max:780px}
     *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 5% 0,#e4f2eb,transparent 38%),var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink)}
@@ -52,7 +53,8 @@
   <div class="field"><label id="labResp">אחריות וניסיון מרכזי</label><textarea id="responsibilities"></textarea></div>
   <div class="rows"><div class="field"><label id="labDischarge">תאריך שחרור מסדיר</label><input id="dischargeDate" type="date"></div><div class="field"><label id="labReserve">שירות מילואים</label><select id="reserveStatus"><option value="">—</option><option value="active">פעיל</option><option value="occasional">מדי פעם</option><option value="not-current">לא כיום</option></select></div></div>
   <div class="field"><label id="labReserveGroup">יחידת / קבוצת מילואים</label><input id="reserveUnitGroup"></div>
-  <div class="field"><label id="labReserveSummary">תקופות מילואים, ימים ותפקידים</label><textarea id="reserveServiceSummary"></textarea></div>
+  <div class="field"><label id="labReservePeriods">תאריכים / תקופות מילואים</label><textarea id="reservePeriodsText" placeholder="לדוגמה: 2026-01-10 עד 2026-02-03"></textarea></div>
+  <div class="field"><label id="labReserveSummary">סיכום מילואים, ימים ותפקידים</label><textarea id="reserveServiceSummary"></textarea></div>
   <div class="field"><label id="labStyle">איך נוח לי שהמערכת תעזור</label><input id="preferredSupportStyle"></div>
   <div class="actions"><button class="pill primary" id="btnSaveInfo">שמור</button><button id="btnExport">ייצא את המידע</button><button class="danger" id="btnDelete">מחק את כל המידע</button></div>
   <h3 id="skillsHeading">מיומנויות וניסיון שאושרו</h3><div class="memoryList" id="skillsList"></div>
@@ -61,7 +63,7 @@
 
 <dialog id="aiDialog"><div class="dlgHead"><h2 id="aiTitle">AI ופרטיות</h2><button class="pill" data-close="aiDialog">✕</button></div><div class="dlgBody">
   <div class="field"><label id="labLocalModel">מודל מקומי</label><select id="localModel"><option value="auto">אוטומטי</option><option value="standard">3B — רגיל</option><option value="light">1B — קל</option></select></div>
-  <label><input type="checkbox" id="cloudFallback"> אפשר להשתמש ב-AI חיצוני כאשר המקומי אינו זמין</label>
+  <label id="cloudLabel"><input type="checkbox" id="cloudFallback"> אפשר להשתמש ב-AI חיצוני כאשר המקומי אינו זמין</label>
   <p class="small" id="cloudExplain">לפני שליחה ל-AI חיצוני תוצג לך בדיוק השאלה וההקשר שנבחרו. ההיסטוריה המלאה אינה נשלחת אוטומטית.</p>
   <div class="actions"><button class="pill primary" id="btnSaveAI">שמור הגדרות</button></div>
   <hr><div class="small" id="deviceInfo"></div>
@@ -196,6 +198,7 @@ function targetingTags(state) {
   if (s.serviceFamily) tags.add('service:' + normalizeTag(s.serviceFamily));
   if (s.unitGroup) tags.add('group:' + normalizeTag(s.unitGroup));
   if (s.reserveStatus) tags.add('reserve:' + normalizeTag(s.reserveStatus));
+  if (s.reserveUnitGroup) tags.add('reserve-group:' + normalizeTag(s.reserveUnitGroup));
   const cohort = dischargeCohort(s.dischargeDate);
   if (cohort) tags.add('discharge:' + cohort);
   return [...tags];
@@ -210,7 +213,8 @@ function bannerMatches(banner, state) {
   const required = banner.tags || [];
   if (!required.length) return true;
   const have = new Set(targetingTags(state));
-  return required.some(t => have.has(String(t).toLowerCase()));
+  const normalized = required.map(t => String(t).toLowerCase());
+  return banner.match === 'any' ? normalized.some(t => have.has(t)) : normalized.every(t => have.has(t));
 }
 
 function classifySafety(text) {
@@ -221,15 +225,18 @@ function classifySafety(text) {
     /\b(i am|i'm|im) going to (kill|hurt) myself\b/i,
     /\b(i will|i'm going to|i am going to) (kill|hurt) (him|her|them|someone)\b/i,
     /\bi have (a )?(gun|knife|weapon|pills).*\b(kill|hurt)\b/i,
-    /אני (הולך|עומד) (להתאבד|לפגוע בעצמי)/,
-    /אני (הולך|עומד) (להרוג|לפגוע ב).+/
+    /\bi (am|'m) (going to|about to) (end|take) my life\b/i,
+    /\bi (am|'m) going to (shoot|stab|overdose) (myself|on purpose)\b/i,
+    /אני (הולך|עומד|מתכוון) (להתאבד|לפגוע בעצמי|להרוג את עצמי)/,
+    /יש לי תכנית להתאבד/,
+    /אני (הולך|עומד|מתכוון) (להרוג|לפגוע ב).+/
   ];
   if (immediate.some(r => r.test(t))) return { level: 4, reason: 'credible immediate-harm language' };
 
   const significant = [
-    /\bwant to die\b/i, /\bsuicidal\b/i, /\bhurt myself\b/i,
-    /\bkill someone\b/i, /\bcan't keep myself safe\b/i,
-    /רוצה למות/, /מחשבות אובדניות/, /לפגוע בעצמי/, /להרוג מישהו/
+    /\bwant to die\b/i, /\bsuicidal\b/i, /\bthinking about hurting myself\b/i, /\bmight hurt myself\b/i,
+    /\bend my life\b/i, /\btake my life\b/i, /\bkill someone\b/i, /\bcan't keep myself safe\b/i,
+    /רוצה למות/, /מחשבות אובדניות/, /חושב.*לפגוע בעצמי/, /עלול.*לפגוע בעצמי/, /להרוג את עצמי/, /לשים קץ לחיים/, /להרוג מישהו/
   ];
   if (significant.some(r => r.test(t))) return { level: 3, reason: 'significant safety concern' };
 
@@ -387,18 +394,23 @@ class LocalLLM {
 
   async load(setting = 'auto') {
     if (!LocalLLM.supported()) throw new Error('WebGPU is not available in this browser.');
-    const chosen = LocalLLM.recommended(setting);
-    this.onProgress({ text: 'Loading ' + chosen.label + '…', progress: 0 });
     const webllm = await import('https://esm.run/@mlc-ai/web-llm@0.2.85');
-    this.engine = await webllm.CreateMLCEngine(chosen.id, {
-      initProgressCallback: report => this.onProgress({
-        text: report.text || 'Downloading local AI…',
-        progress: Number(report.progress || 0)
-      })
-    });
-    this.model = chosen;
-    this.onProgress({ text: chosen.label + ' ready on this device.', progress: 1 });
-    return chosen;
+    const first = LocalLLM.recommended(setting);
+    const choices = setting === 'auto' && first.id === MODELS.standard.id ? [MODELS.standard, MODELS.light] : [first];
+    let lastError = null;
+    for (let i=0;i<choices.length;i++) {
+      const chosen = choices[i];
+      this.onProgress({ text: (i ? 'Standard model did not load; trying ' : 'Loading ') + chosen.label + '…', progress: 0 });
+      try {
+        this.engine = await webllm.CreateMLCEngine(chosen.id, {
+          initProgressCallback: report => this.onProgress({text: report.text || 'Downloading local AI…', progress: Number(report.progress || 0)})
+        });
+        this.model = chosen;
+        this.onProgress({ text: chosen.label + ' ready on this device.', progress: 1 });
+        return chosen;
+      } catch (e) { lastError=e; this.engine=null; this.model=null; }
+    }
+    throw lastError || new Error('Local model could not be loaded.');
   }
 
   ready() { return !!this.engine; }
@@ -483,8 +495,16 @@ let listening = false;
 const $ = id => document.getElementById(id);
 
 function loadState(){
-  try { return Object.assign(defaultState(), JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); }
+  try { return mergeState(defaultState(), JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); }
   catch { return defaultState(); }
+}
+function mergeState(base, incoming){
+  if (Array.isArray(base)) return Array.isArray(incoming) ? incoming : base;
+  if (!base || typeof base !== 'object') return incoming === undefined ? base : incoming;
+  const out={...base};
+  if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) return out;
+  for (const [k,v] of Object.entries(incoming)) out[k] = k in base ? mergeState(base[k],v) : v;
+  return out;
 }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function t(){ return I18N[state.lang] || I18N.he; }
@@ -586,7 +606,7 @@ async function callLocal(text, safety){
 async function callCloudWithConsent(text, safety){
   const packet={ question:text, language:state.lang, selectedContext:minimumExternalContext(text), safetyLevel:safety.level };
   const ok=await askShareApproval(packet); if(!ok) return {reply:t().cloudDenied,memory_updates:{}};
-  const messages=[...recentMessages(6)];
+  const messages=[{role:'user',content:text}];
   const res=await fetch(CLOUD_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CLOUD_MODEL,max_tokens:750,system:systemPrompt+'\n\nAPPROVED SELECTED CONTEXT\n'+JSON.stringify(packet.selectedContext),messages})});
   if(!res.ok) throw new Error('External AI HTTP '+res.status);
   const data=await res.json(); const raw=(data.content||[]).filter(x=>x.type==='text').map(x=>x.text).join('\n').trim();
@@ -633,11 +653,13 @@ function updateEngineStatus(){ setEngineStatus(local.ready()?t().localReady:(sta
 function fillInfoForm(){
   const s=state.profile.service;
   for(const id of ['serviceFamily','unitGroup','role','rank','responsibilities','dischargeDate','reserveStatus','reserveUnitGroup','reserveServiceSummary']) if($(id)) $(id).value=s[id]||'';
+  if($('reservePeriodsText')) $('reservePeriodsText').value=(s.reservePeriods||[]).join('\n');
   $('preferredSupportStyle').value=state.profile.preferredSupportStyle||'';
 }
 function saveInfo(){
   const s=state.profile.service;
   for(const id of ['serviceFamily','unitGroup','role','rank','responsibilities','dischargeDate','reserveStatus','reserveUnitGroup','reserveServiceSummary']) s[id]=$(id).value.trim?.() ?? $(id).value;
+  s.reservePeriods=$('reservePeriodsText').value.split(/\n|,/).map(x=>x.trim()).filter(Boolean).slice(0,50);
   state.profile.preferredSupportStyle=$('preferredSupportStyle').value.trim(); saveState(); renderMemoryLists(); refreshBanners(); alert(t().saved);
 }
 
@@ -665,10 +687,20 @@ function deleteAll(){
 }
 
 async function refreshKnowledge(){
-  try { const m=INLINE_KNOWLEDGE_MANIFEST; state.knowledge={manifestVersion:m.version,checkedAt:new Date().toISOString(),packages:(m.packages||[]).filter(p=>p.status==='approved')}; saveState(); } catch {}
+  try {
+    const m=await fetch('./data/knowledge-manifest.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('knowledge '+r.status);return r.json();});
+    state.knowledge={manifestVersion:m.version,checkedAt:new Date().toISOString(),packages:(m.packages||[]).filter(p=>p.status==='approved')}; saveState();
+  } catch {
+    const m=INLINE_KNOWLEDGE_MANIFEST; state.knowledge={manifestVersion:m.version,checkedAt:new Date().toISOString(),packages:(m.packages||[]).filter(p=>p.status==='approved')}; saveState();
+  }
 }
 async function refreshBanners(){
-  try { const data=INLINE_BANNERS; state._banners=(data.items||[]).filter(b=>bannerMatches(b,state)); renderBannerHost(); } catch { state._banners=[]; renderBannerHost(); }
+  try {
+    const data=await fetch('./data/banners.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('banners '+r.status);return r.json();});
+    state._banners=(data.items||[]).filter(b=>bannerMatches(b,state)); renderBannerHost();
+  } catch {
+    const data=INLINE_BANNERS; state._banners=(data.items||[]).filter(b=>bannerMatches(b,state)); renderBannerHost();
+  }
 }
 function renderBannerHost(){ const host=$('bannerHost'); host.innerHTML=''; for(const b of state._banners||[]){ if(state.bannersSeen.includes(b.id))continue; const d=document.createElement('div'); d.className='banner'; d.innerHTML='<b>'+escapeHtml(localized(b.title))+'</b><div class="small">'+escapeHtml(localized(b.summary))+'</div>'; d.onclick=()=>{state.bannersSeen.push(b.id);saveState();d.remove();}; host.appendChild(d); } }
 function renderUpdates(){ const list=$('updatesList'); list.innerHTML=''; const items=state._banners||[]; if(!items.length){list.innerHTML='<p class="small">'+t().updateNone+'</p>';return;} for(const b of items){const d=document.createElement('div');d.className='memoryItem';d.innerHTML='<b>'+escapeHtml(localized(b.title))+'</b><div class="tagline">'+escapeHtml(localized(b.summary))+'</div>';list.appendChild(d);} }
