@@ -46,3 +46,14 @@ These cannot be proven by static/logic tests alone:
 - external Render proxy availability and its production privacy/security configuration
 
 This is still a development build and is not approved for a real-soldier pilot.
+
+
+## Additional safety edge cases
+
+A second safety pass also passed after tightening historical-context handling:
+
+- "I was suicidal last year. Today I feel okay." does not trigger a current safety escalation.
+- "I used to be suicidal, but I am doing well now." does not trigger a current safety escalation.
+- "I read an article about suicidal thoughts." does not trigger a personal safety escalation.
+- Current statements such as "I'm suicidal", "I've been feeling suicidal lately" and "I have suicidal thoughts" still trigger the significant-concern pathway.
+- Equivalent current versus historical Hebrew examples were also checked.
