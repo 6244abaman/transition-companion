@@ -66,3 +66,18 @@ A second safety pass also passed after tightening historical-context handling:
 - "I read an article about suicidal thoughts." does not trigger a personal safety escalation.
 - Current statements such as "I'm suicidal", "I've been feeling suicidal lately" and "I have suicidal thoughts" still trigger the significant-concern pathway.
 - Equivalent current versus historical Hebrew examples were also checked.
+
+
+## Practice Mode regression
+
+A real-phone test exposed a fixed fallback response that repeated whenever the local model was not loaded. The fallback was replaced with route-aware guided responses.
+
+Checks now confirm that:
+
+- three consecutive general Practice Mode turns produce different replies
+- career, education, relationships, finance, travel, health, emotional and skills requests receive topic-specific guided responses
+- skills Practice Mode can surface a small candidate set only when service context exists
+- significant safety concerns still use the safety pathway
+- the previously repeated sentence is no longer used as the normal Practice Mode response
+
+The local LLM remains the intended main engine. Practice Mode is now a useful degraded mode rather than a repeated placeholder.
