@@ -613,8 +613,20 @@ function mergeState(base, incoming){
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function t(){ return I18N[state.lang] || I18N.he; }
 
+async function loadSystemPrompt(){
+  try {
+    const res=await fetch('./config/system-prompt.txt',{cache:'no-store'});
+    if(!res.ok) throw new Error('prompt '+res.status);
+    const text=await res.text();
+    if(!text.trim()) throw new Error('empty prompt');
+    return text.trim();
+  } catch {
+    return INLINE_SYSTEM_PROMPT;
+  }
+}
+
 async function init(){
-  systemPrompt = INLINE_SYSTEM_PROMPT;
+  systemPrompt = await loadSystemPrompt();
   bind(); paintLanguage(); restoreConversation(); fillInfoForm(); fillAIForm(); await refreshKnowledge(); await refreshBanners(); updateEngineStatus();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 }
