@@ -795,14 +795,14 @@ function practiceReplyFor(text, safety){
     return {route, memory_updates:{}, reply:t().safetyConcern};
   }
 
-  if(userTurns <= 2){
+  if(userTurns <= 1){
     return {route:'general', memory_updates:{},
       reply:he
         ? 'לא לדעת עדיין מה הצעד הבא הוא נקודת התחלה לגיטימית. במקום לנסות לבחור עכשיו מקצוע או מסלול לכל החיים, אפשר להתחיל מהתקופה הקרובה ולראות מה צריך להתבהר. אם שלושת החודשים הקרובים היו מסתדרים טוב, מה היית רוצה שיהיה שונה בסופם?'
         : "Not knowing the next step yet is a legitimate starting point. Instead of trying to choose a profession or life path immediately, we can start with the next few months and see what needs to become clearer. If the next three months went reasonably well, what would you want to be different by the end of them?"};
   }
 
-  if(userTurns <= 4){
+  if(userTurns <= 2){
     return {route:'general', memory_updates:{},
       reply:he
         ? 'לפעמים קל יותר לזהות כיוון דרך מה שאתה לא רוצה לחזור אליו. זה עוזר להבחין בין צורך במנוחה לבין רצון אמיתי לשנות כיוון. מה אתה יודע שאתה לא רוצה שהחיים האזרחיים שלך ייראו כמו?'
