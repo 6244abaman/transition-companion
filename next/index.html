@@ -338,7 +338,7 @@ function detectTopics(text) {
     ['health', /pain|injury|sleep|exercise|doctor|health|כאב|פציעה|שינה|רופא|בריאות/],
     ['travel', /travel|trip|flight|backpack|טיול|נסיעה|טיסה/],
     ['skills', /skill|skills|what am i good at|civilian skills|יכולת|יכולות|כישורים|מיומנויות/],
-    ['emotional', /lost|angry|sad|stress|anxious|empty|אבוד|כועס|עצוב|לחץ|חרדה|ריק/]
+    ['emotional', /lost|angry|sad|stress|anxious|empty|emotional support|how i am feeling|אבוד|כועס|עצוב|לחץ|חרדה|ריק|תמיכה רגשית|מה שאני מרגיש/]
   ];
   for (const [name,re] of defs) if (re.test(t)) topics.push(name);
   return topics;
