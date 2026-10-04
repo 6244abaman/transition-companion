@@ -1,24 +1,697 @@
 <!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#21695f">
-<title>Transition Companion Next</title>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#1f675c">
+  <title>Transition Companion Next</title>
+  <style>
+    :root{--bg:#f4f8f6;--card:#fff;--ink:#173c37;--muted:#5c706c;--line:#ccddd6;--accent:#21695f;--soft:#e4f1eb;--warn:#955b46;--shadow:0 8px 28px #173c3710;--r:20px;--max:780px}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 5% 0,#e4f2eb,transparent 38%),var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+    button,input,textarea,select{font:inherit}.top{position:sticky;top:0;z-index:5;background:#fffffff2;border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+    .topin{max-width:var(--max);margin:auto;padding:10px 14px;display:flex;gap:8px;align-items:center}.brand{font-weight:800;margin-inline-end:auto}.sub{display:block;font-size:11px;color:var(--muted);font-weight:500}
+    .pill,.icon{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;color:var(--ink)}.pill.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    main{max-width:var(--max);margin:auto;padding:22px 16px 110px}.hero{background:linear-gradient(135deg,#e3f1e8,#fff);border:1px solid var(--line);border-radius:28px;padding:20px;box-shadow:var(--shadow)}
+    .heroRow{display:flex;gap:16px;align-items:center}.hero img{width:104px;height:124px;object-fit:cover;border-radius:20px;border:4px solid #fff}.hero h1{font-size:31px;line-height:1.14;margin:0 0 10px}.hero p{margin:0;color:var(--muted);line-height:1.6}.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.quick button{padding:12px;border:1px solid var(--line);background:#fff;border-radius:14px;color:var(--ink)}
+    .localCard,.banner,.panel{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;box-shadow:var(--shadow)}.localCard h2,.panel h2{font-size:16px;margin:0 0 6px}.small{font-size:13px;color:var(--muted);line-height:1.5}.progress{height:8px;background:#edf1ef;border-radius:999px;overflow:hidden;margin-top:9px}.progress i{display:block;height:100%;width:0;background:var(--accent)}
+    #chat{display:none}.thread{display:flex;flex-direction:column;gap:15px}.msg{max-width:88%;line-height:1.58;white-space:pre-wrap}.msg.assistant{align-self:flex-start;font-size:17px}.msg.user{align-self:flex-end;background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:17px 17px 5px 17px}.msg.system{align-self:center;max-width:100%;font-size:13px;color:var(--muted);background:#eef4f1;padding:8px 12px;border-radius:12px}.skillchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.skillchip{font-size:12px;background:var(--soft);border-radius:999px;padding:5px 8px}
+    .composer{position:fixed;bottom:0;left:0;right:0;background:#fffffff4;border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));backdrop-filter:blur(8px)}.composeIn{max-width:var(--max);margin:auto;display:flex;gap:8px;align-items:flex-end}.composer textarea{flex:1;resize:none;max-height:130px;min-height:46px;border:1px solid var(--line);border-radius:18px;padding:11px;background:#fff;color:var(--ink)}.send{width:46px;height:46px;border-radius:50%;border:0;background:var(--accent);color:#fff}.mic{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff}.status{max-width:var(--max);margin:4px auto 0;text-align:center;font-size:11px;color:var(--muted)}
+    dialog{width:min(620px,94vw);max-height:88vh;border:1px solid var(--line);border-radius:22px;padding:0;color:var(--ink)}dialog::backdrop{background:#173c3766}.dlgHead{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:8px}.dlgHead h2{margin:0;font-size:18px;margin-inline-end:auto}.dlgBody{padding:16px;overflow:auto}.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;color:var(--ink)}.field textarea{min-height:72px}.rows{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:#fff}.actions .danger{color:#7b3427;border-color:#ddb9ad}.memoryList{display:grid;gap:8px}.memoryItem{border:1px solid var(--line);border-radius:12px;padding:10px}.memoryItem b{display:block;font-size:13px}.tagline{font-size:12px;color:var(--muted)}pre{white-space:pre-wrap;word-break:break-word;background:#f6f8f7;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12px}.hide{display:none!important}
+    @media(max-width:560px){.heroRow{align-items:flex-start}.hero img{width:82px;height:100px}.hero h1{font-size:25px}.quick{grid-template-columns:1fr}.rows{grid-template-columns:1fr}.brand{font-size:14px}.topin{gap:5px}.pill{padding:7px 9px;font-size:12px}}
+  </style>
+</head>
 <body>
-<p id="s" style="font:16px system-ui;padding:24px;color:#173c37">Loading Transition Companion Next…</p>
-<script>
-(async()=>{
-  try{
-    const parts=await Promise.all(Array.from({length:10},(_,i)=>
-      fetch(`./.bundle/c${i+1}.txt`,{cache:'no-store'})
-        .then(r=>{if(!r.ok)throw new Error(`part ${i+1}`);return r.text()})
-    ));
-    const bin=atob(parts.join('').trim());
-    const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
-    const html=new TextDecoder().decode(bytes);
-    document.open();document.write(html);document.close();
-  }catch(e){
-    document.getElementById('s').textContent='Could not load Transition Companion Next. '+e.message;
+<header class="top"><div class="topin">
+  <div class="brand" id="brand">Transition Companion Next<span class="sub" id="brandSub">Local-first development build</span></div>
+  <button class="pill" id="btnInfo">המידע שלי</button>
+  <button class="pill" id="btnUpdates">עדכונים</button>
+  <button class="pill" id="btnLang">English</button>
+</div></header>
+<main>
+  <section id="welcome">
+    <div class="hero">
+      <div class="heroRow"><img src="../companion-mentor.jpeg" alt=""><div><h1 id="welcomeTitle">תודה על השירות שלך.</h1><p id="welcomeText">המערכת הזו נבנתה כדי ללכת איתך בתקופה שאחרי הצבא — לחשוב, לתכנן, לקבל החלטות ולבנות את הצעד הבא בקצב שלך. איך אתה מרגיש, ומה הכי חשוב לך עכשיו?</p></div></div>
+      <div class="quick"><button id="quickUnsure">אני לא יודע מה הלאה</button><button id="quickWork">עבודה וקריירה</button><button id="quickAsk">יש לי שאלה</button></div>
+    </div>
+    <div class="localCard">
+      <h2 id="localTitle">AI מקומי על הטלפון</h2>
+      <div class="small" id="localText">אפשר להוריד מודל קטן שמריץ את רוב השיחות על המכשיר. ברירת המחדל היא מודל 3B בערך 2.3GB זיכרון GPU; במכשירים חלשים יותר האפליקציה בוחרת מודל 1B.</div>
+      <div class="actions"><button class="pill primary" id="btnLoadLocal">הורד והפעל AI מקומי</button><button class="pill" id="btnAISettings">הגדרות AI ופרטיות</button></div>
+      <div class="progress"><i id="localProgress"></i></div><div class="small" id="localStatus">טרם נטען מודל מקומי.</div>
+    </div>
+    <div id="bannerHost"></div>
+  </section>
+  <section id="chat"><div class="thread" id="thread"></div></section>
+</main>
+<div class="composer hide" id="composer"><div class="composeIn"><button class="mic" id="btnMic" aria-label="Speak">🎙️</button><textarea id="input" rows="1" placeholder="כתוב כאן..."></textarea><button class="send" id="btnSend" aria-label="Send">➤</button></div><div class="status" id="engineStatus">מצב תרגול עד שה-AI המקומי מוכן</div></div>
+
+<dialog id="infoDialog"><div class="dlgHead"><h2 id="infoTitle">המידע שלי</h2><button class="pill" data-close="infoDialog">✕</button></div><div class="dlgBody">
+  <p class="small" id="infoIntro">המידע המפורט נשמר במכשיר שלך בדפדפן הזה. אפשר לתקן, לייצא או למחוק אותו.</p>
+  <div class="rows"><div class="field"><label id="labFamily">סוג שירות / חיל</label><input id="serviceFamily"></div><div class="field"><label id="labGroup">יחידה / קבוצה</label><input id="unitGroup"></div></div>
+  <div class="rows"><div class="field"><label id="labRole">תפקיד</label><input id="role"></div><div class="field"><label id="labRank">דרגה</label><input id="rank"></div></div>
+  <div class="field"><label id="labResp">אחריות וניסיון מרכזי</label><textarea id="responsibilities"></textarea></div>
+  <div class="rows"><div class="field"><label id="labDischarge">תאריך שחרור מסדיר</label><input id="dischargeDate" type="date"></div><div class="field"><label id="labReserve">שירות מילואים</label><select id="reserveStatus"><option value="">—</option><option value="active">פעיל</option><option value="occasional">מדי פעם</option><option value="not-current">לא כיום</option></select></div></div>
+  <div class="field"><label id="labReserveGroup">יחידת / קבוצת מילואים</label><input id="reserveUnitGroup"></div>
+  <div class="field"><label id="labReserveSummary">תקופות מילואים, ימים ותפקידים</label><textarea id="reserveServiceSummary"></textarea></div>
+  <div class="field"><label id="labStyle">איך נוח לי שהמערכת תעזור</label><input id="preferredSupportStyle"></div>
+  <div class="actions"><button class="pill primary" id="btnSaveInfo">שמור</button><button id="btnExport">ייצא את המידע</button><button class="danger" id="btnDelete">מחק את כל המידע</button></div>
+  <h3 id="skillsHeading">מיומנויות וניסיון שאושרו</h3><div class="memoryList" id="skillsList"></div>
+  <h3 id="goalsHeading">מטרות והתחייבויות</h3><div class="memoryList" id="goalsList"></div>
+</div></dialog>
+
+<dialog id="aiDialog"><div class="dlgHead"><h2 id="aiTitle">AI ופרטיות</h2><button class="pill" data-close="aiDialog">✕</button></div><div class="dlgBody">
+  <div class="field"><label id="labLocalModel">מודל מקומי</label><select id="localModel"><option value="auto">אוטומטי</option><option value="standard">3B — רגיל</option><option value="light">1B — קל</option></select></div>
+  <label><input type="checkbox" id="cloudFallback"> אפשר להשתמש ב-AI חיצוני כאשר המקומי אינו זמין</label>
+  <p class="small" id="cloudExplain">לפני שליחה ל-AI חיצוני תוצג לך בדיוק השאלה וההקשר שנבחרו. ההיסטוריה המלאה אינה נשלחת אוטומטית.</p>
+  <div class="actions"><button class="pill primary" id="btnSaveAI">שמור הגדרות</button></div>
+  <hr><div class="small" id="deviceInfo"></div>
+</div></dialog>
+
+<dialog id="updatesDialog"><div class="dlgHead"><h2 id="updatesTitle">עדכונים</h2><button class="pill" data-close="updatesDialog">✕</button></div><div class="dlgBody"><p class="small" id="updatesIntro">הטלפון יכול לקבל ידע מאושר והודעות לקבוצות בלי לשלוח את השיחות הפרטיות שלך חזרה למומנטום.</p><div id="updatesList"></div></div></dialog>
+
+<dialog id="shareDialog"><div class="dlgHead"><h2 id="shareTitle">לפני שליחה ל-AI חיצוני</h2></div><div class="dlgBody"><p class="small" id="shareIntro">זה המידע שייצא מהמכשיר:</p><pre id="sharePreview"></pre><div class="actions"><button class="pill primary" id="shareApprove">שלח</button><button id="shareCancel">בטל</button></div></div></dialog>
+
+<script type="module">
+
+const INLINE_SYSTEM_PROMPT="You are the Guided Transition Companion for Israeli soldiers moving from military service into civilian life.\n\nMISSION\nBegin from gratitude and respect for service. Be a long-term companion that helps the person think, plan, decide, act, and learn across work, education, money, relationships, physical health, emotional adjustment, travel, identity, aspirations, and practical civilian life.\n\nPERSONALITY\nWarm, calm, intelligent, direct, practical, respectful, non-patronizing, curious, and comfortable with uncertainty. Do not flatter. Do not sound bureaucratic, clinical, or like a scripted questionnaire.\n\nCONVERSATION\n- Give a useful answer before asking the next question.\n- Ask only one useful question at a time unless the user explicitly wants a checklist.\n- Do not repeatedly restart intake.\n- Use prior context naturally.\n- Support autonomy: the user can skip, correct, change topic, or say they do not want to discuss something.\n- Integrate CBT, ACT, motivational interviewing, positive psychology, solution-focused practice, and trauma-informed reasoning invisibly when useful.\n- Do not diagnose PTSD or other disorders from conversation.\n- Do not pathologize normal transition stress.\n- Ordinary sadness, anger, confusion, relationship difficulty, or feeling lost should not automatically trigger emergency language.\n\nSERVICE, SKILLS, AND EXPERIENCE\nThe system has a 63-skill Momentum library. It is an internal discovery framework, not a checklist to keep showing the user.\n- Unit, role, rank, service family, reserve service, and responsibilities may suggest possible skills but never prove them.\n- Ask the person to confirm or reject suggested skills.\n- A skill becomes confirmed only when the user gives a concrete non-sensitive example.\n- Once confirmed, reason mainly from the individual's Skills & Experience Profile rather than repeatedly referring to the 63-skill taxonomy.\n- Remove operational, classified, identifying, or unnecessary military detail from civilian translations.\n\nMEMORY\nSave only information likely to improve future help: stable preferences, goals, decisions, commitments, confirmed strengths, important relationships, meaningful constraints, user corrections, and long-term aspirations. Do not save every sentence. Corrections supersede old interpretations.\n\nPRIVACY\nThe detailed Personal Map and memory are local-first. Do not ask the user to share unnecessary sensitive information. Do not imply that Momentum centrally stores or sees the person's conversations. When outside AI or live services are needed, use only the minimum context required and preserve user control.\n\nFACTUAL INFORMATION\nDistinguish reflective/coaching reasoning, personalized memory, reviewed local knowledge, and live/current external information. Do not invent benefit amounts, rights, deadlines, eligibility, emergency contacts, or government facts. If reviewed/current information is unavailable, say so.\n\nSAFETY\nTake credible immediate danger to self or others seriously. In immediate danger, prioritize staying safe, being with a trusted person if possible, and contacting verified emergency/professional help. Never claim anyone was contacted unless the system actually did so. Do not use emergency-style responses merely because someone discusses trauma, sadness, anger, or difficulty.\n\nLANGUAGE\nReply in the user's current language. Hebrew should sound natural, not mechanically translated. Keep voice-mode replies shorter.\n\nOUTPUT\nReturn JSON only, without markdown fences, using this shape:\n{\n  \"reply\": \"natural user-facing response\",\n  \"route\": \"general|career|education|jobs|relationships|finance|health|travel|emotional|skills|safety|accountability\",\n  \"memory_updates\": {\n    \"values\": [],\n    \"interests\": [],\n    \"currentConcerns\": [],\n    \"service\": {},\n    \"goals\": {\"immediate\":[],\"day30\":[],\"day90\":[],\"month12\":[],\"longTerm\":[]},\n    \"decisions\": [],\n    \"commitments\": [],\n    \"lessons\": [],\n    \"corrections\": [],\n    \"confirmedSkills\": []\n  },\n  \"candidate_skills\": [{\"id\": 1, \"why\": \"short reason\"}],\n  \"safety_level\": 0\n}\nOmit empty optional arrays/objects where possible. candidate_skills should be a small set and only when genuinely useful. confirmedSkills entries require id, evidence, and level 1-4. safety_level is not a diagnosis.\n";
+const INLINE_KNOWLEDGE_MANIFEST={
+  "version": "2026-10-04.1",
+  "packages": [],
+  "note": "No Israeli rights, benefits, deadlines, emergency contacts or other volatile factual packages are activated until they have verified sources and review metadata."
+};
+const INLINE_BANNERS={
+  "version": "2026-10-04.1",
+  "items": []
+};
+const SKILLS63 = [
+  [1,'Mission & Execution','Finishing the Job','Delivery ownership and reliable follow-through'],
+  [2,'Mission & Execution','Work Under Pressure','Performance under time, safety, or workload pressure'],
+  [3,'Mission & Execution','Completing Tasks','Completing tasks'],
+  [4,'Mission & Execution','Planning','Planning'],
+  [5,'Mission & Execution','Time Management','Time management'],
+  [6,'Mission & Execution','Quick Reaction — 0 to 100','Rapid mobilization and incident response'],
+  [7,'Mission & Execution','Improvise','Resourceful adaptation within constraints'],
+  [8,'Mission & Execution','Administration Skills','Administration skills'],
+  [9,'Mission & Execution','Technological Know-How','Technological know-how'],
+  [10,'Mission & Execution','Work in Harsh Conditions','Work in harsh conditions'],
+  [11,'Mission & Execution','Prioritize','Prioritization'],
+  [12,'Mission & Execution','Take Risks','Calculated risk assessment and action'],
+  [13,'Mission & Execution','Work with Systems','Work with systems'],
+  [14,'Mission & Execution','Leading Processes','Leading processes'],
+  [15,'Mission & Execution','Operate Independently','Operate independently'],
+  [16,'Leadership & People','Leadership','Leadership'],
+  [17,'Leadership & People','Teamwork','Teamwork'],
+  [18,'Leadership & People','Leading People','Leading people'],
+  [19,'Leadership & People','Teaching Skills','Teaching skills'],
+  [20,'Leadership & People','Getting Friends','Rapport building and relationship development'],
+  [21,'Leadership & People','Work with Different People','Work with different people'],
+  [22,'Leadership & People','Contribute to Others','Contribute to others'],
+  [23,'Leadership & People','Customer Service Skills','Customer service skills'],
+  [24,'Leadership & People','Organize & Manage','Organize and manage'],
+  [25,'Leadership & People','Discipline','Discipline'],
+  [26,'Resilience & Mindset','Resilience','Resilience'],
+  [27,'Resilience & Mindset','Emotional Regulation','Emotional regulation'],
+  [28,'Resilience & Mindset','Dealing with Failures','Dealing with failures'],
+  [29,'Resilience & Mindset','Dealing with Fears','Dealing with fears'],
+  [30,'Resilience & Mindset','Dealing with Challenges','Dealing with challenges'],
+  [31,'Resilience & Mindset','Hakol Barosh','Mental readiness: preparation, self-belief, and constructive framing'],
+  [32,'Resilience & Mindset','Dealing with Frustrations','Dealing with frustrations'],
+  [33,'Resilience & Mindset','Coping with Stress','Coping with stress'],
+  [34,'Resilience & Mindset','Deal with Loss','Deal with loss'],
+  [35,'Resilience & Mindset','Cope with Uncertainties','Cope with uncertainties'],
+  [36,'Resilience & Mindset','Feeling of Success','Feeling of success'],
+  [37,'Resilience & Mindset','Being Alone','Being alone'],
+  [38,'Thinking & Problem Solving','Decision Making','Decision making'],
+  [39,'Thinking & Problem Solving','Problem Solving','Problem solving'],
+  [40,'Thinking & Problem Solving','Think Out of the Box','Think out of the box'],
+  [41,'Thinking & Problem Solving','Seizing Opportunities','Seizing opportunities'],
+  [42,'Thinking & Problem Solving','Intuition','Intuition'],
+  [43,'Thinking & Problem Solving','Adapt to Change','Adapt to change'],
+  [44,'Thinking & Problem Solving','Insistence','Constructive assertiveness and follow-through'],
+  [45,'Thinking & Problem Solving','Everything Possible Mindset','Solution orientation and disciplined optimism'],
+  [46,'Thinking & Problem Solving','Thinking Big','Thinking big'],
+  [47,'Thinking & Problem Solving','Flexibility','Flexibility'],
+  [48,'Character & Values','Trustworthy','Trustworthy'],
+  [49,'Character & Values','Hard Work','Hard work'],
+  [50,'Character & Values','High Work Ethics','High work ethics'],
+  [51,'Character & Values','Responsibility','Responsibility'],
+  [52,'Character & Values','Passion','Passion'],
+  [53,'Character & Values','Work for Meaning','Work for meaning'],
+  [54,'Character & Values','Devotion','Devotion'],
+  [55,'Character & Values','Professionalism','Professionalism'],
+  [56,'Character & Values','Determination','Determination'],
+  [57,'Character & Values','Care & Giving','Care and giving'],
+  [58,'Social & Communication','Communication & Expression','Communication and expression'],
+  [59,'Social & Communication','Creativity','Creativity'],
+  [60,'Social & Communication','Appreciate Small Things','Appreciate small things'],
+  [61,'Social & Communication','Get Rid of Judgment','Non-judgmental listening and perspective taking'],
+  [62,'Social & Communication','To Persist','Sustained effort through obstacles'],
+  [63,'Social & Communication','Professionalism','Professionalism']
+];
+
+const skillById = id => SKILLS63.find(s => s[0] === Number(id));
+
+
+const APP_VERSION = 'next-stage2-0.1.0';
+const MEMORY_SCHEMA_VERSION = '1.0';
+const SAFETY_VERSION = '0.1-review-required';
+const ROUTER_VERSION = '0.1';
+
+function defaultState() {
+  return {
+    version: APP_VERSION,
+    lang: 'he',
+    messages: [],
+    profile: {
+      values: [], interests: [], educationHistory: [], importantRelationships: [],
+      preferredSupportStyle: '', currentConcerns: [],
+      service: {
+        serviceFamily: '', unitGroup: '', role: '', rank: '', responsibilities: '',
+        training: '', dischargeDate: '', reserveStatus: '', reserveUnitGroup: '',
+        reserveServiceSummary: '', reservePeriods: []
+      },
+      skills: [],
+      goals: { immediate: [], day30: [], day90: [], month12: [], longTerm: [] },
+      decisions: [], commitments: [], lessons: [], corrections: []
+    },
+    settings: {
+      aiMode: 'local-first', localModel: 'auto', cloudFallback: false,
+      speakReplies: false, voiceInput: true
+    },
+    knowledge: { manifestVersion: null, checkedAt: null, packages: [] },
+    bannersSeen: [],
+    safetyEvents: []
+  };
+}
+
+function dischargeCohort(dateString) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString || '')) return '';
+  return dateString.slice(0, 7);
+}
+
+function targetingTags(state) {
+  const s = state.profile?.service || {};
+  const tags = new Set();
+  if (state.lang) tags.add('lang:' + state.lang);
+  if (s.serviceFamily) tags.add('service:' + normalizeTag(s.serviceFamily));
+  if (s.unitGroup) tags.add('group:' + normalizeTag(s.unitGroup));
+  if (s.reserveStatus) tags.add('reserve:' + normalizeTag(s.reserveStatus));
+  const cohort = dischargeCohort(s.dischargeDate);
+  if (cohort) tags.add('discharge:' + cohort);
+  return [...tags];
+}
+
+function normalizeTag(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\p{L}\p{N}:_-]/gu, '');
+}
+
+function bannerMatches(banner, state) {
+  if (!banner || banner.active === false) return false;
+  const required = banner.tags || [];
+  if (!required.length) return true;
+  const have = new Set(targetingTags(state));
+  return required.some(t => have.has(String(t).toLowerCase()));
+}
+
+function classifySafety(text) {
+  const t = String(text || '').trim().toLowerCase();
+  if (!t) return { level: 0, reason: 'empty' };
+
+  const immediate = [
+    /\b(i am|i'm|im) going to (kill|hurt) myself\b/i,
+    /\b(i will|i'm going to|i am going to) (kill|hurt) (him|her|them|someone)\b/i,
+    /\bi have (a )?(gun|knife|weapon|pills).*\b(kill|hurt)\b/i,
+    /אני (הולך|עומד) (להתאבד|לפגוע בעצמי)/,
+    /אני (הולך|עומד) (להרוג|לפגוע ב).+/
+  ];
+  if (immediate.some(r => r.test(t))) return { level: 4, reason: 'credible immediate-harm language' };
+
+  const significant = [
+    /\bwant to die\b/i, /\bsuicidal\b/i, /\bhurt myself\b/i,
+    /\bkill someone\b/i, /\bcan't keep myself safe\b/i,
+    /רוצה למות/, /מחשבות אובדניות/, /לפגוע בעצמי/, /להרוג מישהו/
+  ];
+  if (significant.some(r => r.test(t))) return { level: 3, reason: 'significant safety concern' };
+
+  const distress = [
+    /\bhopeless\b/i, /\bnot functioning\b/i, /\bcan't function\b/i,
+    /\bpanic\b/i, /\bnot sleeping for (days|several days)\b/i,
+    /חסר תקווה/, /לא מתפקד/, /פאניקה/, /לא ישן כמה ימים/
+  ];
+  if (distress.some(r => r.test(t))) return { level: 2, reason: 'meaningful distress' };
+
+  return { level: 0, reason: 'no explicit safety trigger' };
+}
+
+function routeMessage(text) {
+  const t = String(text || '').toLowerCase();
+  const routes = [
+    ['safety', [/suicid|hurt myself|kill myself|kill someone|לפגוע בעצמי|להתאבד|להרוג/]],
+    ['career', [/job|career|work|cv|resume|interview|עבודה|קריירה|קורות חיים|ראיון/]],
+    ['education', [/study|university|college|degree|psychometric|לימודים|אוניברסיטה|תואר|פסיכומטרי/]],
+    ['relationships', [/girlfriend|boyfriend|wife|husband|partner|relationship|family|חברה|חבר|אשתי|בעלי|זוגיות|משפחה/]],
+    ['finance', [/money|debt|budget|salary|benefit|grant|כסף|חוב|תקציב|שכר|מענק|זכויות/]],
+    ['health', [/pain|injury|sleep|exercise|doctor|health|כאב|פציעה|שינה|רופא|בריאות/]],
+    ['travel', [/travel|trip|flight|backpack|טיול|נסיעה|טיסה/]],
+    ['skills', [/skill|skills|what am i good at|civilian skills|יכולת|יכולות|כישורים|מיומנויות/]],
+    ['emotional', [/lost|angry|sad|stress|anxious|empty|אבוד|כועס|עצוב|לחץ|חרדה|ריק/]]
+  ];
+  for (const [name, pats] of routes) if (pats.some(r => r.test(t))) return name;
+  return 'general';
+}
+
+const ROLE_HINTS = [
+  { re:/commander|officer|squad|מפקד|קצין|מכ|מ"כ|ממ|מ"מ/i, ids:[16,18,19,24,38,51,58] },
+  { re:/combat|infantry|fighter|לוחם|חי"ר|קרבי/i, ids:[2,6,17,26,33,35,43,51] },
+  { re:/tank|armor|armored|שריון|טנק/i, ids:[2,6,10,13,17,33,38] },
+  { re:/medic|paramedic|חובש|רפוא/i, ids:[2,6,27,38,51,57] },
+  { re:/intel|intelligence|analyst|מודיעין|אנליסט/i, ids:[9,11,13,15,39,42,48] },
+  { re:/cyber|software|developer|code|סייבר|תוכנה|מפתח/i, ids:[9,13,15,39,40,46] },
+  { re:/logistic|supply|transport|לוגיסט|אפסנ|תובלה/i, ids:[4,5,8,11,13,24,51] },
+  { re:/instructor|trainer|teacher|מדריך|הדרכה/i, ids:[19,21,22,24,58] },
+  { re:/reserve|reservist|מילואים/i, ids:[2,17,35,43,47,51] }
+];
+
+function suggestCandidateSkills(serviceText, confirmedIds = [], limit = 5) {
+  const scores = new Map();
+  for (const h of ROLE_HINTS) {
+    if (h.re.test(serviceText || '')) {
+      for (const id of h.ids) scores.set(id, (scores.get(id) || 0) + 1);
+    }
   }
-})();
+  const confirmed = new Set((confirmedIds || []).map(Number));
+  return [...scores.entries()]
+    .filter(([id]) => !confirmed.has(id))
+    .sort((a,b) => b[1]-a[1] || a[0]-b[0])
+    .slice(0, limit)
+    .map(([id, score]) => {
+      const s = skillById(id);
+      return { id, score, name: s?.[2] || String(id), civilian: s?.[3] || '' };
+    });
+}
+
+function applyMemoryUpdates(state, updates = {}) {
+  const next = structuredCloneSafe(state);
+  const p = next.profile;
+  const pushUnique = (arr, value) => {
+    const v = typeof value === 'string' ? value.trim() : value;
+    if (!v) return;
+    if (!arr.some(x => JSON.stringify(x) === JSON.stringify(v))) arr.push(v);
+  };
+
+  for (const v of updates.values || []) pushUnique(p.values, v);
+  for (const v of updates.interests || []) pushUnique(p.interests, v);
+  for (const v of updates.currentConcerns || []) pushUnique(p.currentConcerns, v);
+  for (const v of updates.decisions || []) pushUnique(p.decisions, v);
+  for (const v of updates.lessons || []) pushUnique(p.lessons, v);
+  for (const v of updates.corrections || []) pushUnique(p.corrections, v);
+
+  if (updates.service && typeof updates.service === 'object') {
+    for (const [k,v] of Object.entries(updates.service)) {
+      if (k in p.service && typeof v === 'string' && v.trim()) p.service[k] = v.trim();
+    }
+  }
+
+  const goalBuckets = ['immediate','day30','day90','month12','longTerm'];
+  for (const bucket of goalBuckets) for (const v of updates.goals?.[bucket] || []) pushUnique(p.goals[bucket], v);
+
+  for (const c of updates.commitments || []) {
+    if (!c || !c.action) continue;
+    const item = { action:String(c.action).trim(), why:c.why || '', targetDate:c.targetDate || '', status:c.status || 'planned' };
+    if (!p.commitments.some(x => x.action === item.action && x.status !== 'completed')) p.commitments.push(item);
+  }
+
+  for (const s of updates.confirmedSkills || []) {
+    const id = Number(s.id);
+    if (!skillById(id) || !String(s.evidence || '').trim()) continue;
+    const existing = p.skills.find(x => x.id === id);
+    const item = { id, evidence:String(s.evidence).trim(), level:Math.max(1, Math.min(4, Number(s.level) || 1)), confirmedAt:new Date().toISOString() };
+    if (existing) Object.assign(existing, item); else p.skills.push(item);
+  }
+  return next;
+}
+
+function structuredCloneSafe(value) {
+  if (typeof structuredClone === 'function') return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
+function compactContext(state) {
+  const p = state.profile;
+  return {
+    language: state.lang,
+    service: p.service,
+    confirmedSkills: p.skills.map(x => ({ id:x.id, evidence:x.evidence, level:x.level })),
+    goals: p.goals,
+    decisions: p.decisions.slice(-8),
+    commitments: p.commitments.filter(x => x.status !== 'completed').slice(-8),
+    values: p.values.slice(-8),
+    interests: p.interests.slice(-8),
+    currentConcerns: p.currentConcerns.slice(-8),
+    preferredSupportStyle: p.preferredSupportStyle
+  };
+}
+
+
+const MODELS = {
+  standard: {
+    id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+    label: 'Local Standard (3B)',
+    approxVramMb: 2264
+  },
+  light: {
+    id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+    label: 'Local Light (1B)',
+    approxVramMb: 879
+  }
+};
+
+class LocalLLM {
+  constructor(onProgress = () => {}) {
+    this.engine = null;
+    this.model = null;
+    this.onProgress = onProgress;
+  }
+
+  static supported() {
+    return typeof navigator !== 'undefined' && !!navigator.gpu;
+  }
+
+  static models() { return MODELS; }
+
+  static recommended(setting = 'auto') {
+    if (setting === 'standard' || setting === 'light') return MODELS[setting];
+    const mem = Number(navigator?.deviceMemory || 0);
+    return mem >= 8 ? MODELS.standard : MODELS.light;
+  }
+
+  async load(setting = 'auto') {
+    if (!LocalLLM.supported()) throw new Error('WebGPU is not available in this browser.');
+    const chosen = LocalLLM.recommended(setting);
+    this.onProgress({ text: 'Loading ' + chosen.label + '…', progress: 0 });
+    const webllm = await import('https://esm.run/@mlc-ai/web-llm@0.2.85');
+    this.engine = await webllm.CreateMLCEngine(chosen.id, {
+      initProgressCallback: report => this.onProgress({
+        text: report.text || 'Downloading local AI…',
+        progress: Number(report.progress || 0)
+      })
+    });
+    this.model = chosen;
+    this.onProgress({ text: chosen.label + ' ready on this device.', progress: 1 });
+    return chosen;
+  }
+
+  ready() { return !!this.engine; }
+
+  async chat({ system, messages, maxTokens = 700 }) {
+    if (!this.engine) throw new Error('Local model is not loaded.');
+    const full = [{ role:'system', content:system }, ...messages];
+    let response;
+    try {
+      response = await this.engine.chat.completions.create({
+        messages: full,
+        temperature: 0.35,
+        max_tokens: maxTokens,
+        response_format: { type:'json_object' }
+      });
+    } catch (e) {
+      response = await this.engine.chat.completions.create({
+        messages: full,
+        temperature: 0.35,
+        max_tokens: maxTokens
+      });
+    }
+    return response?.choices?.[0]?.message?.content || '';
+  }
+}
+
+
+const STORAGE_KEY = 'transition_companion_next_state_v1';
+const CLOUD_API_URL = 'https://momentum-proxy.onrender.com/api';
+const CLOUD_MODEL = 'claude-sonnet-4-6';
+
+const I18N = {
+  he: {
+    dir:'rtl', other:'English', info:'המידע שלי', updates:'עדכונים',
+    welcomeTitle:'תודה על השירות שלך.',
+    welcomeText:'המערכת הזו נבנתה כדי ללכת איתך בתקופה שאחרי הצבא — לחשוב, לתכנן, לקבל החלטות ולבנות את הצעד הבא בקצב שלך. איך אתה מרגיש, ומה הכי חשוב לך עכשיו?',
+    q1:'אני לא יודע מה הלאה', q2:'עבודה וקריירה', q3:'יש לי שאלה',
+    localTitle:'AI מקומי על הטלפון',
+    localText:'אפשר להוריד מודל קטן שמריץ את רוב השיחות על המכשיר. ברירת המחדל היא מודל 3B בערך 2.3GB זיכרון GPU; במכשירים חלשים יותר האפליקציה בוחרת מודל 1B.',
+    load:'הורד והפעל AI מקומי', aiSettings:'הגדרות AI ופרטיות',
+    modelNotLoaded:'טרם נטען מודל מקומי.', input:'כתוב כאן...', practice:'מצב תרגול עד שה-AI המקומי מוכן',
+    opening:'תודה על השירות שלך. אני כאן כדי לעזור לך לחשוב על מה שבא עכשיו — בלי שאלון ארוך ובלי לחץ לדעת הכול מראש. איך אתה מרגיש כרגע, ומה הדבר שהכי היית רוצה עזרה איתו?',
+    thinking:'חושב…', localReady:'AI מקומי פעיל על המכשיר', cloudReady:'AI חיצוני לפי אישור', practiceReady:'מצב תרגול',
+    practiceReply:'אני יכול לעזור להתחיל לעשות סדר גם לפני שהמודל המקומי נטען. הדבר הכי מועיל עכשיו הוא לבחור נושא אחד שחשוב לך באמת — עבודה, לימודים, כסף, קשרים, נסיעה, או פשוט להבין מה אתה רוצה. מה מרגיש הכי דחוף השבוע?',
+    safetyImmediate:'מה שכתבת נשמע כמו מצב שדורש עזרה מיידית בעולם האמיתי. אם יש סכנה קרובה לך או למישהו אחר, אל תישאר לבד עם זה — עבור למקום בטוח ככל האפשר, פנה עכשיו לאדם שאתה סומך עליו שיכול להיות איתך פיזית, ופנה לשירות חירום או גורם מקצועי מאומת באזור שלך. אני אשאר איתך בשיחה, אבל איני יכול להזעיק עזרה בעצמי. האם אתה בסכנה מיידית עכשיו?',
+    safetyConcern:'זה נשמע מעבר ללחץ רגיל של מעבר לאזרחות. כדאי שנמשיך לדבר, ובמקביל יהיה נכון לערב אדם מקצועי או אדם קרוב שאפשר לסמוך עליו. האם יש כרגע סכנה מיידית שאתה עלול לפגוע בעצמך או במישהו אחר?',
+    saved:'נשמר במכשיר.', deleted:'המידע המקומי נמחק.', cloudDenied:'לא נשלח דבר ל-AI חיצוני.',
+    noWebGPU:'הדפדפן הזה לא תומך כרגע ב-WebGPU. אפשר להשתמש במצב תרגול או, באישור, ב-AI חיצוני.',
+    updateNone:'אין כרגע הודעות חדשות המתאימות לקבוצה שלך.',
+    infoIntro:'המידע המפורט נשמר במכשיר שלך בדפדפן הזה. אפשר לתקן, לייצא או למחוק אותו.',
+    send:'שלח', cancel:'בטל'
+  },
+  en: {
+    dir:'ltr', other:'עברית', info:'My information', updates:'Updates',
+    welcomeTitle:'Thank you for your service.',
+    welcomeText:'This was built to stay with you through the move into civilian life — to think, plan, make decisions and take the next step at your pace. How are you doing, and what feels most important right now?',
+    q1:"I don't know what's next", q2:'Work & career', q3:'I have a question',
+    localTitle:'Local AI on your phone',
+    localText:'You can download a small model that runs most conversations on the device. The default is a 3B model using about 2.3 GB of GPU memory; lower-resource phones can use a 1B model.',
+    load:'Download & start local AI', aiSettings:'AI & privacy settings',
+    modelNotLoaded:'Local model not loaded yet.', input:'Write here...', practice:'Practice mode until local AI is ready',
+    opening:"Thank you for your service. I'm here to help you think through what comes next — without a long intake form and without pressure to know everything now. How are you doing, and what would you most like help with right now?",
+    thinking:'Thinking…', localReady:'Local AI active on this device', cloudReady:'External AI only with approval', practiceReady:'Practice mode',
+    practiceReply:"I can still help you start organizing things before the local model is loaded. The most useful move is to choose one area that matters right now — work, study, money, relationships, travel, or simply figuring out what you want. What feels most urgent this week?",
+    safetyImmediate:"What you wrote sounds like a situation that needs immediate real-world help. If there is near-term danger to you or someone else, move to a safer place if you can, contact someone you trust who can physically be with you, and contact a verified local emergency or professional service now. I can stay with you in the conversation, but I cannot call anyone for you. Are you in immediate danger right now?",
+    safetyConcern:"This sounds more serious than ordinary transition stress. We can keep talking, and it would also be wise to involve a professional or a trusted person. Is there an immediate risk that you might hurt yourself or someone else right now?",
+    saved:'Saved on this device.', deleted:'Local information deleted.', cloudDenied:'Nothing was sent to external AI.',
+    noWebGPU:'This browser does not currently support WebGPU. You can use Practice Mode or, with approval, external AI.',
+    updateNone:'There are no new messages that match your group right now.',
+    infoIntro:'Detailed information is stored on this device in this browser. You can correct, export, or delete it.',
+    send:'Send', cancel:'Cancel'
+  }
+};
+
+let state = loadState();
+let systemPrompt = '';
+let local = new LocalLLM(onLocalProgress);
+let shareResolver = null;
+let recognition = null;
+let listening = false;
+
+const $ = id => document.getElementById(id);
+
+function loadState(){
+  try { return Object.assign(defaultState(), JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); }
+  catch { return defaultState(); }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function t(){ return I18N[state.lang] || I18N.he; }
+
+async function init(){
+  systemPrompt = INLINE_SYSTEM_PROMPT;
+  bind(); paintLanguage(); restoreConversation(); fillInfoForm(); fillAIForm(); await refreshKnowledge(); await refreshBanners(); updateEngineStatus();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+}
+
+function bind(){
+  $('btnLang').onclick = () => { state.lang = state.lang === 'he' ? 'en' : 'he'; saveState(); paintLanguage(); renderThread(); };
+  $('btnInfo').onclick = () => { fillInfoForm(); renderMemoryLists(); $('infoDialog').showModal(); };
+  $('btnUpdates').onclick = () => { renderUpdates(); $('updatesDialog').showModal(); };
+  $('btnAISettings').onclick = () => { fillAIForm(); $('aiDialog').showModal(); };
+  document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => $(b.dataset.close).close());
+  $('btnLoadLocal').onclick = loadLocal;
+  $('btnSaveInfo').onclick = saveInfo;
+  $('btnSaveAI').onclick = saveAI;
+  $('btnExport').onclick = exportData;
+  $('btnDelete').onclick = deleteAll;
+  $('btnSend').onclick = () => sendUser($('input').value);
+  $('input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendUser(e.target.value); } });
+  $('input').addEventListener('input', e => { e.target.style.height='auto'; e.target.style.height=Math.min(130,e.target.scrollHeight)+'px'; });
+  $('quickUnsure').onclick = () => startChat(state.lang==='he'?'אני לא יודע מה אני רוצה לעשות הלאה.':"I don't know what I want to do next.");
+  $('quickWork').onclick = () => startChat(state.lang==='he'?'אני רוצה לחשוב על עבודה וקריירה.':'I want to think about work and career.');
+  $('quickAsk').onclick = () => startChat(state.lang==='he'?'יש לי שאלה.':'I have a question.');
+  $('btnMic').onclick = toggleMic;
+  $('shareApprove').onclick = () => finishShare(true);
+  $('shareCancel').onclick = () => finishShare(false);
+}
+
+function paintLanguage(){
+  const x=t(); document.documentElement.lang=state.lang; document.documentElement.dir=x.dir;
+  $('btnLang').textContent=x.other; $('btnInfo').textContent=x.info; $('btnUpdates').textContent=x.updates;
+  $('welcomeTitle').textContent=x.welcomeTitle; $('welcomeText').textContent=x.welcomeText;
+  $('quickUnsure').textContent=x.q1; $('quickWork').textContent=x.q2; $('quickAsk').textContent=x.q3;
+  $('localTitle').textContent=x.localTitle; $('localText').textContent=x.localText; $('btnLoadLocal').textContent=x.load; $('btnAISettings').textContent=x.aiSettings;
+  $('input').placeholder=x.input; $('infoIntro').textContent=x.infoIntro;
+  if (!local.ready()) $('localStatus').textContent=x.modelNotLoaded;
+  updateEngineStatus(); fillInfoForm(); fillAIForm();
+}
+
+function startChat(seed=''){
+  $('welcome').classList.add('hide'); $('chat').style.display='block'; $('composer').classList.remove('hide');
+  if (!state.messages.length) { state.messages.push({role:'assistant', text:t().opening}); saveState(); }
+  renderThread(); if (seed) setTimeout(()=>sendUser(seed),80);
+}
+function restoreConversation(){ if (state.messages.length) startChat(''); }
+
+function renderThread(){
+  const box=$('thread'); box.innerHTML='';
+  for (const m of state.messages) {
+    const div=document.createElement('div'); div.className='msg '+m.role; div.dir='auto'; div.textContent=m.text; box.appendChild(div);
+    if (m.candidateSkills?.length) {
+      const chips=document.createElement('div'); chips.className='skillchips';
+      for (const c of m.candidateSkills) { const s=skillById(c.id); const span=document.createElement('span'); span.className='skillchip'; span.textContent=s?.[2] || ('#'+c.id); chips.appendChild(span); }
+      box.appendChild(chips);
+    }
+  }
+  requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
+}
+
+async function sendUser(raw){
+  const text=String(raw||'').trim(); if(!text) return;
+  if ($('welcome') && !$('welcome').classList.contains('hide')) startChat('');
+  $('input').value=''; $('input').style.height='auto';
+  state.messages.push({role:'user',text}); saveState(); renderThread();
+
+  const safety=classifySafety(text);
+  if (safety.level >= 4) {
+    state.safetyEvents.push({at:new Date().toISOString(),level:safety.level,reason:safety.reason});
+    state.messages.push({role:'assistant',text:t().safetyImmediate}); saveState(); renderThread(); return;
+  }
+  if (safety.level === 3) {
+    state.safetyEvents.push({at:new Date().toISOString(),level:safety.level,reason:safety.reason});
+  }
+
+  setEngineStatus(t().thinking);
+  try {
+    let output;
+    if (local.ready()) output = await callLocal(text, safety);
+    else if (state.settings.cloudFallback) output = await callCloudWithConsent(text, safety);
+    else output = { reply: safety.level===3 ? t().safetyConcern : t().practiceReply, route:routeMessage(text), memory_updates:{} };
+    applyOutput(output, safety);
+  } catch (e) {
+    state.messages.push({role:'system',text:(state.lang==='he'?'לא הצלחתי להפעיל את מנוע ה-AI כרגע. ':'I could not run the AI engine right now. ')+e.message});
+    state.messages.push({role:'assistant',text:safety.level===3?t().safetyConcern:t().practiceReply}); saveState(); renderThread();
+  } finally { updateEngineStatus(); }
+}
+
+async function callLocal(text, safety){
+  const messages = recentMessages(10);
+  const context = buildPromptContext(text, safety);
+  const raw = await local.chat({system:systemPrompt+'\n\nCURRENT LOCAL CONTEXT\n'+JSON.stringify(context), messages, maxTokens:700});
+  return parseModelOutput(raw);
+}
+
+async function callCloudWithConsent(text, safety){
+  const packet={ question:text, language:state.lang, selectedContext:minimumExternalContext(text), safetyLevel:safety.level };
+  const ok=await askShareApproval(packet); if(!ok) return {reply:t().cloudDenied,memory_updates:{}};
+  const messages=[...recentMessages(6)];
+  const res=await fetch(CLOUD_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CLOUD_MODEL,max_tokens:750,system:systemPrompt+'\n\nAPPROVED SELECTED CONTEXT\n'+JSON.stringify(packet.selectedContext),messages})});
+  if(!res.ok) throw new Error('External AI HTTP '+res.status);
+  const data=await res.json(); const raw=(data.content||[]).filter(x=>x.type==='text').map(x=>x.text).join('\n').trim();
+  return parseModelOutput(raw);
+}
+
+function recentMessages(n){ return state.messages.filter(m=>m.role==='user'||m.role==='assistant').slice(-n).map(m=>({role:m.role,content:m.text})); }
+function buildPromptContext(text,safety){
+  const ctx=compactContext(state); const serviceText=Object.values(ctx.service||{}).join(' ');
+  const candidates = routeMessage(text)==='skills' || /career|work|cv|job|עבודה|קריירה|קורות/i.test(text)
+    ? suggestCandidateSkills(serviceText, ctx.confirmedSkills.map(x=>x.id), 5) : [];
+  return { route:routeMessage(text), safety, personalContext:ctx, candidateSkillHypotheses:candidates, knowledge:state.knowledge.packages.filter(p=>p.status==='approved').map(p=>({id:p.id,title:p.title,version:p.version})) };
+}
+function minimumExternalContext(text){
+  const route=routeMessage(text); const p=state.profile; const out={route};
+  if(['career','education','skills','jobs'].includes(route)) out.service={serviceFamily:p.service.serviceFamily,role:p.service.role,rank:p.service.rank,responsibilities:p.service.responsibilities,dischargeCohort:(p.service.dischargeDate||'').slice(0,7),confirmedSkills:p.skills.map(s=>({id:s.id,evidence:s.evidence,level:s.level}))};
+  if(route==='accountability') out.commitments=p.commitments.filter(x=>x.status!=='completed').slice(-5);
+  return out;
+}
+
+function parseModelOutput(raw){
+  let x=String(raw||'').replace(/```json|```/g,'').trim(); const a=x.indexOf('{'),b=x.lastIndexOf('}');
+  if(a>=0&&b>a) x=x.slice(a,b+1);
+  try { return JSON.parse(x); } catch { return {reply:String(raw||'').trim()||t().practiceReply,memory_updates:{}}; }
+}
+function applyOutput(out,safety){
+  if (out.memory_updates) state=applyMemoryUpdates(state,out.memory_updates);
+  let reply=out.reply || t().practiceReply;
+  if (safety.level===3 && !/danger|סכנה|professional|מקצוע/i.test(reply)) reply += '\n\n'+t().safetyConcern;
+  state.messages.push({role:'assistant',text:reply,candidateSkills:(out.candidate_skills||[]).slice(0,5)});
+  saveState(); renderThread(); renderMemoryLists();
+}
+
+async function loadLocal(){
+  try {
+    if(!LocalLLM.supported()) { $('localStatus').textContent=t().noWebGPU; return; }
+    const chosen=await local.load(state.settings.localModel || 'auto'); $('localStatus').textContent=chosen.label+' ready.'; updateEngineStatus();
+  } catch(e){ $('localStatus').textContent=e.message; }
+}
+function onLocalProgress(r){ $('localProgress').style.width=Math.max(0,Math.min(100,(r.progress||0)*100))+'%'; $('localStatus').textContent=r.text; }
+function setEngineStatus(x){ $('engineStatus').textContent=x; }
+function updateEngineStatus(){ setEngineStatus(local.ready()?t().localReady:(state.settings.cloudFallback?t().cloudReady:t().practiceReady)); }
+
+function fillInfoForm(){
+  const s=state.profile.service;
+  for(const id of ['serviceFamily','unitGroup','role','rank','responsibilities','dischargeDate','reserveStatus','reserveUnitGroup','reserveServiceSummary']) if($(id)) $(id).value=s[id]||'';
+  $('preferredSupportStyle').value=state.profile.preferredSupportStyle||'';
+}
+function saveInfo(){
+  const s=state.profile.service;
+  for(const id of ['serviceFamily','unitGroup','role','rank','responsibilities','dischargeDate','reserveStatus','reserveUnitGroup','reserveServiceSummary']) s[id]=$(id).value.trim?.() ?? $(id).value;
+  state.profile.preferredSupportStyle=$('preferredSupportStyle').value.trim(); saveState(); renderMemoryLists(); refreshBanners(); alert(t().saved);
+}
+
+function renderMemoryLists(){
+  const skills=$('skillsList'); skills.innerHTML='';
+  if(!state.profile.skills.length) skills.innerHTML='<div class="small">'+(state.lang==='he'?'עדיין אין מיומנויות מאושרות.':'No confirmed skills yet.')+'</div>';
+  for(const s of state.profile.skills){ const def=skillById(s.id); const d=document.createElement('div'); d.className='memoryItem'; d.innerHTML='<b>'+escapeHtml(def?.[3]||def?.[2]||('Skill '+s.id))+'</b><div class="tagline">'+escapeHtml(s.evidence)+' · level '+s.level+'</div>'; skills.appendChild(d); }
+  const goals=$('goalsList'); goals.innerHTML='';
+  const allGoals=Object.entries(state.profile.goals).flatMap(([k,v])=>v.map(x=>({k,x})));
+  const commitments=state.profile.commitments;
+  if(!allGoals.length&&!commitments.length) goals.innerHTML='<div class="small">'+(state.lang==='he'?'עדיין אין מטרות או התחייבויות שמורות.':'No saved goals or commitments yet.')+'</div>';
+  for(const g of allGoals){ const d=document.createElement('div'); d.className='memoryItem'; d.innerHTML='<b>'+escapeHtml(g.x)+'</b><div class="tagline">'+g.k+'</div>'; goals.appendChild(d); }
+  for(const c of commitments){ const d=document.createElement('div'); d.className='memoryItem'; d.innerHTML='<b>'+escapeHtml(c.action)+'</b><div class="tagline">'+escapeHtml(c.status)+(c.targetDate?' · '+escapeHtml(c.targetDate):'')+'</div>'; goals.appendChild(d); }
+}
+
+function fillAIForm(){ $('localModel').value=state.settings.localModel||'auto'; $('cloudFallback').checked=!!state.settings.cloudFallback; const dm=navigator.deviceMemory||'?'; $('deviceInfo').textContent='WebGPU: '+(LocalLLM.supported()?'yes':'no')+' · approximate device memory: '+dm+' GB · local information stays in this browser profile unless you explicitly approve an external request.'; }
+function saveAI(){ state.settings.localModel=$('localModel').value; state.settings.cloudFallback=$('cloudFallback').checked; saveState(); $('aiDialog').close(); updateEngineStatus(); }
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='transition-companion-next-export.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+function deleteAll(){
+  const ok=confirm(state.lang==='he'?'למחוק את כל המידע המקומי באפליקציה הזו?':'Delete all local information in this app?'); if(!ok)return;
+  localStorage.removeItem(STORAGE_KEY); state=defaultState(); saveState(); $('infoDialog').close(); location.reload();
+}
+
+async function refreshKnowledge(){
+  try { const m=INLINE_KNOWLEDGE_MANIFEST; state.knowledge={manifestVersion:m.version,checkedAt:new Date().toISOString(),packages:(m.packages||[]).filter(p=>p.status==='approved')}; saveState(); } catch {}
+}
+async function refreshBanners(){
+  try { const data=INLINE_BANNERS; state._banners=(data.items||[]).filter(b=>bannerMatches(b,state)); renderBannerHost(); } catch { state._banners=[]; renderBannerHost(); }
+}
+function renderBannerHost(){ const host=$('bannerHost'); host.innerHTML=''; for(const b of state._banners||[]){ if(state.bannersSeen.includes(b.id))continue; const d=document.createElement('div'); d.className='banner'; d.innerHTML='<b>'+escapeHtml(localized(b.title))+'</b><div class="small">'+escapeHtml(localized(b.summary))+'</div>'; d.onclick=()=>{state.bannersSeen.push(b.id);saveState();d.remove();}; host.appendChild(d); } }
+function renderUpdates(){ const list=$('updatesList'); list.innerHTML=''; const items=state._banners||[]; if(!items.length){list.innerHTML='<p class="small">'+t().updateNone+'</p>';return;} for(const b of items){const d=document.createElement('div');d.className='memoryItem';d.innerHTML='<b>'+escapeHtml(localized(b.title))+'</b><div class="tagline">'+escapeHtml(localized(b.summary))+'</div>';list.appendChild(d);} }
+function localized(v){ if(typeof v==='string')return v; return v?.[state.lang]||v?.en||v?.he||''; }
+
+function askShareApproval(packet){
+  $('sharePreview').textContent=JSON.stringify(packet,null,2); $('shareDialog').showModal();
+  return new Promise(resolve=>{shareResolver=resolve;});
+}
+function finishShare(ok){ $('shareDialog').close(); if(shareResolver){shareResolver(ok);shareResolver=null;} }
+
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alert(state.lang==='he'?'זיהוי דיבור אינו זמין בדפדפן הזה.':'Speech recognition is not available in this browser.');return;}
+  if(listening&&recognition){recognition.stop();return;}
+  recognition=new SR(); recognition.lang=state.lang==='he'?'he-IL':'en-US'; recognition.interimResults=true; recognition.continuous=false;
+  recognition.onstart=()=>{listening=true;$('btnMic').textContent='⏹';}; recognition.onend=()=>{listening=false;$('btnMic').textContent='🎙️';};
+  recognition.onresult=e=>{let txt='';for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;$('input').value=txt;}; recognition.onerror=()=>{listening=false;$('btnMic').textContent='🎙️';}; recognition.start();
+}
+
+function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+
+init();
+
 </script>
 </body>
+</html>
