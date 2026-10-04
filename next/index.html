@@ -158,7 +158,7 @@ const SKILLS63 = [
 const skillById = id => SKILLS63.find(s => s[0] === Number(id));
 
 
-const APP_VERSION = 'next-stage2-0.2.0';
+const APP_VERSION = 'next-stage2-0.2.1';
 const PROMPT_VERSION = 'stage2-0.2';
 const MEMORY_SCHEMA_VERSION = '1.1';
 const SAFETY_VERSION = '0.2-review-required';
@@ -712,6 +712,109 @@ function renderThread(){
   requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
 }
 
+function practiceReplyFor(text, safety){
+  if (safety.level === 3) return { reply:t().safetyConcern, route:'safety', memory_updates:{} };
+
+  const route=routeMessage(text);
+  const he=state.lang==='he';
+  const userTurns=state.messages.filter(m=>m.role==='user').length;
+  const service=state.profile.service||{};
+  const knownService=!!(service.role||service.serviceFamily||service.unitGroup||service.rank);
+
+  if(route==='career'){
+    if(!knownService){
+      return {route, memory_updates:{currentSituation:{currentFocus:he?'עבודה וקריירה':'work and career'}},
+        reply:he
+          ? 'אפשר להתחיל בלי לבחור מקצוע מיד. קודם כדאי להבין מה כבר יש לך ביד — מה באמת עשית בשירות, מה היה באחריותך, ואילו סוגי משימות נתנו לך אנרגיה או דווקא כיבו אותך. מה היה התפקיד שלך בפועל, לא רק השם הרשמי שלו?'
+          : "You don't need to choose a profession immediately. First it helps to understand what you already bring with you — what you actually did in service, what you were responsible for, and which kinds of tasks gave you energy or drained it. What was your real day-to-day role, beyond the official title?"};
+    }
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'עבודה וקריירה':'work and career'}},
+      reply:he
+        ? 'כדאי להפריד בין מה שאתה יודע לעשות לבין מה שאתה רוצה לעשות עכשיו. הניסיון הצבאי יכול לפתוח אפשרויות, אבל הוא לא צריך לקבוע את הבחירה. כשאתה חושב על עבודה אזרחית, מה מושך אותך יותר כרגע — אנשים, טכנולוגיה, ניהול, עבודה מעשית, או עצמאות?'
+        : "It helps to separate what you can do from what you actually want to do next. Your military experience can open options, but it should not dictate the choice. When you picture civilian work, what draws you more right now — people, technology, management, hands-on work, or independence?"};
+  }
+
+  if(route==='education'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'לימודים':'education'}},
+      reply:he
+        ? 'לא צריך להתחיל מבחירת מוסד. קודם צריך להבין איזה כיוון שווה לך לבדוק, מה דרישות הקבלה שלו, וכמה זמן וכסף הוא דורש. האם יש תחום אחד או שניים שכבר מסקרנים אותך, אפילו אם אתה עדיין רחוק מהחלטה?'
+        : "You don't need to start by choosing a school. First we should identify which directions are worth exploring, what their entry requirements are, and what they cost in time and money. Are there one or two fields you're already curious about, even if you're far from deciding?"};
+  }
+
+  if(route==='relationships'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'יחסים ומשפחה':'relationships and family'}},
+      reply:he
+        ? 'מעבר מהצבא משנה לעיתים את הקצב, התקשורת והציפיות בבית, גם כששני הצדדים רוצים שהקשר יעבוד. עדיף להבין את הדפוס לפני שמחליטים מי צודק. מה בדרך כלל קורה ביניכם ממש לפני שהשיחה נהיית קשה?'
+        : "Leaving service can change pace, communication, and expectations at home even when both people want the relationship to work. It is usually more useful to understand the pattern before deciding who is right. What usually happens between you just before a conversation becomes difficult?"};
+  }
+
+  if(route==='finance'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'כסף':'money'}},
+      reply:he
+        ? 'בכסף הכי מועיל לעבור מהר מתחושה כללית למספרים פשוטים: מה נכנס, מה יוצא, מה דחוף ומה יכול לחכות. בלי להיכנס עדיין לכל פרט, מה הבעיה המרכזית כרגע — שאין מספיק הכנסה, שיש חוב, או שאתה מנסה להבין כמה אתה יכול להרשות לעצמך ללימודים או נסיעה?'
+        : "With money, it helps to move quickly from a vague feeling to a few simple numbers: what comes in, what goes out, what is urgent, and what can wait. Without getting into every detail yet, is the main issue low income, debt, or figuring out what you can afford for study or travel?"};
+  }
+
+  if(route==='travel'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'נסיעה / טיול':'travel'}},
+      reply:he
+        ? 'טיול אחרי שירות יכול להיות מנוחה, הרפתקה, זמן לחשוב, או פשוט הפסקה — והמטרה משנה את כל התכנון. לפני שמדברים על יעד, מה אתה רוצה שהטיול הזה יעשה בשבילך?'
+        : "Travel after service can be rest, adventure, time to think, or simply a break — and the purpose changes the whole plan. Before talking about destinations, what do you want the trip to do for you?"};
+  }
+
+  if(route==='health'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'בריאות':'health'}},
+      reply:he
+        ? 'כדאי להפריד בין משהו שצריך בדיקה רפואית לבין בניית שגרת התאוששות טובה — שינה, כאב, פעילות ואנרגיה. מה הדבר הגופני שהכי מפריע לך כרגע?'
+        : "It helps to separate something that needs medical evaluation from building a better recovery routine around sleep, pain, activity, and energy. What physical issue is affecting you most right now?"};
+  }
+
+  if(route==='emotional'){
+    return {route, memory_updates:{currentSituation:{currentFocus:he?'הסתגלות רגשית':'emotional adjustment'}},
+      reply:he
+        ? 'לא חייבים לפתור מיד את כל התחושה. לפעמים הדבר הראשון הוא להבין אם מה שחסר הוא מסגרת, אנשים, תחושת מטרה, שקט, או ביטחון לגבי העתיד. מה מתוך אלה הכי קרוב למה שאתה מרגיש?'
+        : "You don't have to solve the whole feeling at once. Often the first useful step is figuring out whether what is missing is structure, people, purpose, quiet, or confidence about the future. Which of those comes closest to what you're feeling?"};
+  }
+
+  if(route==='skills'){
+    const serviceText=Object.values(service).join(' ');
+    const candidates=suggestCandidateSkills(serviceText,state.profile.skills.map(x=>x.id),4);
+    if(!knownService){
+      return {route, candidate_skills:[], memory_updates:{},
+        reply:he
+          ? 'אני יכול לעזור לזהות יכולות מהשירות, אבל אני לא רוצה לנחש לפי יחידה או דרגה בלבד. נתחיל ממה שבאמת עשית. מה היה סוג השירות, התפקיד והאחריות המרכזית שלך?'
+          : "I can help identify capabilities from your service, but I don't want to guess from unit or rank alone. Let's start with what you actually did. What was your service type, role, and main responsibility?"};
+    }
+    return {route, candidate_skills:candidates.map(x=>({id:x.id,why:x.civilian})), memory_updates:{},
+      reply:he
+        ? 'יש כמה יכולות ששווה לבדוק לפי מה שכבר ידוע, אבל הן עדיין רק השערות עד שאתה מאשר אותן מתוך ניסיון אמיתי. בחר אחת שנראית נכונה ותן לי מקרה אחד קצר שבו באמת השתמשת בה.'
+        : "There are a few capabilities worth testing from what is already known, but they are still only hypotheses until you confirm them from real experience. Pick one that feels accurate and give me one short example of when you actually used it."};
+  }
+
+  if(route==='safety'){
+    return {route, memory_updates:{}, reply:t().safetyConcern};
+  }
+
+  if(userTurns <= 2){
+    return {route:'general', memory_updates:{},
+      reply:he
+        ? 'לא לדעת עדיין מה הצעד הבא הוא נקודת התחלה לגיטימית. במקום לנסות לבחור עכשיו מקצוע או מסלול לכל החיים, אפשר להתחיל מהתקופה הקרובה ולראות מה צריך להתבהר. אם שלושת החודשים הקרובים היו מסתדרים טוב, מה היית רוצה שיהיה שונה בסופם?'
+        : "Not knowing the next step yet is a legitimate starting point. Instead of trying to choose a profession or life path immediately, we can start with the next few months and see what needs to become clearer. If the next three months went reasonably well, what would you want to be different by the end of them?"};
+  }
+
+  if(userTurns <= 4){
+    return {route:'general', memory_updates:{},
+      reply:he
+        ? 'לפעמים קל יותר לזהות כיוון דרך מה שאתה לא רוצה לחזור אליו. זה עוזר להבחין בין צורך במנוחה לבין רצון אמיתי לשנות כיוון. מה אתה יודע שאתה לא רוצה שהחיים האזרחיים שלך ייראו כמו?'
+        : "Sometimes direction becomes clearer by identifying what you do not want to repeat. That helps distinguish needing a break from genuinely wanting a different kind of life. What do you already know you do not want your civilian life to look like?"};
+  }
+
+  return {route:'general', memory_updates:{},
+    reply:he
+      ? 'אפשר להמשיך לבנות תמונה גם בלי המודל המקומי, אבל מצב התרגול מוגבל יותר. בינתיים נתקדם צעד אחד בכל פעם במקום לחזור על שאלון. מה הדבר האחד שהיית רוצה לקבל עליו החלטה או לעשות בו התקדמות השבוע?'
+      : "We can keep building the picture even without the local model, although Practice Mode is more limited. For now, we'll move one useful step at a time rather than repeating an intake. What is the one thing you'd most like to decide or make progress on this week?"};
+}
+
 async function sendUser(raw){
   const text=String(raw||'').trim(); if(!text) return;
   if ($('welcome') && !$('welcome').classList.contains('hide')) startChat('');
@@ -732,11 +835,11 @@ async function sendUser(raw){
     let output;
     if (local.ready()) output = await callLocal(text, safety);
     else if (state.settings.cloudFallback) output = await callCloudWithConsent(text, safety);
-    else output = { reply: safety.level===3 ? t().safetyConcern : t().practiceReply, route:routeMessage(text), memory_updates:{} };
+    else output = practiceReplyFor(text, safety);
     applyOutput(output, safety);
   } catch (e) {
     state.messages.push({role:'system',text:(state.lang==='he'?'לא הצלחתי להפעיל את מנוע ה-AI כרגע. ':'I could not run the AI engine right now. ')+e.message});
-    state.messages.push({role:'assistant',text:safety.level===3?t().safetyConcern:t().practiceReply}); saveState(); renderThread();
+    const fallback=practiceReplyFor(text,safety); applyOutput(fallback,safety);
   } finally { updateEngineStatus(); }
 }
 
