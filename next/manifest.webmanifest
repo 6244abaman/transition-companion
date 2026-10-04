@@ -1,0 +1,10 @@
+{
+  "name": "Transition Companion Next",
+  "short_name": "Companion Next",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f8f6",
+  "theme_color": "#21695f",
+  "description": "Local-first transition companion development build"
+}
