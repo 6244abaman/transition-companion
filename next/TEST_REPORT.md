@@ -8,8 +8,10 @@ The current Next build was re-tested after the safety, memory, update and voice 
 
 ## Automated logic checks
 
-24/24 checks passed:
+40/40 automated checks passed:
 
+- app/prompt/memory/safety version markers are present and current
+- 3B and 1B local model IDs and automatic device-memory selection
 - exactly 63 skills, IDs 1 through 63
 - ordinary transition-stress examples do not trigger emergency classification
 - historical suicidality examples do not automatically trigger current emergency classification
@@ -28,12 +30,16 @@ The current Next build was re-tested after the safety, memory, update and voice 
 - evidence-gated confirmed skills
 - corrected goals replace old values
 - current-situation corrections
-- external-AI context excludes unit/group by default
+- old saved-state migration preserves prior data while adding the new schema fields
+- memory corrections can clear obsolete current-situation and service facts
+- external-AI context excludes unit/group and raw responsibilities by default
 - external-AI context uses discharge month rather than exact date
 - no duplicate HTML IDs
 - no missing DOM references
 - manifest link present
+- voice privacy disclosure present
 - read-aloud control present
+- Next uses its own mentor image
 
 ## Remaining real-device tests
 
