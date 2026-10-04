@@ -68,6 +68,7 @@
   <div class="field"><label id="labLocalModel">מודל מקומי</label><select id="localModel"><option value="auto">אוטומטי</option><option value="standard">3B — רגיל</option><option value="light">1B — קל</option></select></div>
   <label id="cloudLabel"><input type="checkbox" id="cloudFallback"> אפשר להשתמש ב-AI חיצוני כאשר המקומי אינו זמין</label>
   <p class="small" id="cloudExplain">לפני שליחה ל-AI חיצוני תוצג לך בדיוק השאלה וההקשר שנבחרו. ההיסטוריה המלאה אינה נשלחת אוטומטית.</p>
+  <p class="small" id="voiceExplain">קלט קולי משתמש בשירותי הדיבור של הדפדפן או המכשיר כאשר הם זמינים, ולכן ייתכן שהעיבוד אינו מתבצע כולו במכשיר. האפליקציה אינה שומרת בכוונה את קובץ האודיו.</p>
   <div class="actions"><button class="pill primary" id="btnSaveAI">שמור הגדרות</button></div>
   <hr><div class="small" id="deviceInfo"></div>
 </div></dialog>
@@ -653,6 +654,7 @@ function paintLanguage(){
     labReservePeriods:'Reserve-duty dates / periods',labReserveSummary:'Reserve-service summary, days and roles',labStyle:'How I prefer the Companion to help',
     skillsHeading:'Confirmed skills & experience',goalsHeading:'Goals & commitments',memoryHeading:'Other information I remember',aiTitle:'AI & privacy',labLocalModel:'Local model',
     cloudExplain:'Before any external AI request, you will see the exact question and selected personal context. Conversation history is not sent automatically.',
+    voiceExplain:'Voice input uses speech services provided by the browser or device when available, so processing may not be entirely on-device. This app does not intentionally store the raw audio file.',
     updatesTitle:'Updates',updatesIntro:'Your phone can receive reviewed knowledge and group messages without sending your private conversations back to Momentum.',
     shareTitle:'Before sending to external AI',shareIntro:'This is the personal information that will leave the device:'
   } : {
@@ -661,6 +663,7 @@ function paintLanguage(){
     labReservePeriods:'תאריכים / תקופות מילואים',labReserveSummary:'סיכום מילואים, ימים ותפקידים',labStyle:'איך נוח לי שהמערכת תעזור',
     skillsHeading:'מיומנויות וניסיון שאושרו',goalsHeading:'מטרות והתחייבויות',memoryHeading:'מידע נוסף שאני זוכר',aiTitle:'AI ופרטיות',labLocalModel:'מודל מקומי',
     cloudExplain:'לפני שליחה ל-AI חיצוני תוצג לך בדיוק השאלה וההקשר האישי שנבחרו. היסטוריית השיחה אינה נשלחת אוטומטית.',
+    voiceExplain:'קלט קולי משתמש בשירותי הדיבור של הדפדפן או המכשיר כאשר הם זמינים, ולכן ייתכן שהעיבוד אינו מתבצע כולו במכשיר. האפליקציה אינה שומרת בכוונה את קובץ האודיו.',
     updatesTitle:'עדכונים',updatesIntro:'הטלפון יכול לקבל ידע מאושר והודעות לקבוצות בלי לשלוח את השיחות הפרטיות שלך חזרה למומנטום.',
     shareTitle:'לפני שליחה ל-AI חיצוני',shareIntro:'זה המידע האישי שייצא מהמכשיר:'
   };
@@ -749,7 +752,7 @@ function buildPromptContext(text,safety){
 }
 function minimumExternalContext(text){
   const route=routeMessage(text); const p=state.profile; const out={route};
-  if(['career','education','skills','jobs'].includes(route)) out.service={serviceFamily:p.service.serviceFamily,role:p.service.role,rank:p.service.rank,responsibilities:p.service.responsibilities,dischargeCohort:(p.service.dischargeDate||'').slice(0,7),confirmedSkills:p.skills.map(s=>({id:s.id,evidence:s.evidence,level:s.level}))};
+  if(['career','education','skills','jobs'].includes(route)) out.service={serviceFamily:p.service.serviceFamily,role:p.service.role,rank:p.service.rank,dischargeCohort:(p.service.dischargeDate||'').slice(0,7),confirmedSkills:p.skills.map(s=>({id:s.id,evidence:s.evidence,level:s.level}))};
   if(route==='accountability') out.commitments=p.commitments.filter(x=>x.status!=='completed').slice(-5);
   return out;
 }
