@@ -256,13 +256,26 @@ function classifySafety(text) {
   if (immediate.some(r => r.test(t))) return { level: 4, reason: 'credible immediate-harm language' };
 
   const significant = [
-    /\bwant to die\b/i, /\bdon't want to live\b/i, /\bdo not want to live\b/i, /\bwish i were dead\b/i,
-    /\bsuicidal\b/i, /\bsuicidal thoughts?\b/i, /\bthinking about hurting myself\b/i, /\bmight hurt myself\b/i,
-    /\bend my life\b/i, /\btake my life\b/i, /\bkill someone\b/i, /\bcan't keep myself safe\b/i,
+    /\bi want to die\b/i,
+    /\b(i don't|i do not) want to live\b/i,
+    /\bi wish i were dead\b/i,
+    /\b(i am|i'm|im) suicidal\b/i,
+    /\b(i have|i'm having|i am having) suicidal thoughts?\b/i,
+    /\b(i've been|i have been|i'm|i am) feeling suicidal\b/i,
+    /\b(i am|i'm|im) thinking about (suicide|hurting myself|killing myself)\b/i,
+    /\bi might hurt myself\b/i,
+    /\bi can't keep myself safe\b/i,
+    /\bi want to (end|take) my life\b/i,
     /\bi want to (kill|hurt) (him|her|them|someone)\b/i,
     /\bi (hurt|cut|burned|burnt) myself (today|yesterday|last night|recently)\b/i,
-    /רוצה למות/, /לא רוצה לחיות/, /הלוואי והייתי מת/, /מחשבות אובדניות/, /חושב.*לפגוע בעצמי/, /עלול.*לפגוע בעצמי/,
-    /להרוג את עצמי/, /לשים קץ לחיים/, /להרוג מישהו/, /אני רוצה (להרוג|לפגוע ב).+/,
+    /אני רוצה למות/,
+    /אני לא רוצה לחיות/,
+    /הלוואי והייתי מת/,
+    /יש לי מחשבות אובדניות/,
+    /אני (חושב|חושבת).*לפגוע בעצמי/,
+    /אני (עלול|עלולה).*לפגוע בעצמי/,
+    /אני רוצה (להרוג את עצמי|לשים קץ לחיים)/,
+    /אני רוצה (להרוג|לפגוע ב).+/,
     /(פגעתי|חתכתי|שרפתי) בעצמי (היום|אתמול|אמש|לאחרונה)/
   ];
   if (!pastOnly && significant.some(r => r.test(t))) return { level: 3, reason: 'significant safety concern' };
