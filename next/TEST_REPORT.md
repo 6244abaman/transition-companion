@@ -137,3 +137,24 @@ The exact reported sequence was reproduced and now passes:
 All five turns now produce distinct, context-following responses. The third turn is interpreted as two 90-day goals (meaningful work and dating); the fourth narrows to getting a job; the fifth is treated as an answer to the service-experience question and surfaces candidate capabilities without declaring them confirmed skills.
 
 The local-model prompt now also instructs the LLM to interpret short or fragmentary replies as answers to the previous question unless the user clearly changes topic.
+
+
+## Relationship-intent regression
+
+A real test exposed a semantic error: the phrase "I want a girlfriend I don't have one now" was treated as if the user already had a relationship problem.
+
+The app now distinguishes:
+
+- existing relationship
+- desire to start dating / meet someone
+- unknown relationship status
+
+Regression checks confirm that:
+
+- `like a pla, a job and girlfriend` detects planning + career + relationships despite the typo "pla"
+- `I want a girlfriend I dont have one now` is interpreted as single + dating goal, not an existing relationship conflict
+- the reply explicitly acknowledges that there is no current girlfriend
+- relationship status and dating goal are stored separately in local memory
+- existing-partner language such as `my girlfriend and I keep fighting` still follows the existing-relationship path
+- build version is visible in the header so testers can confirm they are on the current code
+- Local AI controls are accessible from the chat header, not only from the welcome screen
