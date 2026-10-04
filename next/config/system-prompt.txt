@@ -45,7 +45,7 @@ OUTPUT
 Return JSON only, without markdown fences, using this shape:
 {
   "reply": "natural user-facing response",
-  "route": "general|career|education|jobs|relationships|finance|health|travel|emotional|skills|safety|accountability",
+  "route": "general|career|education|jobs|rights|relationships|finance|health|travel|emotional|skills|safety|accountability",
   "memory_updates": {
     "values": [],
     "interests": [],
