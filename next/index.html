@@ -427,13 +427,15 @@ function applyStructuredCorrection(profile, correction) {
   }
   if (path.startsWith('currentSituation.')) {
     const key = path.slice('currentSituation.'.length);
-    if (key in profile.currentSituation && typeof newValue === 'string') profile.currentSituation[key] = newValue.trim();
+    if (key in profile.currentSituation) profile.currentSituation[key] = newValue == null ? '' : String(newValue).trim();
     return;
   }
   if (path.startsWith('service.')) {
     const key = path.slice(8);
-    if (key === 'reservePeriods' && Array.isArray(newValue)) profile.service.reservePeriods = newValue.map(x=>String(x).trim()).filter(Boolean).slice(0,50);
-    else if (key in profile.service && typeof newValue === 'string') profile.service[key] = newValue.trim();
+    if (key === 'reservePeriods') {
+      if (Array.isArray(newValue)) profile.service.reservePeriods = newValue.map(x=>String(x).trim()).filter(Boolean).slice(0,50);
+      else if (newValue == null) profile.service.reservePeriods = [];
+    } else if (key in profile.service) profile.service[key] = newValue == null ? '' : String(newValue).trim();
   }
 }
 
