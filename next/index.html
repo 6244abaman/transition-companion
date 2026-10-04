@@ -331,10 +331,10 @@ function detectTopics(text) {
     ['safety', /suicid|hurt myself|kill myself|kill someone|לפגוע בעצמי|להתאבד|להרוג/],
     ['planning', /\bplan\b|\bplans\b|\bplanning\b|next steps?|future|direction|what next|תכנית|תוכנית|לתכנן|תכנון|מה הלאה|עתיד|כיוון/],
     ['career', /\bjob\b|\bjobs\b|career|\bwork\b|cv|resume|interview|עבודה|קריירה|קורות חיים|ראיון/],
-    ['education', /study|university|college|degree|psychometric|לימודים|אוניברסיטה|תואר|פסיכומטרי/],
-    ['rights', /rights?|benefits?|eligibility|discharged soldier|זכויות|הטבות|זכאות|חייל משוחרר/],
+    ['education', /study|studies|education|university|college|degree|psychometric|לימודים|השכלה|אוניברסיטה|תואר|פסיכומטרי/],
+    ['rights', /rights?|benefits?|eligibility|grants?|discharged soldier|זכויות|הטבות|זכאות|מענקים?|חייל משוחרר/],
     ['relationships', /girlfriend|boyfriend|wife|husband|partner|relationship|family|חברה|חבר|אשתי|בעלי|בת זוג|בן זוג|זוגיות|משפחה/],
-    ['finance', /money|debt|budget|salary|benefit|grant|כסף|חוב|תקציב|שכר|מענק|זכויות/],
+    ['finance', /money|debt|budget|salary|income|expenses?|כסף|חוב|תקציב|שכר|הכנסה|הוצאות/],
     ['health', /pain|injury|sleep|exercise|doctor|health|כאב|פציעה|שינה|רופא|בריאות/],
     ['travel', /travel|trip|flight|backpack|טיול|נסיעה|טיסה/],
     ['skills', /skill|skills|what am i good at|civilian skills|יכולת|יכולות|כישורים|מיומנויות/],
@@ -803,7 +803,7 @@ const TRANSITION_TOPICS = [
   {id:'study', en:'Studies', he:'לימודים', enSeed:'I want help thinking about studies and education.', heSeed:'אני רוצה עזרה לחשוב על לימודים והשכלה.'},
   {id:'rights', en:'Rights & benefits', he:'זכויות והטבות', enSeed:'I want to understand rights and benefits that may apply to me.', heSeed:'אני רוצה להבין אילו זכויות והטבות עשויות להיות רלוונטיות לי.'},
   {id:'money', en:'Money', he:'כסף', enSeed:'I want help with money and my next financial steps.', heSeed:'אני רוצה עזרה עם כסף והצעדים הכלכליים הבאים שלי.'},
-  {id:'travel', en:'Travel', he:'נסיעות וטיולים', enSeed:'I want help planning travel alongside my other plans.', heSeed:'אני רוצה עזרה לתכנן טיול לצד התוכניות האחרות שלי.'},
+  {id:'travel', en:'Travel', he:'נסיעות וטיולים', enSeed:'I want help with travel.', heSeed:'אני רוצה עזרה בנושא נסיעה או טיול.'},
   {id:'family', en:'Relationships & family', he:'מערכות יחסים ומשפחה', enSeed:'I want help with a relationship or family issue.', heSeed:'אני רוצה עזרה בנושא של זוגיות או משפחה.'},
   {id:'support', en:'Emotional support', he:'תמיכה רגשית', enSeed:'I want support with how I am feeling during this transition.', heSeed:'אני רוצה תמיכה במה שאני מרגיש בתקופת המעבר.'}
 ];
