@@ -23,6 +23,10 @@
 
 A message can be broadcast with a group/cohort tag and filtered locally on each phone. The central publisher therefore does not need a named list of soldiers merely to target a group.
 
+## System prompt
+
+The reviewable governing runtime prompt is `config/system-prompt.txt`. The app fetches it at startup and falls back to the embedded copy if the file is unavailable.
+
 ## AI routing
 
 1. Deterministic local safety pre-check.
