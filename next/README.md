@@ -21,6 +21,10 @@ Separate development build of the Guided Transition Companion. The existing app 
 - Voice input uses browser speech recognition when supported. A read-aloud button uses browser text-to-speech.
 - No volatile Israeli rights/benefits/emergency facts are activated until verified.
 
+## Reviewable system behavior
+
+The runtime system prompt is stored at `next/config/system-prompt.txt` so psychologists and other reviewers can inspect it without editing application logic. The HTML carries the same prompt only as an offline fallback.
+
 ## Privacy architecture
 
 Detailed personal information stays local wherever practical. Momentum's future central service is intended primarily for reviewed knowledge updates and group/cohort messages, not a named personal dossier.
