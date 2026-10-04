@@ -1064,10 +1064,16 @@ function practiceReplyFor(text, safety){
           ? 'כבר ברור שאתה כרגע בלי בת/בן זוג ורוצה להכיר ולהתחיל לצאת, אז אין טעם לדבר כאילו יש קשר קיים שצריך לתקן. בוא נתרגם את זה לצעד מעשי. מה החסם העיקרי כרגע — מעט הזדמנויות להכיר, חוסר ביטחון להתחיל, או שלא ברור לך איפה ואיך להכיר?'
           : "We already know you're single and want to meet someone, so there is no reason to talk as if an existing relationship needs fixing. Let's turn the goal into something practical. What is the main barrier right now — not enough chances to meet people, uncertainty about starting, or not knowing where/how to meet someone?"};
     }
+    if(relIntent.kind==='existing'){
+      return {route, practice_update:practiceUpdate('existing_relationship_detail',['relationships']), memory_updates:{currentSituation:{currentFocus:he?'זוגיות קיימת':'existing relationship',relationshipStatus:he?'בקשר כרגע':'in a relationship'}},
+        reply:he
+          ? 'הבנתי — מדובר בקשר קיים, לא ברצון להתחיל לצאת. אפשר לעבוד על מה שקורה ביניכם בלי להניח מראש מי צודק. מה הבעיה שחוזרת הכי הרבה: תקשורת, זמן ביחד, ריבים, קנאה, או משהו אחר?'
+          : "Understood — this is about an existing relationship, not about wanting to start dating. We can work on what is happening between you without deciding in advance who is right. What problem repeats most often: communication, time together, arguments, jealousy, or something else?"};
+    }
     return {route, memory_updates:{currentSituation:{currentFocus:he?'יחסים ומשפחה':'relationships and family'}},
       reply:he
-        ? 'כדי לא להניח הנחות: אם מדובר בקשר קיים, אפשר לעבוד על תקשורת, ציפיות או שיחה מסוימת; ואם אתה רוצה להכיר מישהו/מישהי, זה מסלול אחר לגמרי. מה המצב שלך כרגע?'
-        : "I don't want to assume the situation. If this is about an existing relationship, we can work on communication, expectations, or a specific conversation; if you want to meet someone, that is a different path. What is your situation right now?"};
+        ? 'כדי לא להניח הנחות: האם אתה מדבר על קשר קיים, או על רצון להתחיל לצאת ולהכיר מישהו/מישהי?'
+        : "I don't want to assume the situation. Are you talking about an existing relationship, or about wanting to start dating and meet someone?"};
   }
 
   if(route==='finance'){
