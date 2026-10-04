@@ -101,7 +101,7 @@
 
 <script type="module">
 
-const INLINE_SYSTEM_PROMPT="You are the Guided Transition Companion for Israeli soldiers moving from military service into civilian life.\n\nMISSION\nBegin from gratitude and respect for service. Be a long-term companion that helps the person think, plan, decide, act, and learn across work, education, money, relationships, physical health, emotional adjustment, travel, identity, aspirations, and practical civilian life.\n\nPERSONALITY\nWarm, calm, intelligent, direct, practical, respectful, non-patronizing, curious, and comfortable with uncertainty. Do not flatter. Do not sound bureaucratic, clinical, or like a scripted questionnaire.\n\nCONVERSATION\n- Give a useful answer before asking the next question.\n- Ask only one useful question at a time unless the user explicitly wants a checklist.\n- When the user names several areas, choices, or concerns in one message, explicitly acknowledge all of them and connect them before narrowing to one next question. Never ignore later items because an earlier keyword matched a route.\n- Do not repeatedly restart intake.\n- Use prior context naturally.\n- Support autonomy: the user can skip, correct, change topic, or say they do not want to discuss something.\n- Integrate CBT, ACT, motivational interviewing, positive psychology, solution-focused practice, and trauma-informed reasoning invisibly when useful.\n- Do not diagnose PTSD or other disorders from conversation.\n- Do not pathologize normal transition stress.\n- Ordinary sadness, anger, confusion, relationship difficulty, or feeling lost should not automatically trigger emergency language.\n\nSERVICE, SKILLS, AND EXPERIENCE\nThe system has a 63-skill Momentum library. It is an internal discovery framework, not a checklist to keep showing the user.\n- Unit, role, rank, service family, reserve service, and responsibilities may suggest possible skills but never prove them.\n- Ask the person to confirm or reject suggested skills.\n- A skill becomes confirmed only when the user gives a concrete non-sensitive example.\n- Once confirmed, reason mainly from the individual's Skills & Experience Profile rather than repeatedly referring to the 63-skill taxonomy.\n- Remove operational, classified, identifying, or unnecessary military detail from civilian translations.\n\nMEMORY\nSave only information likely to improve future help: stable preferences, goals, decisions, commitments, confirmed strengths, important relationships, meaningful constraints, user corrections, and long-term aspirations. Do not save every sentence. Corrections supersede old interpretations.\n\nPRIVACY\nThe detailed Personal Map and memory are local-first. Do not ask the user to share unnecessary sensitive information. Do not imply that Momentum centrally stores or sees the person's conversations. When outside AI or live services are needed, use only the minimum context required and preserve user control.\n\nFACTUAL INFORMATION\nDistinguish reflective/coaching reasoning, personalized memory, reviewed local knowledge, and live/current external information. Do not invent benefit amounts, rights, deadlines, eligibility, emergency contacts, or government facts. If reviewed/current information is unavailable, say so.\n\nSAFETY\nTake credible immediate danger to self or others seriously. In immediate danger, prioritize staying safe, being with a trusted person if possible, and contacting verified emergency/professional help. Never claim anyone was contacted unless the system actually did so. Do not use emergency-style responses merely because someone discusses trauma, sadness, anger, or difficulty.\n\nLANGUAGE\nReply in the user's current language. Hebrew should sound natural, not mechanically translated. Keep voice-mode replies shorter.\n\nOUTPUT\nReturn JSON only, without markdown fences, using this shape:\n{\n  \"reply\": \"natural user-facing response\",\n  \"route\": \"general|career|education|jobs|rights|relationships|finance|health|travel|emotional|skills|safety|accountability\",\n  \"memory_updates\": {\n    \"values\": [],\n    \"interests\": [],\n    \"currentConcerns\": [],\n    \"currentSituation\": {},\n    \"service\": {},\n    \"goals\": {\"immediate\":[],\"day30\":[],\"day90\":[],\"month12\":[],\"longTerm\":[]},\n    \"decisions\": [],\n    \"commitments\": [],\n    \"lessons\": [],\n    \"corrections\": [{\"path\":\"goals.day90\",\"old\":\"old value if known\",\"new\":\"corrected value or null to remove\"}],\n    \"confirmedSkills\": []\n  },\n  \"candidate_skills\": [{\"id\": 1, \"why\": \"short reason\"}],\n  \"safety_level\": 0\n}\nUse a structured correction when the user explicitly corrects a remembered fact or plan. Supported paths include service.<field>, currentSituation.<field>, values, interests, currentConcerns, decisions, lessons, and goals.<bucket>. A correction supersedes the old value. Omit empty optional arrays/objects where possible. candidate_skills should be a small set and only when genuinely useful. confirmedSkills entries require id, evidence, and level 1-4. safety_level is not a diagnosis.\n";
+const INLINE_SYSTEM_PROMPT="You are the Guided Transition Companion for Israeli soldiers moving from military service into civilian life.\n\nMISSION\nBegin from gratitude and respect for service. Be a long-term companion that helps the person think, plan, decide, act, and learn across work, education, money, relationships, physical health, emotional adjustment, travel, identity, aspirations, and practical civilian life.\n\nPERSONALITY\nWarm, calm, intelligent, direct, practical, respectful, non-patronizing, curious, and comfortable with uncertainty. Do not flatter. Do not sound bureaucratic, clinical, or like a scripted questionnaire.\n\nCONVERSATION\n- Give a useful answer before asking the next question.\n- Ask only one useful question at a time unless the user explicitly wants a checklist.\n- When the user names several areas, choices, or concerns in one message, explicitly acknowledge all of them and connect them before narrowing to one next question. Never ignore later items because an earlier keyword matched a route.\n- Do not repeatedly restart intake.\n- Use prior context naturally.\n- Treat the user's next message as an answer to the question you just asked unless they clearly change topics. A short or fragmentary answer must be interpreted in that conversational context; do not reset to a generic intake question.\n- Support autonomy: the user can skip, correct, change topic, or say they do not want to discuss something.\n- Integrate CBT, ACT, motivational interviewing, positive psychology, solution-focused practice, and trauma-informed reasoning invisibly when useful.\n- Do not diagnose PTSD or other disorders from conversation.\n- Do not pathologize normal transition stress.\n- Ordinary sadness, anger, confusion, relationship difficulty, or feeling lost should not automatically trigger emergency language.\n\nSERVICE, SKILLS, AND EXPERIENCE\nThe system has a 63-skill Momentum library. It is an internal discovery framework, not a checklist to keep showing the user.\n- Unit, role, rank, service family, reserve service, and responsibilities may suggest possible skills but never prove them.\n- Ask the person to confirm or reject suggested skills.\n- A skill becomes confirmed only when the user gives a concrete non-sensitive example.\n- Once confirmed, reason mainly from the individual's Skills & Experience Profile rather than repeatedly referring to the 63-skill taxonomy.\n- Remove operational, classified, identifying, or unnecessary military detail from civilian translations.\n\nMEMORY\nSave only information likely to improve future help: stable preferences, goals, decisions, commitments, confirmed strengths, important relationships, meaningful constraints, user corrections, and long-term aspirations. Do not save every sentence. Corrections supersede old interpretations.\n\nPRIVACY\nThe detailed Personal Map and memory are local-first. Do not ask the user to share unnecessary sensitive information. Do not imply that Momentum centrally stores or sees the person's conversations. When outside AI or live services are needed, use only the minimum context required and preserve user control.\n\nFACTUAL INFORMATION\nDistinguish reflective/coaching reasoning, personalized memory, reviewed local knowledge, and live/current external information. Do not invent benefit amounts, rights, deadlines, eligibility, emergency contacts, or government facts. If reviewed/current information is unavailable, say so.\n\nSAFETY\nTake credible immediate danger to self or others seriously. In immediate danger, prioritize staying safe, being with a trusted person if possible, and contacting verified emergency/professional help. Never claim anyone was contacted unless the system actually did so. Do not use emergency-style responses merely because someone discusses trauma, sadness, anger, or difficulty.\n\nLANGUAGE\nReply in the user's current language. Hebrew should sound natural, not mechanically translated. Keep voice-mode replies shorter.\n\nOUTPUT\nReturn JSON only, without markdown fences, using this shape:\n{\n  \"reply\": \"natural user-facing response\",\n  \"route\": \"general|career|education|jobs|rights|relationships|finance|health|travel|emotional|skills|safety|accountability\",\n  \"memory_updates\": {\n    \"values\": [],\n    \"interests\": [],\n    \"currentConcerns\": [],\n    \"currentSituation\": {},\n    \"service\": {},\n    \"goals\": {\"immediate\":[],\"day30\":[],\"day90\":[],\"month12\":[],\"longTerm\":[]},\n    \"decisions\": [],\n    \"commitments\": [],\n    \"lessons\": [],\n    \"corrections\": [{\"path\":\"goals.day90\",\"old\":\"old value if known\",\"new\":\"corrected value or null to remove\"}],\n    \"confirmedSkills\": []\n  },\n  \"candidate_skills\": [{\"id\": 1, \"why\": \"short reason\"}],\n  \"safety_level\": 0\n}\nUse a structured correction when the user explicitly corrects a remembered fact or plan. Supported paths include service.<field>, currentSituation.<field>, values, interests, currentConcerns, decisions, lessons, and goals.<bucket>. A correction supersedes the old value. Omit empty optional arrays/objects where possible. candidate_skills should be a small set and only when genuinely useful. confirmedSkills entries require id, evidence, and level 1-4. safety_level is not a diagnosis.\n";
 const INLINE_KNOWLEDGE_MANIFEST={
   "version": "2026-10-04.1",
   "packages": [],
@@ -180,7 +180,7 @@ const SKILLS63 = [
 const skillById = id => SKILLS63.find(s => s[0] === Number(id));
 
 
-const APP_VERSION = 'next-stage2-0.2.3';
+const APP_VERSION = 'next-stage2-0.2.4';
 const PROMPT_VERSION = 'stage2-0.2';
 const MEMORY_SCHEMA_VERSION = '1.1';
 const SAFETY_VERSION = '0.2-review-required';
@@ -192,6 +192,7 @@ function defaultState() {
     versions: { app:APP_VERSION, prompt:PROMPT_VERSION, memory:MEMORY_SCHEMA_VERSION, safety:SAFETY_VERSION, router:ROUTER_VERSION },
     lang: 'he',
     activeTopic: '',
+    practiceContext: { focusTopics: [], pending: '', turn: 0 },
     messages: [],
     profile: {
       values: [], interests: [], educationHistory: [], importantRelationships: [],
@@ -333,12 +334,12 @@ function detectTopics(text) {
     ['career', /\bjob\b|\bjobs\b|career|\bwork\b|cv|resume|interview|עבודה|קריירה|קורות חיים|ראיון/],
     ['education', /study|studies|education|university|college|degree|psychometric|לימודים|השכלה|אוניברסיטה|תואר|פסיכומטרי/],
     ['rights', /rights?|benefits?|eligibility|grants?|discharged soldier|זכויות|הטבות|זכאות|מענקים?|חייל משוחרר/],
-    ['relationships', /girlfriend|boyfriend|wife|husband|partner|relationship|family|חברה|חבר|אשתי|בעלי|בת זוג|בן זוג|זוגיות|משפחה/],
+    ['relationships', /girlfriend|boyfriend|wife|husband|partner|relationship|family|dating|date someone|start dating|meet someone|חברה|חבר|אשתי|בעלי|בת זוג|בן זוג|זוגיות|משפחה|דייט|להתחיל לצאת|להכיר מישהו|להכיר מישהי/],
     ['finance', /money|debt|budget|salary|income|expenses?|כסף|חוב|תקציב|שכר|הכנסה|הוצאות/],
     ['health', /pain|injury|sleep|exercise|doctor|health|כאב|פציעה|שינה|רופא|בריאות/],
     ['travel', /travel|trip|flight|backpack|טיול|נסיעה|טיסה/],
     ['skills', /skill|skills|what am i good at|civilian skills|יכולת|יכולות|כישורים|מיומנויות/],
-    ['emotional', /lost|angry|sad|stress|anxious|empty|emotional support|how i am feeling|אבוד|כועס|עצוב|לחץ|חרדה|ריק|תמיכה רגשית|מה שאני מרגיש/]
+    ['emotional', /lost|angry|sad|stress|anxious|empty|meaningful|meaning|purpose|emotional support|how i am feeling|אבוד|כועס|עצוב|לחץ|חרדה|ריק|משמעות|משמעותי|מטרה|תמיכה רגשית|מה שאני מרגיש/]
   ];
   for (const [name,re] of defs) if (re.test(t)) topics.push(name);
   return topics;
@@ -834,8 +835,92 @@ function selectTransitionTopic(topic){
   setTimeout(()=>sendUser(seed),40);
 }
 
+function practiceState(){
+  if(!state.practiceContext || typeof state.practiceContext!=='object'){
+    state.practiceContext={focusTopics:[],pending:'',turn:0};
+  }
+  return state.practiceContext;
+}
+
+function practiceUpdate(pending='', focusTopics=[]){
+  return {pending,focusTopics:[...new Set(focusTopics)],turn:(practiceState().turn||0)+1};
+}
+
+function isServiceExperienceAnswer(text){
+  return /combat|infantry|fighter|sharpshooter|sharp shooter|sniper|soldier|protect|building|patrol|commander|officer|medic|intel|logistic|cyber|unit|role|לוחם|קרבי|חי"ר|צלף|קלע|חייל|להגן|מבנה|מפקד|קצין|חובש|מודיעין|לוגיסט|סייבר|יחידה|תפקיד/i.test(String(text||''));
+}
+
+function extractServiceMemory(text){
+  const raw=String(text||'').trim();
+  const out={};
+  if(/combat|infantry|fighter|לוחם|קרבי|חי"ר/i.test(raw)) out.serviceFamily=state.lang==='he'?'קרבי':'combat';
+  if(/sharp\s*shooter|sharpshooter|sniper|צלף|קלע/i.test(raw)) out.role=state.lang==='he'?'קלע / צלף':'sharpshooter';
+  return out;
+}
+
+function pendingPracticeReply(text, safety){
+  const ctx=practiceState();
+  const he=state.lang==='he';
+  const lower=String(text||'').toLowerCase();
+
+  if(ctx.pending==='ninety_day_work_relationship'){
+    const wantsMeaning=/meaningful|meaning|purpose|משמעות|משמעותי|מטרה/i.test(lower);
+    const wantsDating=/dating|date|girlfriend|boyfriend|relationship|meet someone|דייט|לצאת|זוגיות|להכיר/i.test(lower);
+    if(wantsMeaning || wantsDating){
+      const goals=[];
+      if(wantsMeaning) goals.push(he?'למצוא עבודה או כיוון שמרגיש משמעותי':'Find work or a direction that feels meaningful');
+      if(wantsDating) goals.push(he?'להתחיל לצאת ולהכיר מישהי/מישהו':'Start dating and building a relationship');
+      return {
+        route:'career',
+        practice_update:practiceUpdate('career_goal_detail',['career','relationships']),
+        memory_updates:{
+          currentSituation:{currentFocus:he?'עבודה משמעותית + זוגיות':'meaningful work + relationships'},
+          goals:{day90:goals}
+        },
+        reply:he
+          ? 'זה כבר הרבה יותר קונקרטי: אתה רוצה למצוא משהו שמרגיש משמעותי, ובמקביל להתחיל לצאת ולהכיר. אלה שני יעדים אמיתיים, ולא צריך למחוק אחד כדי לעבוד על השני. הייתי מתחיל מהעבודה כי היא יכולה לתת מבנה וביטחון, ובמקביל משאיר מקום לחיים החברתיים. איזה סוג עבודה היה מרגיש לך משמעותי — עבודה עם אנשים, אחריות, שטח, טכנולוגיה, או משהו אחר?'
+          : "That gives us a much clearer picture: you want to find something that feels meaningful, and you also want to start dating. Those are two real goals, and we do not need to drop one to work on the other. I would start by making the work goal concrete because it can give structure and confidence, while still leaving room for your social life. What kind of work would feel meaningful to you — working with people, responsibility, hands-on work, technology, or something else?"
+      };
+    }
+  }
+
+  if(ctx.pending==='career_service_role' && isServiceExperienceAnswer(text)){
+    const serviceUpdates=extractServiceMemory(text);
+    const candidateIds=suggestCandidateSkills(text,state.profile.skills.map(x=>x.id),4);
+    return {
+      route:'career',
+      practice_update:practiceUpdate('service_skill_evidence',['career','skills']),
+      memory_updates:{
+        service:serviceUpdates,
+        currentSituation:{currentFocus:he?'תרגום הניסיון הצבאי לעבודה':'translating service experience into civilian work'}
+      },
+      candidate_skills:candidateIds.map(x=>({id:x.id,why:x.civilian})),
+      reply:he
+        ? 'זה נותן תמונה הרבה יותר ברורה. אתה מתאר שירות קרבי, קלע/צלף, אחריות להגן על חיילים אחרים והימצאות מוקדם בתוך מצבים מסוכנים. אני לא אקבע מזה אוטומטית שיש לך "מנהיגות" או "אומץ", אבל יש כמה יכולות ששווה לבדוק: עבודה תחת לחץ, אחריות לאחרים, עבודת צוות ושיקול דעת. על איזו מהן החברים או המפקדים באמת סמכו עליך בפועל?'
+        : "That gives me something concrete to work with. You describe combat service, sharpshooting, protecting other soldiers, and being early into high-risk situations. I would not automatically label that as 'leadership' or 'courage,' but it does give us several capabilities worth testing: working under pressure, responsibility for others, teamwork, and judgment. Which of those did other soldiers or commanders actually rely on you for?"
+    };
+  }
+
+  if(ctx.pending==='career_goal_detail' && isServiceExperienceAnswer(text)){
+    const serviceUpdates=extractServiceMemory(text);
+    return {
+      route:'career',
+      practice_update:practiceUpdate('service_skill_evidence',['career','skills']),
+      memory_updates:{service:serviceUpdates},
+      reply:he
+        ? 'הניסיון הזה חשוב כי הוא נותן חומר אמיתי לתרגום לעולם האזרחי. אני לא רוצה להפוך את עצם השירות לכישור בלי הוכחה, אבל אפשר לבדוק מה אנשים סמכו עליך לעשות תחת לחץ. מה הייתה האחריות שהכי הייתה "שלך" ושאחרים ציפו ממך לבצע היטב?'
+        : "That experience matters because it gives us real material to translate into civilian terms. I do not want to turn the fact of service itself into a skill without evidence, but we can look at what people actually relied on you to do under pressure. What responsibility felt most clearly yours — the thing others expected you to do well?"
+    };
+  }
+
+  return null;
+}
+
 function practiceReplyFor(text, safety){
-  if (safety.level === 3) return { reply:t().safetyConcern, route:'safety', memory_updates:{} };
+  if (safety.level === 3) return { reply:t().safetyConcern, route:'safety', memory_updates:{}, practice_update:practiceUpdate('safety',[]) };
+
+  const pending=pendingPracticeReply(text,safety);
+  if(pending) return pending;
 
   const topics=detectTopics(text);
   const route=routeMessage(text);
@@ -847,7 +932,9 @@ function practiceReplyFor(text, safety){
   const meaningfulTopics=topics.filter(x=>x!=='safety');
   if(meaningfulTopics.length >= 2){
     const focus=meaningfulTopics.map(x=>topicLabel(x,he)).join(' + ');
-    return {route, memory_updates:{currentSituation:{currentFocus:focus}}, reply:multiTopicPracticeReply(meaningfulTopics,he)};
+    const hasWorkRelationship=meaningfulTopics.includes('career') && meaningfulTopics.includes('relationships');
+    const pendingName=hasWorkRelationship?'ninety_day_work_relationship':'multi_topic_followup';
+    return {route, practice_update:practiceUpdate(pendingName,meaningfulTopics), memory_updates:{currentSituation:{currentFocus:focus}}, reply:multiTopicPracticeReply(meaningfulTopics,he)};
   }
 
   if(route==='career'){
@@ -866,7 +953,7 @@ function practiceReplyFor(text, safety){
           : "We can tailor an application to a specific role — CV, cover note, and examples that show fit. If you have the job description, paste it; if not, tell me which position you want to apply for."};
     }
     if(!knownService){
-      return {route, memory_updates:{currentSituation:{currentFocus:he?'עבודה וקריירה':'work and career'}},
+      return {route, practice_update:practiceUpdate('career_service_role',['career']), memory_updates:{currentSituation:{currentFocus:he?'עבודה וקריירה':'work and career'}},
         reply:he
           ? 'אפשר להתחיל בלי לבחור מקצוע מיד. קודם כדאי להבין מה כבר יש לך ביד — מה באמת עשית בשירות, מה היה באחריותך, ואילו סוגי משימות נתנו לך אנרגיה או דווקא כיבו אותך. מה היה התפקיד שלך בפועל, לא רק השם הרשמי שלו?'
           : "You don't need to choose a profession immediately. First it helps to understand what you already bring with you — what you actually did in service, what you were responsible for, and which kinds of tasks gave you energy or drained it. What was your real day-to-day role, beyond the official title?"};
@@ -946,23 +1033,24 @@ function practiceReplyFor(text, safety){
   }
 
   if(userTurns <= 1){
-    return {route:'general', memory_updates:{},
+    return {route:'general', practice_update:practiceUpdate('ninety_day_general',['planning']), memory_updates:{},
       reply:he
         ? 'לא לדעת עדיין מה הצעד הבא הוא נקודת התחלה לגיטימית. במקום לנסות לבחור עכשיו מקצוע או מסלול לכל החיים, אפשר להתחיל מהתקופה הקרובה ולראות מה צריך להתבהר. אם שלושת החודשים הקרובים היו מסתדרים טוב, מה היית רוצה שיהיה שונה בסופם?'
         : "Not knowing the next step yet is a legitimate starting point. Instead of trying to choose a profession or life path immediately, we can start with the next few months and see what needs to become clearer. If the next three months went reasonably well, what would you want to be different by the end of them?"};
   }
 
   if(userTurns <= 2){
-    return {route:'general', memory_updates:{},
+    return {route:'general', practice_update:practiceUpdate('avoidance_clarity',['planning']), memory_updates:{},
       reply:he
         ? 'לפעמים קל יותר לזהות כיוון דרך מה שאתה לא רוצה לחזור אליו. זה עוזר להבחין בין צורך במנוחה לבין רצון אמיתי לשנות כיוון. מה אתה יודע שאתה לא רוצה שהחיים האזרחיים שלך ייראו כמו?'
         : "Sometimes direction becomes clearer by identifying what you do not want to repeat. That helps distinguish needing a break from genuinely wanting a different kind of life. What do you already know you do not want your civilian life to look like?"};
   }
 
-  return {route:'general', memory_updates:{},
+  const previousFocus=practiceState().focusTopics||[];
+  return {route:'general', practice_update:practiceUpdate('freeform_followup',previousFocus), memory_updates:{},
     reply:he
-      ? 'אפשר להמשיך לבנות תמונה גם בלי המודל המקומי, אבל מצב התרגול מוגבל יותר. בינתיים נתקדם צעד אחד בכל פעם במקום לחזור על שאלון. מה הדבר האחד שהיית רוצה לקבל עליו החלטה או לעשות בו התקדמות השבוע?'
-      : "We can keep building the picture even without the local model, although Practice Mode is more limited. For now, we'll move one useful step at a time rather than repeating an intake. What is the one thing you'd most like to decide or make progress on this week?"};
+      ? 'מה שכתבת הוא מידע חדש, ולכן אני לא רוצה להחזיר אותך לאותה שאלה כללית. אני אשמור אותו כחלק מהתמונה ונמשיך ממנו. מה מתוך מה שאמרת עכשיו הכי חשוב שאבין לעומק לפני שנבחר את הצעד הבא?'
+      : "What you just wrote is new information, so I do not want to send you back to the same generic question. I'll keep it as part of the picture and continue from it. What part of what you just told me is most important for me to understand before we choose the next step?"};
 }
 
 async function sendUser(raw){
@@ -1015,7 +1103,7 @@ function buildPromptContext(text,safety){
   const ctx=compactContext(state); const serviceText=Object.values(ctx.service||{}).join(' ');
   const candidates = routeMessage(text)==='skills' || /career|work|cv|job|עבודה|קריירה|קורות/i.test(text)
     ? suggestCandidateSkills(serviceText, ctx.confirmedSkills.map(x=>x.id), 5) : [];
-  return { route:routeMessage(text), topics:detectTopics(text), safety, personalContext:ctx, candidateSkillHypotheses:candidates, knowledge:state.knowledge.packages.filter(p=>p.status==='approved').map(p=>({id:p.id,title:p.title,version:p.version})) };
+  return { route:routeMessage(text), topics:detectTopics(text), practiceContext:state.practiceContext, safety, personalContext:ctx, candidateSkillHypotheses:candidates, knowledge:state.knowledge.packages.filter(p=>p.status==='approved').map(p=>({id:p.id,title:p.title,version:p.version})) };
 }
 function minimumExternalContext(text){
   const route=routeMessage(text); const p=state.profile; const out={route};
@@ -1031,6 +1119,7 @@ function parseModelOutput(raw){
 }
 function applyOutput(out,safety){
   if (out.memory_updates) state=applyMemoryUpdates(state,out.memory_updates);
+  if (out.practice_update) state.practiceContext={...practiceState(),...out.practice_update};
   let reply=out.reply || t().practiceReply;
   if (safety.level===3 && !/danger|סכנה|professional|מקצוע/i.test(reply)) reply += '\n\n'+t().safetyConcern;
   state.messages.push({role:'assistant',text:reply,candidateSkills:(out.candidate_skills||[]).slice(0,5)});
