@@ -81,3 +81,19 @@ Checks now confirm that:
 - the previously repeated sentence is no longer used as the normal Practice Mode response
 
 The local LLM remains the intended main engine. Practice Mode is now a useful degraded mode rather than a repeated placeholder.
+
+
+## Multiple-priority conversation regression
+
+A real-phone test showed that the degraded Practice Mode used first-match routing: a reply such as "plan job girlfriend" matched "job" first and ignored the plan and relationship choices.
+
+The router now detects multiple topics before selecting a primary route, and both Practice Mode and the local-model context receive the full topic set. The system prompt also explicitly requires acknowledging all user-named areas before narrowing.
+
+Regression examples passed in English and Hebrew:
+
+- `plan job girlfriend` → acknowledges plan + work + relationship together
+- `job girlfriend` → connects work and relationship rather than dropping one
+- `money girlfriend` → connects financial pressure and relationship
+- `job study` → acknowledges both work and study
+- `תוכנית עבודה בת זוג` → acknowledges all three in Hebrew
+- `כסף וזוגיות` → acknowledges both in Hebrew
