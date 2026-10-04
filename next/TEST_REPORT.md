@@ -2,6 +2,8 @@
 
 **Date:** 4 October 2026
 
+**Retested app version:** `next-stage2-0.2.0`
+
 The current Next build was re-tested after the safety, memory, update and voice corrections.
 
 ## Automated logic checks
