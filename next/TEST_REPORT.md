@@ -37,6 +37,7 @@ The current Next build was re-tested after the safety, memory, update and voice 
 - no duplicate HTML IDs
 - no missing DOM references
 - manifest link present
+- reviewable system prompt file present with inline fallback
 - voice privacy disclosure present
 - read-aloud control present
 - Next uses its own mentor image
