@@ -4,6 +4,8 @@ Separate development build of the Guided Transition Companion. The existing app 
 
 ## Current build
 
+- Persistent transition choices panel: CV, Job applications, Work & career, My Skills, Studies, Rights & benefits, Money, Travel, Relationships & family, Emotional support. It is fixed on the side on wide screens and collapsible above the composer on smaller screens.
+
 - Local-first personal memory in the browser.
 - English/Hebrew with RTL support.
 - Service Experience Profile: service family, unit/group, role, rank, responsibilities, training, regular-service discharge date, reserve status/group, reserve-duty periods and reserve-service summary.
