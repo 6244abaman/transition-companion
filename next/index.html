@@ -157,14 +157,16 @@ const SKILLS63 = [
 const skillById = id => SKILLS63.find(s => s[0] === Number(id));
 
 
-const APP_VERSION = 'next-stage2-0.1.0';
-const MEMORY_SCHEMA_VERSION = '1.0';
-const SAFETY_VERSION = '0.1-review-required';
+const APP_VERSION = 'next-stage2-0.2.0';
+const PROMPT_VERSION = 'stage2-0.2';
+const MEMORY_SCHEMA_VERSION = '1.1';
+const SAFETY_VERSION = '0.2-review-required';
 const ROUTER_VERSION = '0.1';
 
 function defaultState() {
   return {
     version: APP_VERSION,
+    versions: { app:APP_VERSION, prompt:PROMPT_VERSION, memory:MEMORY_SCHEMA_VERSION, safety:SAFETY_VERSION, router:ROUTER_VERSION },
     lang: 'he',
     messages: [],
     profile: {
@@ -583,6 +585,8 @@ const I18N = {
 };
 
 let state = loadState();
+state.version = APP_VERSION;
+state.versions = { app:APP_VERSION, prompt:PROMPT_VERSION, memory:MEMORY_SCHEMA_VERSION, safety:SAFETY_VERSION, router:ROUTER_VERSION };
 let systemPrompt = '';
 let local = new LocalLLM(onLocalProgress);
 let shareResolver = null;
