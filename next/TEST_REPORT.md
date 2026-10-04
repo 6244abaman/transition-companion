@@ -97,3 +97,24 @@ Regression examples passed in English and Hebrew:
 - `job study` → acknowledges both work and study
 - `תוכנית עבודה בת זוג` → acknowledges all three in Hebrew
 - `כסף וזוגיות` → acknowledges both in Hebrew
+
+
+## Persistent choices panel regression
+
+The earlier persistent transition-topic box had been dropped from the Next interface. It has been restored.
+
+13/13 panel checks passed:
+
+- panel contains 10 topics
+- order preserves Work & career followed by My Skills
+- CV routes to CV-specific guidance
+- Job applications routes to application-specific guidance
+- Work & career routes to career guidance
+- My Skills routes to skills guidance
+- Studies routes to education guidance
+- Rights & benefits routes to verified-rights guidance
+- Money routes to financial guidance
+- Travel routes to travel guidance
+- Relationships & family routes to relationship guidance
+- Emotional support routes to emotional-support guidance
+- the panel is persistent: side box on desktop, collapsible box above the composer on smaller screens
