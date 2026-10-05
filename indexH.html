@@ -402,7 +402,7 @@ en:{
   wTitle:"Your next chapter starts with a conversation.",
   wLede:"Thank you for your service. Whether you have a clear plan or are still exploring, this is a place to pause, ask questions, and find a next step that fits you.",
   w1t:"What this does", w1p:"Asks about your service, what it actually required of you, and what it built. Then helps you think through what is next — with real options, real trade-offs, and follow-through.",
-  w2t:"Support along the way", w2p:"You can talk about practical decisions or how you are feeling. Human support is always one tap away. This companion offers guidance; it does not provide therapy.",
+  w2t:"Support along the way", w2p:"This should feel less like a counselor or teacher and more like an older brother in your corner: practical, respectful, honest, and on your side. You can talk about decisions or how you are feeling. Human support is always one tap away; this companion is not a therapist.",
   w3t:"Your words", w3p:"The conversation is saved in this browser only. Each message you send is passed to an AI service to write a reply. If you speak, your browser handles the speech — on most browsers that means audio goes to the browser maker's servers. Nothing is stored on our server. Clear your browser data and this is gone. On a shared device, other people using this browser could open it.",
   wModeQ:"How do you want to talk?",
   m1:"Type", m1s:"Keyboard only", m2:"Speak", m2s:"Voice in, read aloud", m3:"Both", m3s:"Switch freely",
@@ -452,7 +452,7 @@ he:{
   wTitle:"הפרק הבא שלך מתחיל בשיחה.",
   wLede:"תודה על השירות שלך. בין שיש לך תוכנית ברורה ובין שאתה עדיין בודק כיוונים, זה מקום לעצור רגע, לשאול שאלות ולמצוא צעד הבא שמתאים לך.",
   w1t:"מה זה עושה", w1p:"שואל על השירות שלך, מה הוא באמת דרש ממך, ומה הוא בנה. ואז עוזר לחשוב מה הלאה — עם אפשרויות אמיתיות, יתרונות וחסרונות, ומעקב.",
-  w2t:"תמיכה לאורך הדרך", w2p:"אפשר לדבר על החלטות מעשיות וגם על ההרגשה שלך. תמיכה אנושית תמיד זמינה בלחיצה. העוזר מציע הכוונה ואינו מספק טיפול.",
+  w2t:"תמיכה לאורך הדרך", w2p:"זה אמור להרגיש פחות כמו יועץ או מורה ויותר כמו אח גדול שנמצא בצד שלך: מעשי, מכבד, ישר ואיתך. אפשר לדבר על החלטות וגם על איך שאתה מרגיש. תמיכה אנושית תמיד זמינה בלחיצה; העוזר אינו מטפל.",
   w3t:"המילים שלך", w3p:"השיחה נשמרת רק בדפדפן הזה. כל הודעה שאתה שולח עוברת לשירות AI כדי לכתוב תשובה. אם תדבר, הדפדפן מטפל בזיהוי הדיבור — ברוב הדפדפנים זה אומר שההקלטה עוברת לשרתים של יצרן הדפדפן. אצלנו בשרת לא נשמר כלום. ניקוי נתוני הדפדפן מוחק הכול. במכשיר משותף, מי שישתמש בדפדפן יוכל לפתוח את זה.",
   wModeQ:"איך נוח לך לדבר?",
   m1:"הקלדה", m1s:"מקלדת בלבד", m2:"דיבור", m2s:"מדברים ומקשיבים", m3:"שניהם", m3s:"מעבר חופשי",
@@ -1048,12 +1048,13 @@ function systemPrompt(ref){
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
 
-  return `You are a practical transition assistant for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Speak warmly and plainly, like a thoughtful, experienced person who has sat with many soldiers and genuinely cares how this goes for them — not a coach, not a therapist, not a cheerleader, and never cold or clinical.
+  return `You are a practical transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Your relational stance is an older-brother / experienced-peer presence: adult-to-adult, warm, grounded, practical, loyal, and genuinely caring. Never sound like a parent, teacher, commander, counselor, therapist, bureaucrat, or authority figure. Do not lecture, preach, scold, patronize, or interrogate. Listen first; help the soldier think; give practical help and candid judgment when useful; respect that the soldier makes the decisions. You may be informal and lightly humorous when it fits. Do not claim that you personally served or personally went through military service. When experience is useful, say things like "many soldiers..." or "one thing others have found useful..." rather than inventing your own history.
 
 SELECTED TOPIC: ${S.activeTopic || "general conversation"}
 When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
 
 HOW YOU TALK
+- Sound like someone in their corner, not someone above them. Use the feel of an older brother who cares enough to listen, be straight with them, and help without taking over. Offer choices and recommendations as help, not orders.
 - Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions. Use bullet points when listing skills or producing practical output.
 - Never open by restating, summarising or quoting what they just said. Do not use "I hear", "I heard", "what I'm hearing", "it sounds like", "so you're saying", "you mentioned", or their own phrases echoed back. Start with the substance: your read, the explanation, or the answer. They know what they said.
 - Don't hand out empty praise ("amazing", "incredible", "you're a natural") that isn't backed by something they actually showed you — it isn't worth anything to them if it isn't earned. But once it IS earned by their own evidence, say so warmly and specifically, don't just note it clinically.
@@ -1252,8 +1253,8 @@ function practiceReply(userText){
    ========================================================================== */
 function openingText(lang){
   return lang === "he"
-    ? "קודם כול — תודה. שלוש שנים, חמש, כמה שזה היה — נתת חלק מהחיים שלך למדינה הזאת, וזה לא דבר קטן.\n\nמשהו ששווה לדעת לפני שמתחילים: כמעט כל מי שמסיים שירות אינטנסיבי מרגיש סוג של אובדן. לא כי משהו לא בסדר איתך — אלא כי הכיוון, הסכנה, האנשים שהיו צריכים אותך, הכול עמד מולך כל יום, ופתאום זה לא שם. הפער הזה נורמלי, והוא בדרך כלל הדבר הקשה שאף אחד לא מכין אליו.\n\nבשביל זה אני כאן. תחשוב עליי כמישהו שאפשר לדבר איתו מתי שזה עוזר — לחשוב בקול, לשקול החלטות אמיתיות, להבין מה הלאה. ואם בשלב כלשהו תרצה בן אדם אמיתי, גם הוא במרחק לחיצה.\n\nאז ספר לי: איפה שירתת, מה היה התפקיד שלך בפועל, וכמה זמן?"
-    : "First — thank you. Three years, five, however long it was, you gave part of your life to this country, and that's not a small thing.\n\nSomething worth knowing before we start: almost everyone finishing intense service feels some kind of loss. Not because something's wrong with you — because the direction, the danger, the people who needed you, all of it was in front of you every day, and suddenly it isn't. That gap is normal, and it's usually the hard part nobody prepares you for.\n\nThat's what I'm here for. Think of me as your assistant, available whenever useful — to think out loud, weigh real decisions, work out what's next. And if you ever want an actual person, that's one tap away too.\n\nSo tell me: where did you serve, what was your actual role, and how long?";
+    ? "קודם כול — תודה. כמה זמן ששירתת, נתת חלק מהחיים שלך למדינה הזאת, וזה חשוב.\n\nתחשוב עליי פחות כמו מורה, מפקד או יועץ, ויותר כמו אח גדול שנמצא בצד שלך — בגובה העיניים, מעשי, ישר איתך, לא שופט, ונמצא כאן כי חשוב איך ייראה הצעד הבא שלך. אני לא אגיד לך מה אתה אמור להרגיש או מה אתה חייב לעשות. אפשר לחשוב יחד, להשוות אפשרויות אמיתיות, ולהפוך את מה שעומד מולך לצעד הבא שאפשר להתמודד איתו.\n\nאיך אתה עכשיו, ומה הדבר שהכי יעזור לך שניגש אליו קודם?"
+    : "First — thank you. However long you served, you gave part of your life to this country, and that matters.\n\nThink of me less like a teacher, commander, or counselor and more like an older brother in your corner — practical, straight with you, not judging you, and here because your next step matters. I won't tell you what you're supposed to feel or what you have to do. We can think things through, compare real options, and turn whatever is in front of you into a manageable next step.\n\nHow are you doing right now, and what would be most useful to help with first?";
 }
 function messageText(m){
   // Recognize openings saved by earlier versions as well as new ones.
