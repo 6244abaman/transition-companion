@@ -1,16 +1,22 @@
 {
   "name": "transition-companion",
   "version": "2.0.0",
-  "description": "Guided Transition Companion — dialogue-first support for Israelis finishing IDF service",
+  "description": "Guided Transition Companion \u2014 dialogue-first support for Israelis finishing IDF service",
   "private": true,
   "scripts": {
-    "test": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js",
+    "test": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js && node voice-check.js && node --test tests/sync.test.js tests/reminders.test.js tests/safety-rights.test.js tests/integration-ui.test.js tests/offline.test.js",
     "test:flow": "node tests/flow.test.js",
     "test:paths": "node tests/paths.test.js",
     "inspect": "node tests/inspector.test.js",
-    "test:journey": "node tests/journey.test.js"
+    "test:journey": "node tests/journey.test.js",
+    "start": "node server/sync-server.js",
+    "test:integration": "node --test tests/sync.test.js tests/reminders.test.js tests/safety-rights.test.js tests/integration-ui.test.js tests/offline.test.js",
+    "test:live": "node tests/live-ai-smoke.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=24 <25"
   }
 }

@@ -1,6 +1,6 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html','utf8');
+const html = fs.readFileSync(__dirname + '/../index.html','utf8');
 const results = [];
 const check = (n, ok, d) => { results.push(ok); console.log(ok?'✅':'❌', n, d!=null?'— '+d:''); };
 
@@ -8,7 +8,7 @@ function boot(storage){
   // localStorage must exist BEFORE the page scripts run, or the app boots empty
   return new JSDOM(html,{
     url:'https://localhost/', runScripts:'dangerously', pretendToBeVisual:true,
-    beforeParse(win){ if (storage) win.localStorage.setItem('gtc_v2_state', storage); }
+    beforeParse(win){ require('./browser-env').prepare(win); if (storage) win.localStorage.setItem('gtc_v2_state', storage); }
   });
 }
 const wait = ms => new Promise(r=>setTimeout(r,ms));

@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v6-journey-profile";
+const CACHE = "tc-v7-continuity-tools";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -27,12 +27,23 @@ const APP_FILES = [
   "./my-journey.js",
   "./journey-store.js",
   "./journey-backup.js",
+  "./journey-sync.js",
+  "./journey-reminders.js",
+  "./journey-tools-ui.js",
+  "./journey-rights.js",
+  "./ai-consent.js",
+  "./response-schema.js",
+  "./skills-source.js",
+  "./companion-safety.js",
+  "./life-skills-ui.js",
   "./companion-mentor.jpeg",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
   "./apple-touch-icon.png"
 ];
+
+const APP_PATHS = new Set(APP_FILES.map(file => new URL(file, self.location.href).pathname));
 
 // Install: save the app files.
 self.addEventListener("install", event => {
@@ -45,7 +56,7 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k.startsWith("tc-") && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -70,6 +81,8 @@ self.addEventListener("fetch", event => {
 
   // Anything else from another website (including the proxy): left alone.
   if (url.origin !== self.location.origin) return;
+  // Cache only named public assets, never same-origin API responses or private data.
+  if (!APP_PATHS.has(url.pathname)) return;
 
   // The app's own files: internet first, saved copy if offline.
   event.respondWith(
@@ -86,4 +99,10 @@ self.addEventListener("fetch", event => {
           .then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : undefined))
       )
   );
+});
+
+// Generic notification click opens the private local action list.
+self.addEventListener("notificationclick",event=>{
+  event.notification.close();
+  event.waitUntil(clients.openWindow(new URL("./my-journey.html#actions",self.location.href).href));
 });
