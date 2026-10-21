@@ -54,7 +54,7 @@
     if (type === "goals") return { ...common, category: ["work", "education", "business", "life", "other"].includes(v.category) ? v.category : "other", targetDate: date(v.targetDate) };
     if (type === "actions") return { ...common, goalId: str(v.goalId, 90), dueDate: date(v.dueDate),
       completedAt: common.status === "done" ? str(v.completedAt, 40) || iso() : "" };
-    if (type === "education") return { ...common, field: str(v.field, 180), institution: str(v.institution, 180),
+    if (type === "education") return { ...common, goalId: str(v.goalId, 90), field: str(v.field, 180), institution: str(v.institution, 180),
       targetDate: date(v.targetDate), nextStep: str(v.nextStep, 400) };
     return { ...common, targetRole: str(v.targetRole, 180),
       language: v.language === "he" ? "he" : "en", summary: str(v.summary, 4000),
@@ -229,7 +229,7 @@
     if (JSON.stringify(raw).length > 1048576) throw new Error("Backup exceeds 1 MB");
     const incoming = normalize(raw);
     if (mode !== "merge" && mode !== "replace") throw new Error("Choose merge or replace");
-    if (mode === "replace") return persist(incoming);
+    if (mode === "replace") { incoming.privacy.shareWithAI = false; return persist(incoming); }
     return write(current => {
       TYPES.forEach(type => {
         const map = new Map(current[type].map(x => [x.id, x]));
@@ -246,8 +246,11 @@
   function erase(options) {
     const ls = storage();
     if (!ls) throw new Error("Browser storage unavailable");
-    ls.removeItem(KEY);
     if (options && options.assessment) ls.removeItem(SKILLS_KEY);
+    // Partial reset must stay reset, not automatically restore legacy skills on the next read.
+    if (options && !options.assessment && !options.companion) {
+      const fresh = blank(); fresh.meta.skillsImported = true; persist(fresh);
+    } else ls.removeItem(KEY);
     if (options && options.companion) {
       ls.removeItem("gtc_v2_state");
       ls.removeItem("gtc_H_state");
