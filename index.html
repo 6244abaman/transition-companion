@@ -343,6 +343,15 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
     <div class="note" id="diagOut" style="display:none;font-size:13.5px"></div>
+    <section id="journeyWelcome" aria-label="My ongoing profile" style="border:1px solid #a4c4cf;border-radius:14px;background:#ecf5f6;padding:16px;margin:18px 0;color:#183d4d">
+      <h3 style="margin:0 0 7px;font-size:1.12rem">My Journey — what I've learned and where I'm going</h3>
+      <p style="margin:0 0 12px">Keep your skills, goals, CV drafts, education plans and next steps in one place. You can return, edit, export or erase your information.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="./my-journey.html?lang=en" style="display:inline-block;background:#145b76;color:white;font-weight:700;text-decoration:none;padding:12px 16px;border-radius:10px">Open My Journey</a>
+        <a href="./skills-business.html?lang=en" style="display:inline-block;border:1px solid #155b73;color:#155b73;font-weight:700;text-decoration:none;padding:11px 15px;border-radius:10px">Discover my 36 skills</a>
+      </div>
+      <p style="font-size:.81rem;margin:11px 0 0;opacity:.9">Saved locally in this browser. Sharing profile details with AI is off by default.</p>
+    </section>
   </div>
 </main>
 
@@ -1911,9 +1920,6 @@ function sizeTopicPanel(){ $("topicPanel").open=topicBreakpoint.matches; }
 topicBreakpoint.addEventListener("change",sizeTopicPanel);
 sizeTopicPanel(); paintTopicPanel();
 </script>
-
-<a id="momentum-business-skills-link" href="./skills-business.html?lang=en" style="position:fixed;bottom:14px;right:14px;z-index:9999;background:#087a89;color:white;padding:12px 16px;border-radius:14px;font:600 14px Arial,sans-serif;box-shadow:0 3px 12px #173d4d55;text-decoration:none;max-width:230px;text-align:center" aria-label="Discover your 36 career and business skills">Discover your 36 career and business skills</a>
-<a id="momentum-journey-link" href="./my-journey.html?lang=en" style="position:fixed;bottom:84px;right:14px;z-index:9999;background:#194765;color:#fff;padding:12px 16px;border-radius:14px;font:600 14px Arial,sans-serif;box-shadow:0 3px 12px #173d4d55;text-decoration:none;max-width:230px;text-align:center" aria-label="My Journey — ongoing profile">My Journey · Ongoing profile</a>
 
 <script id="journey-offline-register">
 if ("serviceWorker" in navigator && location.protocol === "https:") {
