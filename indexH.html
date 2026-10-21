@@ -1177,7 +1177,9 @@ function systemPrompt(ref){
   // Unlike the conversation text sent for the current question, saved profile
   // details are included only when the soldier explicitly enables sharing.
   const journey = window.MomentumJourney ? window.MomentumJourney.read() : null;
-  const profileAllowed = !!(journey && journey.privacy.shareWithAI);
+  const recentRequest=(String(S.activeTopic||"")+" "+S.messages.filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
+  const profileRelevant=/(?:\bcv\b|\br[eé]sum[eé]\b|work|job|career|study|school|college|university|course|training|educat|business|employ|interview|goal|plan|next step|action|skill|profile|journey|עבודה|משרה|מקצוע|קריירה|לימוד|לימודים|קורס|הכשרה|אוניברסיט|עסק|ראיון|מטרה|תכנית|תוכנית|צעד|פעולה|כישור|מיומנ|פרופיל|מסע|קורות חיים)/i.test(recentRequest);
+  const profileAllowed = !!(journey && journey.privacy.shareWithAI && profileRelevant);
   const state =
     "PHASE: "+S.phase+
     "\nCONFIRMED STRENGTHS: "+(profileAllowed && journey.privacy.shareSkills ? (p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet") : "not shared")+
@@ -1186,8 +1188,6 @@ function systemPrompt(ref){
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
   const businessContext=businessSkillContext();
-  const recentRequest=(String(S.activeTopic||"")+" "+S.messages.filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
-  const profileRelevant=/(?:\bcv\b|\br[eé]sum[eé]\b|work|job|career|study|school|college|university|course|training|educat|business|employ|interview|goal|plan|next step|action|skill|profile|journey|עבודה|משרה|מקצוע|קריירה|לימוד|לימודים|קורס|הכשרה|אוניברסיט|עסק|ראיון|מטרה|תכנית|תוכנית|צעד|פעולה|כישור|מיומנ|פרופיל|מסע|קורות חיים)/i.test(recentRequest);
   const journeyContext=(journey && profileRelevant) ? window.MomentumJourney.aiContext(journey,S.lang) : "";
   return `You are a practical transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Your relational stance is an older-brother / experienced-peer presence: adult-to-adult, warm, grounded, practical, loyal, and genuinely caring. Never sound like a parent, teacher, commander, counselor, therapist, bureaucrat, or authority figure. Do not lecture, preach, scold, patronize, or interrogate. Listen first; help the soldier think; give practical help and candid judgment when useful; respect that the soldier makes the decisions. You may be informal and lightly humorous when it fits. Do not claim that you personally served or personally went through military service. When experience is useful, say things like "many soldiers..." or "one thing others have found useful..." rather than inventing your own history.
 
