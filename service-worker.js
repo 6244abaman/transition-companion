@@ -3,7 +3,7 @@
    Lets the app open without internet and makes it installable.
 
    What it does:
-   - Keeps a copy of the app's own files on the phone (less than 1 MB).
+   - Keeps a copy of the app's own files on the phone for offline access.
    - Always tries the internet first, so updates you push to
      GitHub show up the next time someone opens the app online.
    - If there is no internet, it opens the saved copy.
@@ -17,11 +17,16 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v5-direct-topic-assistant";
+const CACHE = "tc-v6-journey-profile";
 const APP_FILES = [
   "./",
   "./index.html",
   "./indexH.html",
+  "./skills-business.html",
+  "./my-journey.html",
+  "./my-journey.js",
+  "./journey-store.js",
+  "./journey-backup.js",
   "./companion-mentor.jpeg",
   "./manifest.json",
   "./icon-192.png",
