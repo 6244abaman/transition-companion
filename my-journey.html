@@ -165,5 +165,13 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 </form></dialog>
 </main>
 <footer id="footerText">Momentum Transition Companion · Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.</footer>
+
+<script id="journey-offline-register">
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  });
+}
+</script>
 </body>
 </html>
