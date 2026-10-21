@@ -77,6 +77,10 @@
       deleteConfirm: "Delete this entry?", deletionConfirm: "Delete the selected local data? This cannot be undone.",
       unencryptedConfirm: "This JSON backup contains personal details and has no password. Download anyway?",
       passwordPrompt: "Enter a password (10+ characters). You must remember it to restore your backup:",
+      passwordTitleExport: "Protect your Journey backup", passwordTitleImport: "Unlock your Journey backup",
+      passwordInfoExport: "Choose a strong password (10+ characters). It will not be stored and cannot be recovered.",
+      passwordInfoImport: "Enter the password used when this encrypted backup was created.",
+      passwordLabel: "Backup password", passwordAgainLabel: "Repeat password", passwordSubmit: "Continue", passwordCancel: "Cancel",
       passwordRepeat: "Repeat your backup password:", passwordMismatch: "Passwords do not match.",
       missingBackup: "Choose a backup file first.", importConfirm: "Replace your current Journey entries with this backup? Current Journey entries not in the backup will be lost.",
       imported: "Profile restored in this browser. AI sharing remains off until you explicitly enable it.",
@@ -160,6 +164,10 @@
       deleteConfirm: "למחוק את הרשומה?", deletionConfirm: "למחוק את המידע המקומי שנבחר? לא ניתן לבטל פעולה זו.",
       unencryptedConfirm: "קובץ הגיבוי כולל מידע אישי ללא הגנת סיסמה. להוריד בכל זאת?",
       passwordPrompt: "בחרו סיסמה לגיבוי (לפחות 10 תווים). תצטרכו אותה לשחזור:",
+      passwordTitleExport: "הגנה על גיבוי המסע", passwordTitleImport: "פתיחת גיבוי המסע",
+      passwordInfoExport: "בחרו סיסמה חזקה (לפחות 10 תווים). הסיסמה לא תישמר ולא ניתן לשחזר אותה.",
+      passwordInfoImport: "הזינו את הסיסמה שנבחרה בזמן יצירת הגיבוי המוצפן.",
+      passwordLabel: "סיסמת גיבוי", passwordAgainLabel: "הזינו את הסיסמה שוב", passwordSubmit: "המשך", passwordCancel: "ביטול",
       passwordRepeat: "הזינו שוב את סיסמת הגיבוי:", passwordMismatch: "הסיסמאות אינן תואמות.",
       missingBackup: "בחרו תחילה קובץ גיבוי.", importConfirm: "להחליף את פרטי המסע הקיימים בנתוני הגיבוי? נתונים שאינם בגיבוי יאבדו.",
       imported: "הפרופיל שוחזר בדפדפן. השיתוף עם AI נותר כבוי עד שתפעילו אותו.",
@@ -512,13 +520,46 @@
     try{await navigator.clipboard.writeText(cvText(item));notify(T().saved)}
     catch(e){notify(T().error+(e.message||"Clipboard unavailable"),true)}
   }
+  // Backup passwords are entered into masked fields, never plain-text prompts.
+  function askPassword(isExport){
+    return new Promise(resolve=>{
+      const dialog=$("passwordDialog"),form=$("passwordForm"),one=$("passwordValue"),
+        twice=$("passwordAgain");
+      one.value="";twice.value="";
+      $("passwordTitle").textContent=T()[isExport?"passwordTitleExport":"passwordTitleImport"];
+      $("passwordInfo").textContent=T()[isExport?"passwordInfoExport":"passwordInfoImport"];
+      $("passwordLabel").textContent=T().passwordLabel;
+      $("passwordAgainLabel").textContent=T().passwordAgainLabel;
+      $("passwordSubmit").textContent=T().passwordSubmit;
+      $("passwordCancel").textContent=T().passwordCancel;
+      $("passwordAgainWrap").hidden=!isExport;twice.required=isExport;
+      one.minLength=isExport?10:1;
+      let settled=false;
+      const finish=value=>{
+        if(settled)return;
+        settled=true;
+        one.value="";twice.value="";
+        if(typeof dialog.close==="function")dialog.close();else dialog.removeAttribute("open");
+        resolve(value);
+      };
+      form.onsubmit=ev=>{
+        ev.preventDefault();
+        const first=one.value;
+        if(isExport&&first.length<10){notify(T().error+"10+ characters required",true);return;}
+        if(isExport&&first!==twice.value){notify(T().passwordMismatch,true);return;}
+        if(!first){notify(T().error+"Password required",true);return;}
+        finish(first);
+      };
+      $("passwordCancel").onclick=()=>finish(null);
+      dialog.oncancel=ev=>{ev.preventDefault();finish(null)};
+      if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
+      one.focus();
+    });
+  }
   async function encryptedExport(){
     if(!Backup||!window.crypto||!window.crypto.subtle)return notify(T().secureOnly,true);
-    const password=window.prompt(T().passwordPrompt);
+    const password=await askPassword(true);
     if(password===null)return;
-    const confirmPass=window.prompt(T().passwordRepeat);
-    if(confirmPass===null)return;
-    if(password!==confirmPass){notify(T().passwordMismatch,true);return;}
     try{
       const encrypted=await Backup.encrypt(profile,password);
       download(JSON.stringify(encrypted,null,2),"my-journey-protected.journey");
@@ -535,8 +576,9 @@
     if(file.size>2000000)return notify(T().error+"File too large",true);
     try{
       let data=JSON.parse(await file.text());
-      if(data.format===Backup.FORMAT){
-        const password=prompt(T().passwordPrompt);
+      if(data.format&&/^momentum-journey-encrypted/.test(data.format)){
+        if(!Backup)throw new Error(T().secureOnly);
+        const password=await askPassword(false);
         if(password===null)return;
         data=await Backup.decrypt(data,password);
       }
