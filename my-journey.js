@@ -325,7 +325,7 @@
     row.append(button(T().edit,()=>openEditor(type,record),"small"));
     if(type==="goals")row.append(button(T().nextActionForGoal,()=>openEditor("actions",{goalId:record.id}),"small"));
     if(type==="education"&&record.nextStep)row.append(button(T().makeStep,()=>{
-      const x=Store.upsert("actions",{title:record.nextStep,notes:record.title,status:"todo"});
+      const x=Store.upsert("actions",{title:record.nextStep,goalId:record.goalId||"",notes:record.title,status:"todo"});
       if(x){notify(T().saved);view("actions")}
     },"small"));
     if(type==="actions")row.append(button(record.status==="done"?T().undo:T().done,
@@ -361,7 +361,7 @@
         detail(card,T().notes,x.notes);
       }
       if(type==="education"){
-        meta(card,x.institution?T().institution+": "+x.institution:"",x.targetDate?T().target+": "+x.targetDate:"");
+        const linkedGoal=profile.goals.find(g=>g.id===x.goalId);meta(card,linkedGoal?T().goal+": "+linkedGoal.title:"",x.institution?T().institution+": "+x.institution:"",x.targetDate?T().target+": "+x.targetDate:"");
         detail(card,T().field,x.field);
         detail(card,T().nextStep,x.nextStep);
         detail(card,T().notes,x.notes);
@@ -416,7 +416,7 @@
   const fieldDefs = {
     goals: ["title","category","status","targetDate","notes"],
     actions: ["title","goalId","status","dueDate","notes"],
-    education: ["title","field","institution","status","targetDate","nextStep","notes"],
+    education: ["title","goalId","field","institution","status","targetDate","nextStep","notes"],
     cvs: ["title","targetRole","language","status","summary","bullets","notes"]
   };
   function labelFor(name){return {
@@ -555,7 +555,7 @@
       const all=$("deleteAll").checked;
       Store.erase({assessment:all,companion:all});
       // A partial erase should not silently seed old skills back into Journey.
-      if(!all)Store.write(p=>({...Store.blank(),meta:{skillsImported:true}}));
+
       $("deleteAll").checked=false;
       notify(T().deleted);view("overview");
     });
