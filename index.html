@@ -776,7 +776,7 @@ function buildReference(){
   if (c.interview) add("interview-story guide", INTERVIEW_GUIDE);
   if (c.job || c.edu) add(c.job ? "work & study guide" : "study guide", DIRECTION_GUIDE + (c.edu ? EDU_ADD : ""));
 
-  const allowOldProfile = !!(window.MomentumJourney && window.MomentumJourney.read().privacy.shareWithAI);
+  const allowOldProfile = !!(window.MomentumJourney && window.MomentumJourney.read().privacy.shareWithAI && window.MomentumJourney.read().privacy.shareSkills);
   const known = (allowOldProfile?S.profile.strengths:[]).filter(s => REF_SKILLS[s.id]).slice(0,6);
   if (wantsDoc && known.length)
     add("meaning of confirmed skills", "WHAT THEIR CONFIRMED SKILLS MEAN IN PRACTICE (use to translate; do not quote):\n" +
@@ -1073,6 +1073,44 @@ function turnNode(m, idx){
     cb.onclick = () => copyText(m.text, cb);
     wrap.appendChild(cb);
   }
+  if (window.MomentumJourney && m.role === "assistant" && m.doc) {
+    // AI-generated CV wording becomes part of the profile only after a soldier clicks Save.
+    const at=typeof idx==="number" ? idx : S.messages.length-1;
+    const previous=[...S.messages.slice(0,at)].reverse().find(x=>x.role==="user");
+    const cvRequested=/(?:\bcv\b|\br[eé]sum[eé]\b|curriculum vitae|קורות\s*חיים)/i.test(previous&&previous.text||"");
+    if(cvRequested){
+      const saveCV=el("button","copy",S.lang==="he"?"שמירת טיוטת קורות חיים במסע שלי":"Save CV draft to My Journey");
+      saveCV.onclick=()=>{
+        if(!confirm(S.lang==="he"?"לשמור את הנוסח כטיוטה אישית הניתנת לעריכה? יש לבדוק אותו לפני שיתוף.":"Save this AI-generated text as an editable CV draft? Review it for accuracy before sharing."))return;
+        try{
+          const lines=String(m.text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+          const recordId=m.journeyCVId||"chat-cv-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8);
+          window.MomentumJourney.upsert("cvs",{
+            id:recordId,title:S.lang==="he"?"טיוטת קורות חיים מהשיחה":"CV draft from Companion",
+            language:S.lang,status:"draft",
+            summary:lines.slice(0,3).join(" ").slice(0,4000),
+            bullets:lines.slice(3,53),notes:"AI-generated draft. Soldier must verify."
+          });
+          m.journeyCVId=recordId;save();
+          saveCV.textContent=S.lang==="he"?"הטיוטה נשמרה ✓":"Draft saved ✓";
+        }catch(e){alert((S.lang==="he"?"לא ניתן לשמור: ":"Could not save: ")+e.message)}
+      };
+      wrap.appendChild(saveCV);
+    }
+  }
+
+  if (window.MomentumJourney && m.role === "assistant" && m.doc) {
+    const saveAction=el("button","copy",S.lang==="he"?"שמירת צעד להמשך":"Save a next action");
+    saveAction.onclick=()=>{
+      const title=prompt(S.lang==="he"?"איזו פעולה מעשית תרצו לשמור?":"Which practical next action would you like to save?");
+      if(!title||!title.trim())return;
+      try{
+        window.MomentumJourney.upsert("actions",{title:title.trim(),status:"todo"});
+        saveAction.textContent=S.lang==="he"?"הפעולה נשמרה ✓":"Action saved ✓";
+      }catch(e){alert((S.lang==="he"?"לא ניתן לשמור: ":"Could not save: ")+e.message)}
+    };
+    wrap.appendChild(saveAction);
+  }
 
   if (m.surfaced && m.surfaced.length){
     const s = el("div","surface");
@@ -1089,6 +1127,20 @@ function turnNode(m, idx){
       if (pr.why) b.appendChild(el("small",null,pr.why));
       b.onclick = () => sendUser(pr.title);
       p.appendChild(b);
+      if(window.MomentumJourney && pr.title){
+        const saveGoal=el("button","copy",S.lang==="he"?"שמירה כמטרה אפשרית":"Save as possible goal");
+        saveGoal.onclick=()=>{
+          if(!confirm(S.lang==="he"?"להוסיף את ההצעה למטרות לבדיקה?":"Add this suggestion as a goal to explore?"))return;
+          try{
+            const journey=window.MomentumJourney.read();
+            const title=String(pr.title).trim();
+            if(journey.goals.some(g=>g.title.toLowerCase()===title.toLowerCase()))return;
+            window.MomentumJourney.upsert("goals",{title,status:"exploring",notes:String(pr.why||"")});
+            saveGoal.textContent=S.lang==="he"?"המטרה נשמרה ✓":"Goal saved ✓";
+          }catch(e){alert((S.lang==="he"?"לא ניתן לשמור: ":"Could not save: ")+e.message)}
+        };
+        p.appendChild(saveGoal);
+      }
     });
     wrap.appendChild(p);
   }
@@ -1128,10 +1180,9 @@ function systemPrompt(ref){
   const profileAllowed = !!(journey && journey.privacy.shareWithAI);
   const state =
     "PHASE: "+S.phase+
-    "\nCONFIRMED STRENGTHS: "+(profileAllowed ? (p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet") : "not shared")+
-    "\nCOSTS NAMED: "+(profileAllowed ? (p.costs.join("; ")||"none yet") : "not shared")+
-    "\nOPEN QUESTIONS: "+(profileAllowed ? (p.open.join("; ")||"none yet") : "not shared")+
-    "\nDIRECTIONS RAISED: "+(profileAllowed ? (p.directions.map(d=>d.title).join("; ")||"none yet") : "not shared")+
+    "\nCONFIRMED STRENGTHS: "+(profileAllowed && journey.privacy.shareSkills ? (p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet") : "not shared")+
+    "\nOTHER PRIVATE PROFILE NOTES: not shared"+
+    "\nUNCONFIRMED CONVERSATION SUGGESTIONS: not shared"+
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
   const businessContext=businessSkillContext();
