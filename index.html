@@ -838,6 +838,84 @@ function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ r
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 const L = () => T[S.lang];
 
+/* Bridge between Momentum 36-skill self-assessment and this ongoing private profile.
+   Ratings are self-reports. Only soldier-confirmed examples can be reused in drafts.
+   AI sharing of these examples is opt-in and off by default. */
+const BUSINESS_SKILL_NAMES=[{"id":1,"en":"Finishing the Job","he":"התמדה עד השלמת המשימה"},{"id":2,"en":"Working Under Pressure","he":"תפקוד תחת לחץ"},{"id":3,"en":"Planning","he":"תכנון"},{"id":4,"en":"Time Management","he":"ניהול זמן"},{"id":5,"en":"Improvisation","he":"אלתור"},{"id":6,"en":"Technological Know-How","he":"יכולת טכנולוגית"},{"id":7,"en":"Prioritization","he":"קביעת סדרי עדיפויות"},{"id":8,"en":"Calculated Risk-Taking","he":"נטילת סיכונים מחושבת"},{"id":9,"en":"Leading Processes","he":"הובלת תהליכים"},{"id":10,"en":"Operating Independently","he":"עבודה עצמאית"},{"id":11,"en":"Leadership","he":"מנהיגות"},{"id":12,"en":"Teamwork","he":"עבודת צוות"},{"id":13,"en":"Leading People","he":"הובלת אנשים"},{"id":14,"en":"Teaching Skills","he":"הדרכת מיומנויות"},{"id":15,"en":"Working with Different People","he":"עבודה עם אנשים שונים"},{"id":16,"en":"Service Orientation","he":"תודעת שירות"},{"id":17,"en":"Organizing & Managing","he":"ארגון וניהול"},{"id":18,"en":"Discipline","he":"משמעת"},{"id":19,"en":"Resilience","he":"חוסן והתאוששות"},{"id":20,"en":"Emotional Regulation","he":"ויסות רגשי"},{"id":21,"en":"Learning from Failure","he":"למידה מכישלון"},{"id":22,"en":"Managing Uncertainty","he":"התמודדות עם אי-ודאות"},{"id":23,"en":"Decision-Making","he":"קבלת החלטות"},{"id":24,"en":"Problem-Solving","he":"פתרון בעיות"},{"id":25,"en":"Thinking Outside the Box","he":"חשיבה מחוץ לקופסה"},{"id":26,"en":"Recognizing Opportunities","he":"זיהוי הזדמנויות"},{"id":27,"en":"Pattern Recognition","he":"זיהוי דפוסים"},{"id":28,"en":"Adapting to Change","he":"הסתגלות לשינויים"},{"id":29,"en":"Thinking Big","he":"חשיבה רחבה"},{"id":30,"en":"Flexibility","he":"גמישות"},{"id":31,"en":"Trustworthiness","he":"אמינות"},{"id":32,"en":"Work Ethic / Integrity","he":"מוסר עבודה ויושרה"},{"id":33,"en":"Responsibility","he":"אחריות"},{"id":34,"en":"Professionalism","he":"מקצועיות"},{"id":35,"en":"Communication & Expression","he":"תקשורת והבעה"},{"id":36,"en":"Creativity","he":"יצירתיות"}];
+const BUSINESS_SKILL_KEY="momentum-business-skills-v1";
+function syncBusinessSkills(){
+  if(!S.profile||typeof S.profile!=="object") S.profile={strengths:[],costs:[],open:[],directions:[]};
+  if(!Array.isArray(S.profile.businessSkills)) S.profile.businessSkills=[];
+  try {
+    const raw=JSON.parse(localStorage.getItem(BUSINESS_SKILL_KEY)||"null");
+    if(raw&&raw.answers&&typeof raw.answers==="object"){
+      S.profile.businessSkills=BUSINESS_SKILL_NAMES.flatMap(n=>{
+        const a=raw.answers[n.id];
+        if(!a||!Number.isInteger(a.rating)||a.rating<1||a.rating>7)return [];
+        return [{id:n.id,en:n.en,he:n.he,rating:a.rating,
+          evidence:String(a.evidence||"").slice(0,1500),
+          confirmed:!!a.confirmed&&!!String(a.evidence||"").trim()}];
+      });
+    }
+  }catch(e){console.warn("Skills profile sync unavailable",e)}
+}
+syncBusinessSkills();
+function businessSkillContext(){
+  if(!S.profile.shareBusinessSkillsWithAI)return "";
+  return (S.profile.businessSkills||[])
+    .filter(x=>x.confirmed&&x.evidence)
+    .sort((a,b)=>b.rating-a.rating).slice(0,8)
+    .map(x=>"- "+x.en+" (self-rated "+x.rating+"/7): "+x.evidence)
+    .join("\n");
+}
+function businessSkillsPanel(body){
+  const b=S.profile.businessSkills||[];
+  const section=el("div","block");
+  section.appendChild(el("h3",null,S.lang==="he"?"36 מיומנויות לקריירה ולעסקים":"36 career and business skills"));
+  section.appendChild(el("div","empty",S.lang==="he"
+    ?"הדירוגים הם הערכה עצמית. רק דוגמאות שאישרתם יוכלו לשמש בטיוטות."
+    :"Ratings are self-assessments. Only examples you confirm can be used in drafts."));
+  const link=el("a","prop",S.lang==="he"?"פתיחה או עדכון של הערכת המיומנויות":"Open or update my skill assessment");
+  link.href="./skills-business.html?lang="+S.lang;link.style.display="block";link.style.margin="10px 0";
+  section.appendChild(link);
+  b.slice().sort((a,b)=>b.rating-a.rating).forEach(x=>{
+    const item=el("div","entry strength");
+    item.appendChild(el("b",null,(S.lang==="he"?x.he:x.en)+" — "+x.rating+"/7"));
+    if(x.confirmed&&x.evidence)item.appendChild(el("q",null,x.evidence));
+    else item.appendChild(el("small",null,S.lang==="he"?"טרם אושרה דוגמה לשימוש בקורות חיים":"Example not yet confirmed for CV use"));
+    section.appendChild(item);
+  });
+  const row=el("label",null,"");row.style.display="flex";row.style.gap="10px";row.style.alignItems="flex-start";
+  const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!S.profile.shareBusinessSkillsWithAI;
+  cb.style.width="auto";cb.style.marginTop="4px";
+  const lbl=el("span",null,S.lang==="he"
+    ?"אני מאשר/ת לשתף עם שירות ה-AI דוגמאות מיומנויות שאישרתי, רק כאשר אבקש סיוע. ניתן לבטל בכל עת."
+    :"I allow confirmed skill examples to be sent to the AI service when I ask for help. I can turn this off anytime.");
+  row.append(cb,lbl);cb.onchange=()=>{S.profile.shareBusinessSkillsWithAI=cb.checked;save()};
+  section.appendChild(row);
+  const makeAction=(label,message)=>{
+    const btn=el("button","prop",label);btn.type="button";
+    btn.onclick=()=>{
+      if(!(S.profile.businessSkills||[]).some(x=>x.confirmed&&x.evidence)){
+        alert(S.lang==="he"?"יש לאשר קודם דוגמה אחת לפחות בהערכת המיומנויות.":"Confirm at least one skills example in the assessment first.");return;
+      }
+      if(!S.profile.shareBusinessSkillsWithAI){
+        alert(S.lang==="he"?"כדי להשתמש בדוגמאות בשיחת AI, סמנו תחילה את אפשרות השיתוף בפרופיל.":"To use these examples in an AI conversation, first enable sharing in your profile.");return;
+      }
+      closeDrawer();sendUser(message);
+    };
+    section.appendChild(btn);
+  };
+  makeAction(S.lang==="he"?"הכנת קורות חיים מהמיומנויות":"Draft a CV from my skills",
+    S.lang==="he"?"הכן טיוטת קורות חיים על סמך המיומנויות המאושרות בפרופיל, בלי להמציא פרטים.":"Draft accurate CV content using my confirmed business-skill examples from the profile. Do not invent achievements.");
+  makeAction(S.lang==="he"?"התאמת מיומנויות למשרות":"Match skills to job applications",
+    S.lang==="he"?"עזור לי להתאים את המיומנויות המאושרות בפרופיל למשרות ולמכתבי פנייה.":"Help adapt my confirmed profile skills for jobs, applications and cover letters.");
+  makeAction(S.lang==="he"?"חקירת מסלולי קריירה":"Explore career options",
+    S.lang==="he"?"הצע כיווני עבודה ולימודים על בסיס המיומנויות המאושרות בפרופיל, וציין אילו פרטים עוד דרושים.":"Suggest work or education pathways using my confirmed profile skills and identify missing details.");
+  body.appendChild(section);
+}
+
+
 /* ==========================================================================
    4. UI WIRING
    ========================================================================== */
@@ -1050,7 +1128,12 @@ function systemPrompt(ref){
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
 
+  const businessContext=businessSkillContext();
   return `You are a practical transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Your relational stance is an older-brother / experienced-peer presence: adult-to-adult, warm, grounded, practical, loyal, and genuinely caring. Never sound like a parent, teacher, commander, counselor, therapist, bureaucrat, or authority figure. Do not lecture, preach, scold, patronize, or interrogate. Listen first; help the soldier think; give practical help and candid judgment when useful; respect that the soldier makes the decisions. You may be informal and lightly humorous when it fits. Do not claim that you personally served or personally went through military service. When experience is useful, say things like "many soldiers..." or "one thing others have found useful..." rather than inventing your own history.
+
+CONFIRMED BUSINESS SKILL EVIDENCE (included only with the soldier's permission; self-ratings are not certified proficiency):
+${businessContext || "Not shared. Do not assume any 36-skill assessment results."}
+When the soldier asks for CVs, job applications, interview stories or career plans, reuse these examples rather than repeating questions. Never turn self-ratings into verified qualifications, invent results or imply a level of proficiency not supported by evidence.
 
 SELECTED TOPIC: ${S.activeTopic || "general conversation"}
 When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
@@ -1351,6 +1434,7 @@ $("btnProfile").onclick = openProfile; $("btnHelp").onclick = openSupport;
 
 function openProfile(){
   const t = L(), b = $("dBody"); $("dTitle").textContent = t.dProfile; b.innerHTML = "";
+  syncBusinessSkills();
   const p = S.profile;
   const empty = !p.strengths.length && !p.costs.length && !p.open.length && !p.directions.length;
   if (empty) b.appendChild(el("div","empty", t.emptyP));
@@ -1392,10 +1476,11 @@ function openProfile(){
     });
     use.appendChild(list); b.appendChild(use);
   }
+  businessSkillsPanel(b);
   const reset = el("button","linkish", S.lang==="he" ? "מחיקת השיחה והפרופיל מהדפדפן" : "Delete this conversation and profile from the browser");
   reset.onclick = () => {
     if (!confirm(S.lang==="he" ? "למחוק הכול? אי אפשר לשחזר." : "Delete everything? This cannot be undone.")) return;
-    localStorage.removeItem(KEY); location.reload();
+    localStorage.removeItem(KEY); localStorage.removeItem(BUSINESS_SKILL_KEY); location.reload();
   };
   b.appendChild(reset);
   openDrawer();
