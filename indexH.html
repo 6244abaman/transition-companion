@@ -27,6 +27,10 @@
      ============================================================ -->
 
 <script src="./journey-store.js"></script>
+<script src="./ai-consent.js"></script>
+<script src="./response-schema.js"></script>
+<script src="./skills-source.js"></script>
+<script src="./companion-safety.js"></script>
 <script id="config">
 const CONFIG = {
   // Your Render proxy. Change the path if your proxy uses a different route.
@@ -545,8 +549,13 @@ const SKILLS = [
  [56,"c","Determination over time","נחישות לאורך זמן"],[57,"c","Care and giving","אכפתיות ונתינה"],
  [58,"s","Clear direct communication","תקשורת ישירה וברורה"],[59,"s","Creativity with what you have","יצירתיות עם מה שיש"],
  [60,"s","Appreciating small things","הערכת הדברים הקטנים"],[61,"s","Holding back judgment","הימנעות משיפוטיות"],
- [62,"s","Persisting past motivation","התמדה גם בלי מוטיבציה"],[63,"s","Holding a standard","עמידה בסטנדרט"]
+ [62,"s","Persisting past motivation","התמדה גם בלי מוטיבציה"],[63,"s","Professionalism (source duplicate of #55)","מקצועיות (כפילות במקור של 55)"]
 ];
+// Preserve the canonical English source names; Hebrew labels remain an interface translation.
+if(window.MomentumSkillSource) SKILLS.forEach(s=>{
+  const original=window.MomentumSkillSource.skills.find(x=>x.id===s[0]);
+  if(original)s[2]=original.original+(s[0]===63?" (source duplicate of #55)":"");
+});
 const skillById = id => SKILLS.find(s => s[0] === +id);
 const skillName = (id,lang) => { const s = skillById(id); return s ? (lang==="he"?s[3]:s[2]) : ""; };
 
@@ -1248,6 +1257,12 @@ REFERENCE — a REFERENCE section may appear near the end of these instructions.
 BEHAVIOUR THAT NEVER STOPS, in every phase including long after orientation:
 Understand before answering. Analyse, don't just reflect back. When they raise a choice, generate at least two real alternatives they did not mention, state the trade-offs honestly including cost and time, and give a recommendation when you have enough to justify one — say what would change your mind. Be honest even when it's not what they want to hear — don't just agree to be agreeable — but say it gently, the way someone who's on their side would, not as a correction. Follow up on things they said they would do.
 
+CONTENT LIMITS
+Do not provide pornographic content or help bypass a content filter. Religious guidance is limited to Judaism; acknowledge other backgrounds respectfully without religious instruction. Continue practical, non-religious assistance for everyone. Never request operational, classified or identifying information about other soldiers.
+
+RIGHTS AND BENEFITS
+Never invent amounts, deadlines or eligibility. Direct the person to the dated official-source cards and application preparation in My Journey. Explain that eligibility requires confirmation by the responsible authority.
+
 BOUNDARIES
 You are not a clinician. If there is real distress — hopelessness, not sleeping, not functioning, thoughts of hurting themselves — set concern:true, say plainly that talking to a person would help, and keep talking with them. Never replace a professional, never diagnose.
 
@@ -1277,22 +1292,27 @@ async function askModel(){
   DIAG.estPromptTokens = Math.round((sys.length + hist.reduce((a,m)=>a+m.content.length,0)) / 4);
   DIAG.at = new Date().toLocaleTimeString();
 
-  const res = await fetch(CONFIG.API_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      model: CONFIG.MODEL,
-      max_tokens: ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,
-      system: sys,
-      messages: hist
-    })
-  });
-  if (!res.ok) { DIAG.error = "HTTP "+res.status; throw new Error("HTTP "+res.status); }
-  const data = await res.json();
+  let payload = {model:CONFIG.MODEL, max_tokens:ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,system:sys,messages:hist};
+  if(window.MomentumResponseFormat)payload.output_config={format:window.MomentumResponseFormat};
+  if (window.MomentumAIConsent) {
+    payload = await window.MomentumAIConsent.approve(payload,CONFIG.API_URL,S.lang);
+    if (!payload) { const error=new Error("Sharing canceled"); error.canceled=true; throw error; }
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(()=>controller.abort(),25000);
+  let res, data;
+  try {
+    res = await fetch(CONFIG.API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:controller.signal});
+    if (!res.ok) { DIAG.error = "HTTP "+res.status; throw new Error("HTTP "+res.status); }
+    data = await res.json();
+  } finally { clearTimeout(timeout); }
+  if(window.MomentumAIConsent)window.MomentumAIConsent.audit("response-received",CONFIG.API_URL,payload.messages.length);
+  if (data.stop_reason==="max_tokens") throw new Error("AI reply was cut short. Please try a narrower question.");
   if (data.usage) DIAG.usage = data.usage;
   const raw = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
+  if (!raw) throw new Error("The AI service returned no reply");
   DIAG.raw = raw;
-  const parsed = parseReply(raw);
+  const parsed = normalizeModelReply(parseReply(raw));
   DIAG.parsedOK = !!(parsed && parsed.reply && raw.indexOf("{") > -1);
   DIAG.parsed = parsed;
   return parsed;
@@ -1316,6 +1336,20 @@ function fixBreaksInStrings(t){
       out += ch;
     } else { if (ch === '"') inStr = true; out += ch; }
   }
+  return out;
+}
+function normalizeModelReply(value){
+  const v=value && typeof value==="object" ? value : {};
+  const text=x=>typeof x==="string"?x.slice(0,20000):"";
+  const list=(key,max)=>Array.isArray(v[key])?v[key].slice(0,max):[];
+  const out={reply:text(v.reply)||"…"};
+  if(["opening","foundation","discovery","direction","open"].includes(v.phase))out.phase=v.phase;
+  for(const key of ["concern","ack","shift","document"])out[key]=v[key]===true;
+  out.candidates=list("candidates",5).filter(x=>x&&skillById(x.id)).map(x=>({id:Number(x.id),why:text(x.why).slice(0,300)}));
+  out.confirmed=list("confirmed",8).filter(x=>x&&skillById(x.id)&&text(x.evidence).trim())
+    .map(x=>({id:Number(x.id),evidence:text(x.evidence).slice(0,1500),level:[1,2,3,4].includes(Number(x.level))?Number(x.level):0}));
+  out.proposals=list("proposals",5).filter(x=>x&&text(x.title).trim()).map(x=>({title:text(x.title).slice(0,160),why:text(x.why).slice(0,600)}));
+  for(const key of ["costs","open"])out[key]=list(key,10).map(text).filter(Boolean);
   return out;
 }
 function parseReply(raw){
@@ -1425,12 +1459,19 @@ function openConversation(){
   pushMsg("assistant", openingText(S.lang), {kind:"opening"});
 }
 
+let sendingUserMessage = false;
 async function sendUser(text){
+  if(sendingUserMessage)return;
   text = (text||"").trim();
   if (!text) return;
+  sendingUserMessage=true;
+  try {
   $("input").value = ""; $("input").style.height="auto";
   stopSpeaking();
   pushMsg("user", text);
+  if(window.MomentumSafety && window.MomentumSafety.urgent(text)){
+    applyReply({reply:window.MomentumSafety.reply(S.lang),concern:true});return;
+  }
   showThinking();
 
   let out;
@@ -1438,6 +1479,7 @@ async function sendUser(text){
     if (S.practice) throw new Error("practice");
     out = await askModel();
   } catch (err) {
+    if (err.canceled) { hideThinking(); pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
     if (!S.practice) { S.practice = true; pushMsg("system", L().offline); }
     out = practiceReply(text);
@@ -1450,9 +1492,16 @@ async function sendUser(text){
   }
   hideThinking();
   applyReply(out);
+  if(S.practice){
+    const retry=el("button","linkish",S.lang==="he"?"ניסיון חיבור מחדש ל-AI":"Retry live AI connection");
+    retry.onclick=()=>{S.practice=false;save();retry.remove();$("input").focus();};
+    const turns=$("thread").querySelectorAll(".turn.them");if(turns.length)turns[turns.length-1].appendChild(retry);
+  }
+  } finally { sendingUserMessage=false; }
 }
 
 function applyReply(out){
+  out=normalizeModelReply(out);
   DIAG.triggers = [];
   if (out.ack) DIAG.triggers.push("service acknowledgment (once)");
   if (out.shift) DIAG.triggers.push("named the shift to self-direction (once)");
@@ -1564,6 +1613,14 @@ function openProfile(){
     journeyLink.href="./my-journey.html?lang="+S.lang;
     journeyLink.style.display="block";journeyLink.style.marginBottom="9px";
     section.appendChild(journeyLink);
+    const importSkills=el("button","prop",S.lang==="he"?"בדקתי את הדוגמאות — לשמור מיומנויות במסע שלי":"I checked my examples — save life skills to My Journey");
+    importSkills.onclick=()=>{
+      if(!confirm(S.lang==="he"?"לאשר שהדוגמאות נכונות ואינן כוללות מידע רגיש?":"Confirm these examples are accurate and contain no sensitive information?"))return;
+      const values=S.profile.strengths.filter(x=>x.evidence&&x.id!==63).map(x=>({id:x.id,en:skillName(x.id,"en"),he:skillName(x.id,"he"),evidence:x.evidence,level:x.level||0,confirmed:true}));
+      window.MomentumJourney.saveLifeSkills(values);
+      importSkills.textContent=S.lang==="he"?"נשמר במסע שלי":"Saved to My Journey";
+    };
+    section.appendChild(importSkills);
     const privacyLink=el("a","prop",S.lang==="he"?"בחירת פרטי הפרופיל לשיתוף עם AI":"Choose what profile details AI may receive");
     privacyLink.href="./my-journey.html?lang="+S.lang+"#privacy";
     privacyLink.style.display="block";privacyLink.style.marginBottom="9px";

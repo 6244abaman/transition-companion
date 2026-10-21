@@ -14,7 +14,7 @@ global.localStorage = {
   setItem(key, value) { data.set(key, String(value)); },
   removeItem(key) { data.delete(key); }
 };
-global.crypto = webcrypto;
+Object.defineProperty(global, "crypto", {value:webcrypto, configurable:true});
 global.window = global;
 global.btoa = s => Buffer.from(s, "binary").toString("base64");
 global.atob = s => Buffer.from(s, "base64").toString("binary");

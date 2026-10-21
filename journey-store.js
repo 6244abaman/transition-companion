@@ -31,7 +31,7 @@
   function blank() {
     const t = iso();
     return { schema: SCHEMA, version: VERSION, createdAt: t, updatedAt: t,
-      goals: [], actions: [], education: [], cvs: [], skills: [],
+      goals: [], actions: [], education: [], cvs: [], skills: [], lifeSkills: [],
       privacy: { shareWithAI: false, shareSkills: true, shareGoals: true,
         shareEducation: true, shareActions: true, shareCVs: false },
       meta: { skillsImported: false } };
@@ -60,6 +60,13 @@
       language: v.language === "he" ? "he" : "en", summary: str(v.summary, 4000),
       bullets: arr(v.bullets).slice(0, 50).map(x => str(x, 1000)).filter(Boolean) };
   }
+  function cleanLifeSkill(v) {
+    if(!v || !Number.isInteger(Number(v.id)) || Number(v.id)<1 || Number(v.id)>63)return null;
+    const evidence=str(v.evidence,1500);
+    if(!evidence || v.confirmed!==true)return null;
+    return {id:Number(v.id),en:str(v.en,120),he:str(v.he,120),evidence,confirmed:true,
+      level:Number.isInteger(Number(v.level)) && Number(v.level)>=1 && Number(v.level)<=4 ? Number(v.level):0};
+  }
   function normalize(raw) {
     if (!raw || raw.schema !== SCHEMA || raw.version !== VERSION) throw new Error("Unsupported Journey profile format");
     const result = blank();
@@ -73,6 +80,10 @@
     const seenSkills = new Set();
     result.skills = arr(raw.skills).slice(0, LIMIT.skills).map(cleanSkill)
       .filter(v => { if (!v || seenSkills.has(v.id)) return false; seenSkills.add(v.id); return true; });
+    const seenLife = new Set();
+    result.lifeSkills=arr(raw.lifeSkills).slice(0,63).map(cleanLifeSkill).filter(v=>{
+      if(!v||seenLife.has(v.id))return false;seenLife.add(v.id);return true;
+    });
     const p = raw.privacy || {};
     result.privacy = {
       shareWithAI: p.shareWithAI === true,
@@ -180,7 +191,7 @@
     if (!TYPES.includes(type)) throw new Error("Unknown Journey record type");
     return write(p => {
       p[type] = p[type].filter(x => x.id !== recordId);
-      if (type === "goals") p.actions.forEach(a => { if (a.goalId === recordId) a.goalId = ""; });
+      if (type === "goals") ["actions","education"].forEach(t=>p[t].forEach(a => { if (a.goalId === recordId) a.goalId = ""; }));
       return p;
     });
   }
@@ -191,6 +202,14 @@
       return p;
     });
   }
+  function saveLifeSkills(values) {
+    return write(p=>{
+      const map=new Map(p.lifeSkills.map(x=>[x.id,x]));
+      arr(values).map(cleanLifeSkill).filter(Boolean).forEach(x=>map.set(x.id,x));
+      p.lifeSkills=[...map.values()];return p;
+    });
+  }
+  function removeLifeSkill(id){return write(p=>{p.lifeSkills=p.lifeSkills.filter(x=>x.id!==Number(id));return p;});}
   function syncAssessment() {
     const assessment = getRaw(SKILLS_KEY);
     if (!assessment) return read();
@@ -206,6 +225,8 @@
         .forEach(x => lines.push("Skill (soldier-confirmed example, self-rated " + x.rating + "/7): " +
           (he ? (x.he || x.en) : (x.en || x.he)) + " — " + str(x.evidence, 260)));
     }
+    if(p.privacy.shareSkills) arr(p.lifeSkills).filter(x=>x.confirmed&&x.evidence&&x.id!==63).slice(0,8)
+      .forEach(x=>lines.push("Life skill (soldier-confirmed example): "+(he?(x.he||x.en):(x.en||x.he))+" — "+str(x.evidence,260)));
     if (p.privacy.shareGoals) p.goals.filter(x => x.status !== "achieved").slice(0, 6)
       .forEach(x => lines.push("Goal: " + x.title + " [" + x.status + "]" +
         (x.targetDate ? " target " + x.targetDate : "")));
@@ -239,6 +260,8 @@
       const skills = new Map(current.skills.map(x => [x.id, x]));
       incoming.skills.forEach(x => skills.set(x.id, x));
       current.skills = [...skills.values()].slice(0, 36);
+      const lifeSkills=new Map(current.lifeSkills.map(x=>[x.id,x]));
+      incoming.lifeSkills.forEach(x=>lifeSkills.set(x.id,x));current.lifeSkills=[...lifeSkills.values()].slice(0,63);
       // Never implicitly enable AI sharing through a merged backup.
       return current;
     });
@@ -252,10 +275,12 @@
       const fresh = blank(); fresh.meta.skillsImported = true; persist(fresh);
     } else ls.removeItem(KEY);
     if (options && options.companion) {
+      ls.removeItem("momentum-ai-disclosures-v1");
+      ls.removeItem("momentum-reminder-settings-v1");
       ls.removeItem("gtc_v2_state");
       ls.removeItem("gtc_H_state");
     }
   }
   return { KEY, VERSION, read, write, upsert, remove, updatePrivacy, syncAssessment,
-    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels };
+    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels, saveLifeSkills, removeLifeSkill };
 });

@@ -2,6 +2,7 @@ const {JSDOM}=require('jsdom');
 const fs=require('fs'), assert=require('node:assert/strict');
 let spoken=[], recognizer;
 const dom=new JSDOM(fs.readFileSync('index.html','utf8'),{url:'https://localhost/',runScripts:'dangerously',beforeParse(w){
+  require("./tests/browser-env").prepare(w);
   w.isSecureContext=true;
   w.SpeechSynthesisUtterance=class {constructor(text){this.text=text;}};
   w.speechSynthesis={getVoices:()=>[{name:'English',lang:'en-US',voiceURI:'en'},{name:'Hebrew',lang:'he-IL',voiceURI:'he'}],cancel(){},speak(u){spoken.push(u);}};
