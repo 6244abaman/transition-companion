@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#155779">
+<title>My Journey · Momentum Soldier Transition Companion</title>
+<style>
+:root{color-scheme:light;--ink:#172d43;--sub:#53687b;--teal:#116a7f;--navy:#164f72;--line:#d3e2e9;--pale:#f1f6f9;--white:#fff;--soft:#e8f3f3;--warn:#8c5512;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pale);color:var(--ink)}
+a{color:#086784;text-decoration-thickness:1px;text-underline-offset:3px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #e6a127;outline-offset:3px}
+header{background:linear-gradient(112deg,#11436d,#207c81);color:#fff;padding:18px max(calc((100vw - 1050px)/2),18px) 30px}
+header a{color:#fff}
+header .nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+header .nav a{display:inline-flex;align-items:center;min-height:42px}
+header h1{font-size:clamp(1.7rem,4.8vw,2.8rem);margin:18px 0 4px;line-height:1.15}
+header p{margin:4px 0;max-width:800px;opacity:.93}
+main{max-width:1100px;margin:auto;padding:16px 18px 60px}
+button,.button{border:1px solid #8fb6c6;border-radius:10px;padding:10px 15px;color:#135872;background:white;font-weight:650;display:inline-block}
+button.primary,.button.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+button.danger{color:#932f37;border-color:#cfa7aa}
+button.quiet{border-color:transparent;background:transparent}
+button.small{font-size:.85rem;padding:7px 11px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+section[hidden],div[hidden]{display:none!important}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:21px;margin:15px 0;box-shadow:0 2px 8px rgba(14,54,77,.045)}
+.card h2{font-size:1.43rem;margin:0 0 10px}
+.card h3{font-size:1.07rem;margin:.3em 0}
+.muted{color:var(--sub)}
+.mini{font-size:.85rem}
+.topline{display:flex;gap:14px;flex-wrap:wrap;align-items:start;justify-content:space-between}
+.privacy-note{padding:11px 14px;border:1px solid #bdd4d8;background:#e8f3f3;border-radius:12px;font-size:.92rem;margin:14px 0}
+.warning{border-color:#d7b789;background:#fff7e9;color:#643e09}
+#tabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:thin;padding:7px 0 12px;white-space:nowrap}
+#tabs button{flex:0 0 auto;font-size:.91rem}
+#tabs button[aria-selected=true]{background:#144e70;border-color:#144e70;color:white}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat strong{display:block;font-size:2rem;color:#145e73;line-height:1.2}
+.stat span{font-size:.88rem;color:var(--sub)}
+.record{border:1px solid #dae7ed;background:#fcfeff;border-radius:12px;padding:15px;margin:12px 0}
+.record .heading{display:flex;justify-content:space-between;gap:10px;align-items:start;flex-wrap:wrap}
+.record h3{margin:0}
+.record p{margin:8px 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.tag{display:inline-block;background:#e5f1f5;color:#24546b;padding:3px 9px;border-radius:999px;font-size:.8rem;font-weight:600;margin:2px}
+.tag.done{background:#e3f3e9;color:#245d3e}
+.empty{color:var(--sub);border:1px dashed #bad0db;border-radius:12px;padding:18px;text-align:center;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.field{margin:12px 0}
+.field label{display:block;font-weight:650;font-size:.92rem;margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;border:1px solid #a8c3cf;padding:11px 12px;border-radius:9px;background:#fff;color:var(--ink)}
+.field textarea{min-height:100px;resize:vertical}
+.field small{display:block;color:var(--sub);margin-top:3px}
+#editDialog{width:min(680px,calc(100% - 25px));max-height:90dvh;border:1px solid var(--line);border-radius:17px;padding:0;background:#fff;color:var(--ink);box-shadow:0 20px 80px #102e4a4a}
+#editDialog::backdrop{background:#071c30a8}
+#editForm{padding:23px;overflow:auto;max-height:90dvh}
+#editForm h2{margin:0}
+#editForm .footer{position:sticky;bottom:-23px;background:#fff;border-top:1px solid var(--line);padding:12px 0 2px}
+#status{position:sticky;top:0;z-index:12;padding:10px 15px;background:#def1e9;border:1px solid #9fc7ad;border-radius:10px;margin-bottom:12px;display:none}
+#status[role=alert]{display:block}
+.switch-row{display:flex;align-items:flex-start;gap:11px;margin:13px 0;padding:8px 0}
+.switch-row input{width:22px;height:22px;flex:0 0 auto;accent-color:#126b82}
+.switch-row span{display:block}
+footer{max-width:1100px;margin:0 auto;padding:0 18px 38px;font-size:.86rem;color:var(--sub)}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.card{padding:15px}main{padding:12px 11px 45px}header{padding-inline:15px}}
+</style>
+<script src="./journey-store.js"></script>
+<script src="./journey-backup.js"></script>
+<script src="./my-journey.js" defer></script>
+</head>
+<body>
+<header>
+<div class="nav">
+<a id="homeLink" href="./index.html">← Back to Companion</a>
+<a id="skillsLink" href="./skills-business.html">Skill assessment</a>
+<button type="button" id="language" aria-label="Switch language">עברית</button>
+</div>
+<h1 id="pageTitle">My Journey</h1>
+<p id="pageSubtitle">Thank you for your service. Keep your goals, strengths and next steps together, and choose what happens to your information.</p>
+</header>
+<main>
+<div id="status" aria-live="polite"></div>
+<div id="storageNotice" class="privacy-note">Your information stays in this browser on this device. It is not encrypted here or automatically synced to another phone. You control export, deletion and AI sharing.</div>
+<nav id="tabs" aria-label="My Journey sections" role="tablist">
+<button type="button" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+<button type="button" data-tab="skills" role="tab" aria-selected="false">Skills</button>
+<button type="button" data-tab="goals" role="tab" aria-selected="false">Goals</button>
+<button type="button" data-tab="cvs" role="tab" aria-selected="false">CVs</button>
+<button type="button" data-tab="education" role="tab" aria-selected="false">Education</button>
+<button type="button" data-tab="actions" role="tab" aria-selected="false">Next actions</button>
+<button type="button" data-tab="privacy" role="tab" aria-selected="false">Privacy & backup</button>
+</nav>
+<section id="view-overview" data-view="overview">
+<div class="stats" id="stats" aria-live="polite"></div>
+<div class="grid">
+<div class="card"><div class="topline"><h2 id="nextHeading">Your next steps</h2><button class="small" data-switch="actions">All actions</button></div><div id="nextSnapshot"></div></div>
+<div class="card"><div class="topline"><h2 id="goalsHeading">Goals in progress</h2><button class="small" data-switch="goals">All goals</button></div><div id="goalsSnapshot"></div></div>
+</div>
+<div class="card"><h2 id="introHeading">A profile that grows with you</h2><p id="introBody" class="muted">Start anywhere. Record a goal, turn it into practical steps, preserve skills from service, or create a CV draft. You can return and update everything whenever life changes.</p><div class="actions"><button class="primary" data-add="goals" id="quickGoal">Add a goal</button><button data-add="actions" id="quickAction">Add a next step</button><button data-switch="cvs" id="quickCV">Work on my CV</button></div></div>
+</section>
+<section id="view-skills" class="card" data-view="skills" hidden>
+<div class="topline"><div><h2 id="skillsHeading">My skills from service</h2><p id="skillsSubtitle" class="muted">Self-ratings are not professional certifications. Confirm an example before using it in a CV.</p></div><a id="skillEditLink" class="button" href="./skills-business.html">Update assessment</a></div>
+<div id="skillsList"></div>
+</section>
+<section id="view-goals" class="card" data-view="goals" hidden>
+<div class="topline"><div><h2 id="goalsTitle">My goals</h2><p id="goalsSubtitle" class="muted">Choose what matters to you and change direction anytime.</p></div><button class="primary" data-add="goals" id="addGoal">Add goal</button></div>
+<div id="goalsList"></div>
+</section>
+<section id="view-cvs" class="card" data-view="cvs" hidden>
+<div class="topline"><div><h2 id="cvsTitle">CV and application drafts</h2><p id="cvsSubtitle" class="muted">Your working drafts stay editable. Use only examples you have approved as accurate.</p></div><div class="actions"><button class="primary" id="makeCV">Draft from my skills</button><button id="addCV" data-add="cvs">Add CV</button></div></div>
+<div id="cvsList"></div>
+</section>
+<section id="view-education" class="card" data-view="education" hidden>
+<div class="topline"><div><h2 id="educationTitle">Education and training plans</h2><p id="educationSubtitle" class="muted">Compare paths, plan applications and record the next step.</p></div><button class="primary" id="addEducation" data-add="education">Add plan</button></div>
+<div id="educationList"></div>
+</section>
+<section id="view-actions" class="card" data-view="actions" hidden>
+<div class="topline"><div><h2 id="actionsTitle">Follow-up actions</h2><p id="actionsSubtitle" class="muted">Small steps build momentum. Keep what is useful and mark tasks done.</p></div><button class="primary" id="addAction" data-add="actions">Add action</button></div>
+<div id="actionsList"></div>
+</section>
+<section id="view-privacy" class="card" data-view="privacy" hidden>
+<h2 id="privacyTitle">Privacy, sharing and backup</h2>
+<p id="privacyIntro" class="muted">Your profile is saved locally in this browser. Browser storage is not encrypted and could be visible to other people using the same browser profile. Chat messages to the Companion's AI service are a separate operation.</p>
+<h3 id="shareHeading">Allow profile context in AI conversations</h3>
+<label class="switch-row"><input id="shareWithAI" type="checkbox"><span id="shareWithAIText">Share selected profile details with the Companion's external AI when I ask it for help (off by default). Turn off at any time.</span></label>
+<div id="shareFields" style="padding-inline-start:23px">
+<label class="switch-row"><input id="shareSkills" type="checkbox"><span id="shareSkillsText">Confirmed skills and my examples</span></label>
+<label class="switch-row"><input id="shareGoals" type="checkbox"><span id="shareGoalsText">Goal titles and status</span></label>
+<label class="switch-row"><input id="shareEducation" type="checkbox"><span id="shareEducationText">Education plan titles and status</span></label>
+<label class="switch-row"><input id="shareActions" type="checkbox"><span id="shareActionsText">Pending action titles and dates</span></label>
+<label class="switch-row"><input id="shareCVs" type="checkbox"><span id="shareCVsText">CV summaries and bullet excerpts (more personal; off by default)</span></label>
+</div>
+<details><summary id="previewSummary">Preview exactly what the profile would add to an AI request</summary><pre id="aiPreview" style="white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f7f9;border-radius:10px;padding:12px;font-size:.78rem"></pre></details>
+<hr>
+<h3 id="backupHeading">Take your profile with you</h3>
+<p id="backupHelp" class="muted">Export a portable backup, then import it on another device. A password-protected backup is recommended; the password is never stored by Momentum and cannot be recovered.</p>
+<div class="actions">
+<button id="exportEncrypted" class="primary">Download password-protected backup</button>
+<button id="exportPlain">Download unencrypted JSON</button>
+</div>
+<div class="field"><label id="importLabel" for="importFile">Import a previously exported profile</label><input id="importFile" type="file" accept=".json,.journey,application/json"></div>
+<div class="field"><label id="importModeLabel" for="importMode">Import method</label>
+<select id="importMode"><option value="merge">Merge with my current profile</option><option value="replace">Replace current Journey profile</option></select></div>
+<button class="primary" id="importButton">Import selected file</button>
+<hr>
+<h3 id="legacyHeading">Suggestions from earlier Companion conversations</h3>
+<p id="legacyHelp" class="muted">Earlier conversation directions are suggestions, not confirmed goals. Review before choosing to bring them into your Journey.</p>
+<div id="legacyList"></div>
+<hr>
+<h3 id="deleteHeading">Erase local information</h3>
+<p id="deleteHelp" class="muted">You can delete only My Journey, or also delete your saved skills assessment and existing Companion conversations. Export first if you need a copy.</p>
+<label class="switch-row"><input type="checkbox" id="deleteAll"><span id="deleteAllText">Also erase saved skills and both Companion conversation histories</span></label>
+<button class="danger" id="deleteButton">Delete local data</button>
+</section>
+<dialog id="editDialog" aria-labelledby="editTitle"><form id="editForm" method="dialog" novalidate>
+<div class="topline"><h2 id="editTitle">Add</h2><button class="quiet" id="closeDialog" type="button" aria-label="Close">✕</button></div>
+<div id="editFields"></div>
+<div class="actions footer"><button type="submit" id="saveRecord" class="primary">Save</button><button id="cancelRecord" type="button">Cancel</button></div>
+</form></dialog>
+</main>
+<footer id="footerText">Momentum Transition Companion · Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.</footer>
+</body>
+</html>
