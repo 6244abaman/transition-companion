@@ -26,6 +26,7 @@
      is sent during the opening conversation.
      ============================================================ -->
 
+<script src="./journey-store.js"></script>
 <script id="config">
 const CONFIG = {
   // Your Render proxy. Change the path if your proxy uses a different route.
@@ -775,7 +776,8 @@ function buildReference(){
   if (c.interview) add("interview-story guide", INTERVIEW_GUIDE);
   if (c.job || c.edu) add(c.job ? "work & study guide" : "study guide", DIRECTION_GUIDE + (c.edu ? EDU_ADD : ""));
 
-  const known = S.profile.strengths.filter(s => REF_SKILLS[s.id]).slice(0,6);
+  const allowOldProfile = !!(window.MomentumJourney && window.MomentumJourney.read().privacy.shareWithAI);
+  const known = (allowOldProfile?S.profile.strengths:[]).filter(s => REF_SKILLS[s.id]).slice(0,6);
   if (wantsDoc && known.length)
     add("meaning of confirmed skills", "WHAT THEIR CONFIRMED SKILLS MEAN IN PRACTICE (use to translate; do not quote):\n" +
         known.map(s => "- "+nm(s.id)+": "+REF_SKILLS[s.id][1]+".").join("\n"));
@@ -861,6 +863,7 @@ function syncBusinessSkills(){
 }
 syncBusinessSkills();
 function businessSkillContext(){
+  if(window.MomentumJourney)return ""; // Unified consented Journey context below is the one source of truth.
   if(!S.profile.shareBusinessSkillsWithAI)return "";
   return (S.profile.businessSkills||[])
     .filter(x=>x.confirmed&&x.evidence)
@@ -886,12 +889,12 @@ function businessSkillsPanel(body){
     section.appendChild(item);
   });
   const row=el("label",null,"");row.style.display="flex";row.style.gap="10px";row.style.alignItems="flex-start";
-  const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!S.profile.shareBusinessSkillsWithAI;
+  const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!(window.MomentumJourney&&window.MomentumJourney.read().privacy.shareWithAI&&window.MomentumJourney.read().privacy.shareSkills);
   cb.style.width="auto";cb.style.marginTop="4px";
   const lbl=el("span",null,S.lang==="he"
     ?"אני מאשר/ת לשתף עם שירות ה-AI דוגמאות מיומנויות שאישרתי, רק כאשר אבקש סיוע. ניתן לבטל בכל עת."
     :"I allow confirmed skill examples to be sent to the AI service when I ask for help. I can turn this off anytime.");
-  row.append(cb,lbl);cb.onchange=()=>{S.profile.shareBusinessSkillsWithAI=cb.checked;save()};
+  row.append(cb,lbl);cb.onchange=()=>{if(window.MomentumJourney){window.MomentumJourney.updatePrivacy({shareWithAI:cb.checked,shareSkills:cb.checked,shareGoals:false,shareEducation:false,shareActions:false,shareCVs:false});}else{S.profile.shareBusinessSkillsWithAI=cb.checked;save()}};
   section.appendChild(row);
   const makeAction=(label,message)=>{
     const btn=el("button","prop",label);btn.type="button";
@@ -899,7 +902,7 @@ function businessSkillsPanel(body){
       if(!(S.profile.businessSkills||[]).some(x=>x.confirmed&&x.evidence)){
         alert(S.lang==="he"?"יש לאשר קודם דוגמה אחת לפחות בהערכת המיומנויות.":"Confirm at least one skills example in the assessment first.");return;
       }
-      if(!S.profile.shareBusinessSkillsWithAI){
+      if(!(window.MomentumJourney?window.MomentumJourney.read().privacy.shareWithAI&&window.MomentumJourney.read().privacy.shareSkills:S.profile.shareBusinessSkillsWithAI)){
         alert(S.lang==="he"?"כדי להשתמש בדוגמאות בשיחת AI, סמנו תחילה את אפשרות השיתוף בפרופיל.":"To use these examples in an AI conversation, first enable sharing in your profile.");return;
       }
       closeDrawer();sendUser(message);
@@ -1119,17 +1122,25 @@ function systemPrompt(ref){
   ref = ref || buildReference();
   const names = SKILLS.map(s => s[0]+":"+s[2]).join(", ");
   const p = S.profile;
+  // Unlike the conversation text sent for the current question, saved profile
+  // details are included only when the soldier explicitly enables sharing.
+  const journey = window.MomentumJourney ? window.MomentumJourney.read() : null;
+  const profileAllowed = !!(journey && journey.privacy.shareWithAI);
   const state =
     "PHASE: "+S.phase+
-    "\nCONFIRMED STRENGTHS: "+(p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet")+
-    "\nCOSTS NAMED: "+(p.costs.join("; ")||"none yet")+
-    "\nOPEN QUESTIONS: "+(p.open.join("; ")||"none yet")+
-    "\nDIRECTIONS RAISED: "+(p.directions.map(d=>d.title).join("; ")||"none yet")+
+    "\nCONFIRMED STRENGTHS: "+(profileAllowed ? (p.strengths.map(x=>x.id+(x.level?" [level "+x.level+"]":"")+" ("+x.evidence+")").join("; ")||"none yet") : "not shared")+
+    "\nCOSTS NAMED: "+(profileAllowed ? (p.costs.join("; ")||"none yet") : "not shared")+
+    "\nOPEN QUESTIONS: "+(profileAllowed ? (p.open.join("; ")||"none yet") : "not shared")+
+    "\nDIRECTIONS RAISED: "+(profileAllowed ? (p.directions.map(d=>d.title).join("; ")||"none yet") : "not shared")+
     "\nSERVICE ACKNOWLEDGED: "+(S.ack?"yes":"no")+
     "\nSHIFT NAMED: "+(S.shift?"yes":"no");
-
   const businessContext=businessSkillContext();
+  const journeyContext=journey ? window.MomentumJourney.aiContext(journey,S.lang) : "";
   return `You are a practical transition companion for Israelis finishing IDF service (conscripts, officers, reservists). Reply in ${S.lang==="he"?"Hebrew":"English"}. Your relational stance is an older-brother / experienced-peer presence: adult-to-adult, warm, grounded, practical, loyal, and genuinely caring. Never sound like a parent, teacher, commander, counselor, therapist, bureaucrat, or authority figure. Do not lecture, preach, scold, patronize, or interrogate. Listen first; help the soldier think; give practical help and candid judgment when useful; respect that the soldier makes the decisions. You may be informal and lightly humorous when it fits. Do not claim that you personally served or personally went through military service. When experience is useful, say things like "many soldiers..." or "one thing others have found useful..." rather than inventing your own history.
+
+CONTINUING SOLDIER-OWNED JOURNEY (selected details only, when the soldier opted in; do not infer unshared data):
+${journeyContext || "No Journey context shared."}
+Use confirmed skills and the soldier's existing goals, CV drafts, study plans and follow-up actions without asking them to repeat known information. Do not infer eligibility, invent outcomes or certify a self-rating.
 
 CONFIRMED BUSINESS SKILL EVIDENCE (included only with the soldier's permission; self-ratings are not certified proficiency):
 ${businessContext || "Not shared. Do not assume any 36-skill assessment results."}
@@ -1477,10 +1488,39 @@ function openProfile(){
     use.appendChild(list); b.appendChild(use);
   }
   businessSkillsPanel(b);
-  const reset = el("button","linkish", S.lang==="he" ? "מחיקת השיחה והפרופיל מהדפדפן" : "Delete this conversation and profile from the browser");
+  // The soldier's long-term goals, education, CVs and actions share one browser-owned Journey.
+  if (window.MomentumJourney) {
+    const j = window.MomentumJourney.read();
+    const section = el("div", "block");
+    section.appendChild(el("h3", null, S.lang==="he" ? "המסע שלי — פרופיל מתמשך" : "My Journey — ongoing profile"));
+    const countGoals = j.goals.filter(x=>x.status!=="achieved").length;
+    const countActions = j.actions.filter(x=>x.status!=="done").length;
+    section.appendChild(el("div","empty",(S.lang==="he"
+      ? "מטרות פתוחות: "+countGoals+" · פעולות לביצוע: "+countActions+" · טיוטות קורות חיים: "+j.cvs.length+" · תוכניות לימודים: "+j.education.length
+      : "Open goals: "+countGoals+" · Next actions: "+countActions+" · CV drafts: "+j.cvs.length+" · Education plans: "+j.education.length)));
+    const journeyLink=el("a","prop",S.lang==="he"?"פתיחת המסע שלי — מטרות, קורות חיים וצעדים":"Open My Journey — goals, CVs and next steps");
+    journeyLink.href="./my-journey.html?lang="+S.lang;
+    journeyLink.style.display="block";journeyLink.style.marginBottom="9px";
+    section.appendChild(journeyLink);
+    const privacyLink=el("a","prop",S.lang==="he"?"בחירת פרטי הפרופיל לשיתוף עם AI":"Choose what profile details AI may receive");
+    privacyLink.href="./my-journey.html?lang="+S.lang+"#privacy";
+    privacyLink.style.display="block";privacyLink.style.marginBottom="9px";
+    section.appendChild(privacyLink);
+    const consent=el("div","empty",(S.lang==="he"
+      ? "שיתוף נתוני המסע עם AI: "+(j.privacy.shareWithAI?"מופעל לפי הבחירות שלכם":"כבוי — הפרופיל נשאר מקומי")
+      : "AI access to Journey data: "+(j.privacy.shareWithAI?"enabled for your selected fields":"off — Journey profile stays local")));
+    section.appendChild(consent);
+    const due=j.actions.filter(x=>x.status!=="done").sort((a,b)=>(a.dueDate||"9999").localeCompare(b.dueDate||"9999")).slice(0,3);
+    if(due.length){
+      section.appendChild(el("h4",null,S.lang==="he"?"הצעדים הבאים":"Upcoming steps"));
+      due.forEach(x=>section.appendChild(el("div","entry", "• "+x.title+(x.dueDate?" · "+x.dueDate:""))));
+    }
+    b.appendChild(section);
+  }
+  const reset = el("button","linkish", S.lang==="he" ? "מחיקת המסע, המיומנויות והשיחות השמורות מהדפדפן" : "Delete all local Journey, skills and Companion conversations");
   reset.onclick = () => {
-    if (!confirm(S.lang==="he" ? "למחוק הכול? אי אפשר לשחזר." : "Delete everything? This cannot be undone.")) return;
-    localStorage.removeItem(KEY); localStorage.removeItem(BUSINESS_SKILL_KEY); location.reload();
+    if (!confirm(S.lang==="he" ? "למחוק את כל נתוני המסע, המיומנויות והשיחות בשתי השפות? לא ניתן לבטל." : "Delete Journey, skills, and both-language conversation histories from this browser? This cannot be undone.")) return;
+    localStorage.removeItem(KEY); localStorage.removeItem(BUSINESS_SKILL_KEY); if(window.MomentumJourney)window.MomentumJourney.erase({assessment:true,companion:true}); location.reload();
   };
   b.appendChild(reset);
   openDrawer();
@@ -1820,5 +1860,6 @@ sizeTopicPanel(); paintTopicPanel();
 </script>
 
 <a id="momentum-business-skills-link" href="./skills-business.html?lang=en" style="position:fixed;bottom:14px;right:14px;z-index:9999;background:#087a89;color:white;padding:12px 16px;border-radius:14px;font:600 14px Arial,sans-serif;box-shadow:0 3px 12px #173d4d55;text-decoration:none;max-width:230px;text-align:center" aria-label="Discover your 36 career and business skills">Discover your 36 career and business skills</a>
+<a id="momentum-journey-link" href="./my-journey.html?lang=en" style="position:fixed;bottom:84px;right:14px;z-index:9999;background:#194765;color:#fff;padding:12px 16px;border-radius:14px;font:600 14px Arial,sans-serif;box-shadow:0 3px 12px #173d4d55;text-decoration:none;max-width:230px;text-align:center" aria-label="My Journey — ongoing profile">My Journey · Ongoing profile</a>
 </body>
 </html>
