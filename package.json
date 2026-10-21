@@ -4,10 +4,11 @@
   "description": "Guided Transition Companion — dialogue-first support for Israelis finishing IDF service",
   "private": true,
   "scripts": {
-    "test": "node tests/flow.test.js && node tests/paths.test.js",
+    "test": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js",
     "test:flow": "node tests/flow.test.js",
     "test:paths": "node tests/paths.test.js",
-    "inspect": "node tests/inspector.test.js"
+    "inspect": "node tests/inspector.test.js",
+    "test:journey": "node tests/journey.test.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
