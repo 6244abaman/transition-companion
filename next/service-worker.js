@@ -1,5 +1,5 @@
-const CACHE='transition-companion-next-shell-v8';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./companion-mentor.jpeg','../icon-192.png','../icon-512.png','../apple-touch-icon.png','./config/system-prompt.txt','./data/knowledge-manifest.json','./data/banners.json'];
+const CACHE='transition-companion-next-shell-v10';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./companion-mentor.jpeg','./business-skills.js','./sync-client.js','./knowledge-store.js','../journey-store.js','../icon-192.png','../icon-512.png','../apple-touch-icon.png','./config/system-prompt.txt','./data/knowledge-manifest.json','./data/knowledge/discharged-rights-core.json','./data/banners.json'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{
