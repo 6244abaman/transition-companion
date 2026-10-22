@@ -1,5 +1,14 @@
 {
-  "version": "2026-10-04.1",
-  "packages": [],
-  "note": "No Israeli rights, benefits, deadlines, emergency contacts or other volatile factual packages are activated until they have verified sources and review metadata."
+  "version": "2026-10-22.1",
+  "packages": [
+    {
+      "id": "discharged-rights-core",
+      "version": "2026-10-22.1",
+      "status": "approved",
+      "reviewedAt": "2026-10-22",
+      "validUntil": "2027-01-20",
+      "path": "./data/knowledge/discharged-rights-core.json",
+      "title": "Discharged soldiers: core rights"
+    }
+  ]
 }

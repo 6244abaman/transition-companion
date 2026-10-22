@@ -3,12 +3,14 @@
   "version": "2.0.0",
   "description": "Guided Transition Companion — dialogue-first support for Israelis finishing IDF service",
   "private": true,
+  "engines": { "node": ">=22.5.0" },
   "scripts": {
-    "test": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js",
-    "test:flow": "node tests/flow.test.js",
-    "test:paths": "node tests/paths.test.js",
-    "inspect": "node tests/inspector.test.js",
-    "test:journey": "node tests/journey.test.js"
+    "test": "node tests/journey.test.js && node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
+    "inspect": "node inspector.test.js",
+    "test:journey": "node tests/journey.test.js",
+    "test:business-skills": "node tests/business-skills.test.js",
+    "test:sync": "node tests/sync-client.test.js && node tests/sync-service.test.js",
+    "test:knowledge": "node tests/knowledge-store.test.js"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"

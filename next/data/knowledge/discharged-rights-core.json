@@ -1,0 +1,56 @@
+{
+  "schema": "momentum-reviewed-knowledge-v1",
+  "id": "discharged-rights-core",
+  "version": "2026-10-22.1",
+  "status": "approved",
+  "reviewedAt": "2026-10-22",
+  "validUntil": "2027-01-20",
+  "authority": "Israeli Ministry of Defense and National Insurance Institute",
+  "topics": ["rights", "finance", "jobs"],
+  "items": [
+    {
+      "id": "release-grant-and-deposit",
+      "topics": ["rights", "finance"],
+      "question": {
+        "en": "What is the difference between the discharge grant and the personal deposit?",
+        "he": "מה ההבדל בין מענק השחרור לפיקדון האישי?"
+      },
+      "answer": {
+        "en": "They are separate benefits. The Ministry of Defense says the discharge grant is paid to the bank account on record, usually within 60 days after discharge, and can be used for any purpose. The personal deposit is available from day 14 after discharge and is restricted to six statutory purposes: education, vocational training, starting a business, driving lessons, marriage, and buying a home or land to build one. As of September 2026, the listed monthly deposit rates are: combat ₪995.35; combat support ₪829.46; other/rear service and national-civic service ₪663.57; intermediate civic track ₪497.74; split civic track ₪331.83. These are per recognized month and may change. Eligibility and the individual balance depend on the service actually reported; check the personal area or official calculator. The Ministry currently describes deposit eligibility as at least 12 months of service, or a shorter period when discharge was for medical reasons. If your record or amount looks wrong, contact the Ministry's Discharged Soldiers and Reservists Department.",
+        "he": "אלה שתי זכויות נפרדות. לפי משרד הביטחון, מענק השחרור מועבר לחשבון הבנק הרשום בדרך כלל בתוך 60 יום מהשחרור, ואפשר להשתמש בו לכל מטרה. הפיקדון האישי זמין מהיום ה־14 לשחרור ומוגבל לשש מטרות הקבועות בחוק: לימודים, הכשרה מקצועית, הקמת עסק, לימודי נהיגה, נישואין ורכישת דירה או קרקע לבניית בית. נכון לספטמבר 2026, הסכומים החודשיים המפורסמים לפיקדון הם: לוחמים — 995.35 ₪; תומכי לחימה — 829.46 ₪; עורפי ושירות לאומי־אזרחי — 663.57 ₪; מסלול אזרחי ביניים — 497.74 ₪; מסלול אזרחי מפוצל — 331.83 ₪. אלה סכומים לכל חודש שירות מוכר והם עשויים להשתנות. הזכאות והיתרה האישית תלויות בפרטי השירות שדווחו בפועל; יש לבדוק את האזור האישי או המחשבון הרשמי. משרד הביטחון מציין כיום זכאות למי ששירתו לפחות 12 חודשים, או פחות מכך אם השחרור היה מסיבה רפואית. אם הנתונים או הסכום נראים שגויים, פנו לאגף לחיילים משוחררים ומילואים."
+      },
+      "nextSteps": {
+        "en": ["Check the discharge date, bank details, and current balance in the Ministry of Defense personal area.", "Use the official calculator for an estimate; the personal-area balance is the authoritative amount for your record.", "For a personal-deposit withdrawal, select one of the six eligible purposes and follow that purpose's current document checklist."],
+        "he": ["בדקו את תאריך השחרור, פרטי חשבון הבנק והיתרה באזור האישי של משרד הביטחון.", "השתמשו במחשבון הרשמי להערכה; היתרה באזור האישי היא הנתון הקובע לגבי הרשומה האישית שלכם.", "למימוש הפיקדון, בחרו אחת משש המטרות המותרות ופעלו לפי רשימת המסמכים העדכנית של אותה מטרה."]
+      },
+      "sources": [
+        {"authority":"Ministry of Defense — Discharged Soldiers and Reservists Department","title":{"en":"Grant and personal deposit","he":"מענק ופיקדון אישי"},"url":"https://www.hachvana.mod.gov.il/GrantAndDeposit/Pages/default.aspx","checkedAt":"2026-10-22"},
+        {"authority":"Ministry of Defense — Discharged Soldiers and Reservists Department","title":{"en":"Personal deposit up to five years after discharge","he":"פיקדון אישי עד חמש שנים מיום השחרור"},"url":"https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/default.aspx","checkedAt":"2026-10-22"},
+        {"authority":"Ministry of Defense — Discharged Soldiers and Reservists Department","title":{"en":"Personal area","he":"אזור אישי"},"url":"https://www.hachvana.mod.gov.il/HachvanaOnline","checkedAt":"2026-10-22"}
+      ]
+    },
+    {
+      "id": "preferred-work-grant",
+      "topics": ["rights", "jobs", "finance"],
+      "question": {
+        "en": "Can I get a grant for working in a recognized vital/preferred job, and how do I apply?",
+        "he": "האם מגיע לי מענק על עבודה מועדפת או נדרשת, ואיך מגישים תביעה?"
+      },
+      "answer": {
+        "en": "The National Insurance Institute says discharged compulsory-service soldiers may qualify even if they did not complete the full service period; national or national-civil service completers generally need 24 months. The general route requires work recognized as vital/preferred for six full months (at least 150 work days) within 24 months after discharge. The Institute also lists an unemployment-eligibility condition for people who start after the first year, with exceptions and special cases; check the current official eligibility page for your dates and circumstances. File online after completing the qualifying work and no later than 42 months after discharge under the general rule. Gather your discharge/service confirmation and employer certificates showing the workplace, type of work, dates, workdays in each month and average hours. The Institute says reserve-duty days, holidays, sick days and notice periods do not count as workdays. Verify that the exact job is recognized before relying on it; the Institute recommends checking with a branch if uncertain.",
+        "he": "לפי הביטוח הלאומי, חיילים משוחררים משירות חובה עשויים להיות זכאים גם אם לא השלימו את כל תקופת השירות; למסיימי שירות לאומי או אזרחי נדרשים בדרך כלל 24 חודשי שירות. המסלול הכללי דורש עבודה שהוכרה כעבודה נדרשת במשך שישה חודשים מלאים (לפחות 150 ימי עבודה) בתוך 24 חודשים מהשחרור. הביטוח הלאומי מציין גם תנאי זכאות לדמי אבטלה למי שמתחילים לעבוד לאחר השנה הראשונה, לצד חריגים ומקרים מיוחדים; בדקו את דף הזכאות העדכני לפי תאריכי השירות והנסיבות שלכם. את התביעה מגישים באופן מקוון לאחר השלמת תקופת העבודה המזכה ולא יאוחר מ־42 חודשים מהשחרור לפי הכלל הכללי. הכינו אישור שחרור או שירות ואישורי מעסיקים המציינים את מקום העבודה, סוג העבודה, תאריכים, ימי עבודה בכל חודש וממוצע שעות. הביטוח הלאומי מציין שימי מילואים, חגים, מחלה והודעה מוקדמת אינם נספרים כימי עבודה. לפני שמסתמכים על משרה מסוימת, ודאו שהיא מוכרת; אם אינכם בטוחים, הביטוח הלאומי ממליץ לבדוק מול הסניף לפני תחילת העבודה."
+      },
+      "nextSteps": {
+        "en": ["Check that the specific employer, workplace, and job duties appear in the National Insurance Institute's recognized-work guidance before accepting the job.", "Track actual workdays and keep employer confirmations and pay slips; reserve days and several types of absence do not count as workdays.", "Check the official eligibility and filing pages against your discharge date, when you started the job, service type, and any reserve periods.", "Submit the claim through the official online service. The Companion can help prepare a checklist, but it cannot submit the claim or verify the National Insurance Institute's decision."],
+        "he": ["ודאו שהמעסיק, מקום העבודה והתפקיד הספציפי מופיעים בהנחיות הביטוח הלאומי לעבודה מוכרת, לפני קבלת המשרה.", "תעדו ימי עבודה בפועל ושמרו אישורי מעסיק ותלושי שכר; ימי מילואים וסוגי היעדרות מסוימים אינם נספרים.", "בדקו את דפי הזכאות וההגשה לפי תאריך השחרור, מועד תחילת העבודה, סוג השירות ותקופות מילואים רלוונטיות.", "הגישו את התביעה בשירות המקוון הרשמי. העוזר יכול להכין רשימת בדיקה, אך אינו יכול להגיש את התביעה או לאשר את החלטת הביטוח הלאומי."]
+      },
+      "sources": [
+        {"authority":"National Insurance Institute","title":{"en":"Eligibility conditions","he":"תנאי זכאות"},"url":"https://www.btl.gov.il/benefits/Demobilized_Soldier/tnaeyZakaut/Pages/default.aspx","checkedAt":"2026-10-22"},
+        {"authority":"National Insurance Institute","title":{"en":"How to submit the claim","he":"אופן הגשת התביעה"},"url":"https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/%D7%90%D7%95%D7%A4%D7%9F%20%D7%94%D7%92%D7%A9%D7%AA%20%D7%94%D7%AA%D7%91%D7%99%D7%A2%D7%94.aspx","checkedAt":"2026-10-22"},
+        {"authority":"National Insurance Institute","title":{"en":"Claim the vital work grant online","he":"תביעה מקוונת למענק עבודה נדרשת"},"url":"https://www.gov.il/en/service/grant_discharged_soldier_is_required_to_work","checkedAt":"2026-10-22"},
+        {"authority":"National Insurance Institute","title":{"en":"Recognized vital/preferred jobs","he":"רשימת עבודות נדרשות מוכרות"},"url":"https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA%20%D7%A2%D7%91%D7%95%D7%93%D7%95%D7%AA%20%D7%9E%D7%96%D7%9B%D7%95%D7%AA.aspx","checkedAt":"2026-10-22"},
+        {"authority":"National Insurance Institute","title":{"en":"Vital work grant — English information","he":"מידע באנגלית על מענק עבודה נדרשת"},"url":"https://www.btl.gov.il/English%20Homepage/Benefits/Grant%20to%20discharged%20soldiers%20performing%20vital%20work/Pages/default.aspx","checkedAt":"2026-10-22"}
+      ]
+    }
+  ]
+}
