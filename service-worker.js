@@ -17,9 +17,10 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v6-journey-profile";
+const CACHE = "tc-v7-access";
 const APP_FILES = [
   "./",
+  "./companion-access.js",
   "./index.html",
   "./indexH.html",
   "./skills-business.html",
