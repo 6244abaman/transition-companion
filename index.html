@@ -27,6 +27,7 @@
      ============================================================ -->
 
 <script src="./journey-store.js"></script>
+<script src="./companion-access.js"></script>
 <script id="config">
 const CONFIG = {
   // Your Render proxy. Change the path if your proxy uses a different route.
@@ -1028,7 +1029,7 @@ $("btnDiag").onclick = async () => {
   out.textContent = t.diagRun;
   let res;
   try {
-    res = await fetch(CONFIG.API_URL, {
+    res = await companionFetch(CONFIG.API_URL, {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ model: CONFIG.MODEL, max_tokens: 16,
@@ -1277,7 +1278,7 @@ async function askModel(){
   DIAG.estPromptTokens = Math.round((sys.length + hist.reduce((a,m)=>a+m.content.length,0)) / 4);
   DIAG.at = new Date().toLocaleTimeString();
 
-  const res = await fetch(CONFIG.API_URL, {
+  const res = await companionFetch(CONFIG.API_URL, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
