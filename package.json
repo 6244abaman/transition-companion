@@ -5,7 +5,7 @@
   "private": true,
   "engines": { "node": ">=22.5.0" },
   "scripts": {
-    "test": "node tests/journey.test.js && node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
+    "test": "node tests/offline-fallback.test.js && node tests/journey.test.js && node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
     "inspect": "node inspector.test.js",
     "test:journey": "node tests/journey.test.js",
     "test:business-skills": "node tests/business-skills.test.js",

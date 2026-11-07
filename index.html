@@ -56,6 +56,10 @@ const CONFIG = {
   // (a built-in scripted engine) so the whole flow stays testable.
   ALLOW_PRACTICE_FALLBACK: true,
 
+  // How long to wait for the proxy before trying again. A sleeping free
+  // Render server can take about a minute to wake up on its first request.
+  API_TIMEOUT_MS: 45000,
+
   // Human support numbers shown in the "Talk to a person" panel.
   SUPPORT: [
     { name: "ERAN — emotional first aid, 24/7", he: "ער\"ן — עזרה ראשונה נפשית, 24/7", tel: "1201" },
@@ -414,6 +418,7 @@ en:{
   emptyP:"Nothing here yet. Strengths appear only once you have described something real that shows them — not because of your role.",
   pStr:"Built in service", pCost:"What it cost", pOpen:"Still open", pDir:"Directions raised",
   offline:"⚠ PRACTICE MODE — the AI is NOT connected. These replies come from a fixed script and do NOT respond to what you write. This is not how the app really behaves. Tap Check connection on the start screen to fix it.",
+  back:"✓ The AI is connected again. From here on, replies respond to what you write.",
   sendFail:"That message didn't go through. Tap send again to retry.",
   concern:"This is a lot to carry. These people answer 24/7, and I'm still here after.",
   callit:"Call",
@@ -464,6 +469,7 @@ he:{
   emptyP:"עדיין ריק. חוזקות מופיעות רק אחרי שתיארת משהו אמיתי שמראה אותן — לא בגלל התפקיד.",
   pStr:"מה נבנה בשירות", pCost:"מה זה עלה", pOpen:"עדיין פתוח", pDir:"כיוונים שעלו",
   offline:"⚠ מצב תרגול — ה‑AI לא מחובר. התשובות האלה מגיעות מתסריט קבוע ולא מגיבות למה שכתבת. זו לא ההתנהגות האמיתית של האפליקציה. לחץ על בדיקת חיבור במסך הפתיחה כדי לתקן.",
+  back:"✓ ה-AI מחובר שוב. מעכשיו התשובות מגיבות למה שאתה כותב.",
   sendFail:"ההודעה לא נשלחה. לחץ שוב על שליחה כדי לנסות שוב.",
   concern:"זה הרבה לשאת. האנשים האלה עונים מסביב לשעון, ואני כאן גם אחרי.",
   callit:"חיוג",
@@ -1262,6 +1268,33 @@ ${state}`;
 /* ==========================================================================
    7. TALKING TO THE MODEL
    ========================================================================== */
+async function postToProxy(body){
+  let lastErr;
+  for (let attempt = 0; attempt < 2; attempt++){
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), CONFIG.API_TIMEOUT_MS);
+    let retryable = true;
+    try {
+      const res = await fetch(CONFIG.API_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(body),
+        signal: ctl.signal
+      });
+      clearTimeout(timer);
+      if (res.ok) return res;
+      DIAG.error = "HTTP "+res.status;
+      lastErr = new Error("HTTP "+res.status);
+      retryable = res.status >= 500 || res.status === 429;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+    }
+    if (!retryable) break;
+    if (attempt === 0) await new Promise(r => setTimeout(r, 3000));
+  }
+  throw lastErr;
+}
 async function askModel(){
   const hist = S.messages
     .filter(m => m.role === "user" || m.role === "assistant")
@@ -1277,17 +1310,12 @@ async function askModel(){
   DIAG.estPromptTokens = Math.round((sys.length + hist.reduce((a,m)=>a+m.content.length,0)) / 4);
   DIAG.at = new Date().toLocaleTimeString();
 
-  const res = await fetch(CONFIG.API_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      model: CONFIG.MODEL,
-      max_tokens: ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,
-      system: sys,
-      messages: hist
-    })
+  const res = await postToProxy({
+    model: CONFIG.MODEL,
+    max_tokens: ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,
+    system: sys,
+    messages: hist
   });
-  if (!res.ok) { DIAG.error = "HTTP "+res.status; throw new Error("HTTP "+res.status); }
   const data = await res.json();
   if (data.usage) DIAG.usage = data.usage;
   const raw = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
@@ -1376,7 +1404,8 @@ const SHIFT_LINE = {
 };
 function practiceReply(userText){
   if(S.activeTopic) return topicPracticeReply(userText);
-  const i = Math.min(S.practiceStep, SCRIPT[S.lang].length-1);
+  if (S.practiceStep >= SCRIPT[S.lang].length) return { reply: ["That is the end of the built-in guidance for this topic while the AI is not connected. Pick another topic from the list, or send another message: the app tries to reconnect each time and will give you a full personal answer when it can.","זה סוף ההכוונה המובנית בנושא הזה כל עוד ה-AI לא מחובר. אפשר לבחור נושא אחר מהרשימה או לשלוח הודעה נוספת: האפליקציה מנסה להתחבר מחדש בכל פעם, ותיתן תשובה אישית מלאה כשזה אפשרי."][S.lang==="he"?1:0] };
+  const i = S.practiceStep;
   // Practice Mode has no language understanding, so it does not pretend to:
   // it never echoes the person's words back, it just gives the scripted reply.
   const out = { reply: SCRIPT[S.lang][i] };
@@ -1435,8 +1464,8 @@ async function sendUser(text){
 
   let out;
   try {
-    if (S.practice) throw new Error("practice");
     out = await askModel();
+    if (S.practice) { S.practice = false; pushMsg("system", L().back); }
   } catch (err) {
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
     if (!S.practice) { S.practice = true; pushMsg("system", L().offline); }
@@ -1891,7 +1920,7 @@ function skillsTopicText(){
 function prepareTopic(topic){
  if($("thinking"))return;
  closeDrawer(); stopSpeaking();
- S.started=true; S.activeTopic=topic[0]; S.ack=true;
+ S.started=true; S.activeTopic=topic[0]; S.ack=true; S.topicStep=0;
  enterChat(); paintTopicPanel();
  const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
  pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
@@ -1899,6 +1928,8 @@ function prepareTopic(topic){
  $("input").focus();
 }
 function openMySkills(){prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));}
+const TOPIC_STEPS={"cv":[["Thanks. Whatever the target job, a CV works best when each line shows what you did and what changed because of it. Take one responsibility from your service or work and describe it in civilian words: what you handled, how many people or how much equipment, and one result.\n\nWhich responsibility would you like to turn into a CV line first?","תודה. לא משנה לאיזו משרה, קורות חיים עובדים הכי טוב כשכל שורה מראה מה עשית ומה השתנה בזכותך. קח אחריות אחת מהשירות או מהעבודה ותאר אותה במילים אזרחיות: מה טיפלת, כמה אנשים או כמה ציוד, ותוצאה אחת.\n\nאיזו אחריות תרצה להפוך קודם לשורה בקורות החיים?"],["Keep it to one page, newest first. A simple order: contact details, a one-line summary, service and work experience, education and courses, languages and skills. Leave out classified or operational details and unit jargon an employer would not understand.\n\nWhich job or field is this CV for? The wording changes with the target.","כדאי להישאר בעמוד אחד, מהחדש לישן. סדר פשוט: פרטי קשר, משפט תקציר אחד, ניסיון בשירות ובעבודה, לימודים וקורסים, שפות וכישורים. אל תכלול פרטים מסווגים או מבצעיים ומונחים צבאיים שמעסיק לא יבין.\n\nלאיזו משרה או תחום קורות החיים מיועדים? הניסוח משתנה לפי היעד."],["Next, write the summary line and two or three bullet points per role, each starting with an action verb. Then ask someone you trust to read it and tell you what is unclear. Before you send it anywhere, check that every sentence is true and that you can explain it in an interview.\n\nWould you like to start with the summary line or the experience bullets?","השלב הבא: כתוב משפט תקציר ושתיים-שלוש נקודות לכל תפקיד, וכל נקודה תיפתח בפועל פעולה. אחר כך בקש ממישהו שאתה סומך עליו לקרוא ולומר מה לא ברור. לפני ששולחים לכל מקום, בדוק שכל משפט נכון ושאתה יכול להסביר אותו בראיון.\n\nמאיפה תרצה להתחיל: משפט התקציר או נקודות הניסיון?"]],"applications":[["Thanks. A strong application matches the job, not just your history. Pick one posting, underline the three requirements that matter most, and find one real example of yours for each.\n\nWhich of those three requirements is hardest for you to show an example for?","תודה. מועמדות חזקה מותאמת למשרה ולא רק לעבר שלך. בחר מודעה אחת, סמן את שלוש הדרישות החשובות ביותר ומצא דוגמה אמיתית שלך לכל אחת.\n\nאיזו משלוש הדרישות הכי קשה לך להדגים?"],["For the cover letter, use three short paragraphs: why this role, why you (with two examples), and a closing line with your availability. Use the posting's key words only where they are true for you.\n\nWhat is the biggest gap between the posting and your experience?","במכתב הפנייה כדאי שלוש פסקאות קצרות: למה התפקיד הזה, למה אתה (עם שתי דוגמאות) ומשפט סיום עם הזמינות שלך. השתמש במילות המפתח של המודעה רק כשהן נכונות לגביך.\n\nמהו הפער הגדול ביותר בין המודעה לניסיון שלך?"],["Prepare for the interview with two or three short stories: a problem you solved, a time you worked with others, and a mistake you learned from. Practice each for about a minute and a half, in civilian terms.\n\nWhich of these three stories is hardest for you to tell?","היערך לראיון עם שניים-שלושה סיפורים קצרים: בעיה שפתרת, מצב שבו עבדת עם אחרים, וטעות שלמדת ממנה. תרגל כל אחד כדקה וחצי, במונחים אזרחיים.\n\nאיזה משלושת הסיפורים הכי קשה לך לספר?"]],"career":[["Thanks. Start from evidence rather than job titles: list three moments in service, school or work when time passed quickly or people came to you for help. Patterns in those moments point to directions worth testing.\n\nWhat were two of those moments?","תודה. כדאי להתחיל מעדויות ולא מתארים: רשום שלושה רגעים בשירות, בלימודים או בעבודה שבהם הזמן עבר מהר או שאנשים פנו אליך לעזרה. דפוסים ברגעים האלה מצביעים על כיוונים שכדאי לבדוק.\n\nמהם שניים מהרגעים האלה?"],["Now narrow to two or three directions and compare them on day-to-day work, the way in, time and cost to start, and early pay. You do not have to choose yet; choose what to test.\n\nWhich two or three fields feel most worth comparing?","עכשיו צמצם לשניים-שלושה כיוונים והשווה אותם לפי העבודה היומיומית, דרך הכניסה, זמן ועלות ההתחלה והשכר בתחילת הדרך. אין צורך להחליט עכשיו; בוחרים מה לבדוק.\n\nאילו שניים-שלושה תחומים הכי שווה להשוות?"],["Test cheaply before committing: talk to one person who works in the field, watch a day-in-the-life video, or try a short course or a small task. Aim for one test in the next two weeks.\n\nWho could you ask for a 15-minute conversation?","בדוק בזול לפני שמתחייבים: דבר עם אדם אחד שעובד בתחום, צפה בסרטון על יום עבודה אופייני, או נסה קורס קצר או משימה קטנה. כדאי לתכנן בדיקה אחת בשבועיים הקרובים.\n\nאת מי אפשר לבקש לשיחה של 15 דקות?"]],"study":[["Thanks. Plan backwards from the date you want to start. The main pieces are the entry requirements of the programs you like, any entrance exam, preparation time, registration windows and cost.\n\nWhen would you like to start, and which entry requirements (for example matriculation or an entrance exam) do you already have?","תודה. מתכננים לאחור ממועד ההתחלה הרצוי. החלקים העיקריים: דרישות הקבלה בתוכניות שמעניינות אותך, מבחן כניסה אם יש, זמן הכנה, מועדי הרשמה ועלות.\n\nמתי תרצה להתחיל, ואילו דרישות קבלה (למשל בגרות או מבחן כניסה) כבר יש לך?"],["Compare routes, not just names: university, college, vocational training, a preparatory program, or work first. For each one look at length, total cost, the chance of finishing, and the jobs it leads to. Dates, requirements and tuition change, so check them on the institution's official site.\n\nWhich two routes would you like to compare?","השווה מסלולים ולא רק שמות: אוניברסיטה, מכללה, הכשרה מקצועית, מכינה או עבודה קודם. בכל אחד בדוק משך, עלות כוללת, סיכוי להשלים ולאילו משרות הוא מוביל. תאריכים, דרישות ושכר לימוד משתנים, ולכן יש לבדוק אותם באתר הרשמי של המוסד.\n\nאילו שני מסלולים תרצה להשוות?"],["Put the dates in a calendar with a safety margin before each official deadline, and write the first three actions for this month. If a requirement is unclear, ask the admissions office directly.\n\nWhat worries you most about studying?","רשום את המועדים ביומן עם מרווח ביטחון לפני כל מועד רשמי, וכתוב את שלושת הצעדים הראשונים לחודש הזה. אם דרישה לא ברורה, פנה ישירות למדור קבלה.\n\nמה הכי מדאיג אותך בלימודים?"]],"rights":[["Thanks, that narrows it down. Benefits depend on your type of service, its length and your discharge date, so the first job is to find which categories apply to you. Common areas to check are study support, housing and loans, employment, health and rehabilitation, and reserve-duty benefits.\n\nWhich area matters most to you right now?","תודה, זה מצמצם. זכויות תלויות בסוג השירות, באורכו ובמועד השחרור, ולכן הצעד הראשון הוא לברר אילו קטגוריות רלוונטיות לך. תחומים נפוצים לבדיקה: סיוע בלימודים, דיור והלוואות, תעסוקה, בריאות ושיקום, והטבות מילואים.\n\nאיזה תחום הכי חשוב לך עכשיו?"],["For that area, make a short list: what you think you may be entitled to, the documents you would need (such as a discharge certificate, ID and proof of service), and the official place that can confirm it. Eligibility and deadlines must be confirmed with the responsible official service (for example the Ministry of Defense or National Insurance), not from friends or social media.\n\nWhich of those documents do you already have?","בתחום הזה כדאי להכין רשימה קצרה: למה אתה חושב שאתה זכאי, אילו מסמכים תצטרך (כמו תעודת שחרור, תעודת זהות ואישור שירות), ואיזה גוף רשמי יכול לאשר. זכאות ומועדים יש לאמת מול הגוף הרשמי האחראי (למשל משרד הביטחון או ביטוח לאומי), ולא מחברים או מרשתות חברתיות.\n\nאילו מהמסמכים האלה כבר יש לך?"],["Write down every deadline you find on the official site, with a margin before it, and one next action. If a claim is refused or unclear, ask for the decision in writing; a rights adviser can help you appeal.\n\nWhat would make it easier to start this week?","רשום כל מועד שתמצא באתר הרשמי, עם מרווח לפניו, וצעד הבא אחד. אם תביעה נדחית או לא ברורה, בקש את ההחלטה בכתב; יועץ זכויות יכול לעזור בערעור.\n\nמה יקל עליך להתחיל השבוע?"]],"money":[["Thanks. Start with a simple monthly picture: what comes in, your fixed costs (rent, phone, transport, insurance), and what is left. Rough numbers are enough.\n\nRoughly how much comes in and goes out each month?","תודה. נתחיל בתמונה חודשית פשוטה: מה נכנס, ההוצאות הקבועות (שכר דירה, טלפון, תחבורה, ביטוח) ומה נשאר. מספרים בקירוב מספיקים.\n\nבערך כמה נכנס וכמה יוצא בכל חודש?"],["Mark which expenses are essential and which are flexible. Before big plans, try to build a small buffer, and pick one change for this month: pause a subscription, set a small automatic saving, or delay a purchase.\n\nWhich expense feels the most flexible?","סמן אילו הוצאות חיוניות ואילו גמישות. לפני תוכניות גדולות כדאי לבנות כרית ביטחון קטנה, ולבחור שינוי אחד לחודש הזה: לעצור מנוי, להגדיר חיסכון אוטומטי קטן או לדחות קנייה.\n\nאיזו הוצאה הכי גמישה אצלך?"],["For discharge payments, savings plans, loans or debt, confirm the details with an official source or a licensed financial counsellor; this app cannot give personal financial advice. A monthly ten-minute check-in with your numbers is usually enough.\n\nWhat is the next money decision you need to make in the coming month?","לגבי מענקי שחרור, תוכניות חיסכון, הלוואות או חובות, כדאי לאמת פרטים מול גוף רשמי או יועץ כלכלי מוסמך; האפליקציה אינה יכולה לתת ייעוץ כלכלי אישי. בדיקה חודשית של עשר דקות במספרים שלך בדרך כלל מספיקה.\n\nמהי ההחלטה הכלכלית הבאה שעליך לקבל בחודש הקרוב?"]],"travel":[["Thanks. Fit the trip to your budget and dates: set a total budget that includes flights, insurance, daily costs and a buffer, and check passport validity, visa rules and official travel advisories for each country.\n\nHow long are you thinking of going, and what budget feels realistic?","תודה. כדאי להתאים את הטיול לתקציב ולמועדים: קבע תקציב כולל שמכיל טיסות, ביטוח, הוצאות יומיומיות ורזרבה, ובדוק תוקף דרכון, דרישות ויזה והמלצות רשמיות לנסיעה בכל מדינה.\n\nלכמה זמן אתה חושב לנסוע, ואיזה תקציב נראה לך ריאלי?"],["Check what cannot wait while you are away: study registration, exam dates, benefit deadlines and job offers. Back up your documents and share your plan with someone at home.\n\nWhich deadlines might fall during the trip?","בדוק מה לא יכול לחכות בזמן שאתה בחוץ: הרשמה ללימודים, מועדי מבחנים, מועדי הטבות והצעות עבודה. גבה את המסמכים שלך ושתף מישהו בבית בתוכנית.\n\nאילו מועדים עלולים לחול בזמן הטיול?"],["Decide what the trip is for (rest, adventure, work, volunteering), then set a return date and write the first three actions for when you are back. Travel is a legitimate part of the transition.\n\nWhat would make this trip feel worth it for you?","החלט למה הטיול משרת אותך (מנוחה, הרפתקה, עבודה, התנדבות), קבע תאריך חזרה וכתוב את שלושת הצעדים הראשונים לחזרה. טיול הוא חלק לגיטימי מהמעבר.\n\nמה יגרום לטיול הזה להרגיש שווה בשבילך?"]],"family":[["Thanks for naming it. A hard conversation goes better when you pick one topic, a calm moment, and say what you need in a single sentence.\n\nWhat would you most like the other person to understand?","תודה ששיתפת. שיחה קשה מצליחה יותר כשבוחרים נושא אחד, רגע רגוע, ואומרים מה אתה צריך במשפט אחד.\n\nמה הכי היית רוצה שהצד השני יבין?"],["Before you talk, write one sentence about how you feel and one about what you are asking for. The other person will probably react from their own worries, and listening first usually lowers the temperature.\n\nWhat do you think they are most worried about?","לפני השיחה כתוב משפט אחד על מה שאתה מרגיש ומשפט אחד על מה שאתה מבקש. כנראה שהצד השני יגיב מתוך הדאגות שלו, והקשבה קודם בדרך כלל מורידה מתח.\n\nממה לדעתך הוא הכי מודאג?"],["If the tension is constant or you ever feel unsafe, a family counsellor or social worker can help, and the Support button shows phone numbers. Otherwise pick one small step this week: a message, a call or a shared meal.\n\nWhat is a small step that feels doable?","אם המתח קבוע או אם אי פעם אתה מרגיש לא בטוח, יועץ משפחתי או עובד סוציאלי יכולים לעזור, וכפתור התמיכה מציג מספרי טלפון. אחרת בחר צעד קטן אחד לשבוע: הודעה, שיחה או ארוחה משותפת.\n\nמהו צעד קטן שנראה לך אפשרי?"]],"support":[["Thank you for saying it. What you are feeling is real and deserves attention, even if it is hard to put into words, and you do not have to solve it today. If you ever feel unsafe or think about harming yourself, call ERAN on 1201 right now (24/7), or use the Support button.\n\nIs it more a heaviness that comes and goes, or something steady that affects your sleep, eating or daily tasks?","תודה ששיתפת. מה שאתה מרגיש אמיתי וראוי לתשומת לב, גם אם קשה לנסח אותו, ואין צורך לפתור הכול היום. אם אי פעם אתה מרגיש לא בטוח או חושב לפגוע בעצמך, התקשר מיד לער\"ן 1201 (24/7) או השתמש בכפתור התמיכה.\n\nזה יותר כבדות שבאה והולכת, או משהו קבוע שמשפיע על השינה, האכילה או המשימות היומיומיות?"],["Thanks. While you sort this out, small things can help: regular sleep and meals, a short walk, and contact with one person you trust. A person can help more than this app can: ERAN (1201) is available any time, and NATAL (1-800-363-363) supports trauma and resilience related to service.\n\nWho is one person you could talk to this week?","תודה. בזמן שאתה מסדר את זה, דברים קטנים יכולים לעזור: שינה ואוכל סדירים, הליכה קצרה וקשר עם אדם אחד שאתה סומך עליו. אדם יכול לעזור יותר מהאפליקציה: ער\"ן (1201) זמין בכל שעה, ונט\"ל (1-800-363-363) מסייע בטראומה וחוסן הקשורים לשירות.\n\nעם מי אחד אפשר לדבר השבוע?"],["You do not need a crisis to ask for help. A family doctor or a mental-health professional can check how you are doing, and I can help you prepare what you want to say. If it ever feels unsafe, ERAN 1201 is there 24/7.\n\nWhat would make that first call or appointment feel easier?","אין צורך במשבר כדי לבקש עזרה. רופא משפחה או איש מקצוע בתחום בריאות הנפש יכולים לבדוק איך אתה מרגיש, ואני יכול לעזור לך להכין מה תרצה לומר. אם אי פעם זה מרגיש לא בטוח, ער\"ן 1201 זמין 24/7.\n\nמה יקל עליך להתקשר או לקבוע את הפגישה הראשונה?"]]};
+const OFFLINE_CLOSING=["That is the end of the built-in guidance for this topic while the AI is not connected. Pick another topic from the list, or send another message: the app tries to reconnect each time and will give you a full personal answer when it can.","זה סוף ההכוונה המובנית בנושא הזה כל עוד ה-AI לא מחובר. אפשר לבחור נושא אחר מהרשימה או לשלוח הודעה נוספת: האפליקציה מנסה להתחבר מחדש בכל פעם, ותיתן תשובה אישית מלאה כשזה אפשרי."];
 function topicPracticeReply(userText){
  const he=S.lang==="he", id=S.activeTopic;
  if(id==="skills"){
@@ -1909,10 +1940,9 @@ function topicPracticeReply(userText){
    : (he?"כדי לזהות כישור אישי צריך דוגמה, ולא רק שם תפקיד. כשהשירות המקוון אינו זמין, איני יכול לנתח או לאשר אוטומטית את הדוגמה שלך.\n\nתוכל לתאר משימה אחת שביצעת ואיך התמודדת איתה?":"Identifying a personal skill takes an example, not just a role title. With the online service unavailable, I cannot automatically analyse or confirm your example.\n\nCan you describe one task you carried out and how you handled it?"),
    candidates};
  }
- const labels=TRANSITION_TOPICS.find(t=>t[0]===id);
- return {reply:he
-  ?"שמרתי את הפרטים שלך בנושא "+labels[2]+". שירות ה-AI אינו זמין כרגע, ולכן איני יכול להכין תשובה מותאמת לפרטים החדשים. אפשר לנסות שוב מאוחר יותר או להשתמש בכפתור ׳שאל AI׳.\n\n"+TOPIC_RESPONSES[id][1]
-  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask an AI.\n\n"+TOPIC_RESPONSES[id][0]};
+ const steps=TOPIC_STEPS[id], n=S.topicStep||0; S.topicStep=n+1;
+ const reply=(steps&&steps[n])?steps[n][he?1:0]:OFFLINE_CLOSING[he?1:0];
+ return {reply};
 }
 
 const topicBreakpoint=window.matchMedia("(min-width:1100px)");
