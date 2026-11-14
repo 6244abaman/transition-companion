@@ -1,5 +1,10 @@
 TRANSITION COMPANION - SHARE AND MANAGE THE REVIEW SITE
 
+OPEN AND SHARE: https://transition-companion-review.onrender.com/
+MANAGE IN RENDER: https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0
+FIND BOTH APPS FROM ANY DEVICE:
+https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md
+
 Everyday use
 Open the review site's public web address in a browser and share that same
 address with reviewers. It opens the Hebrew Companion. English is available

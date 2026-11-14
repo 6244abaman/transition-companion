@@ -1,5 +1,9 @@
 # Soldier Transition Companion — continuity and follow-up
 
+**[Open and share the review app](https://transition-companion-review.onrender.com/)**
+· [Render dashboard](https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0)
+· [Permanent links to both apps](https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md)
+
 ## Share the hosted review build
 
 The Render review site serves this development branch independently of Aba's

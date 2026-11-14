@@ -5,6 +5,9 @@ service/workspace, deployment branch and build settings. `HOSTING.txt` is the
 plain owner guide. Keep the live link near the top of the public README so the
 owner can find it from a phone or another computer; Render's service page also
 shows that same link. Never store credentials or deploy-hook URLs in metadata.
+The public owner directory is
+https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md.
+Keep it accurate when an app's public access information intentionally changes.
 
 ## Changes requested by Aba
 

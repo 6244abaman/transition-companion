@@ -37,3 +37,25 @@ test('review build preserves app assets, resolves links and excludes private/ser
   const info = JSON.parse(fs.readFileSync(path.join(output, 'build-info.json'), 'utf8'));
   assert.equal(info.app, 'transition-companion-review');
 });
+test('owner links, Render settings and AI target stay consistent with shared metadata', () => {
+  const config = JSON.parse(fs.readFileSync(path.join(root, 'app-deployment.json'), 'utf8'));
+  assert.equal(config.review.serviceType, 'static_site');
+  assert.equal(config.review.publishPath, 'dist');
+  assert.equal(new URL(config.review.url).protocol, 'https:');
+  assert.ok(config.review.dashboardUrl.endsWith('/'+config.review.serviceId));
+  for (const file of ['README.md','HOSTING.txt','LIVE-APPS.md']) {
+    const text = fs.readFileSync(path.join(root, file), 'utf8');
+    assert.ok(text.includes(config.review.url), file+': public app URL');
+    assert.ok(text.includes(config.review.dashboardUrl), file+': owner dashboard');
+  }
+  assert.ok(fs.readFileSync(path.join(root, 'HOSTING.txt'),'utf8').includes(config.deploymentBranch));
+  for (const file of ['index.html','indexH.html']) {
+    const dom = new JSDOM(fs.readFileSync(path.join(root, file), 'utf8'));
+    const source = dom.window.document.getElementById('config').textContent;
+    const actual = vm.runInNewContext(source+'; CONFIG');
+    assert.equal(actual.API_URL, config.llm.apiUrl);
+    assert.equal(actual.MODEL, config.llm.model);
+    dom.window.close();
+  }
+  assert.match(fs.readFileSync(path.join(root, 'CLAUDE.md'),'utf8'), /@APP-OPERATIONS\.md/);
+});

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "app": "transition-companion",
+  "repository": "https://github.com/6244abaman/transition-companion",
+  "deploymentBranch": "complete/continuity-and-followup",
+  "publicDirectory": "https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md",
+  "review": {
+    "workspaceName": "Momentum Claude",
+    "workspaceId": "tea-d702h2fkijhs73d5bgtg",
+    "serviceName": "transition-companion-review",
+    "serviceId": "srv-dbsb37jl550s73fvm5t0",
+    "serviceType": "static_site",
+    "url": "https://transition-companion-review.onrender.com/",
+    "dashboardUrl": "https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0",
+    "autoDeploy": "yes",
+    "buildCommand": "npm ci --ignore-scripts --no-audit --no-fund && npm test && npm run build:review",
+    "publishPath": "dist"
+  },
+  "llm": {
+    "serviceName": "momentum-proxy",
+    "serviceId": "srv-d7035nhr0fns73ck2a60",
+    "dashboardUrl": "https://dashboard.render.com/web/srv-d7035nhr0fns73ck2a60",
+    "apiUrl": "https://momentum-proxy.onrender.com/api",
+    "model": "claude-sonnet-4-6"
+  },
+  "local": {
+    "url": "http://127.0.0.1:43127/",
+    "start": "Start.cmd",
+    "stop": "Stop.cmd"
+  }
+}
