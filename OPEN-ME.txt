@@ -1,0 +1,76 @@
+TRANSITION COMPANION - OPEN ON WINDOWS
+
+Everyday use
+1. Double-click Start.cmd (Hebrew) or Start-English.cmd (English).
+2. A separate Chrome or Edge window opens when installed; otherwise your
+   default browser opens. Use the app yourself; Codex can be closed.
+3. Open My Journey inside the app for your goals, skills, CVs and backups.
+4. When finished, close the app window. Double-click Stop.cmd to stop its
+   background server. Closing the browser alone leaves that server running.
+
+Local address: http://127.0.0.1:43127/
+Hebrew: http://127.0.0.1:43127/indexH.html
+English: http://127.0.0.1:43127/index.html
+My Journey: http://127.0.0.1:43127/my-journey.html?lang=he
+
+One-time setup
+Download the repository ZIP from GitHub's Code menu on the branch you intend
+to use, then extract the whole ZIP. Do not run Start.cmd from inside the ZIP.
+Install Node.js 24 from nodejs.org if it is not already installed.
+Node.js 24 is already installed on Aba's current Windows computer.
+Daily use needs no npm commands, Git, Docker, administrator access or open
+Codex session. The whole folder is needed; do not move only the launchers.
+If you use a desktop shortcut, point it to Start.cmd in the extracted folder.
+Aba's existing "Transition Companion - Local" shortcut already does this.
+
+What runs locally and what goes online
+- The interface is served only on this computer, on loopback port 43127.
+- Profile and conversations use the chosen browser profile's local storage.
+- Real AI answers use your existing momentum-proxy.onrender.com backend,
+  configured for Claude. The app shows its existing review/approval dialog
+  before sending a question. No API key is included in this local package.
+- Live AI needs internet and a working backend. Practice Mode is scripted,
+  not a live LLM. Fonts, external links and browser voice may use internet.
+- Optional encrypted device sync still needs a separately configured service;
+  Start.cmd does not launch or deploy a sync service.
+
+Your data
+Always use the same browser profile and 127.0.0.1:43127 address. Changing
+browser/profile, using localhost instead, or using another port gives a
+different local store. Your existing GitHub Pages data will not automatically
+appear in this local app: export a password-protected backup from My Journey
+on the old site and import it here. Export a backup before updating.
+Stopping/restarting the app keeps data. Clearing site/browser data removes it.
+Browser storage is unencrypted; encrypted backups protect the exported file.
+
+If it does not open
+- Read the launcher's error message. Details are in .local\error.log.
+- If port 43127 is busy, stop the other copy/app first. The launcher will
+  not choose a new port because your stored profile depends on this address.
+- For microphone/read-aloud, allow the requested browser permission. Actual
+  voice availability depends on this computer and browser; typing also works.
+- If AI is unavailable, use the app's connection check/retry control.
+
+Updates
+The launchers are source files in 6244abaman/transition-companion. They run
+the copy in their own folder and do not auto-update or change the online site.
+
+1. Export an encrypted Journey backup and save it outside the app folder.
+2. Run Stop.cmd.
+3. Download and extract the updated repository ZIP from the intended branch.
+   Use a branch containing Start.cmd, Stop.cmd and windows/server.cjs.
+4. Copy the updated repository files into your existing app folder, preserving
+   their relative folders. This also keeps existing desktop shortcuts valid.
+5. Run Start.cmd, using the same browser profile and local address, and check
+   that your Journey is present. Import your backup if needed.
+
+Never overwrite the app folder while its server is running. Keep the previous
+download and encrypted backup until you have checked the updated copy.
+
+Developer checks (optional, not needed for daily use)
+npm ci --ignore-scripts
+npm test
+Powershell: .\Start-Companion.ps1 -NoBrowser
+
+This remains the repository's development prototype. A local launcher does
+not change its documented pilot/deployment limitations in README.md.

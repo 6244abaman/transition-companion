@@ -1,5 +1,16 @@
 # Soldier Transition Companion — continuity and follow-up
 
+## Open on Windows
+
+Double-click `Start.cmd` for Hebrew or `Start-English.cmd` for English. Use
+`Stop.cmd` to stop the background server. Install Node.js 24 once if needed;
+daily use needs no development commands or open Codex session.
+The fixed local address is `http://127.0.0.1:43127/`.
+
+See [OPEN-ME.txt](OPEN-ME.txt) for opening, backup, internet requirements and
+updates. Keep the launcher files with the app when updating this repository.
+Live AI uses the existing external backend with the app's sharing controls.
+
 The existing Hebrew and English Companion now connects the soldier-owned Journey profile to both the original Momentum 63 life skills and the separate 36 business skills. Goals, CV drafts, education and actions remain editable in the same local profile.
 
 ## Current entry points
