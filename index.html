@@ -742,15 +742,54 @@ function matchFamilies(text){
   return hits.slice(0,2).map(h => REF_FAMS.find(f => f.n === h.n)).filter(Boolean);
 }
 
+/* Keep the saved transcript, but start each topic's AI context at its boundary.
+   Old unanswered questions must not become the new topic's instructions. */
+function currentTopicMessages(){
+  if(!S.activeTopic)return S.messages;
+  for(let i=S.messages.length-1;i>=0;i--){
+    const m=S.messages[i];
+    if((m.kind==="topic"||m.kind==="topic-switch")&&m.topic===S.activeTopic)return S.messages.slice(i);
+  }
+  return S.messages;
+}
+function requestedTopic(text){
+  // Match requests at the beginning, not incidental words in a follow-up
+  // (for example, "I have money saved for travel" is not a topic switch).
+  let request=String(text||"").trim().toLowerCase();
+  const prefix=/^(?:(?:and then|and|now|next|instead|actually|please|let['’]s|can (?:you|we)|could (?:you|we)|i(?:['’]d| would) like|i want|i need|help me|help with|help (?:writing|planning)|help|with|about|for|what about|how about|switch to|move on to|go back to|talk about|to|my|a|the|ועכשיו|עכשיו|במקום|בעצם|בבקשה|אני רוצה|אני צריך|אני צריכה|אפשר|בוא נדבר על|בואי נדבר על|לדבר על|תעזור לי|תעזרי לי|עזור לי|עזרי לי|עזרה בנושא|עזרה עם|עזרה ב|ומה עם|מה עם|לגבי|בנושא|עם|על)(?:\s+|[,;:]\s*))/i;
+  for(let i=0;i<8;i++){const rest=request.replace(prefix,"");if(rest===request)break;request=rest.trim();}
+  const intents=[
+    ["cv",/^(?:(?:(?:write|writing|draft|prepare|improve|update)\s+(?:(?:a|my|the)\s+)?)?(?:cv|r[eé]sum[eé])\b|(?:(?:לכתוב|להכין|לשפר|לעדכן|כתיבת)\s+(?:את\s+)?)?(?:קורות חיים|קו["״']?ח)(?:\s|[.!?]|$))/i],
+    ["applications",/^(?:(?:job applications?|cover letter|apply for (?:a |the )?job)\b|(?:מועמדות|מכתב פנייה|להגיש מועמדות)(?:\s|[.!?]|$))/i],
+    ["travel",/^(?:(?:travel|trips?|vacation|holidays?|backpacking|go abroad|go travel(?:ling|ing)?|(?:plan|planning|organise|book) (?:a |my |the )?(?:trip|travel|vacation))\b|(?:טיול|לטייל|נסיעות|נסיעה|לתכנן טיול|לתכנן נסיעה|תכנון טיול)(?:\s|[.!?]|$))/i],
+    ["money",/^(?:(?:money|finances?|budget(?:ing)?|save money|manage (?:my )?money)\b|(?:כסף|תקציב|כלכלה|לחסוך|לתכנן תקציב)(?:\s|[.!?]|$))/i],
+    ["study",/^(?:(?:study|studies|education|university|college|courses?)\b|(?:לימודים|ללמוד|אוניברסיטה|מכללה|קורס)(?:\s|[.!?]|$))/i],
+    ["career",/^(?:(?:career|jobs?|work options|find (?:a )?job)\b|(?:עבודה|קריירה|למצוא עבודה)(?:\s|[.!?]|$))/i],
+    ["rights",/^(?:(?:rights|benefits)\b|(?:זכויות|הטבות)(?:\s|[.!?]|$))/i],
+    ["skills",/^(?:(?:(?:my|identify my) )?skills\b|(?:כישורים|הכישורים שלי|מיומנויות)(?:\s|[.!?]|$))/i],
+    ["family",/^(?:(?:family|relationships?)\b|(?:משפחה|מערכות יחסים)(?:\s|[.!?]|$))/i],
+    ["support",/^(?:emotional support\b|תמיכה רגשית(?:\s|[.!?]|$))/i]
+  ];
+  const match=intents.find(([,pattern])=>pattern.test(request));
+  return match?match[0]:null;
+}
+function activateTopic(id){
+  S.activeTopic=id;S.phase="open";
+  paintTopicPanel();
+}
+
 function refContext(){
   const users = S.messages.filter(m => m.role === "user").map(m => norm(m.text));
-  const recent = users.slice(-4);
+  const recent = currentTopicMessages().filter(m=>m.role==="user").map(m=>norm(m.text)).slice(-4);
   const any = re => recent.some(t => re.test(t));
   const all = users.slice(-40).join("\n");
   return {
     fams: matchFamilies(all),
     commander: RX_COMMANDER.test(all),
-    cv: any(RX.cv), interview: any(RX.interview), job: any(RX.job), edu: any(RX.edu)
+    cv: S.activeTopic ? S.activeTopic==="cv" : any(RX.cv),
+    interview: (!S.activeTopic || ["cv","applications","career"].includes(S.activeTopic)) && any(RX.interview),
+    job: S.activeTopic ? ["career","applications"].includes(S.activeTopic) : any(RX.job),
+    edu: S.activeTopic ? S.activeTopic==="study" : any(RX.edu)
   };
 }
 
@@ -784,7 +823,7 @@ function buildReference(){
   const out = { text:"", doc:false, labels:[] };
   const c = refContext();
   const wantsDoc = c.cv || c.interview || c.job || c.edu;
-  const phaseOK = /^(discovery|direction|open)$/.test(S.phase);
+  const phaseOK = (!S.activeTopic || S.activeTopic==="skills") && /^(discovery|direction|open)$/.test(S.phase);
   const blocks = [];
   const add = (label, text) => blocks.push({ label, text });
   const nm = id => "#"+id+" "+skillName(id,"en")+" (Momentum: "+REF_SKILLS[id][0]+")";
@@ -806,7 +845,7 @@ function buildReference(){
 
   if (c.commander && (wantsDoc || phaseOK)) add("commander/instructor overlay", COMMANDER_OVERLAY);
 
-  const last = [...S.messages].reverse().find(m => m.role === "assistant");
+  const last = [...currentTopicMessages()].reverse().find(m => m.role === "assistant");
   const ids = (last && last.surfaced ? last.surfaced : []).map(x => +x.id).filter(id => REF_SKILLS[id]).slice(0,3);
   if (ids.length)
     add("evidence questions: "+ids.join(", "), "EVIDENCE QUESTIONS FOR THE SKILLS BEING TESTED (pick one, in your own words, one at a time):\n" +
@@ -1195,7 +1234,7 @@ function systemPrompt(ref){
   // Unlike the conversation text sent for the current question, saved profile
   // details are included only when the soldier explicitly enables sharing.
   const journey = window.MomentumJourney ? window.MomentumJourney.read() : null;
-  const recentRequest=(String(S.activeTopic||"")+" "+S.messages.filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
+  const recentRequest=(String(S.activeTopic||"")+" "+currentTopicMessages().filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
   const profileRelevant=/(?:\bcv\b|\br[eé]sum[eé]\b|work|job|career|study|school|college|university|course|training|educat|business|employ|interview|goal|plan|next step|action|skill|profile|journey|עבודה|משרה|מקצוע|קריירה|לימוד|לימודים|קורס|הכשרה|אוניברסיט|עסק|ראיון|מטרה|תכנית|תוכנית|צעד|פעולה|כישור|מיומנ|פרופיל|מסע|קורות חיים)/i.test(recentRequest);
   const profileAllowed = !!(journey && journey.privacy.shareWithAI && profileRelevant);
   const state =
@@ -1218,6 +1257,7 @@ ${businessContext || "Not shared. Do not assume any 36-skill assessment results.
 When the soldier asks for CVs, job applications, interview stories or career plans, reuse these examples rather than repeating questions. Never turn self-ratings into verified qualifications, invent results or imply a level of proficiency not supported by evidence.
 
 SELECTED TOPIC: ${S.activeTopic || "general conversation"}
+The latest user request takes priority over earlier topics and unanswered questions. Follow a new request immediately; do not continue the previous topic's questionnaire. Treat earlier facts only as optional background relevant to the current request. For travel, focus on the trip (destination, dates, itinerary); ask about costs only when needed for that trip. For CVs, focus on the target job and evidence for a draft; do not continue money or travel intake.
 When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
 
 HOW YOU TALK
@@ -1278,10 +1318,18 @@ ${state}`;
    7. TALKING TO THE MODEL
    ========================================================================== */
 async function askModel(){
-  const hist = S.messages
+  const current = currentTopicMessages();
+  // With history sharing enabled, keep earlier user facts available while
+  // excluding the old assistant's pending questions. The consent gate still
+  // sends only the latest user message unless history is explicitly checked.
+  const background = S.messages.slice(0,S.messages.length-current.length)
+    .filter(m=>m.role==="user").map(m=>({...m,kind:"topic-background"}));
+  const hist = [...background,...current]
     .filter(m => m.role === "user" || m.role === "assistant")
     .slice(-CONFIG.HISTORY_TURNS)
-    .map(m => ({ role: m.role, content: m.text }));
+    .map(m => m.kind==="topic"
+      ? {role:"user",content:TRANSITION_TOPICS.find(t=>t[0]===m.topic)[S.lang==="he"?4:3]}
+      : { role: m.role, content: m.kind==="topic-background" ? "Earlier user message — background only, not an active request:\n"+m.text : m.text });
 
   const ref = buildReference();
   const sys = systemPrompt(ref);
@@ -1468,7 +1516,10 @@ async function sendUser(text){
   try {
   $("input").value = ""; $("input").style.height="auto";
   stopSpeaking();
-  pushMsg("user", text);
+  const topic=requestedTopic(text);
+  const changed=!!topic && topic!==S.activeTopic;
+  if(changed)activateTopic(topic);
+  pushMsg("user", text, changed?{kind:"topic-switch",topic}:undefined);
   if(window.MomentumSafety && window.MomentumSafety.urgent(text)){
     applyReply({reply:window.MomentumSafety.reply(S.lang),concern:true});return;
   }
@@ -1948,7 +1999,7 @@ function skillsTopicText(){
 function prepareTopic(topic){
  if($("thinking"))return;
  closeDrawer(); stopSpeaking();
- S.started=true; S.activeTopic=topic[0]; S.ack=true;
+ S.started=true; activateTopic(topic[0]); S.ack=true;
  enterChat(); paintTopicPanel();
  const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
  pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
