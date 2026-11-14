@@ -1,5 +1,13 @@
 # Soldier Transition Companion — continuity and follow-up
 
+## Share the hosted review build
+
+The Render review site serves this development branch independently of Aba's
+computer and Codex. See [HOSTING.txt](HOSTING.txt) for the Render dashboard,
+sharing, automatic updates and manual deployment instructions. `npm run
+build:review` packages only the public frontend into `dist`; the existing AI
+backend remains separate. Hosting does not activate cross-device sync.
+
 ## Open on Windows
 
 Double-click `Start.cmd` for Hebrew or `Start-English.cmd` for English. Use

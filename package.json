@@ -4,7 +4,9 @@
   "description": "Guided Transition Companion \u2014 dialogue-first support for Israelis finishing IDF service",
   "private": true,
   "scripts": {
-    "test": "npm run test:legacy && npm run test:integration && npm run test:next",
+    "test": "npm run test:legacy && npm run test:integration && npm run test:next && npm run test:review",
+    "build:review": "node scripts/build-review.cjs",
+    "test:review": "node --test tests/review-build.test.js",
     "test:legacy": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js && node voice-check.js",
     "test:flow": "node tests/flow.test.js",
     "test:paths": "node tests/paths.test.js",

@@ -6,3 +6,4 @@ sync-data/
 playwright-report/
 test-results/
 .local/
+dist/
