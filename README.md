@@ -1,5 +1,14 @@
 # Soldier Transition Companion — Continuous Journey Profile (October 2026)
 
+## Open the current development review
+
+**[Open Transition Companion](https://transition-companion-review.onrender.com/)**
+· [Permanent links to both apps](LIVE-APPS.md)
+· [Render dashboard](https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0)
+
+The latest review build is hosted separately on Render. The [owner's hosting guide](https://github.com/6244abaman/transition-companion/blob/complete/continuity-and-followup/HOSTING.txt) explains opening, sharing and updates without a coding assistant.
+
+
 The Companion offers dialogue-first support in Hebrew and English. **My Journey** now adds a soldier-owned, continuous local profile across service skills, personal goals, CV drafts, education or training plans, and follow-up actions.
 
 ## Try the current pages
