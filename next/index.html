@@ -43,7 +43,9 @@
 <header class="top"><div class="topin">
   <div class="brand" id="brand">Transition Companion Next<span class="sub" id="brandSub">Local-first development build</span></div>
   <button class="pill" id="btnInfo">המידע שלי</button>
+  <button class="pill" id="btnSync">סנכרון</button>
   <button class="pill" id="btnUpdates">עדכונים</button>
+  <button class="pill" id="btnHumanSupport">עזרה מאדם</button>
   <button class="pill" id="btnEngine">AI</button>
   <button class="pill" id="btnLang">English</button>
 </div></header>
@@ -83,6 +85,10 @@
   <div class="field"><label id="labStyle">איך נוח לי שהמערכת תעזור</label><input id="preferredSupportStyle"></div>
   <div class="actions"><button class="pill primary" id="btnSaveInfo">שמור</button><button id="btnExport">ייצא את המידע</button><button class="danger" id="btnDelete">מחק את כל המידע</button></div>
   <h3 id="skillsHeading">מיומנויות וניסיון שאושרו</h3><div class="memoryList" id="skillsList"></div>
+  <h3 id="businessSkillsHeading">36 מיומנויות עסקיות ותעסוקתיות</h3>
+  <p class="small" id="businessSkillsIntro">ההערכה האישית של 1–7 נשארת נפרדת ממיומנויות הליבה. רק דוגמאות שאישרת נשמרות כהוכחה. הנתונים נקראים מההערכה במכשיר הזה.</p>
+  <div class="memoryList" id="businessSkillsList"></div>
+  <div class="actions"><a class="pill" id="businessSkillsLink" href="../skills-business.html">פתח את הערכת 36 המיומנויות</a></div>
   <h3 id="goalsHeading">מטרות והתחייבויות</h3><div class="memoryList" id="goalsList"></div>
   <h3 id="memoryHeading">מידע נוסף שאני זוכר</h3><div class="memoryList" id="memoryList"></div>
 </div></dialog>
@@ -98,15 +104,40 @@
 
 <dialog id="updatesDialog"><div class="dlgHead"><h2 id="updatesTitle">עדכונים</h2><button class="pill" data-close="updatesDialog">✕</button></div><div class="dlgBody"><p class="small" id="updatesIntro">הטלפון יכול לקבל ידע מאושר והודעות לקבוצות בלי לשלוח את השיחות הפרטיות שלך חזרה למומנטום.</p><div id="updatesList"></div></div></dialog>
 
+<dialog id="humanSupportDialog"><div class="dlgHead"><h2 id="humanSupportTitle">עזרה מאדם</h2><button class="pill" data-close="humanSupportDialog">✕</button></div><div class="dlgBody">
+  <p id="humanSupportIntro">אפשר לדבר עם אדם אמיתי גם אם לא מדובר במצב חירום.</p>
+  <div class="memoryList">
+    <div class="memoryItem"><b id="eranGeneralTitle">ער״ן — תמיכה נפשית</b><div class="tagline" id="eranGeneralText">קו סיוע אנונימי, זמין 24/7 בישראל.</div><a href="tel:1201">*1201</a> · <a href="https://www.eran.org.il/" target="_blank" rel="noopener noreferrer" id="eranSource">פרטי השירות</a></div>
+    <div class="memoryItem"><b id="eranSoldiersTitle">ער״ן — חיילים ומשפחותיהם</b><div class="tagline" id="eranSoldiersText">קו סיוע ייעודי למשרתים בצה״ל ולבני משפחותיהם.</div><a href="tel:*2201">*2201</a> · <a href="https://www.eran.org.il/eran-for-the-community/soldiers/" target="_blank" rel="noopener noreferrer" id="eranSoldiersSource">פרטי הקו הייעודי</a></div>
+    <div class="memoryItem"><b id="emergencyTitle">בסכנה מיידית</b><div class="tagline" id="emergencyText">התקשרו לשירותי החירום המקומיים. בישראל: משטרה 100, מד״א 101.</div><a href="tel:100">100</a> · <a href="tel:101">101</a></div>
+  </div>
+  <p class="small" id="supportCheckDate">המספרים והזמינות נבדקו מול ער״ן ב־22 באוקטובר 2026.</p>
+</div></dialog>
+
+<dialog id="syncDialog"><div class="dlgHead"><h2 id="syncTitle">סנכרון מוצפן בין מכשירים</h2><button class="pill" data-close="syncDialog">✕</button></div><div class="dlgBody">
+  <p class="small" id="syncPrivacy">הפרופיל והיסטוריית השיחה יוצפנו במכשיר לפני שליחתם לשרת. מומנטום והשרת אינם מקבלים את מפתח הפענוח. המידע המקומי בדפדפן נשאר לא מוצפן. הפעלה היא בחירה שלך.</p>
+  <label class="field"><span id="syncConsentLabel">אני מבין/ה ומאשר/ת סנכרון של הפרופיל והשיחות המוצפנים שלי.</span> <input id="syncConsent" type="checkbox"></label>
+  <div class="field"><label for="syncEndpoint" id="syncEndpointLabel">כתובת שרת הסנכרון (HTTPS)</label><input id="syncEndpoint" type="url" placeholder="https://your-sync-service.example"></div>
+  <div class="actions"><button class="pill primary" id="btnCreateSync">צור סנכרון והעלה גיבוי מוצפן</button><button class="pill" id="btnSyncNow">סנכרן עכשיו</button><button class="danger" id="btnDeleteSync">מחק עותק מוצפן מהשרת</button></div>
+  <div class="field"><label for="pairingCode" id="pairingCodeLabel">קוד חיבור למכשיר נוסף — שמור/שתף באופן מאובטח</label><textarea id="pairingCode" readonly></textarea><div class="actions"><button id="btnCopyPairing">העתק קוד</button></div></div>
+  <div class="field"><label for="pairingInput" id="pairingInputLabel">הדבק קוד ממכשיר שכבר מסונכרן</label><textarea id="pairingInput"></textarea><div class="actions"><button id="btnLinkSync">חבר ושחזר למכשיר הזה</button></div></div>
+  <div class="actions hide" id="syncConflict"><span class="small" id="syncConflictText">יש שינויים בשני המכשירים. בחר איזו גרסה לשמור.</span><button id="btnUseRemote">השתמש בעותק מהשרת</button><button id="btnKeepLocal">שמור עותק מהמכשיר הזה</button></div>
+  <p class="small" role="status" aria-live="polite" id="syncStatus"></p>
+</div></dialog>
+
 <dialog id="shareDialog"><div class="dlgHead"><h2 id="shareTitle">לפני שליחה ל-AI חיצוני</h2></div><div class="dlgBody"><p class="small" id="shareIntro">זה המידע שייצא מהמכשיר:</p><pre id="sharePreview"></pre><div class="actions"><button class="pill primary" id="shareApprove">שלח</button><button id="shareCancel">בטל</button></div></div></dialog>
 
+<script src="../journey-store.js"></script>
+<script src="./business-skills.js"></script>
+<script src="./sync-client.js"></script>
+<script src="./knowledge-store.js"></script>
 <script type="module">
 
 const INLINE_SYSTEM_PROMPT="You are the Guided Transition Companion for Israeli soldiers moving from military service into civilian life.\n\nMISSION\nBegin from gratitude and respect for service. Be a long-term companion that helps the person think, plan, decide, act, and learn across work, education, money, relationships, physical health, emotional adjustment, travel, identity, aspirations, and practical civilian life.\n\nPERSONALITY\nWarm, calm, intelligent, direct, practical, respectful, non-patronizing, curious, and comfortable with uncertainty. Do not flatter. Do not sound bureaucratic, clinical, or like a scripted questionnaire.\n\nCONVERSATION\n- Give a useful answer before asking the next question.\n- Ask only one useful question at a time unless the user explicitly wants a checklist.\n- When the user names several areas, choices, or concerns in one message, explicitly acknowledge all of them and connect them before narrowing to one next question. Never ignore later items because an earlier keyword matched a route.\n- Do not repeatedly restart intake.\n- Use prior context naturally.\n- Treat the user's next message as an answer to the question you just asked unless they clearly change topics. A short or fragmentary answer must be interpreted in that conversational context; do not reset to a generic intake question.\n- Do not assume that mentioning a girlfriend, boyfriend, partner, or relationship means the user currently has one. Distinguish an existing relationship from a wish to start dating or meet someone, and acknowledge explicit statements such as 'I don't have one now.'\n- Support autonomy: the user can skip, correct, change topic, or say they do not want to discuss something.\n- Integrate CBT, ACT, motivational interviewing, positive psychology, solution-focused practice, and trauma-informed reasoning invisibly when useful.\n- Do not diagnose PTSD or other disorders from conversation.\n- Do not pathologize normal transition stress.\n- Ordinary sadness, anger, confusion, relationship difficulty, or feeling lost should not automatically trigger emergency language.\n\nSERVICE, SKILLS, AND EXPERIENCE\nThe system has a 63-skill Momentum library. It is an internal discovery framework, not a checklist to keep showing the user.\n- Unit, role, rank, service family, reserve service, and responsibilities may suggest possible skills but never prove them.\n- Ask the person to confirm or reject suggested skills.\n- A skill becomes confirmed only when the user gives a concrete non-sensitive example.\n- Once confirmed, reason mainly from the individual's Skills & Experience Profile rather than repeatedly referring to the 63-skill taxonomy.\n- Remove operational, classified, identifying, or unnecessary military detail from civilian translations.\n\nMEMORY\nSave only information likely to improve future help: stable preferences, goals, decisions, commitments, confirmed strengths, important relationships, meaningful constraints, user corrections, and long-term aspirations. Do not save every sentence. Corrections supersede old interpretations.\n\nPRIVACY\nThe detailed Personal Map and memory are local-first. Do not ask the user to share unnecessary sensitive information. Do not imply that Momentum centrally stores or sees the person's conversations. When outside AI or live services are needed, use only the minimum context required and preserve user control.\n\nFACTUAL INFORMATION\nDistinguish reflective/coaching reasoning, personalized memory, reviewed local knowledge, and live/current external information. Do not invent benefit amounts, rights, deadlines, eligibility, emergency contacts, or government facts. If reviewed/current information is unavailable, say so.\n\nSAFETY\nTake credible immediate danger to self or others seriously. In immediate danger, prioritize staying safe, being with a trusted person if possible, and contacting verified emergency/professional help. Never claim anyone was contacted unless the system actually did so. Do not use emergency-style responses merely because someone discusses trauma, sadness, anger, or difficulty.\n\nLANGUAGE\nReply in the user's current language. Hebrew should sound natural, not mechanically translated. Keep voice-mode replies shorter.\n\nOUTPUT\nReturn JSON only, without markdown fences, using this shape:\n{\n  \"reply\": \"natural user-facing response\",\n  \"route\": \"general|career|education|jobs|rights|relationships|finance|health|travel|emotional|skills|safety|accountability\",\n  \"memory_updates\": {\n    \"values\": [],\n    \"interests\": [],\n    \"currentConcerns\": [],\n    \"currentSituation\": {},\n    \"service\": {},\n    \"goals\": {\"immediate\":[],\"day30\":[],\"day90\":[],\"month12\":[],\"longTerm\":[]},\n    \"decisions\": [],\n    \"commitments\": [],\n    \"lessons\": [],\n    \"corrections\": [{\"path\":\"goals.day90\",\"old\":\"old value if known\",\"new\":\"corrected value or null to remove\"}],\n    \"confirmedSkills\": []\n  },\n  \"candidate_skills\": [{\"id\": 1, \"why\": \"short reason\"}],\n  \"safety_level\": 0\n}\nUse a structured correction when the user explicitly corrects a remembered fact or plan. Supported paths include service.<field>, currentSituation.<field>, values, interests, currentConcerns, decisions, lessons, and goals.<bucket>. A correction supersedes the old value. Omit empty optional arrays/objects where possible. candidate_skills should be a small set and only when genuinely useful. confirmedSkills entries require id, evidence, and level 1-4. safety_level is not a diagnosis.\n";
 const INLINE_KNOWLEDGE_MANIFEST={
-  "version": "2026-10-04.1",
-  "packages": [],
-  "note": "No Israeli rights, benefits, deadlines, emergency contacts or other volatile factual packages are activated until they have verified sources and review metadata."
+  "version": "2026-10-22.1",
+  "packages": [{"id":"discharged-rights-core","version":"2026-10-22.1","status":"approved","reviewedAt":"2026-10-22","validUntil":"2027-01-20","path":"./data/knowledge/discharged-rights-core.json","title":"Discharged soldiers: core rights"}],
+  "note": "Dated rights content is loaded only while review metadata and official Israeli government source links remain valid."
 };
 const INLINE_BANNERS={
   "version": "2026-10-04.1",
@@ -181,9 +212,9 @@ const SKILLS63 = [
 const skillById = id => SKILLS63.find(s => s[0] === Number(id));
 
 
-const APP_VERSION = 'next-stage2-0.2.5';
+const APP_VERSION = 'next-stage2-0.3.0';
 const PROMPT_VERSION = 'stage2-0.2';
-const MEMORY_SCHEMA_VERSION = '1.1';
+const MEMORY_SCHEMA_VERSION = '1.2';
 const SAFETY_VERSION = '0.2-review-required';
 const ROUTER_VERSION = '0.1';
 
@@ -205,12 +236,13 @@ function defaultState() {
         reserveServiceSummary: '', reservePeriods: []
       },
       skills: [],
+      businessSkills: [],
       goals: { immediate: [], day30: [], day90: [], month12: [], longTerm: [] },
       decisions: [], commitments: [], lessons: [], corrections: []
     },
     settings: {
       aiMode: 'local-first', localModel: 'auto', cloudFallback: false,
-      speakReplies: false, voiceInput: true
+      speakReplies: false, voiceInput: true, syncConsent: false, syncEndpoint: '', sync: null
     },
     knowledge: { manifestVersion: null, checkedAt: null, lastAttemptAt: null, packages: [] },
     bannerCache: [],
@@ -466,6 +498,7 @@ const ROLE_HINTS = [
   { re:/combat|infantry|fighter|לוחם|חי"ר|קרבי/i, ids:[2,6,17,26,33,35,43,51] },
   { re:/tank|armor|armored|שריון|טנק/i, ids:[2,6,10,13,17,33,38] },
   { re:/medic|paramedic|חובש|רפוא/i, ids:[2,6,27,38,51,57] },
+
   { re:/intel|intelligence|analyst|מודיעין|אנליסט/i, ids:[9,11,13,15,39,42,48] },
   { re:/cyber|software|developer|code|סייבר|תוכנה|מפתח/i, ids:[9,13,15,39,40,46] },
   { re:/logistic|supply|transport|לוגיסט|אפסנ|תובלה/i, ids:[4,5,8,11,13,24,51] },
@@ -593,6 +626,7 @@ function compactContext(state) {
     language: state.lang,
     service: p.service,
     confirmedSkills: p.skills.map(x => ({ id:x.id, evidence:x.evidence, level:x.level })),
+    confirmedBusinessSkills: MomentumBusinessSkills.confirmedContext(p.businessSkills),
     goals: p.goals,
     decisions: p.decisions.slice(-8),
     commitments: p.commitments.filter(x => x.status !== 'completed').slice(-8),
@@ -706,7 +740,11 @@ const I18N = {
     noWebGPU:'הדפדפן הזה לא תומך כרגע ב-WebGPU. אפשר להשתמש במצב תרגול או, באישור, ב-AI חיצוני.',
     updateNone:'אין כרגע הודעות חדשות המתאימות לקבוצה שלך.',
     infoIntro:'המידע המפורט נשמר במכשיר שלך בדפדפן הזה. אפשר לתקן, לייצא או למחוק אותו.',
-    send:'שלח', cancel:'בטל'
+    send:'שלח', cancel:'בטל', sync:'סנכרון', syncTitle:'סנכרון מוצפן בין מכשירים',
+    syncPrivacy:'הפרופיל והשיחות יוצפנו במכשיר לפני שליחתם לשרת. מומנטום והשרת אינם מקבלים את מפתח הפענוח. המידע המקומי בדפדפן נשאר לא מוצפן. ההפעלה היא בחירה שלך.',
+    syncConsent:'אני מבין/ה ומאשר/ת סנכרון של הפרופיל והשיחות המוצפנים שלי.', endpointLabel:'כתובת שרת הסנכרון (HTTPS)', createSync:'צור סנכרון והעלה גיבוי מוצפן', syncNow:'סנכרן עכשיו', deleteSync:'מחק עותק מוצפן מהשרת',
+    pairingLabel:'קוד חיבור למכשיר נוסף — שמור/שתף באופן מאובטח', copyPairing:'העתק קוד', pairingInputLabel:'הדבק קוד ממכשיר שכבר מסונכרן', linkSync:'חבר ושחזר למכשיר הזה',
+    useRemote:'השתמש בעותק מהשרת', keepLocal:'שמור עותק מהמכשיר הזה', conflict:'יש שינויים בשני המכשירים. בחר איזו גרסה לשמור.'
   },
   en: {
     dir:'ltr', other:'עברית', info:'My information', updates:'Updates',
@@ -726,7 +764,11 @@ const I18N = {
     noWebGPU:'This browser does not currently support WebGPU. You can use Practice Mode or, with approval, external AI.',
     updateNone:'There are no new messages that match your group right now.',
     infoIntro:'Detailed information is stored on this device in this browser. You can correct, export, or delete it.',
-    send:'Send', cancel:'Cancel'
+    send:'Send', cancel:'Cancel', sync:'Sync', syncTitle:'Encrypted device sync',
+    syncPrivacy:'Your profile and conversation history are encrypted on this device before upload. Momentum and the relay do not receive the decryption key. Local browser storage remains unencrypted. Sync is your choice.',
+    syncConsent:'I understand and consent to syncing my encrypted profile and conversations.', endpointLabel:'Sync service URL (HTTPS)', createSync:'Create sync and upload encrypted copy', syncNow:'Sync now', deleteSync:'Delete encrypted server copy',
+    pairingLabel:'Pairing code for another device — store/share securely', copyPairing:'Copy code', pairingInputLabel:'Paste a code from an already synced device', linkSync:'Link and restore on this device',
+    useRemote:'Use server copy', keepLocal:'Keep this device copy', conflict:'Both devices changed. Choose which copy to keep.'
   }
 };
 
@@ -770,6 +812,7 @@ async function loadSystemPrompt(){
 
 async function init(){
   systemPrompt = await loadSystemPrompt();
+  refreshBusinessSkills();
   bind(); paintLanguage(); renderTopicPanel();
   const mq=window.matchMedia('(min-width:1100px)');
   const syncTopicPanel=()=>{ if($('topicPanel')) $('topicPanel').open=mq.matches; };
@@ -779,8 +822,10 @@ async function init(){
 
 function bind(){
   $('btnLang').onclick = () => { state.lang = state.lang === 'he' ? 'en' : 'he'; saveState(); paintLanguage(); renderThread(); };
-  $('btnInfo').onclick = () => { fillInfoForm(); renderMemoryLists(); $('infoDialog').showModal(); };
+  $('btnInfo').onclick = () => { refreshBusinessSkills(); fillInfoForm(); renderMemoryLists(); $('infoDialog').showModal(); };
+  $('btnSync').onclick = () => { fillSyncDialog(); $('syncDialog').showModal(); };
   $('btnUpdates').onclick = () => { renderUpdates(); $('updatesDialog').showModal(); };
+  $('btnHumanSupport').onclick = () => $('humanSupportDialog').showModal();
   $('btnEngine').onclick = () => { fillAIForm(); $('aiDialog').showModal(); };
   $('btnAISettings').onclick = () => { fillAIForm(); $('aiDialog').showModal(); };
   document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => $(b.dataset.close).close());
@@ -800,21 +845,41 @@ function bind(){
   $('btnSpeak').onclick = speakLast;
   $('shareApprove').onclick = () => finishShare(true);
   $('shareCancel').onclick = () => finishShare(false);
+  $('syncConsent').onchange = () => { state.settings.syncConsent=$('syncConsent').checked; saveState(); };
+  $('syncEndpoint').onchange = () => { state.settings.syncEndpoint=$('syncEndpoint').value.trim(); saveState(); };
+  $('btnCreateSync').onclick = createSyncSpace;
+  $('btnSyncNow').onclick = syncNow;
+  $('btnLinkSync').onclick = linkSyncDevice;
+  $('btnCopyPairing').onclick = copyPairingCode;
+  $('btnDeleteSync').onclick = deleteRemoteSync;
+  $('btnUseRemote').onclick = usePendingRemote;
+  $('btnKeepLocal').onclick = keepLocalVersion;
 }
 
 function paintLanguage(){
-  const x=t(); document.documentElement.lang=state.lang; document.documentElement.dir=x.dir;
-  $('btnLang').textContent=x.other; $('btnInfo').textContent=x.info; $('btnUpdates').textContent=x.updates; $('btnEngine').textContent=local.ready()?(state.lang==='he'?'AI מקומי ✓':'Local AI ✓'):'AI';
+  const x=t(); const en=state.lang==='en'; document.documentElement.lang=state.lang; document.documentElement.dir=x.dir;
+  $('btnLang').textContent=x.other; $('btnInfo').textContent=x.info; $('btnSync').textContent=x.sync; $('btnUpdates').textContent=x.updates; $('btnEngine').textContent=local.ready()?(state.lang==='he'?'AI מקומי ✓':'Local AI ✓'):'AI';
+  $('btnHumanSupport').textContent=en?'Talk to a person':'עזרה מאדם';
+  $('humanSupportTitle').textContent=en?'Talk to a person':'עזרה מאדם';
+  $('humanSupportIntro').textContent=en?'You can talk with a real person even if this is not an emergency.':'אפשר לדבר עם אדם אמיתי גם אם לא מדובר במצב חירום.';
+  $('eranGeneralTitle').textContent=en?'ERAN — emotional support':'ער״ן — תמיכה נפשית';
+  $('eranGeneralText').textContent=en?'Anonymous support line, available 24/7 in Israel.':'קו סיוע אנונימי, זמין 24/7 בישראל.';
+  $('eranSource').textContent=en?'Service details':'פרטי השירות';
+  $('eranSoldiersTitle').textContent=en?'ERAN — soldiers and families':'ער״ן — חיילים ומשפחותיהם';
+  $('eranSoldiersText').textContent=en?'Dedicated support for people serving in the IDF and their families.':'קו סיוע ייעודי למשרתים בצה״ל ולבני משפחותיהם.';
+  $('eranSoldiersSource').textContent=en?'Dedicated line details':'פרטי הקו הייעודי';
+  $('emergencyTitle').textContent=en?'Immediate danger':'בסכנה מיידית';
+  $('emergencyText').textContent=en?'Call local emergency services. In Israel: police 100, MDA 101.':'התקשרו לשירותי החירום המקומיים. בישראל: משטרה 100, מד״א 101.';
+  $('supportCheckDate').textContent=en?'Contacts checked against ERAN on 22 October 2026.':'המספרים והזמינות נבדקו מול ער״ן ב־22 באוקטובר 2026.';
   $('welcomeTitle').textContent=x.welcomeTitle; $('welcomeText').textContent=x.welcomeText;
   $('quickUnsure').textContent=x.q1; $('quickWork').textContent=x.q2; $('quickAsk').textContent=x.q3;
   $('localTitle').textContent=x.localTitle; $('localText').textContent=x.localText; $('btnLoadLocal').textContent=x.load; $('btnAISettings').textContent=x.aiSettings;
   $('input').placeholder=x.input; $('infoIntro').textContent=x.infoIntro;
-  const en=state.lang==='en';
   const labels=en ? {
     brandSub:'Local-first development build · '+APP_VERSION,infoTitle:'My information',labFamily:'Service type / corps',labGroup:'Unit / group',labRole:'Role',labRank:'Rank',
     labResp:'Responsibilities and important experience',labTraining:'Training / significant courses',labDischarge:'Regular-service discharge date',labReserve:'Reserve service',labReserveGroup:'Reserve unit / group',
     labReservePeriods:'Reserve-duty dates / periods',labReserveSummary:'Reserve-service summary, days and roles',labStyle:'How I prefer the Companion to help',
-    skillsHeading:'Confirmed skills & experience',goalsHeading:'Goals & commitments',memoryHeading:'Other information I remember',aiTitle:'AI & privacy',labLocalModel:'Local model',
+    skillsHeading:'63 confirmed core skills & experience',businessSkillsHeading:'36 business and career skills',businessSkillsIntro:'Your 1–7 self-ratings stay separate from the core skills. Only examples you confirmed count as evidence. This list reads the assessment saved on this device.',businessSkillsLink:'Open the 36-skill assessment',goalsHeading:'Goals & commitments',memoryHeading:'Other information I remember',aiTitle:'AI & privacy',labLocalModel:'Local model',
     cloudExplain:'Before any external AI request, you will see the exact question and selected personal context. Conversation history is not sent automatically.',
     voiceExplain:'Voice input uses speech services provided by the browser or device when available, so processing may not be entirely on-device. This app does not intentionally store the raw audio file.',
     updatesTitle:'Updates',updatesIntro:'Your phone can receive reviewed knowledge and group messages without sending your private conversations back to Momentum.',
@@ -823,13 +888,14 @@ function paintLanguage(){
     brandSub:'בנייה מקומית-תחילה לפיתוח · '+APP_VERSION,infoTitle:'המידע שלי',labFamily:'סוג שירות / חיל',labGroup:'יחידה / קבוצה',labRole:'תפקיד',labRank:'דרגה',
     labResp:'אחריות וניסיון מרכזי',labTraining:'הכשרה / קורסים משמעותיים',labDischarge:'תאריך שחרור מסדיר',labReserve:'שירות מילואים',labReserveGroup:'יחידת / קבוצת מילואים',
     labReservePeriods:'תאריכים / תקופות מילואים',labReserveSummary:'סיכום מילואים, ימים ותפקידים',labStyle:'איך נוח לי שהמערכת תעזור',
-    skillsHeading:'מיומנויות וניסיון שאושרו',goalsHeading:'מטרות והתחייבויות',memoryHeading:'מידע נוסף שאני זוכר',aiTitle:'AI ופרטיות',labLocalModel:'מודל מקומי',
+    skillsHeading:'63 מיומנויות ליבה שאושרו',businessSkillsHeading:'36 מיומנויות עסקיות ותעסוקתיות',businessSkillsIntro:'הדירוג האישי 1–7 נשאר נפרד ממיומנויות הליבה. רק דוגמאות שאישרת נחשבות לראיה. הרשימה קוראת את ההערכה שנשמרה במכשיר הזה.',businessSkillsLink:'פתיחת הערכת 36 המיומנויות',goalsHeading:'מטרות והתחייבויות',memoryHeading:'מידע נוסף שאני זוכר',aiTitle:'AI ופרטיות',labLocalModel:'מודל מקומי',
     cloudExplain:'לפני שליחה ל-AI חיצוני תוצג לך בדיוק השאלה וההקשר האישי שנבחרו. היסטוריית השיחה אינה נשלחת אוטומטית.',
     voiceExplain:'קלט קולי משתמש בשירותי הדיבור של הדפדפן או המכשיר כאשר הם זמינים, ולכן ייתכן שהעיבוד אינו מתבצע כולו במכשיר. האפליקציה אינה שומרת בכוונה את קובץ האודיו.',
     updatesTitle:'עדכונים',updatesIntro:'הטלפון יכול לקבל ידע מאושר והודעות לקבוצות בלי לשלוח את השיחות הפרטיות שלך חזרה למומנטום.',
     shareTitle:'לפני שליחה ל-AI חיצוני',shareIntro:'זה המידע האישי שייצא מהמכשיר:'
   };
   for(const [id,val] of Object.entries(labels)) if($(id)) $(id).textContent=val;
+  for(const [id,val] of Object.entries({syncTitle:x.syncTitle,syncPrivacy:x.syncPrivacy,syncConsentLabel:x.syncConsent,syncEndpointLabel:x.endpointLabel,btnCreateSync:x.createSync,btnSyncNow:x.syncNow,btnDeleteSync:x.deleteSync,pairingCodeLabel:x.pairingLabel,btnCopyPairing:x.copyPairing,pairingInputLabel:x.pairingInputLabel,btnLinkSync:x.linkSync,btnUseRemote:x.useRemote,btnKeepLocal:x.keepLocal,syncConflictText:x.conflict})) if($(id)) $(id).textContent=val;
   $('btnSaveInfo').textContent=en?'Save':'שמור'; $('btnExport').textContent=en?'Export my information':'ייצא את המידע'; $('btnDelete').textContent=en?'Delete all my information':'מחק את כל המידע';
   $('btnLoadLocalDialog').textContent=en?'Download/start local AI':'הורד והפעל AI מקומי'; $('btnSaveAI').textContent=en?'Save settings':'שמור הגדרות'; $('shareApprove').textContent=en?'Send':'שלח'; $('shareCancel').textContent=en?'Cancel':'בטל';
   $('btnMic').setAttribute('aria-label',en?'Speak':'דבר'); $('btnSpeak').setAttribute('aria-label',en?'Read last reply':'הקרא את התשובה האחרונה'); $('btnSend').setAttribute('aria-label',en?'Send':'שלח');
@@ -933,6 +999,7 @@ function pendingPracticeReply(text, safety){
     const wantsDating=/dating|date|girlfriend|boyfriend|relationship|meet someone|דייט|לצאת|זוגיות|להכיר/i.test(lower);
     if(wantsMeaning || wantsDating){
       const goals=[];
+
       if(wantsMeaning) goals.push(he?'למצוא עבודה או כיוון שמרגיש משמעותי':'Find work or a direction that feels meaningful');
       if(wantsDating) goals.push(he?'להתחיל לצאת ולהכיר מישהי/מישהו':'Start dating and meet someone');
       if(wantsMeaning && wantsDating){
@@ -993,6 +1060,9 @@ function pendingPracticeReply(text, safety){
 
 function practiceReplyFor(text, safety){
   if (safety.level === 3) return { reply:t().safetyConcern, route:'safety', memory_updates:{}, practice_update:practiceUpdate('safety',[]) };
+
+  const verifiedAnswer=reviewedKnowledgeReply(text);
+  if(verifiedAnswer) return verifiedAnswer;
 
   const relIntent=detectRelationshipIntent(text);
   if(relIntent.kind==='seeking') return relationshipGoalReply(text,state.lang==='he');
@@ -1194,13 +1264,30 @@ function buildPromptContext(text,safety){
   const ctx=compactContext(state); const serviceText=Object.values(ctx.service||{}).join(' ');
   const candidates = routeMessage(text)==='skills' || /career|work|cv|job|עבודה|קריירה|קורות/i.test(text)
     ? suggestCandidateSkills(serviceText, ctx.confirmedSkills.map(x=>x.id), 5) : [];
-  return { route:routeMessage(text), topics:detectTopics(text), practiceContext:state.practiceContext, safety, personalContext:ctx, candidateSkillHypotheses:candidates, knowledge:state.knowledge.packages.filter(p=>p.status==='approved').map(p=>({id:p.id,title:p.title,version:p.version})) };
+  const route=routeMessage(text);
+  const knowledge=window.MomentumKnowledge?.matching(state.knowledge.packages,route,state.lang,'')||[];
+  return { route, topics:detectTopics(text), practiceContext:state.practiceContext, safety, personalContext:ctx, candidateSkillHypotheses:candidates, reviewedKnowledge:knowledge };
 }
 function minimumExternalContext(text){
   const route=routeMessage(text); const p=state.profile; const out={route};
-  if(['career','education','skills','jobs'].includes(route)) out.service={serviceFamily:p.service.serviceFamily,role:p.service.role,rank:p.service.rank,dischargeCohort:(p.service.dischargeDate||'').slice(0,7),confirmedSkills:p.skills.map(s=>({id:s.id,evidence:s.evidence,level:s.level}))};
+  if(['career','education','skills','jobs'].includes(route)) out.service={serviceFamily:p.service.serviceFamily,role:p.service.role,rank:p.service.rank,dischargeCohort:(p.service.dischargeDate||'').slice(0,7),confirmedSkills:p.skills.map(s=>({id:s.id,evidence:s.evidence,level:s.level})),confirmedBusinessSkills:MomentumBusinessSkills.confirmedContext(p.businessSkills)};
   if(route==='accountability') out.commitments=p.commitments.filter(x=>x.status!=='completed').slice(-5);
+  if(route==='rights') out.reviewedKnowledge=window.MomentumKnowledge?.matching(state.knowledge.packages,route,state.lang,'')||[];
   return out;
+}
+
+function reviewedKnowledgeReply(text){
+  const route=routeMessage(text);
+  if(route!=='rights') return null;
+  const items=window.MomentumKnowledge?.matching(state.knowledge.packages,route,state.lang,'')||[];
+  if(!items.length) return null;
+  const q=String(text||'').toLowerCase();
+  const item=items.find(x=>/work|preferred|vital|מועדפת|נדרשת|עבודה/.test(q)&&x.id==='preferred-work-grant')
+    || items.find(x=>/deposit|פיקדון|grant|מענק/.test(q)&&x.id==='release-grant-and-deposit')
+    || items[0];
+  const he=state.lang==='he';
+  const sources=item.sources.map(s=>s.title+': '+s.url).join('\n');
+  return {route:'rights',memory_updates:{},reply:item.answer+'\n\n'+(he?'מקורות רשמיים (נבדקו '+item.reviewedAt+'):\n':'Official sources (checked '+item.reviewedAt+'):\n')+sources};
 }
 
 function parseModelOutput(raw){
@@ -1233,6 +1320,14 @@ function fillInfoForm(){
   if($('reservePeriodsText')) $('reservePeriodsText').value=(s.reservePeriods||[]).join('\n');
   $('preferredSupportStyle').value=state.profile.preferredSupportStyle||'';
 }
+function refreshBusinessSkills(){
+  if(!window.MomentumBusinessSkills) return;
+  const localAssessment=MomentumBusinessSkills.read();
+  if(localAssessment.length || !Array.isArray(state.profile.businessSkills)) {
+    state.profile.businessSkills=localAssessment;
+    saveState();
+  }
+}
 function saveInfo(){
   const s=state.profile.service;
   for(const id of ['serviceFamily','unitGroup','role','rank','responsibilities','training','dischargeDate','reserveStatus','reserveUnitGroup','reserveServiceSummary']) s[id]=$(id).value.trim?.() ?? $(id).value;
@@ -1258,6 +1353,14 @@ function renderMemoryLists(){
   for(const s of p.skills){
     const def=skillById(s.id);
     skills.appendChild(memoryCard(def?.[3]||def?.[2]||('Skill '+s.id), s.evidence+' · level '+s.level, ()=>{p.skills=p.skills.filter(x=>x.id!==s.id);}));
+  }
+  const business=$('businessSkillsList'); business.replaceChildren();
+  const assessed=Array.isArray(p.businessSkills)?p.businessSkills:[];
+  if(!assessed.length) business.innerHTML='<div class="small">'+(state.lang==='he'?'עדיין לא נשמרה הערכה. אפשר לפתוח את שאלון 36 המיומנויות ולחזור לכאן.':'No assessment is saved yet. Open the 36-skill assessment and return here.')+'</div>';
+  for(const s of assessed){
+    const title=state.lang==='he'?(s.he||s.en):(s.en||s.he);
+    const meta=(state.lang==='he'?'דירוג עצמי ':'Self-rating ')+s.rating+'/7'+(s.confirmed?(state.lang==='he'?' · דוגמה שאושרה':' · example confirmed'):'');
+    business.appendChild(memoryCard(title,meta));
   }
   const goals=$('goalsList'); goals.innerHTML='';
   let hasGoals=false;
@@ -1312,6 +1415,129 @@ function fillAIForm(){
 
 function saveAI(){ state.settings.localModel=$('localModel').value; state.settings.cloudFallback=$('cloudFallback').checked; saveState(); $('aiDialog').close(); updateEngineStatus(); }
 
+let pendingRemoteSync = null;
+function syncSnapshot(){
+  let journey=null, businessAssessment=null;
+  try{if(window.MomentumJourney)journey=JSON.parse(MomentumJourney.exportData());businessAssessment=JSON.parse(localStorage.getItem('momentum-business-skills-v1')||'null');}catch{}
+  return {version:1,lang:state.lang,activeTopic:state.activeTopic,practiceContext:state.practiceContext,profile:state.profile,messages:state.messages.slice(-3000),journey,businessAssessment};
+}
+function syncMessage(he,en){ $('syncStatus').textContent=state.lang==='he'?he:en; }
+function fillSyncDialog(){
+  const credentials=state.settings.sync;
+  $('syncConsent').checked=state.settings.syncConsent===true;
+  $('syncEndpoint').value=credentials?.endpoint||state.settings.syncEndpoint||'';
+  $('pairingCode').value=credentials?MomentumSync.pairingCode(credentials):'';
+  $('syncConflict').classList.add('hide');
+  $('btnSyncNow').disabled=!credentials;
+  $('btnDeleteSync').disabled=!credentials;
+  $('btnCreateSync').textContent=credentials?(state.lang==='he'?'צור קוד חיבור מחדש':'Show pairing code'):(state.lang==='he'?'צור סנכרון והעלה גיבוי מוצפן':'Create sync and upload encrypted copy');
+  syncMessage(credentials?(state.lang==='he'?'המכשיר מחובר לסנכרון מוצפן.':'This device is linked to encrypted sync.'):(state.lang==='he'?'סנכרון כבוי עד שתבחר/י להסכים ותגדיר/י שרת.':'Sync stays off until you consent and configure a service.'), credentials?'This device is linked to encrypted sync.':'Sync stays off until you consent and configure a service.');
+}
+function requireSyncConsent(){
+  if(!$('syncConsent').checked){syncMessage('כדי להמשיך, סמן/י הסכמה לסנכרון.','Check the consent box before continuing.');return false;}
+  state.settings.syncConsent=true; state.settings.syncEndpoint=$('syncEndpoint').value.trim(); saveState(); return true;
+}
+async function createSyncSpace(){
+  if(!requireSyncConsent()) return;
+  const endpoint=$('syncEndpoint').value.trim();
+  try{
+    $('btnCreateSync').disabled=true; syncMessage('יוצר מרחב סנכרון ומצפין את המידע…','Creating a sync space and encrypting your information…');
+    const credentials=await MomentumSync.create(endpoint); state.settings.sync=credentials; $('pairingCode').value=MomentumSync.pairingCode(credentials); saveState();
+    const snapshot=syncSnapshot(), fingerprint=await MomentumSync.fingerprint(snapshot);
+    const saved=await MomentumSync.upload(credentials,snapshot,0);
+    credentials.revision=saved.revision; credentials.fingerprint=fingerprint; saveState(); fillSyncDialog();
+    syncMessage('העותק המוצפן נשמר. קוד החיבור הוא סודי; העבר/י אותו רק למכשיר שלך.','Encrypted copy saved. The pairing code is secret; share it only with your own device.');
+  }catch(error){ syncMessage(error.message,'Sync could not start: '+error.message); }
+  finally{$('btnCreateSync').disabled=false;}
+}
+function validSyncSnapshot(value){return value&&value.version===1&&value.profile&&typeof value.profile==='object'&&Array.isArray(value.messages);}
+function applySyncSnapshot(value){
+  if(!validSyncSnapshot(value)) throw new Error('The remote snapshot is not a valid Companion profile.');
+  const keepSettings=state.settings, keepKnowledge=state.knowledge, keepBanners=state.bannerCache, keepSeen=state.bannersSeen, keepEvents=state.safetyEvents;
+  state.profile=mergeState(defaultState().profile,value.profile);
+  if(window.MomentumJourney&&value.journey) MomentumJourney.importData(value.journey,'replace');
+  if(value.businessAssessment) localStorage.setItem('momentum-business-skills-v1',JSON.stringify(value.businessAssessment));
+  else localStorage.removeItem('momentum-business-skills-v1');
+  if(value.businessAssessment&&window.MomentumJourney) MomentumJourney.syncAssessment();
+  state.messages=value.messages.filter(m=>m&&['user','assistant','system'].includes(m.role)&&typeof m.text==='string').slice(-3000);
+  state.lang=value.lang==='en'?'en':'he'; state.activeTopic=String(value.activeTopic||'');
+  state.practiceContext=mergeState(defaultState().practiceContext,value.practiceContext||{});
+  state.settings=keepSettings; state.knowledge=keepKnowledge; state.bannerCache=keepBanners; state.bannersSeen=keepSeen; state.safetyEvents=keepEvents;
+  saveState(); paintLanguage(); renderThread(); renderMemoryLists();
+}
+async function syncNow(){
+  if(!requireSyncConsent()) return;
+  const credentials=state.settings.sync;
+  if(!credentials){syncMessage('עדיין אין קוד חיבור. צור/י סנכרון במכשיר הראשון.','No pairing yet. Create sync on the first device.');return;}
+  try{
+    $('btnSyncNow').disabled=true; syncMessage('בודק עדכונים מוצפנים…','Checking for encrypted updates…');
+    const remote=await MomentumSync.download(credentials), snapshot=syncSnapshot(), localFingerprint=await MomentumSync.fingerprint(snapshot);
+    if(remote.revision===credentials.revision){
+      if(!remote.snapshot||localFingerprint!==credentials.fingerprint){
+        const saved=await MomentumSync.upload(credentials,snapshot,remote.revision);
+        credentials.revision=saved.revision; credentials.fingerprint=localFingerprint; saveState();
+        syncMessage('המידע המעודכן הוצפן והועלה.','Your updated information was encrypted and uploaded.');
+      }else syncMessage('המכשיר מעודכן.','This device is up to date.');
+    }else if(remote.snapshot&&credentials.fingerprint&&localFingerprint===credentials.fingerprint){
+      applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot()); saveState();
+      syncMessage('העדכון מהמכשיר האחר שוחזר.','The update from your other device was restored.');
+    }else if(remote.snapshot){
+      pendingRemoteSync={remote,localFingerprint}; $('syncConflict').classList.remove('hide');
+      syncMessage('יש שינויים בשני המכשירים. בחר/י איזו גרסה לשמור.','Both devices have changes. Choose which copy to keep.');
+    }else{
+      const saved=await MomentumSync.upload(credentials,snapshot,remote.revision);
+      credentials.revision=saved.revision; credentials.fingerprint=localFingerprint; saveState();
+      syncMessage('העותק המוצפן נשמר.','Encrypted copy saved.');
+    }
+  }catch(error){ syncMessage(error.message,'Sync failed: '+error.message); }
+  finally{$('btnSyncNow').disabled=false;}
+}
+async function linkSyncDevice(){
+  if(!requireSyncConsent()) return;
+  try{
+    const credentials=MomentumSync.parsePairingCode($('pairingInput').value);
+    if(!confirm(state.lang==='he'?'חיבור זה ישחזר את הפרופיל והשיחות מהעותק המוצפן ויחליף את הנתונים המקומיים באפליקציה. להמשיך?':'Linking will restore the profile and conversations from the encrypted copy, replacing local Companion data. Continue?')) return;
+    $('btnLinkSync').disabled=true; syncMessage('מוריד ומפענח את העותק…','Downloading and decrypting the copy…');
+    const remote=await MomentumSync.download(credentials);
+    if(!remote.snapshot) throw new Error('No encrypted profile has been uploaded for this pairing code yet.');
+    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot());
+    state.settings.sync=credentials; state.settings.syncEndpoint=credentials.endpoint; state.settings.syncConsent=true; saveState(); fillSyncDialog();
+    syncMessage('המכשיר חובר והפרופיל שוחזר.','Device linked and profile restored.');
+  }catch(error){syncMessage(error.message,'Could not link this device: '+error.message);}
+  finally{$('btnLinkSync').disabled=false;}
+}
+async function usePendingRemote(){
+  if(!pendingRemoteSync)return;
+  try{
+    const credentials=state.settings.sync, remote=pendingRemoteSync.remote;
+    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot());
+    pendingRemoteSync=null; $('syncConflict').classList.add('hide'); saveState();
+    syncMessage('העותק מהשרת שוחזר.','The server copy was restored.');
+  }catch(error){syncMessage(error.message,'Could not restore the server copy: '+error.message);}
+}
+async function keepLocalVersion(){
+  if(!pendingRemoteSync)return;
+  try{
+    const credentials=state.settings.sync, remote=await MomentumSync.download(credentials), snapshot=syncSnapshot();
+    const saved=await MomentumSync.upload(credentials,snapshot,remote.revision);
+    credentials.revision=saved.revision; credentials.fingerprint=await MomentumSync.fingerprint(snapshot);
+    pendingRemoteSync=null; $('syncConflict').classList.add('hide'); saveState();
+    syncMessage('הגרסה מהמכשיר הזה החליפה את העותק הקודם.','This device copy replaced the previous server copy.');
+  }catch(error){syncMessage(error.message,'Could not save this device copy: '+error.message);}
+}
+async function deleteRemoteSync(){
+  if(!state.settings.sync)return;
+  if(!confirm(state.lang==='he'?'למחוק את העותק המוצפן מהשרת ולנתק את המכשיר? המידע המקומי יישאר.':'Delete the encrypted server copy and unlink this device? Local information will remain.'))return;
+  try{await MomentumSync.remove(state.settings.sync);state.settings.sync=null;state.settings.syncConsent=false;pendingRemoteSync=null;saveState();$('pairingCode').value='';$('syncConsent').checked=false;$('syncConflict').classList.add('hide');fillSyncDialog();syncMessage('העותק המוצפן נמחק והמכשיר נותק.','Encrypted copy deleted and this device unlinked.');}
+  catch(error){syncMessage(error.message,'Could not delete the server copy: '+error.message);}
+}
+async function copyPairingCode(){
+  const code=$('pairingCode').value;
+  if(!code){syncMessage('אין עדיין קוד חיבור.','There is no pairing code yet.');return;}
+  try{await navigator.clipboard.writeText(code);syncMessage('הקוד הועתק. שמור/י אותו במקום מאובטח.','Code copied. Store it securely.');}
+  catch{ $('pairingCode').focus();$('pairingCode').select();syncMessage('העתקה אוטומטית אינה זמינה. סמן/י והעתק/י את הקוד ידנית.','Automatic copy is unavailable. Select and copy the code manually.');}
+}
+
 function exportData(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='transition-companion-next-export.json'; a.click(); URL.revokeObjectURL(a.href);
 }
@@ -1324,12 +1550,13 @@ async function refreshKnowledge(){
   const attemptedAt=new Date().toISOString();
   try {
     const m=await fetch('./data/knowledge-manifest.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('knowledge '+r.status);return r.json();});
-    state.knowledge={manifestVersion:m.version,checkedAt:attemptedAt,lastAttemptAt:attemptedAt,packages:(m.packages||[]).filter(p=>p.status==='approved')};
+    const packages=await MomentumKnowledge.loadApproved(m, path=>fetch(path,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('package '+r.status);return r.json();}));
+    state.knowledge={manifestVersion:m.version,checkedAt:attemptedAt,lastAttemptAt:attemptedAt,packages};
     saveState();
   } catch {
     if(!state.knowledge?.manifestVersion){
       const m=INLINE_KNOWLEDGE_MANIFEST;
-      state.knowledge={manifestVersion:m.version,checkedAt:null,lastAttemptAt:attemptedAt,packages:(m.packages||[]).filter(p=>p.status==='approved')};
+      state.knowledge={manifestVersion:m.version,checkedAt:null,lastAttemptAt:attemptedAt,packages:[]};
     } else state.knowledge.lastAttemptAt=attemptedAt;
     saveState();
   }
@@ -1373,19 +1600,3 @@ function speakLast(){
   u.onstart=()=>{$('btnSpeak').textContent='⏹';};
   u.onend=u.onerror=()=>{$('btnSpeak').textContent='🔊';};
   window.speechSynthesis.speak(u);
-}
-function toggleMic(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alert(state.lang==='he'?'זיהוי דיבור אינו זמין בדפדפן הזה.':'Speech recognition is not available in this browser.');return;}
-  if(listening&&recognition){recognition.stop();return;}
-  recognition=new SR(); recognition.lang=state.lang==='he'?'he-IL':'en-US'; recognition.interimResults=true; recognition.continuous=false;
-  recognition.onstart=()=>{listening=true;$('btnMic').textContent='⏹';}; recognition.onend=()=>{listening=false;$('btnMic').textContent='🎙️';};
-  recognition.onresult=e=>{let txt='';for(let i=e.resultIndex;i<e.results.length;i++)txt+=e.results[i][0].transcript;$('input').value=txt;}; recognition.onerror=()=>{listening=false;$('btnMic').textContent='🎙️';}; recognition.start();
-}
-
-function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-
-init();
-
-</script>
-</body>
-</html>
