@@ -1117,7 +1117,15 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  S.messages.forEach((m,i) => { const opening = openingText(S.lang), text = messageText(m).trim(); const welcome = m.role==="assistant" && (m.kind==="opening" || text.startsWith(opening.slice(0,32))); if(!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i)); });
+  // Topic markers also classify older saved messages without rewriting them.
+  let topic = null;
+  S.messages.forEach((m,i) => {
+    if ((m.kind === "topic" || m.kind === "topic-switch") && m.topic) topic = m.topic;
+    if (S.activeTopic && topic !== S.activeTopic) return;
+    const opening = openingText(S.lang), text = messageText(m).trim();
+    const welcome = m.role === "assistant" && (m.kind === "opening" || text.startsWith(opening.slice(0,32)));
+    if (!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i));
+  });
   scrollDown();
 }
 function turnNode(m, idx){
@@ -1211,7 +1219,8 @@ function scrollDown(){
 function pushMsg(role, text, extra){
   const m = Object.assign({role, text}, extra||{});
   S.messages.push(m); save();
-  $("thread").appendChild(turnNode(m)); scrollDown();
+  if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
+  else { $("thread").appendChild(turnNode(m)); scrollDown(); }
   if (role === "assistant" && S.speak) speak(text);
   return m;
 }

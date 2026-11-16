@@ -97,3 +97,30 @@ for(const file of ['index.html','indexH.html']){
   }finally{dom.window.close();}
  });
 }
+
+for (const file of ['index.html','indexH.html']) {
+ test(file+': every section hides money discussion and restores its own history', async()=>{
+  const {dom,w,d,topic,send}=boot(file);let restored;
+  try {
+   topic('money');await send('MONEY_ONLY_INCOME_7000');
+   w.eval('pushMsg("assistant", "MONEY_ONLY_BUDGET_PLAN")');
+   const savedCount=w.eval('S.messages.length');
+   const ids=w.eval('TRANSITION_TOPICS.map(t=>t[0])');
+   for(const id of ids.filter(id=>id!=='money')) {
+    topic(id);
+    assert.ok(!d.getElementById('thread').textContent.includes('MONEY_ONLY_'),id+' excludes money discussion');
+   }
+   topic('money');
+   assert.match(d.getElementById('thread').textContent,/MONEY_ONLY_INCOME_7000/);
+   assert.match(d.getElementById('thread').textContent,/MONEY_ONLY_BUDGET_PLAN/);
+   await send(file==='indexH.html'?'עכשיו נסיעות':'Now travel');
+   assert.ok(!d.getElementById('thread').textContent.includes('MONEY_ONLY_'),'typed switch filters immediately');
+   restored=boot(file,w.localStorage.getItem(w.eval('KEY')));
+   restored.w.eval('enterChat()');
+   assert.ok(!restored.d.getElementById('thread').textContent.includes('MONEY_ONLY_'),'reload preserves separation');
+   restored.topic('money');
+   assert.match(restored.d.getElementById('thread').textContent,/MONEY_ONLY_BUDGET_PLAN/);
+   assert.ok(w.eval('S.messages.length')>=savedCount,'saved history remains intact');
+  } finally {dom.window.close();if(restored)restored.dom.window.close();}
+ });
+}
