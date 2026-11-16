@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v9-topic-display";
+const CACHE = "tc-v10-benefits-updates";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -31,6 +31,9 @@ const APP_FILES = [
   "./journey-reminders.js",
   "./journey-tools-ui.js",
   "./journey-rights.js",
+  "./benefits-updates.js",
+  "./benefits-updates.css",
+  "./benefits-updates.json",
   "./ai-consent.js",
   "./response-schema.js",
   "./skills-source.js",

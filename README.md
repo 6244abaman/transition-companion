@@ -175,3 +175,7 @@ data deletes everything. On a shared device, others using that browser can open 
 3. Should the growth profile be exportable — for a Momentum coordinator, or for the person's CV?
 4. Who is the Momentum contact in `CONFIG.SUPPORT`, and is it a phone number or a form?
 5. Automatic cross-device continuity remains a future decision: secure account and encrypted sync, user consent, conflict handling and independent security review are prerequisites.
+
+## Updated Information and Benefits
+
+Open the separate sidebar topic or [open directly in English](https://transition-companion-review.onrender.com/app/index.html?lang=en&section=updates). Government rights remain under Rights and benefits; My Journey includes application preparation. The updates section adds a dated public feed for rights, shows, discounts, career events, training and private/nonprofit offers. The chat receives these source notes for relevant questions through the existing consent preview. A scheduled research task checks sources and publishes an edition every three days. Stale reviews and restricted sources are clearly labelled. See [BENEFITS-UPDATES.md](BENEFITS-UPDATES.md) for the publishing workflow and limitations.

@@ -13,7 +13,7 @@
     "inspect": "node tests/inspector.test.js",
     "test:journey": "node tests/journey.test.js",
     "start": "node server/sync-server.js",
-    "test:integration": "node --test tests/sync.test.js tests/reminders.test.js tests/safety-rights.test.js tests/integration-ui.test.js tests/offline.test.js tests/topic-switching.test.js",
+    "test:integration": "node --test tests/sync.test.js tests/reminders.test.js tests/safety-rights.test.js tests/integration-ui.test.js tests/offline.test.js tests/topic-switching.test.js tests/benefits-updates.test.js",
     "test:live": "node tests/live-ai-smoke.js",
     "test:next": "node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
     "test:business-skills": "node tests/business-skills.test.js",

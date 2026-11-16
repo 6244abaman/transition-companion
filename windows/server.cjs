@@ -11,13 +11,14 @@ const TOKEN = randomBytes(32).toString('hex');
 const STATE = path.join(ROOT, '.local', 'runtime.json');
 const publicFiles = new Set([
   'index.html', 'indexH.html', 'my-journey.html', 'skills-business.html',
+  'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
   'ai-consent.js', 'response-schema.js', 'skills-source.js', 'companion-safety.js',
   'journey-store.js', 'journey-backup.js', 'journey-reminders.js', 'journey-rights.js',
   'journey-sync.js', 'journey-tools-ui.js', 'life-skills-ui.js', 'my-journey.js',
   'manifest.json', 'service-worker.js', 'apple-touch-icon.png', 'icon-192.png',
   'icon-512.png', 'companion-mentor.jpeg'
 ]);
-const mime = {'.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.txt':'text/plain', '.png':'image/png', '.jpeg':'image/jpeg', '.webmanifest':'application/manifest+json'};
+const mime = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.json':'application/json', '.txt':'text/plain', '.png':'image/png', '.jpeg':'image/jpeg', '.webmanifest':'application/manifest+json'};
 const server = http.createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');

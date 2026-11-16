@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const PUBLIC_FILES = [
   'index.html', 'indexH.html', 'my-journey.html', 'skills-business.html',
+  'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
   'ai-consent.js', 'response-schema.js', 'skills-source.js', 'companion-safety.js',
   'journey-store.js', 'journey-backup.js', 'journey-reminders.js', 'journey-rights.js',
   'journey-sync.js', 'journey-tools-ui.js', 'life-skills-ui.js', 'my-journey.js',
