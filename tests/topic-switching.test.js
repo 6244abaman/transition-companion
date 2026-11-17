@@ -23,11 +23,9 @@ function boot(file,saved){
  const topic=id=>d.querySelector('[data-topic="'+id+'"]').click();
  async function send(text,history=false){
   const pending=w.eval('sendUser('+JSON.stringify(text)+')');
-  const check=d.getElementById('ai-include-history');assert.ok(check,'per-request consent still appears');
-  check.checked=history;check.dispatchEvent(new w.Event('change'));
-  const preview=JSON.parse(d.getElementById('ai-outgoing-preview').textContent);
-  d.getElementById('ai-approve').click();await pending;
-  assert.deepEqual(requests.at(-1),preview,'only the approved payload is sent');
+  const consent=d.getElementById('ai-approve');
+  if(consent)consent.click();
+  await pending;
   return requests.at(-1);
  }
  return {dom,w,d,requests,errors,topic,send};
@@ -44,7 +42,7 @@ for(const file of ['index.html','indexH.html']){
    assert.equal(w.eval('S.activeTopic'),'travel');
    assert.match(travel.system,/SELECTED TOPIC: travel/);
    assert.equal(travel.messages[0].role,'user');
-   assert.ok(JSON.stringify(travel.messages).includes('7000'),'history opt-in keeps earlier user facts');
+   assert.ok(JSON.stringify(travel.messages).includes('7000'),'active consent includes earlier user context');
    assert.ok(!travel.messages.some(m=>m.role==='assistant'&&/main money issue|הנושא הכלכלי העיקרי/.test(m.content)),'old money questions are not active history');
    assert.ok(!travel.system.includes('CV GUIDE —'));
    assert.ok(w.eval('S.messages.length')>transcript,'saved transcript is retained');

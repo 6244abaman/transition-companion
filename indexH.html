@@ -1081,13 +1081,11 @@ $("btnDiag").onclick = async () => {
   out.textContent = t.diagRun;
   let res;
   try {
-    res = await fetch(CONFIG.API_URL, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ model: CONFIG.MODEL, max_tokens: 16,
-        messages:[{role:"user", content:"Reply with the single word: ok"}] })
-    });
+    if(!window.MomentumAIConsent)throw new Error('AI consent controls unavailable');
+    res = await window.MomentumAIConsent.request({model:CONFIG.MODEL,max_tokens:16,
+      messages:[{role:"user",content:"Reply with the single word: ok"}]},CONFIG.API_URL,S.lang,{interactive:true});
   } catch (e) {
+    if(e.canceled){out.textContent=S.lang==="he"?"לא נשלחה בקשה: נדרשת הסכמה ל-AI חיצוני.":"No request sent: external AI consent is required.";return;}
     out.textContent = t.diagCORS + "\n\n(" + e.message + ")\n\n" + t.diagNote;
     return;
   }
@@ -1331,11 +1329,9 @@ ${state}`;
 /* ==========================================================================
    7. TALKING TO THE MODEL
    ========================================================================== */
-async function askModel(){
+async function askModel(userMessageId){
   const current = currentTopicMessages();
-  // With history sharing enabled, keep earlier user facts available while
-  // excluding the old assistant's pending questions. The consent gate still
-  // sends only the latest user message unless history is explicitly checked.
+  // Include recent conversation context under the active external AI consent.
   const background = S.messages.slice(0,S.messages.length-current.length)
     .filter(m=>m.role==="user").map(m=>({...m,kind:"topic-background"}));
   const hist = [...background,...current]
@@ -1360,19 +1356,10 @@ async function askModel(){
 
   let payload = {model:CONFIG.MODEL, max_tokens:ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,system:sys,messages:hist};
   if(window.MomentumResponseFormat)payload.output_config={format:window.MomentumResponseFormat};
-  if (window.MomentumAIConsent) {
-    payload = await window.MomentumAIConsent.approve(payload,CONFIG.API_URL,S.lang);
-    if (!payload) { const error=new Error("Sharing canceled"); error.canceled=true; throw error; }
-  }
-  const controller = new AbortController();
-  const timeout = setTimeout(()=>controller.abort(),25000);
-  let res, data;
-  try {
-    res = await fetch(CONFIG.API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:controller.signal});
-    if (!res.ok) { DIAG.error = "HTTP "+res.status; throw new Error("HTTP "+res.status); }
-    data = await res.json();
-  } finally { clearTimeout(timeout); }
-  if(window.MomentumAIConsent)window.MomentumAIConsent.audit("response-received",CONFIG.API_URL,payload.messages.length);
+  if(!window.MomentumAIConsent){const error=new Error("AI consent controls unavailable");error.canceled=true;throw error;}
+  const res=await window.MomentumAIConsent.request(payload,CONFIG.API_URL,S.lang,{interactive:!!userMessageId,userMessageId});
+  if(!res.ok){DIAG.error="HTTP "+res.status;throw new Error(DIAG.error);}
+  const data=await res.json();
   if (data.stop_reason==="max_tokens") throw new Error("AI reply was cut short. Please try a narrower question.");
   if (data.usage) DIAG.usage = data.usage;
   const raw = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
@@ -1546,9 +1533,9 @@ async function sendUser(text){
   let out;
   try {
     if (S.practice) throw new Error("practice");
-    out = await askModel();
+    out = await askModel(crypto.randomUUID());
   } catch (err) {
-    if (err.canceled) { hideThinking(); pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
+    if (err.canceled) { hideThinking(); if(err.sent){pushMsg("system",S.lang==="he"?"השיתוף העתידי הופסק. ביטול ההסכמה אינו מבטל מידע שכבר נשלח.":"Future sharing stopped. Withdrawal does not undo information already sent.");return;} pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
     if (!S.practice) { S.practice = true; pushMsg("system", L().offline); }
     out = practiceReply(text);

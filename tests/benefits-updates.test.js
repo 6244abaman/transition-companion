@@ -45,11 +45,11 @@ for(const file of ['index.html','indexH.html'])test(file+': browse, filter, ask 
   const pending=w.eval('sendUser(document.getElementById("input").value)');
   for(let i=0;i<20&&!d.getElementById('ai-approve');i++)await new Promise(r=>setTimeout(r,5));
   assert.ok(d.getElementById('ai-approve'),'sharing requires approval');
-  const preview=JSON.parse(d.getElementById('ai-outgoing-preview').textContent);
-  assert.match(preview.system,/UPDATED INFORMATION AND BENEFITS/);
-  assert.ok(preview.system.includes('hachvana.mod.gov.il'));
+  assert.ok(!requests.some(r=>r.options.method==='POST'));
   d.getElementById('ai-approve').click();await pending;
-  assert.deepEqual(JSON.parse(requests.find(r=>r.options.method==='POST').options.body),preview);
+  const sent=JSON.parse(requests.find(r=>r.options.method==='POST').options.body);
+  assert.match(sent.system,/UPDATED INFORMATION AND BENEFITS/);
+  assert.ok(sent.system.includes('hachvana.mod.gov.il'));
   d.querySelector('[data-topic="career"]').click();assert.equal(panel.hidden,true);
   assert.deepEqual(errors,[]);
  }finally{dom.window.close();}

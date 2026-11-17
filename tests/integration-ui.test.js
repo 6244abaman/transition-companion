@@ -28,12 +28,12 @@ test('actual My Journey scripts load, edit records, save life skills, and switch
  assert.ok(d.getElementById('journey-rights').textContent.includes('פיקדון'));assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
  }finally{dom.window.close();}
 });
-for(const file of ['index.html','indexH.html'])test(file+': cancel sends nothing; approve shares exactly previewed request; crisis works offline',async()=>{
+for(const file of ['index.html','indexH.html'])test(file+': cancel sends nothing; approve enables persistent sharing; crisis works offline',async()=>{
  const {dom,w,d,errors,requests}=await boot(file);try{
  d.getElementById('btnStart').click();const p=w.eval('sendUser("Help me compare courses")');await until(()=>d.getElementById('ai-cancel'));d.getElementById('ai-cancel').click();await p;assert.equal(requests.length,0);assert.equal(w.eval('S.practice'),false);
  const q=w.eval('sendUser("What should I prepare next?")');await until(()=>d.getElementById('ai-approve'));
- const displayed=JSON.parse(d.getElementById('ai-outgoing-preview').textContent);assert.equal(displayed.messages.length,1);
- d.getElementById('ai-approve').click();await q;assert.equal(requests.length,1);assert.deepEqual(JSON.parse(requests[0].options.body),displayed);
+ assert.equal(requests.length,0);
+ d.getElementById('ai-approve').click();await q;assert.equal(requests.length,1);assert.ok(JSON.parse(requests[0].options.body).messages.length>=1); await w.eval('sendUser("One more question")');assert.equal(requests.length,2);assert.equal(d.getElementById('ai-approve'),null);
  const count=requests.length;await w.eval('sendUser("I might hurt myself")');assert.equal(requests.length,count);assert.ok(d.getElementById('thread').textContent.match(/safe right now|בטוח כרגע/));
  assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
  }finally{dom.window.close();}
@@ -42,7 +42,7 @@ test('unavailable AI can be retried and empty responses cannot masquerade as liv
  let fail=true;const {dom,w,d}=await boot('index.html',{fetch:async()=>{if(fail)throw new Error('Unavailable');return {ok:true,json:async()=>({content:[]})};}});
  try{d.getElementById('btnStart').click();let p=w.eval('sendUser("Hello")');await until(()=>d.getElementById('ai-approve'));d.getElementById('ai-approve').click();await p;assert.equal(w.eval('S.practice'),true);
  const retry=[...d.querySelectorAll('button')].find(x=>/Retry live|ניסיון חיבור/.test(x.textContent));assert.ok(retry);retry.click();assert.equal(w.eval('S.practice'),false);fail=false;
- p=w.eval('sendUser("Try again")');await until(()=>d.getElementById('ai-approve'));d.getElementById('ai-approve').click();await p;assert.equal(w.eval('S.practice'),true);
+ p=w.eval('sendUser("Try again")');await p;assert.equal(w.eval('S.practice'),true);
  }finally{dom.window.close();}
 });
 test('malformed model metadata cannot create unevidenced skills or break the conversation',async()=>{

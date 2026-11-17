@@ -27,14 +27,14 @@ The existing Hebrew and English Companion now connects the soldier-owned Journey
 
 ## Current entry points
 
-- `index.html` / `indexH.html`: dialogue, optional browser voice, per-request external AI disclosure, and offline safety cues.
+- `index.html` / `indexH.html`: dialogue, optional browser voice, persistent external AI consent with Settings withdrawal, and offline safety cues.
 - `my-journey.html` / `?lang=he`: goals, actions, CVs, education, confirmed skills, application preparation, reminders, backup and optional encrypted synchronization.
 - `skills-business.html`: the 36-skill, 1–7 self-assessment. This is a self-report scale, distinct from evidence-based experience levels.
 - `server/sync-server.js`: ciphertext-only continuity service, separately deployed. See [deployment and participant instructions](server/README.md).
 
 ## What is implemented
 
-- Explicit permission before each external AI request; exact outgoing JSON and destination are shown. Recent chat history is excluded by default and can be selected. Cancel sends nothing. Requests have timeouts, schema-constrained output, local validation, and a reachable retry path after degraded mode. A minimal disclosure history records metadata, not prompt/answer contents.
+- Explicit consent before the first external AI request, remembered until withdrawal or a provider/sharing-scope change. Cancel sends nothing. Recent conversation context and separately enabled Journey categories are disclosed before agreement. Settings stops future sharing, including background requests. A non-blocking reminder appears every 100 user messages sent. Requests retain timeouts, schema-constrained output, local validation and retry controls.
 - Canonical 63-skill English names and the research role/rank matrix are extracted from the supplied mapping workbook. Source #63 duplicates Professionalism (#55); it remains documented and is not counted as a separate CV skill. Hebrew labels are interface translations pending human review. Role and rank prioritize a few evidence questions; they never award a skill or proficiency score.
 - Soldiers explicitly confirm a non-sensitive example to save a life skill. Saved examples can be reused in editable CV drafts alongside confirmed 36-skill examples. Existing chat-derived strengths need a separate user confirmation before entering Journey.
 - Password-encrypted, invitation-gated online snapshots with private connection codes, two-device download/review, opt-in synchronization while unlocked, atomic conflict detection, tombstones on online deletion and local export/reset controls. Conversations and documents are excluded from this service.
@@ -178,4 +178,10 @@ data deletes everything. On a shared device, others using that browser can open 
 
 ## Updated Information and Benefits
 
-Open the separate sidebar topic or [open directly in English](https://transition-companion-review.onrender.com/app/index.html?lang=en&section=updates). Government rights remain under Rights and benefits; My Journey includes application preparation. The updates section adds a dated public feed for rights, shows, discounts, career events, training and private/nonprofit offers. The chat receives these source notes for relevant questions through the existing consent preview. A scheduled research task checks sources and publishes an edition every three days. Stale reviews and restricted sources are clearly labelled. See [BENEFITS-UPDATES.md](BENEFITS-UPDATES.md) for the publishing workflow and limitations.
+Open the separate sidebar topic or [open directly in English](https://transition-companion-review.onrender.com/app/index.html?lang=en&section=updates). Government rights remain under Rights and benefits; My Journey includes application preparation. The updates section adds a dated public feed for rights, shows, discounts, career events, training and private/nonprofit offers. The chat receives these source notes for relevant questions only while external AI consent is active. A scheduled research task checks sources and publishes an edition every three days. Stale reviews and restricted sources are clearly labelled. See [BENEFITS-UPDATES.md](BENEFITS-UPDATES.md) for the publishing workflow and limitations.
+
+## External AI consent
+
+Before the first provider request, Agree and continue enables sharing of messages, recent conversation context, system instructions and separately enabled Journey categories with Anthropic (Claude). Cancel sends no request. Consent is remembered in this browser until withdrawn, or until the configured provider/endpoint or data-sharing scope changes. Settings → Withdraw consent blocks future chat and background AI requests and aborts in-flight fetches; it cannot undo transfers already made. Every 100 user messages dispatched shows a non-blocking reminder with Manage consent. History messages, lines, diagnostics and background calls do not increment this counter.
+
+All new AI request paths must use `MomentumAIConsent.request`. Background calls must omit `interactive` and `userMessageId`; they fail closed without matching consent. Interactive user sends provide a stable unique message ID. Provider changes must update the `provider` option, and changes to shared data categories must update the scope version in `ai-consent.js`. Consent is local to the browser/origin; unavailable browser storage makes it session-only.

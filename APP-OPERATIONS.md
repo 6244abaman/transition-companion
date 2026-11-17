@@ -40,8 +40,7 @@ the checked-in metadata and owner guide together, and verify the same URL.
 ## Existing app boundaries
 
 The external Claude connection remains in `momentum-proxy`, a separate Render
-service in the confirmed Momentum Claude workspace. Preserve per-request AI
-consent. Test with invented examples. The review site uses browser-local data;
+service in the confirmed Momentum Claude workspace. Preserve persistent external AI consent and withdrawal controls. Test with invented examples. The review site uses browser-local data;
 hosting it does not enable device sync, accounts or a central personal dossier.
 Read README.md and TEST_REPORT.md for the remaining review/pilot limitations.
 

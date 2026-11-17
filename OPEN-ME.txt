@@ -27,8 +27,8 @@ What runs locally and what goes online
 - The interface is served only on this computer, on loopback port 43127.
 - Profile and conversations use the chosen browser profile's local storage.
 - Real AI answers use your existing momentum-proxy.onrender.com backend,
-  configured for Claude. The app shows its existing review/approval dialog
-  before sending a question. No API key is included in this local package.
+  configured for Claude. The app asks for consent before the first request and
+  remembers it until withdrawn in Settings or the provider/sharing scope changes. No API key is included in this local package.
 - Live AI needs internet and a working backend. Practice Mode is scripted,
   not a live LLM. Fonts, external links and browser voice may use internet.
 - Optional encrypted device sync still needs a separately configured service;
