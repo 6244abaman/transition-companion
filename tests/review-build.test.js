@@ -59,3 +59,13 @@ test('owner links, Render settings and AI target stay consistent with shared met
   }
   assert.match(fs.readFileSync(path.join(root, 'CLAUDE.md'),'utf8'), /@APP-OPERATIONS\.md/);
 });
+
+test('fresh V2 address includes the full app outside the old worker scope', () => {
+  const {output}=buildReview(root);
+  for(const file of PUBLIC_FILES) assert.ok(fs.existsSync(path.join(output,'companion-v2',file)),file);
+  for(const file of ['index.html','indexH.html','ai-consent.js']) assert.deepEqual(fs.readFileSync(path.join(output,'companion-v2',file)),fs.readFileSync(path.join(root,file)));
+  const manifest=JSON.parse(fs.readFileSync(path.join(output,'companion-v2/manifest.json'),'utf8'));
+  assert.equal(manifest.name,'Transition Companion V2');assert.equal(manifest.start_url,'./indexH.html');
+  const worker=fs.readFileSync(path.join(output,'companion-v2/service-worker.js'),'utf8');
+  assert.ok(worker.includes('tc-companion-v2-v1'));assert.ok(worker.includes('k.startsWith("tc-companion-v2-")'));
+});

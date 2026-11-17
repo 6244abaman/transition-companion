@@ -14,7 +14,8 @@
     "dashboardUrl": "https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0",
     "autoDeploy": "yes",
     "buildCommand": "npm ci --ignore-scripts --no-audit --no-fund && npm test && npm run build:review",
-    "publishPath": "dist"
+    "publishPath": "dist",
+    "freshUrl": "https://transition-companion-review.onrender.com/companion-v2/indexH.html"
   },
   "llm": {
     "serviceName": "momentum-proxy",

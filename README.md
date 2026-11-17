@@ -185,3 +185,9 @@ Open the separate sidebar topic or [open directly in English](https://transition
 Before the first provider request, Agree and continue enables sharing of messages, recent conversation context, system instructions and separately enabled Journey categories with Anthropic (Claude). Cancel sends no request. Consent is remembered in this browser until withdrawn, or until the configured provider/endpoint or data-sharing scope changes. Settings → Withdraw consent blocks future chat and background AI requests and aborts in-flight fetches; it cannot undo transfers already made. Every 100 user messages dispatched shows a non-blocking reminder with Manage consent. History messages, lines, diagnostics and background calls do not increment this counter.
 
 All new AI request paths must use `MomentumAIConsent.request`. Background calls must omit `interactive` and `userMessageId`; they fail closed without matching consent. Interactive user sends provide a stable unique message ID. Provider changes must update the `provider` option, and changes to shared data categories must update the scope version in `ai-consent.js`. Consent is local to the browser/origin; unavailable browser storage makes it session-only.
+
+Fresh version: Transition Companion V2
+https://transition-companion-review.onrender.com/companion-v2/indexH.html
+English: https://transition-companion-review.onrender.com/companion-v2/index.html
+All frontend assets have new paths to bypass older cached copies. Saved browser data
+and consent stay on the same origin. Use this new link for testing.

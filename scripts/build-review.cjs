@@ -20,6 +20,19 @@ function buildReview(root = path.resolve(__dirname, '..')) {
   fs.rmSync(output, {recursive:true, force:true});
   fs.mkdirSync(path.join(output, 'app'), {recursive:true});
   for (const file of PUBLIC_FILES) fs.copyFileSync(path.join(root, file), path.join(output, 'app', file));
+  // A new directory gives every page and asset a fresh URL, outside the old /app/ worker scope.
+  const fresh = path.join(output, 'companion-v2');
+  fs.mkdirSync(fresh, {recursive:true});
+  for (const file of PUBLIC_FILES) fs.copyFileSync(path.join(root, file), path.join(fresh, file));
+  const worker = fs.readFileSync(path.join(fresh, 'service-worker.js'), 'utf8')
+    .replace('tc-v11-persistent-ai-consent', 'tc-companion-v2-v1')
+    .replace('k.startsWith("tc-")', 'k.startsWith("tc-companion-v2-")');
+  fs.writeFileSync(path.join(fresh, 'service-worker.js'), worker);
+  const manifest = JSON.parse(fs.readFileSync(path.join(fresh, 'manifest.json'), 'utf8'));
+  manifest.name = 'Transition Companion V2';
+  manifest.short_name = 'Companion V2';
+  manifest.start_url = './indexH.html';
+  fs.writeFileSync(path.join(fresh, 'manifest.json'), JSON.stringify(manifest, null, 2)+'\n');
   // Preserve every app entry point and relative link under /app/. Start new visits in Hebrew.
   fs.writeFileSync(path.join(output, 'index.html'), `<!doctype html>
 <html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
