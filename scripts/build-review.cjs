@@ -25,7 +25,7 @@ function buildReview(root = path.resolve(__dirname, '..')) {
   fs.mkdirSync(fresh, {recursive:true});
   for (const file of PUBLIC_FILES) fs.copyFileSync(path.join(root, file), path.join(fresh, file));
   const worker = fs.readFileSync(path.join(fresh, 'service-worker.js'), 'utf8')
-    .replace('tc-v11-persistent-ai-consent', 'tc-companion-v2-v1')
+    .replace('tc-v12-benefits-workflow', 'tc-companion-v2-v2')
     .replace('k.startsWith("tc-")', 'k.startsWith("tc-companion-v2-")');
   fs.writeFileSync(path.join(fresh, 'service-worker.js'), worker);
   const manifest = JSON.parse(fs.readFileSync(path.join(fresh, 'manifest.json'), 'utf8'));

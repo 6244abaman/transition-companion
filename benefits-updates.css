@@ -13,3 +13,12 @@
 .benefits-card h3{font-size:1.1rem;line-height:1.4;margin:8px 0}
 .benefits-card small{font-size:.78rem;color:#52665e}
 @media(max-width:700px){.benefits-grid{grid-template-columns:1fr}#benefitsUpdates{padding:15px}.benefits-card{padding:14px}}
+.benefits-preparation{border:1px solid #b5cbbd;border-radius:10px;padding:14px;margin:15px 0;background:#f8fbf8}
+.benefits-preparation summary{cursor:pointer;font-weight:700;min-height:40px;line-height:1.5}
+.benefits-field{display:block;margin:12px 0;font-size:.95rem}
+.benefits-field input,.benefits-field select,.benefits-field textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;background:white;color:#183d4d;padding:10px;border:1px solid #789687;border-radius:7px;font:inherit;min-width:0}
+.benefits-field textarea{min-height:120px;resize:vertical}
+.benefits-check{display:flex;gap:10px;align-items:start;margin:12px 0;font-size:.92rem;line-height:1.5}
+.benefits-check input{width:20px;height:20px;flex:none}
+.benefits-match{border-inline-start:3px solid #64876e;padding:10px;background:#eaf3eb}
+.benefits-preparation>button{margin:5px}

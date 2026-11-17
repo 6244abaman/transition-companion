@@ -277,6 +277,7 @@
     if (options && options.companion) {
       ls.removeItem("momentum-ai-disclosures-v1");
       ls.removeItem("momentum-reminder-settings-v1");
+      ls.removeItem("tc-benefits-preparation-v1");
       ls.removeItem("gtc_v2_state");
       ls.removeItem("gtc_H_state");
     }

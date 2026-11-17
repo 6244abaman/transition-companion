@@ -65,3 +65,22 @@ test('offline/stale edition retains source dates and excludes stale claims from 
   assert.equal(JSON.parse(w.localStorage.getItem('tc-public-benefits-v1')).reviewedAt,old.reviewedAt);
  }finally{dom.window.close();}
 });
+test('integrated preparation stays local, saves one Journey action, and does not send to AI',async()=>{
+ const {dom,w,d,requests}=boot('indexH.html');try{
+  w.eval(fs.readFileSync(path.join(root,'journey-store.js'),'utf8'));
+  d.querySelector('[data-topic="updates"]').click();await w.MomentumBenefits.refresh();
+  const panel=d.getElementById('benefitsUpdates');
+  const form=panel.querySelector('form');form.querySelector('input[type=date]').value='2026-08-01';form.querySelector('select').value='12';form.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+  assert.match(panel.textContent,/התאמה ראשונית בלבד/);
+  const card=panel.querySelector('[data-item=grant]');card.querySelector('input[type=checkbox]').click();
+  card.querySelector('input[type=date]').value='2026-12-01';
+  const save=[...card.querySelectorAll('button')].find(b=>b.textContent==='שמירת הצעד במסע שלי');save.click();save.click();
+  const actions=w.MomentumJourney.read().actions;assert.equal(actions.length,1);assert.equal(actions[0].id,'benefit-grant');assert.equal(actions[0].dueDate,'2026-12-01');assert.equal(actions[0].status,'todo');
+  assert.equal(requests.filter(r=>r.options?.method==='POST').length,0);
+  const local=JSON.parse(w.localStorage.getItem('tc-benefits-preparation-v1'));assert.equal(local.checks['grant:0'],true);assert.equal(local.profile.date,'2026-08-01');
+  assert.ok(!w.MomentumBenefits.context('en').includes('2026-08-01'));
+  const e=w.MomentumBenefits.eligibility;assert.match(e({id:'deposit'},{date:'2020-01-01',service:'12'},new Date('2026-11-17')),/חמש שנים/);
+  assert.match(e({id:'deposit'},{date:'2026-11-16',service:'12'},new Date('2026-11-17')),/14/);
+  assert.match(e({id:'grant'},{date:'2026-08-01',service:'other'},new Date('2026-11-17')),/דורש בירור/);
+ }finally{dom.window.close();}
+});

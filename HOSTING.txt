@@ -96,3 +96,13 @@ https://transition-companion-review.onrender.com/companion-v2/indexH.html
 English: https://transition-companion-review.onrender.com/companion-v2/index.html
 All frontend assets have new paths to bypass older cached copies. Saved browser data
 and consent stay on the same origin. Use this new link for testing.
+
+Integrated benefits workflow
+Open "Updated Information and Benefits" inside either Companion language.
+Optional matching and document checklists stay in this browser. Save a next
+step into the existing My Journey plan for status, backup and calendar export.
+Calendar reminders need importing into the user's calendar; no new server or
+soldier database is created. Existing external AI consent remains in place.
+Editors can export the public edition or prepare a draft in the section.
+Publishing requires authorized source changes to benefits-updates.json and
+the existing tested Render deployment. Draft downloads do not publish.

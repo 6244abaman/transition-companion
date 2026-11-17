@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v11-persistent-ai-consent";
+const CACHE = "tc-v12-benefits-workflow";
 const APP_FILES = [
   "./",
   "./index.html",
