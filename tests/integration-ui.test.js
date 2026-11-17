@@ -7,7 +7,8 @@ class LocalResources extends ResourceLoader{fetch(url){const u=new URL(url);if(u
 async function boot(file,opts={}){
  const errors=[],requests=[];const console=new VirtualConsole();console.on('jsdomError',e=>errors.push(e));
  const dom=new JSDOM(fs.readFileSync(path.join(root,file),'utf8'),{url:'https://app.test/'+file,resources:new LocalResources(),runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:console,
- beforeParse(w){w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});w.confirm=()=>true;
+ beforeParse(w){for (const [key,value] of Object.entries(opts.storage || {})) w.localStorage.setItem(key,value);
+ w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});w.confirm=()=>true;
  w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
  Object.defineProperty(w,'crypto',{value:webcrypto});w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;w.AbortController=AbortController;
  w.fetch=async(url,options)=>{requests.push({url,options});if(opts.fetch)return opts.fetch(url,options);return {ok:true,json:async()=>({content:[{type:'text',text:JSON.stringify({reply:'A live test reply',phase:'open'})}]})};};
@@ -51,4 +52,45 @@ test('malformed model metadata cannot create unevidenced skills or break the con
  w.eval('applyReply({reply:"Safe reply",confirmed:[{id:17,evidence:""},{id:999,evidence:"invented"}],proposals:"bad shape",phase:"unknown",costs:{bad:true}})');
  assert.equal(w.eval('S.profile.strengths.length'),0);assert.ok(d.getElementById('thread').textContent.includes('Safe reply'));
  }finally{dom.window.close();}
+});
+
+for (const [file,key] of [['index.html','gtc_v2_state'],['indexH.html','gtc_H_state']]) {
+  test(file + ' reopens legacy history and keeps later conversations separate', async () => {
+    const legacy = {started:true, lang:file === 'index.html' ? 'en':'he', phase:'open',
+      profile:{strengths:[],costs:[],open:[],directions:[]}, messages:[{role:'user',text:'Earlier question'}]};
+    const {dom,w,d,requests,errors} = await boot(file,{storage:{[key]:JSON.stringify(legacy)}});
+    try {
+      const panel = d.querySelector('#chatHistory');
+      panel.open = true;
+      await until(() => panel.textContent.includes('Earlier question'));
+      assert.ok(panel.querySelector('a').href.includes(file === 'index.html' ? 'indexH.html':'index.html'));
+      [...panel.querySelectorAll('button')].find(b => /Start a new|פתיחת שיחה/.test(b.textContent)).click();
+      assert.equal(w.eval('S.savedChats[0].messages[0].text'),'Earlier question');
+      w.eval('pushMsg("user","Second question")');
+      panel.open = true;
+      await until(() => panel.textContent.includes('Second question'));
+      [...panel.querySelectorAll('button')].find(b => b.textContent.includes('Earlier question')).click();
+      assert.ok(d.querySelector('#thread').textContent.includes('Earlier question'));
+      assert.ok(!d.querySelector('#thread').textContent.includes('Second question'));
+      const saved = JSON.parse(w.localStorage.getItem(key));
+      assert.deepEqual(saved.messages,legacy.messages);
+      assert.equal(saved.savedChats[0].messages.at(-1).text,'Second question');
+      assert.equal(requests.length,0);
+      assert.deepEqual(errors,[]);
+    } finally { dom.window.close(); }
+  });
+}
+
+test('chat file restore is additive, repeatable and excludes unrelated profile fields', () => {
+  const history = require('../chat-history');
+  const state = {messages:[{role:'user',text:'Original'}],profile:{private:'private marker'}};
+  const backup = history.backup(state);
+  assert.ok(!JSON.stringify(backup).includes('private marker'));
+  const target = {messages:[{role:'user',text:'Keep me'}]};
+  const restored = history.restore(target,backup);
+  assert.deepEqual(restored.messages,target.messages);
+  assert.deepEqual(restored.savedChats[0].messages,state.messages);
+  assert.deepEqual(history.restore(restored,backup),restored);
+  assert.throws(() => history.restore(target,{...backup,chats:[...backup.chats,[{role:'user'}]]}));
+  assert.equal(target.savedChats,undefined);
 });

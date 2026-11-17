@@ -67,5 +67,5 @@ test('fresh V2 address includes the full app outside the old worker scope', () =
   const manifest=JSON.parse(fs.readFileSync(path.join(output,'companion-v2/manifest.json'),'utf8'));
   assert.equal(manifest.name,'Transition Companion V2');assert.equal(manifest.start_url,'./indexH.html');
   const worker=fs.readFileSync(path.join(output,'companion-v2/service-worker.js'),'utf8');
-  assert.ok(worker.includes('tc-companion-v2-v2'));assert.ok(worker.includes('k.startsWith("tc-companion-v2-")'));
+  assert.ok(worker.includes('tc-companion-v2-v3'));assert.ok(worker.includes('k.startsWith("tc-companion-v2-")'));
 });

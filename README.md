@@ -191,3 +191,25 @@ https://transition-companion-review.onrender.com/companion-v2/indexH.html
 English: https://transition-companion-review.onrender.com/companion-v2/index.html
 All frontend assets have new paths to bypass older cached copies. Saved browser data
 and consent stay on the same origin. Use this new link for testing.
+
+## Previous conversations and private transfer
+
+Open **Previous conversations / שיחות קודמות** below the toolbar. Select a
+conversation to continue it or start a new one. Each original edition's
+message stream appears as one conversation. Older messages have no reliable
+session dates. The link inside the list opens the other edition's history.
+Changing interface language preserves the selected conversation.
+
+Chat history is readable by anyone using the same browser profile and site.
+A different browser, profile, device, or site origin has its own storage.
+Clearing site data or ending private browsing can erase it. To transfer chats,
+download a backup from each edition you used, move it privately, and restore
+it in the desired edition. The file contains readable message text, including
+any sensitive details or document text typed into chat. Restore adds missing
+transcripts. Topic controls, profile data, attachments and consent settings
+are outside this text backup. Keep the file somewhere you control.
+
+A username and password alone cannot recover browser data. Optional automatic
+cross-device recovery would require explicit opt-in, encrypted transcript
+storage, device authentication, a key or recovery code held by the soldier,
+and deletion and lost-key procedures. Existing Journey sync excludes chats.

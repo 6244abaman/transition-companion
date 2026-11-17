@@ -303,6 +303,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 .screen{min-height:0}
 @media(min-width:1100px){body{padding-inline-end:258px}.topic-panel{position:fixed;inset-inline-end:14px;top:112px;bottom:18px;width:230px;margin:0;overflow:auto}.topic-panel nav{grid-template-columns:1fr;max-height:none}.topic-panel summary{list-style:none;pointer-events:none}}
 
+#chatHistory{padding:8px 16px} #chatHistory summary{cursor:pointer;font-weight:600} #chatHistory>div{display:grid;gap:8px;max-height:52vh;overflow:auto;padding:8px 0} #chatHistory button{white-space:normal;text-align:start} #chatHistory input{display:block;max-width:100%}
 </style>
 </head>
 <body>
@@ -315,6 +316,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
   <button class="chip badge" id="btnProfile" data-count="0">פרופיל</button>
   <button class="chip" id="btnHelp">תמיכה</button>
 </header>
+<details id="chatHistory"><summary>שיחות קודמות</summary><div></div></details>
 <p id="voiceNotice" role="status" hidden style="padding:12px 18px;background:#EDF5F2;color:#183D39"></p>
 
 <!-- ============ WELCOME ============ -->
@@ -900,6 +902,7 @@ function copyText(text, btn){
    3. STATE
    ========================================================================== */
 const KEY = "gtc_H_state";
+let lastChatWrite;
 let S = load() || {
   lang: "he", mode: "both", speak: true, started: false,
   phase: "opening",           // opening → foundation → discovery → direction → open
@@ -907,8 +910,20 @@ let S = load() || {
   profile: { strengths: [], costs: [], open: [], directions: [] },
   practice: false, practiceStep: 0, ack: false, shift: false
 };
-function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ lastChatWrite = localStorage.getItem(KEY); return JSON.parse(lastChatWrite); }catch(e){ return null; } }
+function writeChatState(state){
+  try {
+    if (localStorage.getItem(KEY) !== lastChatWrite) throw Error();
+    const raw = JSON.stringify(state);
+    localStorage.setItem(KEY, raw);
+    lastChatWrite = raw;
+    return true;
+  } catch {
+    alert(S.lang === "he" ? "השמירה נכשלה. ייתכן שהאחסון מלא או שהשיחה השתנתה בחלון אחר. ניתן להוריד גיבוי לפני טעינה מחדש." : "Could not save. Storage may be full or another tab changed this chat. Download a backup before reloading.");
+    return false;
+  }
+}
+function save(){ return writeChatState(S); }
 // This separate edition always uses Hebrew, including restored sessions.
 S.lang = "he";
 if (S.voiceEdition !== 2) { S.speak = true; S.mode = "both"; S.voiceURI = null; S.voiceEdition = 2; save(); }
@@ -1221,7 +1236,7 @@ function scrollDown(){
 
 function pushMsg(role, text, extra){
   const m = Object.assign({role, text}, extra||{});
-  S.messages.push(m); save();
+  S.messages.push(m); S.updatedAt = new Date().toISOString(); save();
   if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
   else { $("thread").appendChild(turnNode(m)); scrollDown(); }
   if (role === "assistant" && S.speak) speak(text);
@@ -2048,6 +2063,7 @@ if(["en","he"].includes(requestedLanguage)){S.lang=requestedLanguage;save();pain
 if(new URLSearchParams(location.search).get("section")==="updates")prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="updates"));
 </script>
 
+<script src="./chat-history.js"></script>
 <script id="journey-offline-register">
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
