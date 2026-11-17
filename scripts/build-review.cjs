@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const PUBLIC_FILES = [
   'index.html', 'indexH.html', 'my-journey.html', 'skills-business.html',
-  'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
+  'chat-history.js', 'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
   'ai-consent.js', 'response-schema.js', 'skills-source.js', 'companion-safety.js',
   'journey-store.js', 'journey-backup.js', 'journey-reminders.js', 'journey-rights.js',
   'journey-sync.js', 'journey-tools-ui.js', 'life-skills-ui.js', 'my-journey.js',
@@ -25,7 +25,7 @@ function buildReview(root = path.resolve(__dirname, '..')) {
   fs.mkdirSync(fresh, {recursive:true});
   for (const file of PUBLIC_FILES) fs.copyFileSync(path.join(root, file), path.join(fresh, file));
   const worker = fs.readFileSync(path.join(fresh, 'service-worker.js'), 'utf8')
-    .replace('tc-v12-benefits-workflow', 'tc-companion-v2-v2')
+    .replace('tc-v13-chat-history', 'tc-companion-v2-v3')
     .replace('k.startsWith("tc-")', 'k.startsWith("tc-companion-v2-")');
   fs.writeFileSync(path.join(fresh, 'service-worker.js'), worker);
   const manifest = JSON.parse(fs.readFileSync(path.join(fresh, 'manifest.json'), 'utf8'));
