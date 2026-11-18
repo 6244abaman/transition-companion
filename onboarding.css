@@ -1,0 +1,16 @@
+#welcome [hidden]{display:none!important}
+body:has(#welcome:not([hidden])) #topicPanel{display:none}
+body:has(#welcome:not([hidden])){padding-inline-end:0}
+#intro,#setup{max-width:38rem;margin:auto}
+#intro details{margin-block:1rem}
+#intro summary,#setup button{cursor:pointer;padding:.75rem}
+#setup label{display:block;margin-block:.65rem}
+#setup input:not([type=checkbox]),#setup select{display:block;width:100%;box-sizing:border-box;margin-top:.25rem;padding:.65rem;border:1px solid #849997;border-radius:.5rem;font:inherit;background:white;color:#173c37}
+#setup button{min-height:44px;margin:.4rem .15rem;border:1px solid #849997;border-radius:.65rem;background:white;color:#193f36;font:inherit}
+#nextSetup,#finishSetup{background:#175247!important;color:white!important}
+#setup progress{width:100%;accent-color:#256c5b}
+.interestGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.5rem}
+#setup .interestGrid label{border:1px solid #849997;border-radius:.6rem;padding:.8rem;margin:0;cursor:pointer}
+.interestGrid label:has(:checked){background:#dfefe8}
+.messageLabel{display:block;max-width:48rem;margin:0 auto .2rem;font-size:.88rem}
+#setup :is(input,select):focus,#composer #input:focus{border-color:#28649b;outline:2px solid #28649b;outline-offset:1px;box-shadow:0 0 0 4px #3679bb26}

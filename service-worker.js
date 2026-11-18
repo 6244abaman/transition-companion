@@ -31,7 +31,7 @@ const APP_FILES = [
   "./journey-reminders.js",
   "./journey-tools-ui.js",
   "./journey-rights.js",
-  "./chat-history.js",
+  "./onboarding.js", "./onboarding.css", "./chat-history.js",
   "./benefits-updates.js",
   "./benefits-updates.css",
   "./benefits-updates.json",

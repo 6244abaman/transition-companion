@@ -306,6 +306,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 
 #chatHistory{padding:8px 16px} #chatHistory summary{cursor:pointer;font-weight:600} #chatHistory>div{display:grid;gap:8px;max-height:52vh;overflow:auto;padding:8px 0} #chatHistory button{white-space:normal;text-align:start} #chatHistory input{display:block;max-width:100%}
 </style>
+<link rel="stylesheet" href="./onboarding.css">
 </head>
 <body>
 
@@ -323,15 +324,15 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
-    <section class="mentor-portrait" aria-label="Your Transition Assistant">
-      <div class="mentor-face" aria-hidden="true"><img src="./companion-mentor.jpeg" alt="" width="1215" height="1295" fetchpriority="high" decoding="async"></div>
-      <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
-    </section>
-    <div class="welcome-hero">
+<div id="intro">    <div class="welcome-hero">
     <span class="eyebrow" id="wEyebrow"></span>
     <h1 class="hello" id="wTitle"></h1>
     <p class="lede" id="wLede"></p>
     </div>
+<button class="go" id="btnStart"></button><details><summary><span data-en="Help, options and privacy" data-he="עזרה, אפשרויות ופרטיות">Help, options and privacy</span></summary>    <section class="mentor-portrait" aria-label="Your Transition Assistant">
+      <div class="mentor-face" aria-hidden="true"><img src="./companion-mentor.jpeg" alt="" width="1215" height="1295" fetchpriority="high" decoding="async"></div>
+      <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
+    </section>
     <div class="welcome-cards">
     <div class="note"><h3 id="w1t"></h3><p id="w1p"></p></div>
     <div class="note"><h3 id="w2t"></h3><p id="w2p"></p></div>
@@ -348,7 +349,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
     <div class="quick-start">
       <button id="quickOkay"></button><button id="quickUnsure"></button><button id="quickAsk"></button>
     </div>
-    <div class="start-callout" id="startCallout"></div><button class="go" id="btnStart"></button>
+    <div class="start-callout" id="startCallout"></div>
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
     <div class="note" id="diagOut" style="display:none;font-size:13.5px"></div>
@@ -361,6 +362,93 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       </div>
       <p style="font-size:.81rem;margin:11px 0 0;opacity:.9">Saved locally in this browser. Sharing profile details with AI is off by default.</p>
     </section>
+</details></div><section id="setup" hidden>
+<progress id="setupProgress" max="2" value="1" aria-labelledby="stepCount">
+</progress>
+<p id="stepCount">
+</p>
+<div id="background">
+<h2 tabindex="-1">
+<span data-en="A little about you" data-he="קצת עליך">A little about you</span>
+</h2>
+<p>
+<span data-en="Share whatever feels useful. You can skip any question." data-he="אפשר לשתף במה שמתאים לך ולדלג על כל שאלה.">Share whatever feels useful. You can skip any question.</span>
+</p>
+<label>
+<span data-en="What should I call you?" data-he="איך לפנות אליך?">What should I call you?</span>
+<input id="bg-name" maxlength="100">
+</label>
+<label>
+<span data-en="What kind of service did you do?" data-he="מה היה סוג השירות שלך?">What kind of service did you do?</span>
+<input id="bg-service" maxlength="100">
+</label>
+<label>
+<span data-en="About how long did you serve?" data-he="כמה זמן בערך נמשך השירות שלך?">About how long did you serve?</span>
+<input id="bg-length" maxlength="100">
+</label>
+<label>
+<span data-en="Where are you in your transition?" data-he="באיזה שלב של המעבר לחיים האזרחיים את או אתה?">Where are you in your transition?</span>
+<select id="bg-status">
+<option value="" data-en="Choose if you wish" data-he="אפשר לבחור">Choose if you wish</option>
+<option value="serving" data-en="Still serving" data-he="במהלך השירות">Still serving</option>
+<option value="leaving" data-en="Preparing for discharge" data-he="לקראת שחרור">Preparing for discharge</option>
+<option value="discharged" data-en="Already discharged" data-he="אחרי השחרור">Already discharged</option>
+<option value="other" data-en="Something else" data-he="משהו אחר">Something else</option>
+</select>
+</label>
+<label>
+<input type="checkbox" id="bg-reserve"> <span data-en="Also serving in the reserves" data-he="גם בשירות מילואים">Also serving in the reserves</span>
+</label>
+<button type="button" id="nextSetup">
+<span data-en="Continue" data-he="המשך">Continue</span>
+</button>
+<button type="button" id="skipBackground">
+<span data-en="Skip for now" data-he="דילוג">Skip for now</span>
+</button>
+</div>
+<div id="interests" hidden>
+<h2 tabindex="-1">
+<span data-en="What’s on your mind?" data-he="מה מעסיק אותך עכשיו?">What’s on your mind?</span>
+</h2>
+<p>
+<span data-en="Choose as many as you like." data-he="אפשר לבחור כמה נושאים.">Choose as many as you like.</span>
+</p>
+<div class="interestGrid">
+<label>
+<input type="checkbox" value="career"> <span data-en="Work" data-he="עבודה">Work</span>
+</label>
+<label>
+<input type="checkbox" value="study"> <span data-en="Studies" data-he="לימודים">Studies</span>
+</label>
+<label>
+<input type="checkbox" value="rights"> <span data-en="Money and rights" data-he="כסף וזכויות">Money and rights</span>
+</label>
+<label>
+<input type="checkbox" value="travel"> <span data-en="Travel" data-he="טיולים">Travel</span>
+</label>
+<label>
+<input type="checkbox" value="housing"> <span data-en="Housing" data-he="דיור">Housing</span>
+</label>
+<label>
+<input type="checkbox" value="family"> <span data-en="Relationships" data-he="מערכות יחסים">Relationships</span>
+</label>
+<label>
+<input type="checkbox" value="support"> <span data-en="Mental wellbeing" data-he="רווחה נפשית">Mental wellbeing</span>
+</label>
+<label>
+<input type="checkbox" value="unsure"> <span data-en="I’m not sure yet" data-he="עדיין לא ברור לי">I’m not sure yet</span>
+</label>
+</div>
+<button type="button" id="finishSetup">
+<span data-en="Start chatting" data-he="נתחיל לדבר">Start chatting</span>
+</button>
+<button type="button" id="ownQuestion">
+<span data-en="Ask my own question" data-he="יש לי שאלה משלי">Ask my own question</span>
+</button>
+<button type="button" id="backSetup">
+<span data-en="Back" data-he="חזרה">Back</span>
+</button>
+</div></section>
   </div>
 </main>
 
@@ -380,7 +468,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 </details>
 
 <div class="composer" id="composer" hidden>
-  <div class="cwrap">
+  <label for="input" class="messageLabel"><span data-en="Your message" data-he="ההודעה שלך">Your message</span></label><div class="cwrap">
     <button class="icon mic" id="btnMic" title="Speak">🎙</button>
     <textarea id="input" rows="1" placeholder=""></textarea>
     <button class="icon send" id="btnSend" title="Send">↑</button>
@@ -1033,6 +1121,7 @@ function paintStatic(){
   $("wTiny").textContent = t.tiny;
   $("btnDiag").textContent = t.diag;
   $("input").placeholder = (S.mode==="type") ? t.ph : t.phVoice;
+  window.paintOnboarding?.();
   $("btnProfile").dataset.count = S.profile.strengths.length;
 }
 
@@ -1288,21 +1377,9 @@ The latest user request takes priority over earlier topics and unanswered questi
 When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
 
 HOW YOU TALK
-- Sound like someone in their corner, not someone above them. Use the feel of an older brother who cares enough to listen, be straight with them, and help without taking over. Offer choices and recommendations as help, not orders.
-- Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions. Use bullet points when listing skills or producing practical output.
-- Never open by restating, summarising or quoting what they just said. Do not use "I hear", "I heard", "what I'm hearing", "it sounds like", "so you're saying", "you mentioned", or their own phrases echoed back. Start with the substance: your read, the explanation, or the answer. They know what they said.
-- Don't hand out empty praise ("amazing", "incredible", "you're a natural") that isn't backed by something they actually showed you — it isn't worth anything to them if it isn't earned. But once it IS earned by their own evidence, say so warmly and specifically, don't just note it clinically.
-- Never assume. Role, unit, or rank is a HYPOTHESIS, never a conclusion. Two people in the same role built different things.
-- Do not offer a menu of services or modules. What is needed emerges from what they say.
-- If they are vague about an event or a fact, ask for one concrete moment: what happened, what did you actually do, what did it cost.
-- If they are vague about a feeling — "I don't know", "what do you think", "it's hard to explain" — you may venture ONE plain-spoken guess at what's underneath, built from what they've actually told you so far, not a generic guess. State it clearly as a guess, not a fact ("maybe it's more X than Y" — never "you feel X"), and ask if that's close. If they correct it, drop your guess immediately and go with theirs — do not defend it or re-argue it.
-
-RESPOND TO WHAT THEY SAID BY BUILDING ON IT, NOT REPEATING IT
-Every reply must engage the specific content of their last message — but by adding to it, never by echoing it. If they said "excited but uncertain", "I just want to be free", or "strange", do not hand those words back. Explain what is usually going on underneath that state, and connect it to the specifics they gave. Never ask a generic next question that would make sense regardless of what they just told you; that is the single worst failure mode of this app.
-When they express uncertainty, restlessness, wanting freedom, numbness, or not knowing what to do, treat that as the subject, not as an obstacle to getting through your questions. Explain plainly what is common for people leaving service — the sudden absence of structure, the gap between relief and emptiness, friends scattering, money pressure, family not understanding — say why it happens, and connect it to what THEY specifically said. Keep it a short, grounded explanation, not a lecture, then one question that follows from it.
-
-PHASES (move when the person is ready, not on a timer)
-1 opening — establish, early and explicitly: where they served, their ACTUAL ROLE and rank (combat, commander, officer, support, technical), how long, and where they are now. Then how it is actually sitting with them and what is on their mind. Get role early — you need it as a hypothesis — but never treat it as the conclusion about what they built.
+Speak naturally and answer the latest request first. Accept “I’m okay” at face value. Never speculate about hidden feelings or push for disclosure. Ask at most one useful question. Respect skipped background questions. Offer to connect someone seeking mental health support with a qualified professional using the Support control. Use the existing urgent support path for immediate danger. Never diagnose.
+PHASES (optional, follow the person's lead)
+1 opening — ask for background only if invited and useful for the immediate request.
 2 foundation — the transition foundation conversation: what their service actually required of them; what it took from them; what it required them to become; how it changed what they can do, what they trust themselves with, what responsibility means to them, and how they see the world. Hold both sides: service is sacrifice AND it built things. Do not resolve that tension prematurely.
 3 discovery — surface possible strengths from what they described, then TEST each one by asking for a concrete example. A strength enters the profile only with the person's own evidence.
 4 direction — what they are weighing next: work, study, money, relationships, rest, meaning.
@@ -1322,7 +1399,7 @@ LEVELS — when you confirm a strength, also set its level from THEIR example: 1
 REFERENCE — a REFERENCE section may appear near the end of these instructions. Use it to ask sharper evidence questions and to write CV, interview, work and study material.
 
 BEHAVIOUR THAT NEVER STOPS, in every phase including long after orientation:
-Understand before answering. Analyse, don't just reflect back. When they raise a choice, generate at least two real alternatives they did not mention, state the trade-offs honestly including cost and time, and give a recommendation when you have enough to justify one — say what would change your mind. Be honest even when it's not what they want to hear — don't just agree to be agreeable — but say it gently, the way someone who's on their side would, not as a correction. Follow up on things they said they would do.
+Offer practical options when they help the person decide. Invite follow-up when welcome.
 
 CONTENT LIMITS
 Do not provide pornographic content or help bypass a content filter. Religious guidance is limited to Judaism; acknowledge other backgrounds respectfully without religious instruction. Continue practical, non-religious assistance for everyone. Never request operational, classified or identifying information about other soldiers.
@@ -1477,6 +1554,7 @@ const SHIFT_LINE = {
   en: "In service, most decisions this size got made above you. Right now nobody's deciding this one but you — that's not a delay before the real thing starts, it's the first rep of it.\n\n"
 };
 function practiceReply(userText){
+  if (/^(?:i.m (?:fine|ok(?:ay)?)|אני בסדר)[.! ]*$/i.test(userText.trim())) return {reply:S.lang==="he"?"במה תרצה שנתחיל?":"What would you like to start with?"};
   if(S.activeTopic) return topicPracticeReply(userText);
   const i = Math.min(S.practiceStep, SCRIPT[S.lang].length-1);
   // Practice Mode has no language understanding, so it does not pretend to:
@@ -2057,6 +2135,7 @@ if(["en","he"].includes(requestedLanguage)){S.lang=requestedLanguage;save();pain
 if(new URLSearchParams(location.search).get("section")==="updates")prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="updates"));
 </script>
 
+<script src="./onboarding.js"></script>
 <script src="./chat-history.js"></script>
 <script id="journey-offline-register">
 if ("serviceWorker" in navigator && location.protocol === "https:") {
