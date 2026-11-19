@@ -45,6 +45,7 @@ if (typeof module !== 'undefined') module.exports = ChatHistory;
 if (typeof document !== 'undefined') {
   const panel = document.getElementById('chatHistory');
   const body = panel.querySelector('div');
+  const desktop = window.matchMedia('(min-width:1100px)');
   const label = (en,he) => S.lang === 'he' ? he : en;
   function add(tag, text) {
     const node = document.createElement(tag);
@@ -57,6 +58,7 @@ if (typeof document !== 'undefined') {
     node.type = 'button';
     node.className = 'chip';
     node.onclick = fn;
+    return node;
   }
   function commit(next) {
     if (sendingUserMessage || document.getElementById('thinking')) {
@@ -70,27 +72,43 @@ if (typeof document !== 'undefined') {
   function resume(next) {
     if (!commit(next)) return;
     stopSpeaking();
-    panel.open = false;
+    panel.open = desktop.matches;
     enterChat();
     if (!S.messages.length) openConversation();
     paintTopicPanel();
-    document.getElementById('input').focus();
+    draw();
+    document.getElementById('input').focus({preventScroll:true});
+    scrollDown();
   }
   function draw() {
     panel.querySelector('summary').textContent = label('Previous conversations','שיחות קודמות');
     body.replaceChildren();
+    button(label('Close chats ✕','סגירת שיחות ✕'), () => {
+      panel.open = false;
+      panel.querySelector('summary').focus();
+    }).classList.add('close-chats');
+    button(label('+ New chat','+ שיחה חדשה'), () => resume(ChatHistory.select(S,-1))).classList.add('new-chat');
+    const list = add('nav','');
+    list.className = 'chat-list';
+    list.setAttribute('aria-label',label('Saved conversations','שיחות שמורות'));
     const records = ChatHistory.chats(S);
     records.forEach((chat,i) => {
       if (!chat.messages.length) return;
       const first = chat.messages.find(m => m.role === 'user') || chat.messages[0];
       const date = chat.updatedAt ? new Date(chat.updatedAt).toLocaleDateString(S.lang) : '';
       const title = [i === 0 ? label('Current','נוכחית') : '', date, first.text.slice(0,72)].filter(Boolean).join(' · ');
-      button(title, () => resume(i ? ChatHistory.select(S,i-1) : {...S,started:true}));
+      const item = button(title, () => resume(i ? ChatHistory.select(S,i-1) : {...S,started:true}));
+      item.classList.add('chat-item');
+      item.setAttribute('aria-current',String(i === 0));
+      list.append(item);
     });
     if (!records.some(c => c.messages.length)) add('p',label('No saved chats in this edition yet.','עדיין אין שיחות שמורות בגרסה זו.'));
-    button(label('Start a new conversation','פתיחת שיחה חדשה'), () => {
-      resume(ChatHistory.select(S,-1));
-    });
+    const tools = add('details','');
+    tools.className = 'chat-tools';
+    const summary = document.createElement('summary');
+    summary.textContent = label('Chat backups and privacy','גיבוי שיחות ופרטיות');
+    tools.append(summary);
+    const toolsStart = body.children.length;
     const other = KEY === 'gtc_H_state';
     add('a',other ? 'English conversation history' : 'היסטוריית שיחות בגרסה העברית').href =
       (other ? 'index.html?lang=en' : 'indexH.html?lang=he') + '#chatHistory';
@@ -109,6 +127,7 @@ if (typeof document !== 'undefined') {
     file.type = 'file';
     file.accept = '.json,application/json';
     prompt.append(file);
+    Array.from(body.children).slice(toolsStart).forEach(node => tools.append(node));
     file.onchange = async () => {
       try {
         const selected = file.files[0];
@@ -125,8 +144,19 @@ if (typeof document !== 'undefined') {
       file.value = '';
     };
   }
-  panel.ontoggle = () => { if (panel.open) draw(); };
+  panel.ontoggle = () => {
+    if (desktop.matches && !panel.open) panel.open = true;
+    if (panel.open) draw();
+  };
+  desktop.addEventListener('change', () => { panel.open = desktop.matches; });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && panel.open && !desktop.matches) {
+      panel.open = false;
+      panel.querySelector('summary').focus();
+    }
+  });
+  document.addEventListener('companion:chat-updated', draw);
   new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   draw();
-  if (location.hash === '#chatHistory') panel.open = true;
+  if (desktop.matches || location.hash === '#chatHistory') panel.open = true;
 }

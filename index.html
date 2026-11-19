@@ -1015,6 +1015,7 @@ function writeChatState(state){
   }
 }
 function save(){ return writeChatState(S); }
+S.speak = false; // Listen never enables automatic reading of future replies.
 const L = () => T[S.lang];
 
 /* Bridge between Momentum 36-skill self-assessment and this ongoing private profile.
@@ -1114,6 +1115,7 @@ function paintStatic(){
   $("btnHelp").textContent = t.support;
   $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask an AI";
   $("btnVoiceSettings").textContent = S.lang === "he" ? "הגדרות קול" : "Voice settings";
+  $("btnVoice").textContent = S.lang === "he" ? "🔊 האזן" : "🔊 Listen";
   $("btnVoice").title = S.lang === "he" ? "הקראה / עצירה" : "Read aloud / stop";
   $("btnVoice").setAttribute("aria-label", $("btnVoice").title);
   $("btnMic").setAttribute("aria-label", S.lang === "he" ? "דבר" : "Speak");
@@ -1142,27 +1144,19 @@ $("btnLang").onclick = () => {
   stopSpeaking();
   S.voiceURI = null;
   save(); paintStatic(); renderThread(); if($("drawer").classList.contains("on")) closeDrawer();
-  if (S.speak) {
-    const last = [...S.messages].reverse().find(m => m.role === "assistant");
-    const welcome = S.lang === "he"
-      ? "ברוכים הבאים. תודה על השירות. לחצו על הכפתור הגדול כדי להתחיל."
-      : "Welcome. Thank you for your service. Press the large button to begin.";
-    setTimeout(() => speak(last ? messageText(last) : welcome), 250);
-  }
 };
 
 document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
   document.querySelectorAll(".choice").forEach(x=>x.classList.remove("on"));
   b.classList.add("on"); S.mode = b.dataset.mode;
-  if (S.mode !== "type") { S.speak = true; $("btnVoice").classList.add("on"); }
+  // Input mode does not enable read-aloud.
   paintStatic(); save();
 });
 
 $("btnVoice").onclick = () => {
-  S.speak = !S.speak; $("btnVoice").classList.toggle("on", !!S.speak); save();
-  if (!S.speak) { stopSpeaking(); return; }
+  if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); return; }
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
-  speak(last ? messageText(last) : (S.lang === "he" ? "הקול פועל. אפשר לדבר או להקליד." : "Voice is on. You can speak or type."));
+  speak(last ? messageText(last) : (S.lang === "he" ? "ברוכים הבאים. אני כאן בשביל השלב הבא." : "Welcome. I’m here for what comes next."));
 };
 $("btnVoiceSettings").onclick = openVoiceSettings;
 $("btnAI").onclick = openExternalAI;
@@ -1331,8 +1325,16 @@ function turnNode(m, idx){
   return wrap;
 }
 function scrollDown(){
-  const s=$("chat"), last=$("thread").lastElementChild;
-  if (last) s.scrollTop = Math.max(0, last.offsetTop + last.offsetHeight - s.clientHeight + 24);
+  // Wait for the first reply, composer and topic panel to finish laying out.
+  const reveal = () => {
+    const screen = $("chat"), last = $("thread").lastElementChild;
+    if (!last || screen.hidden) return;
+    const bounds = screen.getBoundingClientRect(), reply = last.getBoundingClientRect();
+    // Show the beginning of a long reply, rather than skipping to its last line.
+    screen.scrollTop = Math.max(0, screen.scrollTop + reply.top - bounds.top - 12);
+  };
+  if (window.requestAnimationFrame) requestAnimationFrame(reveal);
+  else setTimeout(reveal, 0);
 }
 
 function pushMsg(role, text, extra){
@@ -1340,7 +1342,7 @@ function pushMsg(role, text, extra){
   S.messages.push(m); S.updatedAt = new Date().toISOString(); save();
   if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
   else { $("thread").appendChild(turnNode(m)); scrollDown(); }
-  if (role === "assistant" && S.speak) speak(text);
+  document.dispatchEvent(new Event("companion:chat-updated"));
   return m;
 }
 function showThinking(){
