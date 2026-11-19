@@ -314,7 +314,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
   <div class="mark" id="mark">Transition Assistant<span id="markSub">a conversation, not a form</span></div>
   <button class="chip" id="btnLang" title="Language">עברית</button>
   <button class="chip" id="btnVoice" title="Read replies aloud">🔊</button>
-  <button class="chip" id="btnAI">Ask an AI</button>
+  <button class="chip" id="btnAI">Ask AI</button>
   <button class="chip" id="btnVoiceSettings">Voice settings</button>
   <button class="chip badge" id="btnProfile" data-count="0">Profile</button>
   <button class="chip" id="btnHelp">Support</button>
@@ -467,7 +467,12 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <!-- ============ CONVERSATION ============ -->
 <main class="screen" id="chat" hidden>
   <div class="pad">
-    <div class="chat-heading"><h2 id="chatTitle"></h2><p id="chatSubtitle"></p></div>
+    <details class="guidance chat-guidance"><summary id="chatGuideSummary" data-en="How to use the Companion" data-he="איך להשתמש במלווה">איך להשתמש במלווה</summary><section aria-labelledby="chatGuideTitle">
+      <h2 class="guide-title" id="chatGuideTitle"></h2>
+      <div class="guide-topics"><span class="guide-cv"></span><span class="guide-job"></span><span class="guide-study"></span></div>
+      <p class="guide-direct"></p><p class="guide-emphasis"></p><p class="guide-example"></p>
+    </section></details>
+    <div class="chat-heading"><h2 id="chatTitle"></h2><p id="chatSubtitle"></p><p id="chatNavigationHint"></p></div>
     <section id="benefitsUpdates" hidden aria-label="Updated Information and Benefits"></section>
     <div id="thread"></div>
   </div>
@@ -502,11 +507,11 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 const T = {
 en:{
   wEyebrow:"MOMENTUM · YOUR NEXT CHAPTER",
-  chatTitle:"A little clearer, one conversation at a time",
-  chatSubtitle:"Start wherever you are. We can take the next step together.",
+  chatTitle:"A little more clarity, one conversation at a time",
+  chatSubtitle:"We can start from where you are. Let’s think together about the next step.",
   guideTitle:"Ask for help. Help me get to know you.",
   guideCV:"CVs", guideJob:"Job applications", guideStudy:"Work & study",
-  guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask an AI’ button also opens other AI services.",
+  guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask AI’ button also opens other AI services.",
   guideEmphasis:"For assistance that fits you, let the companion learn about your experience, goals, strengths, and what matters to you. You do not need to tell everything at once. Share only what you feel comfortable sharing.",
   guideExample:"For example: ‘I was a team leader, I enjoy working with people, and I want help applying for my first job.’ Your real examples help turn general advice into something you can use. Avoid classified, operational, or identifying military details.",
   dir:"ltr", other:"עברית", mark:"Transition Assistant", markSub:"a conversation, not a form",
@@ -1106,6 +1111,8 @@ const el = (tag, cls, txt) => { const n=document.createElement(tag); if(cls)n.cl
 function paintStatic(){
   if(typeof paintTopicPanel === "function") paintTopicPanel();
   const t = L();
+  $("chatGuideSummary").textContent = S.lang === "he" ? "איך להשתמש במלווה" : "How to use the Companion";
+  $("chatNavigationHint").textContent = S.lang === "he" ? "בחרו נושא בצד או לחצו על ׳שאל AI׳ בסרגל העליון." : "Choose a topic on the side or Ask AI directly on the top bar.";
   document.documentElement.lang = S.lang;
   document.documentElement.dir = t.dir;
   $("mark").firstChild.nodeValue = t.mark;
@@ -1113,7 +1120,7 @@ function paintStatic(){
   $("btnLang").textContent = t.other;
   $("btnProfile").textContent = t.profile;
   $("btnHelp").textContent = t.support;
-  $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask an AI";
+  $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask AI";
   $("btnVoiceSettings").textContent = S.lang === "he" ? "הגדרות קול" : "Voice settings";
   $("btnVoice").textContent = S.lang === "he" ? "🔊 האזן" : "🔊 Listen";
   $("btnVoice").title = S.lang === "he" ? "הקראה / עצירה" : "Read aloud / stop";
@@ -2100,7 +2107,7 @@ function paintTopicPanel(){
  });
 }
 
-const TOPIC_RESPONSES={"updates":["Explore the dated listings above, or tell me which benefit or opportunity interests you. I can help check the conditions and prepare your next step. The source date matters; availability and personal eligibility must be confirmed with the provider.","עיינו בפריטים המתוארכים למעלה או ספרו איזו הטבה או הזדמנות מעניינת אתכם. אוכל לעזור להבין תנאים ולהכין את הצעד הבא. חשוב לשים לב למועד בדיקת המקור ולאמת זמינות וזכאות אישית מול הגוף המציע."],"cv":["A useful CV connects your actual responsibilities and achievements to the work you want. I can build a first draft with your service experience, education and confirmed skills.\n\nWhat kind of job is this CV for?","קורות חיים טובים מחברים את האחריות וההישגים שלך לעבודה שאתה רוצה. אוכל להכין טיוטה עם הניסיון מהשירות, ההשכלה והכישורים שאושרו.\n\nלאיזה סוג עבודה מיועדים קורות החיים?"],"applications":["I can help tailor an application to a specific job, including a cover letter and examples that match the requirements.\n\nCan you paste the job description or tell me which position you want?","אוכל לעזור להתאים מועמדות למשרה מסוימת, כולל מכתב פנייה ודוגמאות שמתאימות לדרישות.\n\nתוכל להדביק את תיאור המשרה או לומר לאיזה תפקיד אתה רוצה להגיש מועמדות?"],"career":["We can compare work options against your interests, experience, skills and practical needs, then choose a manageable first step.\n\nWhat kind of work interests you, even if you are still unsure?","נוכל להשוות אפשרויות עבודה לפי תחומי העניין, הניסיון, הכישורים והצרכים המעשיים שלך, ואז לבחור צעד ראשון.\n\nאיזה סוג עבודה מעניין אותך, גם אם אתה עדיין לא בטוח?"],"study":["I can help compare study routes and work backwards from your intended start date, including admission, preparation, time and costs.\n\nWhat would you like to study, or which fields are you considering?","אוכל לעזור להשוות מסלולי לימודים ולתכנן לאחור ממועד ההתחלה, כולל קבלה, הכנה, זמן ועלויות.\n\nמה תרצה ללמוד, או אילו תחומים אתה שוקל?"],"rights":["We can identify benefits to check and the documents you may need. Eligibility and deadlines must be verified with the responsible official service.\n\nAre you finishing regular service, serving in the reserves, or already discharged?","נוכל לזהות זכויות שכדאי לבדוק ומסמכים שייתכן שתצטרך. יש לאמת זכאות ומועדים מול הגוף הרשמי האחראי.\n\nאתה מסיים שירות סדיר, משרת במילואים או כבר השתחררת?"],"money":["We can make a practical budget around income, essential expenses and your next plans, then identify the first change that would help.\n\nWhat is the main money issue you want to work on?","נוכל לבנות תקציב מעשי לפי ההכנסה, ההוצאות החיוניות והתוכניות הבאות שלך, ולזהות שינוי ראשון שיעזור.\n\nמה הנושא הכלכלי העיקרי שתרצה לעבוד עליו?"],"travel":["I can help fit a trip around your budget, work or studies and important dates.\n\nWhere would you like to go, and roughly when?","אוכל לעזור להתאים טיול לתקציב, לעבודה או ללימודים ולמועדים חשובים.\n\nלאן תרצה לנסוע ובערך מתי?"],"family":["We can work on a particular conversation, changing expectations, or reconnecting with people close to you.\n\nWhich relationship or family situation would you like help with?","נוכל לעבוד על שיחה מסוימת, שינוי בציפיות או חידוש הקשר עם אנשים קרובים.\n\nבאיזה קשר או מצב משפחתי תרצה עזרה?"],"support":["You can describe what is happening at your own pace. I can help you sort through it and consider a next step; human support is also available through the Support button.\n\nWhat is weighing on you most right now?","אפשר לתאר את מה שקורה בקצב שלך. אוכל לעזור לעשות סדר ולחשוב על צעד הבא; תמיכה אנושית זמינה גם דרך כפתור התמיכה.\n\nמה הכי מכביד עליך עכשיו?"]};
+const TOPIC_RESPONSES={"updates":["Explore the dated listings above, or tell me which benefit or opportunity interests you. I can help check the conditions and prepare your next step. The source date matters; availability and personal eligibility must be confirmed with the provider.","עיינו בפריטים המתוארכים למעלה או ספרו איזו הטבה או הזדמנות מעניינת אתכם. אוכל לעזור להבין תנאים ולהכין את הצעד הבא. חשוב לשים לב למועד בדיקת המקור ולאמת זמינות וזכאות אישית מול הגוף המציע."],"cv":["A useful CV connects your actual responsibilities and achievements to the work you want. I can build a first draft with your service experience, education and confirmed skills.\n\nWhat kind of job is this CV for?","קורות חיים טובים מחברים את האחריות וההישגים שלך לעבודה שאתה רוצה. אוכל להכין טיוטה עם הניסיון מהשירות, ההשכלה והכישורים שאושרו.\n\nלאיזה סוג עבודה מיועדים קורות החיים?"],"applications":["I can help tailor an application to a specific job, including a cover letter and examples that match the requirements.\n\nCan you paste the job description or tell me which position you want?","אוכל לעזור להתאים מועמדות למשרה מסוימת, כולל מכתב פנייה ודוגמאות שמתאימות לדרישות.\n\nתוכל להדביק את תיאור המשרה או לומר לאיזה תפקיד אתה רוצה להגיש מועמדות?"],"career":["We can compare job options based on your interests, experience, skills, and practical needs, and then choose a first step.\n\nWhat type of job interests you, even if you’re not sure yet?","נוכל להשוות אפשרויות עבודה לפי תחומי העניין, הניסיון, הכישורים והצרכים המעשיים שלך, ואז לבחור צעד ראשון.\n\nאיזה סוג עבודה מעניין אותך, גם אם אתה עדיין לא בטוח?"],"study":["I can help compare study routes and work backwards from your intended start date, including admission, preparation, time and costs.\n\nWhat would you like to study, or which fields are you considering?","אוכל לעזור להשוות מסלולי לימודים ולתכנן לאחור ממועד ההתחלה, כולל קבלה, הכנה, זמן ועלויות.\n\nמה תרצה ללמוד, או אילו תחומים אתה שוקל?"],"rights":["We can identify benefits to check and the documents you may need. Eligibility and deadlines must be verified with the responsible official service.\n\nAre you finishing regular service, serving in the reserves, or already discharged?","נוכל לזהות זכויות שכדאי לבדוק ומסמכים שייתכן שתצטרך. יש לאמת זכאות ומועדים מול הגוף הרשמי האחראי.\n\nאתה מסיים שירות סדיר, משרת במילואים או כבר השתחררת?"],"money":["We can make a practical budget around income, essential expenses and your next plans, then identify the first change that would help.\n\nWhat is the main money issue you want to work on?","נוכל לבנות תקציב מעשי לפי ההכנסה, ההוצאות החיוניות והתוכניות הבאות שלך, ולזהות שינוי ראשון שיעזור.\n\nמה הנושא הכלכלי העיקרי שתרצה לעבוד עליו?"],"travel":["I can help fit a trip around your budget, work or studies and important dates.\n\nWhere would you like to go, and roughly when?","אוכל לעזור להתאים טיול לתקציב, לעבודה או ללימודים ולמועדים חשובים.\n\nלאן תרצה לנסוע ובערך מתי?"],"family":["We can work on a particular conversation, changing expectations, or reconnecting with people close to you.\n\nWhich relationship or family situation would you like help with?","נוכל לעבוד על שיחה מסוימת, שינוי בציפיות או חידוש הקשר עם אנשים קרובים.\n\nבאיזה קשר או מצב משפחתי תרצה עזרה?"],"support":["You can describe what is happening at your own pace. I can help you sort through it and consider a next step; human support is also available through the Support button.\n\nWhat is weighing on you most right now?","אפשר לתאר את מה שקורה בקצב שלך. אוכל לעזור לעשות סדר ולחשוב על צעד הבא; תמיכה אנושית זמינה גם דרך כפתור התמיכה.\n\nמה הכי מכביד עליך עכשיו?"]};
 function skillsTopicText(){
  const he=S.lang==="he", strengths=(S.profile.strengths||[]).filter(s=>SKILLS.some(row=>+row[0]===+s.id));
  const list=strengths.map(s=>{
@@ -2136,7 +2143,7 @@ function topicPracticeReply(userText){
  const labels=TRANSITION_TOPICS.find(t=>t[0]===id);
  return {reply:he
   ?"שמרתי את הפרטים שלך בנושא "+labels[2]+". שירות ה-AI אינו זמין כרגע, ולכן איני יכול להכין תשובה מותאמת לפרטים החדשים. אפשר לנסות שוב מאוחר יותר או להשתמש בכפתור ׳שאל AI׳.\n\n"+TOPIC_RESPONSES[id][1]
-  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask an AI.\n\n"+TOPIC_RESPONSES[id][0]};
+  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask AI.\n\n"+TOPIC_RESPONSES[id][0]};
 }
 
 const topicBreakpoint=window.matchMedia("(min-width:1100px)");
