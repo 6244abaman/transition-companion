@@ -106,3 +106,5 @@ soldier database is created. Existing external AI consent remains in place.
 Editors can export the public edition or prepare a draft in the section.
 Publishing requires authorized source changes to benefits-updates.json and
 the existing tested Render deployment. Draft downloads do not publish.
+
+The Hebrew and English welcome and chat screens show the deployed commit as a short version identifier. Opening online checks public app files for changes; offline use takes the saved copy.

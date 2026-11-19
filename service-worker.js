@@ -52,7 +52,7 @@ const APP_PATHS = new Set(APP_FILES.map(file => new URL(file, self.location.href
 // Install: save the app files.
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(APP_FILES)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(APP_FILES.map(file => new Request(new URL(file, self.location.href), {cache: "reload"})))).then(() => self.skipWaiting())
   );
 });
 
@@ -90,7 +90,7 @@ self.addEventListener("fetch", event => {
 
   // The app's own files: internet first, saved copy if offline.
   event.respondWith(
-    fetch(req)
+    fetch(req, {cache: "no-cache"})
       .then(res => {
         if (res.ok) {
           const copy = res.clone();   // copy now, before the page reads it

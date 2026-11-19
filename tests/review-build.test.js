@@ -13,7 +13,7 @@ test('review build preserves app assets, resolves links and excludes private/ser
   assert.equal(home.window.document.documentElement.lang, 'he');
   assert.equal(home.window.document.querySelector('meta[http-equiv="refresh"]').content, '0;url=./app/indexH.html');
   home.window.close();
-  for (const file of PUBLIC_FILES) assert.deepEqual(fs.readFileSync(path.join(output, 'app', file)), fs.readFileSync(path.join(root, file)), file);
+  for (const file of PUBLIC_FILES.filter(file => !['index.html','indexH.html','service-worker.js'].includes(file))) assert.deepEqual(fs.readFileSync(path.join(output, 'app', file)), fs.readFileSync(path.join(root, file)), file);
   for (const file of ['index.html','indexH.html','my-journey.html','skills-business.html']) {
     const dom = new JSDOM(fs.readFileSync(path.join(output, 'app', file), 'utf8'), {url:'https://review.example/app/'+file});
     try {
@@ -63,9 +63,23 @@ test('owner links, Render settings and AI target stay consistent with shared met
 test('fresh V2 address includes the full app outside the old worker scope', () => {
   const {output}=buildReview(root);
   for(const file of PUBLIC_FILES) assert.ok(fs.existsSync(path.join(output,'companion-v2',file)),file);
-  for(const file of ['index.html','indexH.html','ai-consent.js']) assert.deepEqual(fs.readFileSync(path.join(output,'companion-v2',file)),fs.readFileSync(path.join(root,file)));
+  for(const file of ['ai-consent.js']) assert.deepEqual(fs.readFileSync(path.join(output,'companion-v2',file)),fs.readFileSync(path.join(root,file)));
   const manifest=JSON.parse(fs.readFileSync(path.join(output,'companion-v2/manifest.json'),'utf8'));
   assert.equal(manifest.name,'Transition Companion V2');assert.equal(manifest.start_url,'./indexH.html');
   const worker=fs.readFileSync(path.join(output,'companion-v2/service-worker.js'),'utf8');
-  assert.ok(worker.includes('tc-companion-v2-v3'));assert.ok(worker.includes('k.startsWith("tc-companion-v2-")'));
+  assert.ok(worker.includes('tc-companion-v2-'));assert.ok(worker.includes('k.startsWith("tc-companion-v2-")'));
+});
+
+test('both hosted addresses label the installed build and revalidate online assets', () => {
+  const {output, info} = buildReview(root);
+  const version = info.commit?.slice(0, 8) || 'local';
+  for (const directory of ['app', 'companion-v2']) {
+    for (const file of ['index.html', 'indexH.html']) {
+      const html = fs.readFileSync(path.join(output, directory, file), 'utf8');
+      assert.ok(html.includes('data-build="' + version + '"'));
+    }
+    const worker = fs.readFileSync(path.join(output, directory, 'service-worker.js'), 'utf8');
+    assert.ok(worker.includes('fetch(req, {cache: "no-cache"})'));
+    assert.ok(worker.includes(directory === 'app' ? 'tc-review-app-' + version : 'tc-companion-v2-' + version));
+  }
 });
