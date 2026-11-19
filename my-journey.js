@@ -283,7 +283,7 @@
     const items = [
       [profile.goals.filter(x=>x.status==="active"||x.status==="exploring").length,T().activeGoals],
       [profile.actions.filter(x=>x.status!=="done").length,T().pendingActions],
-      [profile.skills.filter(x=>x.confirmed && x.evidence).length,T().confirmedSkills],
+      [profile.skills.filter(x=>x.confirmed && x.evidence).length+profile.lifeSkills.filter(x=>x.id!==63).length,T().confirmedSkills],
       [profile.cvs.length,T().savedCVs]
     ];
     const root=$("stats");root.replaceChildren();
@@ -309,7 +309,16 @@
   }
   function renderSkills() {
     const root=$("skillsList");root.replaceChildren();
-    if(!profile.skills.length)return empty(root,T().emptySkills);
+    if(!profile.skills.length&&!profile.lifeSkills.length)return empty(root,T().emptySkills);
+    if(profile.lifeSkills.length){
+      root.append(e("h3",null,lang==="he"?"מיומנויות חיים — מסגרת 63 המיומנויות":"Life skills — the 63-skill framework"));
+      profile.lifeSkills.forEach(x=>{
+        const card=e("div","record");card.append(e("h3",null,lang==="he"?(x.he||x.en):(x.en||x.he)),e("p",null,x.evidence));
+        if(x.level)card.append(e("p","muted mini",(lang==="he"?"רמת ניסיון לפי הדוגמה (1–4): ":"Experience level from the example (1–4): ")+x.level));
+        card.append(button(T().erase,()=>{if(confirm(T().deleteConfirm)){Store.removeLifeSkill(x.id);render();}},"small danger"));root.append(card);
+      });
+    }
+    if(profile.skills.length)root.append(e("h3",null,lang==="he"?"36 מיומנויות לקריירה ולעסקים — דירוג עצמי 1–7":"36 career and business skills — self-rating 1–7"));
     profile.skills.slice().sort((a,b)=>b.rating-a.rating).forEach(x=>{
       const card=e("div","record");
       const name = lang === "he" ? (x.he || x.en) : (x.en || x.he);
@@ -491,7 +500,10 @@
     tryAction(()=>{Store.upsert("actions",{...item,status});notify(T().saved);render()});
   }
   function makeDraft() {
-    const good=profile.skills.filter(x=>x.confirmed&&x.evidence).sort((a,b)=>b.rating-a.rating).slice(0,8);
+    const combined=profile.skills.filter(x=>x.confirmed&&x.evidence).sort((a,b)=>b.rating-a.rating)
+      .concat(profile.lifeSkills.filter(x=>x.confirmed&&x.evidence&&x.id!==63));
+    const seen=new Set();
+    const good=combined.filter(x=>{const key=x.evidence.toLowerCase();if(seen.has(key))return false;seen.add(key);return true;}).slice(0,12);
     if(!good.length){alert(T().noExample);view("skills");return;}
     const bullets=good.map(x=>{
       const name=lang==="he"?(x.he||x.en):(x.en||x.he);
@@ -595,6 +607,7 @@
     if(!confirm(T().deletionConfirm))return;
     tryAction(()=>{
       const all=$("deleteAll").checked;
+      if(window.MomentumJourneySync)window.MomentumJourneySync.lock();
       Store.erase({assessment:all,companion:all});
       // A partial erase should not silently seed old skills back into Journey.
 
@@ -627,5 +640,6 @@
     if(!["overview","skills","goals","cvs","education","actions","privacy"].includes(tab))tab="overview";
     updateLanguage();view(tab);
   }
+  document.addEventListener("journey-updated",render);
   wire();
 })();

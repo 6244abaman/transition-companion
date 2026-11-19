@@ -21,3 +21,9 @@ Deploy latest commit**, then wait for **Live**. Each app's repository contains
 
 The Transition Companion review build has not replaced the older GitHub Pages
 app. Reviewers should use the Render review link above for the current work.
+
+Fresh version: Transition Companion V2
+https://transition-companion-review.onrender.com/companion-v2/indexH.html
+English: https://transition-companion-review.onrender.com/companion-v2/index.html
+All frontend assets have new paths to bypass older cached copies. Saved browser data
+and consent stay on the same origin. Use this new link for testing.

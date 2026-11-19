@@ -27,6 +27,12 @@
      ============================================================ -->
 
 <script src="./journey-store.js"></script>
+<script src="./ai-consent.js"></script>
+<script src="./response-schema.js"></script>
+<script src="./skills-source.js"></script>
+<script src="./companion-safety.js"></script>
+<script src="./benefits-updates.js"></script>
+<link rel="stylesheet" href="./benefits-updates.css">
 <script id="config">
 const CONFIG = {
   // Your Render proxy. Change the path if your proxy uses a different route.
@@ -298,7 +304,9 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 .screen{min-height:0}
 @media(min-width:1100px){body{padding-inline-end:258px}.topic-panel{position:fixed;inset-inline-end:14px;top:112px;bottom:18px;width:230px;margin:0;overflow:auto}.topic-panel nav{grid-template-columns:1fr;max-height:none}.topic-panel summary{list-style:none;pointer-events:none}}
 
+#chatHistory{padding:8px 16px} #chatHistory summary{cursor:pointer;font-weight:600} #chatHistory>div{display:grid;gap:8px;max-height:52vh;overflow:auto;padding:8px 0} #chatHistory button{white-space:normal;text-align:start} #chatHistory input{display:block;max-width:100%}
 </style>
+<link rel="stylesheet" href="./onboarding.css">
 </head>
 <body>
 
@@ -306,24 +314,25 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
   <div class="mark" id="mark">Transition Assistant<span id="markSub">a conversation, not a form</span></div>
   <button class="chip" id="btnLang" title="Language">עברית</button>
   <button class="chip" id="btnVoice" title="Read replies aloud">🔊</button>
-  <button class="chip" id="btnAI">Ask an AI</button>
+  <button class="chip" id="btnAI">Ask AI</button>
   <button class="chip" id="btnVoiceSettings">Voice settings</button>
   <button class="chip badge" id="btnProfile" data-count="0">Profile</button>
   <button class="chip" id="btnHelp">Support</button>
 </header>
+<details id="chatHistory"><summary>Previous conversations</summary><div></div></details>
 
 <!-- ============ WELCOME ============ -->
 <main class="screen" id="welcome">
   <div class="pad">
-    <section class="mentor-portrait" aria-label="Your Transition Assistant">
-      <div class="mentor-face" aria-hidden="true"><img src="./companion-mentor.jpeg" alt="" width="1215" height="1295" fetchpriority="high" decoding="async"></div>
-      <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
-    </section>
-    <div class="welcome-hero">
+<div id="intro">    <div class="welcome-hero">
     <span class="eyebrow" id="wEyebrow"></span>
     <h1 class="hello" id="wTitle"></h1>
     <p class="lede" id="wLede"></p>
     </div>
+<button class="go" id="btnStart"></button><details><summary><span data-en="Help, options and privacy" data-he="עזרה, אפשרויות ופרטיות">Help, options and privacy</span></summary>    <section class="mentor-portrait" aria-label="Your Transition Assistant">
+      <div class="mentor-face" aria-hidden="true"><img src="./companion-mentor.jpeg" alt="" width="1215" height="1295" fetchpriority="high" decoding="async"></div>
+      <div class="mentor-copy"><h2 id="mentorTitle"></h2><p id="mentorText"></p></div>
+    </section>
     <div class="welcome-cards">
     <div class="note"><h3 id="w1t"></h3><p id="w1p"></p></div>
     <div class="note"><h3 id="w2t"></h3><p id="w2p"></p></div>
@@ -336,10 +345,11 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       <button class="choice" data-mode="both"><b id="m3"></b><small id="m3s"></small></button>
     </div>
 
+    <p><button class="linkish" id="openBenefitsUpdates" type="button">Updated Information and Benefits</button></p>
     <div class="quick-start">
       <button id="quickOkay"></button><button id="quickUnsure"></button><button id="quickAsk"></button>
     </div>
-    <div class="start-callout" id="startCallout"></div><button class="go" id="btnStart"></button>
+    <div class="start-callout" id="startCallout"></div>
     <p class="tiny" id="wTiny"></p>
     <p style="text-align:center"><button class="linkish" id="btnDiag"></button></p>
     <div class="note" id="diagOut" style="display:none;font-size:13.5px"></div>
@@ -352,13 +362,112 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       </div>
       <p style="font-size:.81rem;margin:11px 0 0;opacity:.9">Saved locally in this browser. Sharing profile details with AI is off by default.</p>
     </section>
+</details></div><section id="setup" hidden>
+<progress id="setupProgress" max="2" value="1" aria-labelledby="stepCount">
+</progress>
+<p id="stepCount">
+</p>
+<div id="background">
+<h2 tabindex="-1">
+<span data-en="A little about you" data-he="קצת עליך">A little about you</span>
+</h2>
+<p><span data-en="A few optional details can help us understand your service experience. You can skip any question." data-he="כמה פרטים לבחירתך יעזרו לנו להבין את הניסיון שלך מהשירות. אפשר לדלג על כל שאלה.">A few optional details can help us understand your service experience. You can skip any question.</span></p>
+<label>
+<span data-en="How can we contact you? (Phone or email)" data-he="איך אפשר ליצור איתך קשר? (טלפון או אימייל)">How can we contact you? (Phone or email)</span>
+<input id="bg-contact" type="text" maxlength="254" autocomplete="off" aria-describedby="contactNote">
+</label>
+<p id="contactNote"><span data-en="Optional. Saved in this browser only; entering it does not send a contact request." data-he="לא חובה. נשמר רק בדפדפן הזה; מילוי הפרטים אינו שולח בקשה ליצירת קשר.">Optional. Saved in this browser only; entering it does not send a contact request.</span></p>
+<label>
+<span data-en="Where did you serve?" data-he="איפה שירתת?">Where did you serve?</span>
+<input id="bg-service" maxlength="100" aria-describedby="serviceNote">
+</label>
+<p id="serviceNote"><span data-en="Unit or branch, in general terms. Please leave out classified or operational details." data-he="יחידה או חיל, באופן כללי. אין לכלול פרטים מסווגים או מבצעיים.">Unit or branch, in general terms. Please leave out classified or operational details.</span></p>
+<label>
+<span data-en="Which role best describes your service?" data-he="איזו אפשרות מתארת את תפקידך בשירות?">Which role best describes your service?</span>
+<select id="bg-role">
+<option value="" data-en="Choose" data-he="בחרו">Choose</option>
+<option value="soldier" data-en="Soldier without a command role" data-he="חייל/ת ללא תפקיד פיקודי">Soldier without a command role</option>
+<option value="commander" data-en="Commander (non-officer)" data-he="מפקד/ת שאינו/ה קצין/ה">Commander (non-officer)</option>
+<option value="officer" data-en="Officer" data-he="קצין/ה">Officer</option>
+<option value="other" data-en="Other or unsure" data-he="אחר או לא בטוח/ה">Other or unsure</option>
+</select>
+</label>
+<label>
+<input type="checkbox" id="bg-reserve"> <span data-en="Reserve service" data-he="שירות מילואים">Reserve service</span>
+</label>
+<label id="reserveRoleField" hidden>
+<span data-en="Which role describes your reserve service?" data-he="איזו אפשרות מתארת את תפקידך בשירות המילואים?">Which role describes your reserve service?</span>
+<select id="bg-reserve-role" disabled>
+<option value="" data-en="Choose" data-he="בחרו">Choose</option>
+<option value="soldier" data-en="Soldier without a command role" data-he="חייל/ת ללא תפקיד פיקודי">Soldier without a command role</option>
+<option value="commander" data-en="Commander (non-officer)" data-he="מפקד/ת שאינו/ה קצין/ה">Commander (non-officer)</option>
+<option value="officer" data-en="Officer" data-he="קצין/ה">Officer</option>
+<option value="other" data-en="Other or unsure" data-he="אחר או לא בטוח/ה">Other or unsure</option>
+</select>
+</label>
+<button type="button" id="nextSetup">
+<span data-en="Continue" data-he="המשך">Continue</span>
+</button>
+<button type="button" id="skipBackground">
+<span data-en="Skip" data-he="דילוג">Skip</span>
+</button>
+</div>
+<div id="interests" hidden>
+<h2 tabindex="-1">
+<span data-en="What’s on your mind?" data-he="מה מעסיק אותך עכשיו?">What’s on your mind?</span>
+</h2>
+<p>
+<span data-en="Choose as many as you like." data-he="בחרו כמה נושאים.">Choose as many as you like.</span>
+</p>
+<div class="interestGrid">
+<label>
+<input type="checkbox" value="career"> <span data-en="Work" data-he="עבודה">Work</span>
+</label>
+<label>
+<input type="checkbox" value="study"> <span data-en="Studies" data-he="לימודים">Studies</span>
+</label>
+<label>
+<input type="checkbox" value="rights"> <span data-en="Money and rights" data-he="כסף וזכויות">Money and rights</span>
+</label>
+<label>
+<input type="checkbox" value="travel"> <span data-en="Travel" data-he="טיולים">Travel</span>
+</label>
+<label>
+<input type="checkbox" value="housing"> <span data-en="Housing" data-he="דיור">Housing</span>
+</label>
+<label>
+<input type="checkbox" value="family"> <span data-en="Relationships" data-he="מערכות יחסים">Relationships</span>
+</label>
+<label>
+<input type="checkbox" value="support"> <span data-en="Mental wellbeing" data-he="רווחה נפשית">Mental wellbeing</span>
+</label>
+<label>
+<input type="checkbox" value="unsure"> <span data-en="I’m not sure yet" data-he="עדיין לא ברור לי">I’m not sure yet</span>
+</label>
+</div>
+<button type="button" id="finishSetup">
+<span data-en="Start chatting" data-he="נתחיל לדבר">Start chatting</span>
+</button>
+<button type="button" id="ownQuestion">
+<span data-en="Ask my own question" data-he="יש לי שאלה משלי">Ask my own question</span>
+</button>
+<button type="button" id="backSetup">
+<span data-en="Back" data-he="חזרה">Back</span>
+</button>
+</div></section>
   </div>
 </main>
 
 <!-- ============ CONVERSATION ============ -->
 <main class="screen" id="chat" hidden>
   <div class="pad">
-    <div class="chat-heading"><h2 id="chatTitle"></h2><p id="chatSubtitle"></p></div>
+    <details class="guidance chat-guidance"><summary id="chatGuideSummary" data-en="How to use the Companion" data-he="איך להשתמש במלווה">איך להשתמש במלווה</summary><section aria-labelledby="chatGuideTitle">
+      <h2 class="guide-title" id="chatGuideTitle"></h2>
+      <div class="guide-topics"><span class="guide-cv"></span><span class="guide-job"></span><span class="guide-study"></span></div>
+      <p class="guide-direct"></p><p class="guide-emphasis"></p><p class="guide-example"></p>
+    </section></details>
+    <div class="chat-heading"><h2 id="chatTitle"></h2><p id="chatSubtitle"></p><p id="chatNavigationHint"></p></div>
+    <section id="benefitsUpdates" hidden aria-label="Updated Information and Benefits"></section>
     <div id="thread"></div>
   </div>
 </main>
@@ -370,7 +479,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 </details>
 
 <div class="composer" id="composer" hidden>
-  <div class="cwrap">
+  <label for="input" class="messageLabel"><span data-en="Your message" data-he="ההודעה שלך">Your message</span></label><div class="cwrap">
     <button class="icon mic" id="btnMic" title="Speak">🎙</button>
     <textarea id="input" rows="1" placeholder=""></textarea>
     <button class="icon send" id="btnSend" title="Send">↑</button>
@@ -392,11 +501,11 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 const T = {
 en:{
   wEyebrow:"MOMENTUM · YOUR NEXT CHAPTER",
-  chatTitle:"A little clearer, one conversation at a time",
-  chatSubtitle:"Start wherever you are. We can take the next step together.",
-  guideTitle:"Ask for help. Help me get to know you.",
+  chatTitle:"A little more clarity, one conversation at a time",
+  chatSubtitle:"We can start from where you are. Let’s think together about the next step.",
+  guideTitle:"Ask for help. Let me get to know you.",
   guideCV:"CVs", guideJob:"Job applications", guideStudy:"Work & study",
-  guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask an AI’ button also opens other AI services.",
+  guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask AI’ button also opens other AI services.",
   guideEmphasis:"For assistance that fits you, let the companion learn about your experience, goals, strengths, and what matters to you. You do not need to tell everything at once. Share only what you feel comfortable sharing.",
   guideExample:"For example: ‘I was a team leader, I enjoy working with people, and I want help applying for my first job.’ Your real examples help turn general advice into something you can use. Avoid classified, operational, or identifying military details.",
   dir:"ltr", other:"עברית", mark:"Transition Assistant", markSub:"a conversation, not a form",
@@ -444,7 +553,7 @@ he:{
   wEyebrow:"מומנטום · הפרק הבא שלך",
   chatTitle:"קצת יותר בהירות, שיחה אחת בכל פעם",
   chatSubtitle:"אפשר להתחיל מהמקום שבו אתה נמצא. נחשוב יחד על הצעד הבא.",
-  guideTitle:"אפשר לבקש עזרה. כדאי גם לתת לי להכיר אותך.",
+  guideTitle:"אפשר לבקש עזרה. תנו לי להכיר אתכם.",
   guideCV:"קורות חיים", guideJob:"מועמדות לעבודה", guideStudy:"עבודה ולימודים",
   guideDirect:"אפשר לשאול את העוזר ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
   guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר לעוזר ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
@@ -536,8 +645,13 @@ const SKILLS = [
  [56,"c","Determination over time","נחישות לאורך זמן"],[57,"c","Care and giving","אכפתיות ונתינה"],
  [58,"s","Clear direct communication","תקשורת ישירה וברורה"],[59,"s","Creativity with what you have","יצירתיות עם מה שיש"],
  [60,"s","Appreciating small things","הערכת הדברים הקטנים"],[61,"s","Holding back judgment","הימנעות משיפוטיות"],
- [62,"s","Persisting past motivation","התמדה גם בלי מוטיבציה"],[63,"s","Holding a standard","עמידה בסטנדרט"]
+ [62,"s","Persisting past motivation","התמדה גם בלי מוטיבציה"],[63,"s","Professionalism (source duplicate of #55)","מקצועיות (כפילות במקור של 55)"]
 ];
+// Preserve the canonical English source names; Hebrew labels remain an interface translation.
+if(window.MomentumSkillSource) SKILLS.forEach(s=>{
+  const original=window.MomentumSkillSource.skills.find(x=>x.id===s[0]);
+  if(original)s[2]=original.original+(s[0]===63?" (source duplicate of #55)":"");
+});
 const skillById = id => SKILLS.find(s => s[0] === +id);
 const skillName = (id,lang) => { const s = skillById(id); return s ? (lang==="he"?s[3]:s[2]) : ""; };
 
@@ -733,15 +847,66 @@ function matchFamilies(text){
   return hits.slice(0,2).map(h => REF_FAMS.find(f => f.n === h.n)).filter(Boolean);
 }
 
+/* Keep the saved transcript, but start each topic's AI context at its boundary.
+   Old unanswered questions must not become the new topic's instructions. */
+// Classify legacy messages without rewriting saved chats. Hide repeated topic
+// introductions only; preserve all user messages and substantive replies.
+function conversationEntries(){
+  let topic = null;
+  const introductions = new Set();
+  return S.messages.flatMap((message,index) => {
+    if (Object.prototype.hasOwnProperty.call(message, "topic")) topic = message.topic;
+    if (message.kind === "topic" && message.role === "assistant") {
+      const key = topic + "\n" + message.text;
+      if (introductions.has(key)) return [];
+      introductions.add(key);
+    }
+    return [{message,index,topic}];
+  });
+}
+function currentTopicMessages(){
+  return conversationEntries().filter(entry => !S.activeTopic || entry.topic === S.activeTopic)
+    .map(entry => entry.message);
+}
+function requestedTopic(text){
+  // Match requests at the beginning, not incidental words in a follow-up
+  // (for example, "I have money saved for travel" is not a topic switch).
+  let request=String(text||"").trim().toLowerCase();
+  const prefix=/^(?:(?:and then|and|now|next|instead|actually|please|let['’]s|can (?:you|we)|could (?:you|we)|i(?:['’]d| would) like|i want|i need|help me|help with|help (?:writing|planning)|help|with|about|for|what about|how about|switch to|move on to|go back to|talk about|to|my|a|the|ועכשיו|עכשיו|במקום|בעצם|בבקשה|אני רוצה|אני צריך|אני צריכה|אפשר|בוא נדבר על|בואי נדבר על|לדבר על|תעזור לי|תעזרי לי|עזור לי|עזרי לי|עזרה בנושא|עזרה עם|עזרה ב|ומה עם|מה עם|לגבי|בנושא|עם|על)(?:\s+|[,;:]\s*))/i;
+  for(let i=0;i<8;i++){const rest=request.replace(prefix,"");if(rest===request)break;request=rest.trim();}
+  const intents=[
+    ["updates",/^(?:updated information|latest (?:benefits|offers|information)|shows|discounts|career fairs|מידע והטבות מעודכנים|הטבות מעודכנות|הופעות|הנחות|ירידי תעסוקה)/i],
+    ["cv",/^(?:(?:(?:write|writing|draft|prepare|improve|update)\s+(?:(?:a|my|the)\s+)?)?(?:cv|r[eé]sum[eé])\b|(?:(?:לכתוב|להכין|לשפר|לעדכן|כתיבת)\s+(?:את\s+)?)?(?:קורות חיים|קו["״']?ח)(?:\s|[.!?]|$))/i],
+    ["applications",/^(?:(?:job applications?|cover letter|apply for (?:a |the )?job)\b|(?:מועמדות|מכתב פנייה|להגיש מועמדות)(?:\s|[.!?]|$))/i],
+    ["travel",/^(?:(?:travel|trips?|vacation|holidays?|backpacking|go abroad|go travel(?:ling|ing)?|(?:plan|planning|organise|book) (?:a |my |the )?(?:trip|travel|vacation))\b|(?:טיול|לטייל|נסיעות|נסיעה|לתכנן טיול|לתכנן נסיעה|תכנון טיול)(?:\s|[.!?]|$))/i],
+    ["money",/^(?:(?:money|finances?|budget(?:ing)?|save money|manage (?:my )?money)\b|(?:כסף|תקציב|כלכלה|לחסוך|לתכנן תקציב)(?:\s|[.!?]|$))/i],
+    ["study",/^(?:(?:study|studies|education|university|college|courses?)\b|(?:לימודים|ללמוד|אוניברסיטה|מכללה|קורס)(?:\s|[.!?]|$))/i],
+    ["career",/^(?:(?:career|jobs?|work options|find (?:a )?job)\b|(?:עבודה|קריירה|למצוא עבודה)(?:\s|[.!?]|$))/i],
+    ["rights",/^(?:(?:rights|benefits)\b|(?:זכויות|הטבות)(?:\s|[.!?]|$))/i],
+    ["skills",/^(?:(?:(?:my|identify my) )?skills\b|(?:כישורים|הכישורים שלי|מיומנויות)(?:\s|[.!?]|$))/i],
+    ["family",/^(?:(?:family|relationships?)\b|(?:משפחה|מערכות יחסים)(?:\s|[.!?]|$))/i],
+    ["support",/^(?:emotional support\b|תמיכה רגשית(?:\s|[.!?]|$))/i]
+  ];
+  const match=intents.find(([,pattern])=>pattern.test(request));
+  return match?match[0]:null;
+}
+function activateTopic(id){
+  S.activeTopic=id;S.phase="open";
+  paintTopicPanel();
+}
+
 function refContext(){
   const users = S.messages.filter(m => m.role === "user").map(m => norm(m.text));
-  const recent = users.slice(-4);
+  const recent = currentTopicMessages().filter(m=>m.role==="user").map(m=>norm(m.text)).slice(-4);
   const any = re => recent.some(t => re.test(t));
   const all = users.slice(-40).join("\n");
   return {
     fams: matchFamilies(all),
     commander: RX_COMMANDER.test(all),
-    cv: any(RX.cv), interview: any(RX.interview), job: any(RX.job), edu: any(RX.edu)
+    cv: S.activeTopic ? S.activeTopic==="cv" : any(RX.cv),
+    interview: (!S.activeTopic || ["cv","applications","career"].includes(S.activeTopic)) && any(RX.interview),
+    job: S.activeTopic ? ["career","applications"].includes(S.activeTopic) : any(RX.job),
+    edu: S.activeTopic ? S.activeTopic==="study" : any(RX.edu)
   };
 }
 
@@ -775,7 +940,7 @@ function buildReference(){
   const out = { text:"", doc:false, labels:[] };
   const c = refContext();
   const wantsDoc = c.cv || c.interview || c.job || c.edu;
-  const phaseOK = /^(discovery|direction|open)$/.test(S.phase);
+  const phaseOK = (!S.activeTopic || S.activeTopic==="skills") && /^(discovery|direction|open)$/.test(S.phase);
   const blocks = [];
   const add = (label, text) => blocks.push({ label, text });
   const nm = id => "#"+id+" "+skillName(id,"en")+" (Momentum: "+REF_SKILLS[id][0]+")";
@@ -797,7 +962,7 @@ function buildReference(){
 
   if (c.commander && (wantsDoc || phaseOK)) add("commander/instructor overlay", COMMANDER_OVERLAY);
 
-  const last = [...S.messages].reverse().find(m => m.role === "assistant");
+  const last = [...currentTopicMessages()].reverse().find(m => m.role === "assistant");
   const ids = (last && last.surfaced ? last.surfaced : []).map(x => +x.id).filter(id => REF_SKILLS[id]).slice(0,3);
   if (ids.length)
     add("evidence questions: "+ids.join(", "), "EVIDENCE QUESTIONS FOR THE SKILLS BEING TESTED (pick one, in your own words, one at a time):\n" +
@@ -838,6 +1003,7 @@ function copyText(text, btn){
    3. STATE
    ========================================================================== */
 const KEY = "gtc_v2_state";
+let lastChatWrite;
 let S = load() || {
   lang: "he", mode: "type", started: false,
   phase: "opening",           // opening → foundation → discovery → direction → open
@@ -845,8 +1011,21 @@ let S = load() || {
   profile: { strengths: [], costs: [], open: [], directions: [] },
   practice: false, practiceStep: 0, ack: false, shift: false
 };
-function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ lastChatWrite = localStorage.getItem(KEY); return JSON.parse(lastChatWrite); }catch(e){ return null; } }
+function writeChatState(state){
+  try {
+    if (localStorage.getItem(KEY) !== lastChatWrite) throw Error();
+    const raw = JSON.stringify(state);
+    localStorage.setItem(KEY, raw);
+    lastChatWrite = raw;
+    return true;
+  } catch {
+    alert(S.lang === "he" ? "השמירה נכשלה. ייתכן שהאחסון מלא או שהשיחה השתנתה בחלון אחר. ניתן להוריד גיבוי לפני טעינה מחדש." : "Could not save. Storage may be full or another tab changed this chat. Download a backup before reloading.");
+    return false;
+  }
+}
+function save(){ return writeChatState(S); }
+S.speak = false; // Listen never enables automatic reading of future replies.
 const L = () => T[S.lang];
 
 /* Bridge between Momentum 36-skill self-assessment and this ongoing private profile.
@@ -937,6 +1116,8 @@ const el = (tag, cls, txt) => { const n=document.createElement(tag); if(cls)n.cl
 function paintStatic(){
   if(typeof paintTopicPanel === "function") paintTopicPanel();
   const t = L();
+  $("chatGuideSummary").textContent = S.lang === "he" ? "איך להשתמש במלווה" : "How to use the Companion";
+  $("chatNavigationHint").textContent = S.lang === "he" ? "בחרו נושא בצד או לחצו על ׳שאל AI׳ בסרגל העליון." : "Choose a topic on the side or Ask AI directly on the top bar.";
   document.documentElement.lang = S.lang;
   document.documentElement.dir = t.dir;
   $("mark").firstChild.nodeValue = t.mark;
@@ -944,8 +1125,9 @@ function paintStatic(){
   $("btnLang").textContent = t.other;
   $("btnProfile").textContent = t.profile;
   $("btnHelp").textContent = t.support;
-  $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask an AI";
+  $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask AI";
   $("btnVoiceSettings").textContent = S.lang === "he" ? "הגדרות קול" : "Voice settings";
+  $("btnVoice").textContent = S.lang === "he" ? "🔊 האזן" : "🔊 Listen";
   $("btnVoice").title = S.lang === "he" ? "הקראה / עצירה" : "Read aloud / stop";
   $("btnVoice").setAttribute("aria-label", $("btnVoice").title);
   $("btnMic").setAttribute("aria-label", S.lang === "he" ? "דבר" : "Speak");
@@ -965,6 +1147,7 @@ function paintStatic(){
   $("wTiny").textContent = t.tiny;
   $("btnDiag").textContent = t.diag;
   $("input").placeholder = (S.mode==="type") ? t.ph : t.phVoice;
+  window.paintOnboarding?.();
   $("btnProfile").dataset.count = S.profile.strengths.length;
 }
 
@@ -973,27 +1156,19 @@ $("btnLang").onclick = () => {
   stopSpeaking();
   S.voiceURI = null;
   save(); paintStatic(); renderThread(); if($("drawer").classList.contains("on")) closeDrawer();
-  if (S.speak) {
-    const last = [...S.messages].reverse().find(m => m.role === "assistant");
-    const welcome = S.lang === "he"
-      ? "ברוכים הבאים. תודה על השירות. לחצו על הכפתור הגדול כדי להתחיל."
-      : "Welcome. Thank you for your service. Press the large button to begin.";
-    setTimeout(() => speak(last ? messageText(last) : welcome), 250);
-  }
 };
 
 document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
   document.querySelectorAll(".choice").forEach(x=>x.classList.remove("on"));
   b.classList.add("on"); S.mode = b.dataset.mode;
-  if (S.mode !== "type") { S.speak = true; $("btnVoice").classList.add("on"); }
+  // Input mode does not enable read-aloud.
   paintStatic(); save();
 });
 
 $("btnVoice").onclick = () => {
-  S.speak = !S.speak; $("btnVoice").classList.toggle("on", !!S.speak); save();
-  if (!S.speak) { stopSpeaking(); return; }
+  if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); return; }
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
-  speak(last ? messageText(last) : (S.lang === "he" ? "הקול פועל. אפשר לדבר או להקליד." : "Voice is on. You can speak or type."));
+  speak(last ? messageText(last) : (S.lang === "he" ? "ברוכים הבאים. אני כאן בשביל השלב הבא." : "Welcome. I’m here for what comes next."));
 };
 $("btnVoiceSettings").onclick = openVoiceSettings;
 $("btnAI").onclick = openExternalAI;
@@ -1028,13 +1203,11 @@ $("btnDiag").onclick = async () => {
   out.textContent = t.diagRun;
   let res;
   try {
-    res = await fetch(CONFIG.API_URL, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ model: CONFIG.MODEL, max_tokens: 16,
-        messages:[{role:"user", content:"Reply with the single word: ok"}] })
-    });
+    if(!window.MomentumAIConsent)throw new Error('AI consent controls unavailable');
+    res = await window.MomentumAIConsent.request({model:CONFIG.MODEL,max_tokens:16,
+      messages:[{role:"user",content:"Reply with the single word: ok"}]},CONFIG.API_URL,S.lang,{interactive:true});
   } catch (e) {
+    if(e.canceled){out.textContent=S.lang==="he"?"לא נשלחה בקשה: נדרשת הסכמה ל-AI חיצוני.":"No request sent: external AI consent is required.";return;}
     out.textContent = t.diagCORS + "\n\n(" + e.message + ")\n\n" + t.diagNote;
     return;
   }
@@ -1069,7 +1242,12 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  S.messages.forEach((m,i) => { const opening = openingText(S.lang), text = messageText(m).trim(); const welcome = m.role==="assistant" && (m.kind==="opening" || text.startsWith(opening.slice(0,32))); if(!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i)); });
+  conversationEntries().forEach(({message:m,index:i,topic}) => {
+    if (S.activeTopic && topic !== S.activeTopic) return;
+    const opening = openingText(S.lang), text = messageText(m).trim();
+    const welcome = m.role === "assistant" && (m.kind === "opening" || text.startsWith(opening.slice(0,32)));
+    if (!(S.activeTopic && welcome)) box.appendChild(turnNode(m,i));
+  });
   scrollDown();
 }
 function turnNode(m, idx){
@@ -1156,15 +1334,24 @@ function turnNode(m, idx){
   return wrap;
 }
 function scrollDown(){
-  const s=$("chat"), last=$("thread").lastElementChild;
-  if (last) s.scrollTop = Math.max(0, last.offsetTop + last.offsetHeight - s.clientHeight + 24);
+  // Wait for the first reply, composer and topic panel to finish laying out.
+  const reveal = () => {
+    const screen = $("chat"), last = $("thread").lastElementChild;
+    if (!last || screen.hidden) return;
+    const bounds = screen.getBoundingClientRect(), reply = last.getBoundingClientRect();
+    // Show the beginning of a long reply, rather than skipping to its last line.
+    screen.scrollTop = Math.max(0, screen.scrollTop + reply.top - bounds.top - 12);
+  };
+  if (window.requestAnimationFrame) requestAnimationFrame(reveal);
+  else setTimeout(reveal, 0);
 }
 
 function pushMsg(role, text, extra){
-  const m = Object.assign({role, text}, extra||{});
-  S.messages.push(m); save();
-  $("thread").appendChild(turnNode(m)); scrollDown();
-  if (role === "assistant" && S.speak) speak(text);
+  const m = Object.assign({role, text, topic:S.activeTopic || null}, extra||{});
+  S.messages.push(m); S.updatedAt = new Date().toISOString(); save();
+  if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
+  else { $("thread").appendChild(turnNode(m)); scrollDown(); }
+  document.dispatchEvent(new Event("companion:chat-updated"));
   return m;
 }
 function showThinking(){
@@ -1186,7 +1373,7 @@ function systemPrompt(ref){
   // Unlike the conversation text sent for the current question, saved profile
   // details are included only when the soldier explicitly enables sharing.
   const journey = window.MomentumJourney ? window.MomentumJourney.read() : null;
-  const recentRequest=(String(S.activeTopic||"")+" "+S.messages.filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
+  const recentRequest=(String(S.activeTopic||"")+" "+currentTopicMessages().filter(m=>m.role==="user").slice(-3).map(m=>m.text).join(" ")).toLowerCase();
   const profileRelevant=/(?:\bcv\b|\br[eé]sum[eé]\b|work|job|career|study|school|college|university|course|training|educat|business|employ|interview|goal|plan|next step|action|skill|profile|journey|עבודה|משרה|מקצוע|קריירה|לימוד|לימודים|קורס|הכשרה|אוניברסיט|עסק|ראיון|מטרה|תכנית|תוכנית|צעד|פעולה|כישור|מיומנ|פרופיל|מסע|קורות חיים)/i.test(recentRequest);
   const profileAllowed = !!(journey && journey.privacy.shareWithAI && profileRelevant);
   const state =
@@ -1209,24 +1396,13 @@ ${businessContext || "Not shared. Do not assume any 36-skill assessment results.
 When the soldier asks for CVs, job applications, interview stories or career plans, reuse these examples rather than repeating questions. Never turn self-ratings into verified qualifications, invent results or imply a level of proficiency not supported by evidence.
 
 SELECTED TOPIC: ${S.activeTopic || "general conversation"}
+The latest user request takes priority over earlier topics and unanswered questions. Follow a new request immediately; do not continue the previous topic's questionnaire. Treat earlier facts only as optional background relevant to the current request. For travel, focus on the trip (destination, dates, itinerary); ask about costs only when needed for that trip. For CVs, focus on the target job and evidence for a draft; do not continue money or travel intake.
 When a topic is selected, answer that topic directly. Do not repeat the welcome, thank-you paragraph, emotional transition preamble, or restart general intake. Use facts already shared; ask only for missing relevant details. For skills, list confirmed skills with evidence, elicit service type, actual role and rank if missing, then suggest potential skills from service experience and test them with examples. Never treat unit or rank as proof. Lists are appropriate for skills and practical output. Act as a practical assistant, not a therapist.
 
 HOW YOU TALK
-- Sound like someone in their corner, not someone above them. Use the feel of an older brother who cares enough to listen, be straight with them, and help without taking over. Offer choices and recommendations as help, not orders.
-- Give a real answer, not a quick prompt. Write two short paragraphs, roughly 70 to 120 words in total. First paragraph: 2 to 4 sentences of substance that ADD something the person did not say — why this matters, what is common at this stage, what trade-off or pattern is in play, or the reasoning behind where you are heading. Second paragraph: ONE question that follows from it. Never a list of questions. Use bullet points when listing skills or producing practical output.
-- Never open by restating, summarising or quoting what they just said. Do not use "I hear", "I heard", "what I'm hearing", "it sounds like", "so you're saying", "you mentioned", or their own phrases echoed back. Start with the substance: your read, the explanation, or the answer. They know what they said.
-- Don't hand out empty praise ("amazing", "incredible", "you're a natural") that isn't backed by something they actually showed you — it isn't worth anything to them if it isn't earned. But once it IS earned by their own evidence, say so warmly and specifically, don't just note it clinically.
-- Never assume. Role, unit, or rank is a HYPOTHESIS, never a conclusion. Two people in the same role built different things.
-- Do not offer a menu of services or modules. What is needed emerges from what they say.
-- If they are vague about an event or a fact, ask for one concrete moment: what happened, what did you actually do, what did it cost.
-- If they are vague about a feeling — "I don't know", "what do you think", "it's hard to explain" — you may venture ONE plain-spoken guess at what's underneath, built from what they've actually told you so far, not a generic guess. State it clearly as a guess, not a fact ("maybe it's more X than Y" — never "you feel X"), and ask if that's close. If they correct it, drop your guess immediately and go with theirs — do not defend it or re-argue it.
-
-RESPOND TO WHAT THEY SAID BY BUILDING ON IT, NOT REPEATING IT
-Every reply must engage the specific content of their last message — but by adding to it, never by echoing it. If they said "excited but uncertain", "I just want to be free", or "strange", do not hand those words back. Explain what is usually going on underneath that state, and connect it to the specifics they gave. Never ask a generic next question that would make sense regardless of what they just told you; that is the single worst failure mode of this app.
-When they express uncertainty, restlessness, wanting freedom, numbness, or not knowing what to do, treat that as the subject, not as an obstacle to getting through your questions. Explain plainly what is common for people leaving service — the sudden absence of structure, the gap between relief and emptiness, friends scattering, money pressure, family not understanding — say why it happens, and connect it to what THEY specifically said. Keep it a short, grounded explanation, not a lecture, then one question that follows from it.
-
-PHASES (move when the person is ready, not on a timer)
-1 opening — establish, early and explicitly: where they served, their ACTUAL ROLE and rank (combat, commander, officer, support, technical), how long, and where they are now. Then how it is actually sitting with them and what is on their mind. Get role early — you need it as a hypothesis — but never treat it as the conclusion about what they built.
+Speak naturally and answer the latest request first. Accept “I’m okay” at face value. Never speculate about hidden feelings or push for disclosure. Ask at most one useful question. Respect skipped background questions. Offer to connect someone seeking mental health support with a qualified professional using the Support control. Use the existing urgent support path for immediate danger. Never diagnose.
+PHASES (optional, follow the person's lead)
+1 opening — ask for background only if invited and useful for the immediate request.
 2 foundation — the transition foundation conversation: what their service actually required of them; what it took from them; what it required them to become; how it changed what they can do, what they trust themselves with, what responsibility means to them, and how they see the world. Hold both sides: service is sacrifice AND it built things. Do not resolve that tension prematurely.
 3 discovery — surface possible strengths from what they described, then TEST each one by asking for a concrete example. A strength enters the profile only with the person's own evidence.
 4 direction — what they are weighing next: work, study, money, relationships, rest, meaning.
@@ -1246,7 +1422,13 @@ LEVELS — when you confirm a strength, also set its level from THEIR example: 1
 REFERENCE — a REFERENCE section may appear near the end of these instructions. Use it to ask sharper evidence questions and to write CV, interview, work and study material.
 
 BEHAVIOUR THAT NEVER STOPS, in every phase including long after orientation:
-Understand before answering. Analyse, don't just reflect back. When they raise a choice, generate at least two real alternatives they did not mention, state the trade-offs honestly including cost and time, and give a recommendation when you have enough to justify one — say what would change your mind. Be honest even when it's not what they want to hear — don't just agree to be agreeable — but say it gently, the way someone who's on their side would, not as a correction. Follow up on things they said they would do.
+Offer practical options when they help the person decide. Invite follow-up when welcome.
+
+CONTENT LIMITS
+Do not provide pornographic content or help bypass a content filter. Religious guidance is limited to Judaism; acknowledge other backgrounds respectfully without religious instruction. Continue practical, non-religious assistance for everyone. Never request operational, classified or identifying information about other soldiers.
+
+RIGHTS AND BENEFITS
+Never invent amounts, deadlines or eligibility. Direct the person to the dated official-source cards and application preparation in My Journey. Explain that eligibility requires confirmation by the responsible authority.
 
 BOUNDARIES
 You are not a clinician. If there is real distress — hopelessness, not sleeping, not functioning, thoughts of hurting themselves — set concern:true, say plainly that talking to a person would help, and keep talking with them. Never replace a professional, never diagnose.
@@ -1262,14 +1444,24 @@ ${state}`;
 /* ==========================================================================
    7. TALKING TO THE MODEL
    ========================================================================== */
-async function askModel(){
-  const hist = S.messages
+async function askModel(userMessageId){
+  const current = currentTopicMessages();
+  // Include recent conversation context under the active external AI consent.
+  const background = S.messages
+    .filter(m=>m.role==="user" && !current.includes(m)).map(m=>({...m,kind:"topic-background"}));
+  const hist = [...background,...current]
     .filter(m => m.role === "user" || m.role === "assistant")
     .slice(-CONFIG.HISTORY_TURNS)
-    .map(m => ({ role: m.role, content: m.text }));
+    .map(m => m.kind==="topic"
+      ? {role:"user",content:TRANSITION_TOPICS.find(t=>t[0]===m.topic)[S.lang==="he"?4:3]}
+      : { role: m.role, content: m.kind==="topic-background" ? "Earlier user message — background only, not an active request:\n"+m.text : m.text });
 
   const ref = buildReference();
-  const sys = systemPrompt(ref);
+  let sys = systemPrompt(ref);
+  if(window.MomentumBenefits && (["updates","rights"].includes(S.activeTopic) || /benefits|discounts|career fair|הטבות|הנחות|יריד תעסוקה/i.test(hist.at(-1)?.content||""))){
+    await window.MomentumBenefits.refresh();
+    sys += "\n\n"+window.MomentumBenefits.context(S.lang);
+  }
   DIAG.source = "live API";
   DIAG.refs = ref.labels; DIAG.refChars = ref.text.length;
   DIAG.sentTurns = hist.length;
@@ -1277,22 +1469,18 @@ async function askModel(){
   DIAG.estPromptTokens = Math.round((sys.length + hist.reduce((a,m)=>a+m.content.length,0)) / 4);
   DIAG.at = new Date().toLocaleTimeString();
 
-  const res = await fetch(CONFIG.API_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      model: CONFIG.MODEL,
-      max_tokens: ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,
-      system: sys,
-      messages: hist
-    })
-  });
-  if (!res.ok) { DIAG.error = "HTTP "+res.status; throw new Error("HTTP "+res.status); }
-  const data = await res.json();
+  let payload = {model:CONFIG.MODEL, max_tokens:ref.doc ? CONFIG.MAX_TOKENS_DOCUMENT : CONFIG.MAX_TOKENS,system:sys,messages:hist};
+  if(window.MomentumResponseFormat)payload.output_config={format:window.MomentumResponseFormat};
+  if(!window.MomentumAIConsent){const error=new Error("AI consent controls unavailable");error.canceled=true;throw error;}
+  const res=await window.MomentumAIConsent.request(payload,CONFIG.API_URL,S.lang,{interactive:!!userMessageId,userMessageId});
+  if(!res.ok){DIAG.error="HTTP "+res.status;throw new Error(DIAG.error);}
+  const data=await res.json();
+  if (data.stop_reason==="max_tokens") throw new Error("AI reply was cut short. Please try a narrower question.");
   if (data.usage) DIAG.usage = data.usage;
   const raw = (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();
+  if (!raw) throw new Error("The AI service returned no reply");
   DIAG.raw = raw;
-  const parsed = parseReply(raw);
+  const parsed = normalizeModelReply(parseReply(raw));
   DIAG.parsedOK = !!(parsed && parsed.reply && raw.indexOf("{") > -1);
   DIAG.parsed = parsed;
   return parsed;
@@ -1316,6 +1504,20 @@ function fixBreaksInStrings(t){
       out += ch;
     } else { if (ch === '"') inStr = true; out += ch; }
   }
+  return out;
+}
+function normalizeModelReply(value){
+  const v=value && typeof value==="object" ? value : {};
+  const text=x=>typeof x==="string"?x.slice(0,20000):"";
+  const list=(key,max)=>Array.isArray(v[key])?v[key].slice(0,max):[];
+  const out={reply:text(v.reply)||"…"};
+  if(["opening","foundation","discovery","direction","open"].includes(v.phase))out.phase=v.phase;
+  for(const key of ["concern","ack","shift","document"])out[key]=v[key]===true;
+  out.candidates=list("candidates",5).filter(x=>x&&skillById(x.id)).map(x=>({id:Number(x.id),why:text(x.why).slice(0,300)}));
+  out.confirmed=list("confirmed",8).filter(x=>x&&skillById(x.id)&&text(x.evidence).trim())
+    .map(x=>({id:Number(x.id),evidence:text(x.evidence).slice(0,1500),level:[1,2,3,4].includes(Number(x.level))?Number(x.level):0}));
+  out.proposals=list("proposals",5).filter(x=>x&&text(x.title).trim()).map(x=>({title:text(x.title).slice(0,160),why:text(x.why).slice(0,600)}));
+  for(const key of ["costs","open"])out[key]=list(key,10).map(text).filter(Boolean);
   return out;
 }
 function parseReply(raw){
@@ -1375,6 +1577,7 @@ const SHIFT_LINE = {
   en: "In service, most decisions this size got made above you. Right now nobody's deciding this one but you — that's not a delay before the real thing starts, it's the first rep of it.\n\n"
 };
 function practiceReply(userText){
+  if (/^(?:i.m (?:fine|ok(?:ay)?)|אני בסדר)[.! ]*$/i.test(userText.trim())) return {reply:S.lang==="he"?"במה תרצה שנתחיל?":"What would you like to start with?"};
   if(S.activeTopic) return topicPracticeReply(userText);
   const i = Math.min(S.practiceStep, SCRIPT[S.lang].length-1);
   // Practice Mode has no language understanding, so it does not pretend to:
@@ -1425,19 +1628,30 @@ function openConversation(){
   pushMsg("assistant", openingText(S.lang), {kind:"opening"});
 }
 
+let sendingUserMessage = false;
 async function sendUser(text){
+  if(sendingUserMessage)return;
   text = (text||"").trim();
   if (!text) return;
+  sendingUserMessage=true;
+  try {
   $("input").value = ""; $("input").style.height="auto";
   stopSpeaking();
-  pushMsg("user", text);
+  const topic=requestedTopic(text);
+  const changed=!!topic && topic!==S.activeTopic;
+  if(changed)activateTopic(topic);
+  pushMsg("user", text, changed?{kind:"topic-switch",topic}:undefined);
+  if(window.MomentumSafety && window.MomentumSafety.urgent(text)){
+    applyReply({reply:window.MomentumSafety.reply(S.lang),concern:true});return;
+  }
   showThinking();
 
   let out;
   try {
     if (S.practice) throw new Error("practice");
-    out = await askModel();
+    out = await askModel(crypto.randomUUID());
   } catch (err) {
+    if (err.canceled) { hideThinking(); if(err.sent){pushMsg("system",S.lang==="he"?"השיתוף העתידי הופסק. ביטול ההסכמה אינו מבטל מידע שכבר נשלח.":"Future sharing stopped. Withdrawal does not undo information already sent.");return;} pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
     if (!S.practice) { S.practice = true; pushMsg("system", L().offline); }
     out = practiceReply(text);
@@ -1450,9 +1664,16 @@ async function sendUser(text){
   }
   hideThinking();
   applyReply(out);
+  if(S.practice){
+    const retry=el("button","linkish",S.lang==="he"?"ניסיון חיבור מחדש ל-AI":"Retry live AI connection");
+    retry.onclick=()=>{S.practice=false;save();retry.remove();$("input").focus();};
+    const turns=$("thread").querySelectorAll(".turn.them");if(turns.length)turns[turns.length-1].appendChild(retry);
+  }
+  } finally { sendingUserMessage=false; }
 }
 
 function applyReply(out){
+  out=normalizeModelReply(out);
   DIAG.triggers = [];
   if (out.ack) DIAG.triggers.push("service acknowledgment (once)");
   if (out.shift) DIAG.triggers.push("named the shift to self-direction (once)");
@@ -1564,6 +1785,14 @@ function openProfile(){
     journeyLink.href="./my-journey.html?lang="+S.lang;
     journeyLink.style.display="block";journeyLink.style.marginBottom="9px";
     section.appendChild(journeyLink);
+    const importSkills=el("button","prop",S.lang==="he"?"בדקתי את הדוגמאות — לשמור מיומנויות במסע שלי":"I checked my examples — save life skills to My Journey");
+    importSkills.onclick=()=>{
+      if(!confirm(S.lang==="he"?"לאשר שהדוגמאות נכונות ואינן כוללות מידע רגיש?":"Confirm these examples are accurate and contain no sensitive information?"))return;
+      const values=S.profile.strengths.filter(x=>x.evidence&&x.id!==63).map(x=>({id:x.id,en:skillName(x.id,"en"),he:skillName(x.id,"he"),evidence:x.evidence,level:x.level||0,confirmed:true}));
+      window.MomentumJourney.saveLifeSkills(values);
+      importSkills.textContent=S.lang==="he"?"נשמר במסע שלי":"Saved to My Journey";
+    };
+    section.appendChild(importSkills);
     const privacyLink=el("a","prop",S.lang==="he"?"בחירת פרטי הפרופיל לשיתוף עם AI":"Choose what profile details AI may receive");
     privacyLink.href="./my-journey.html?lang="+S.lang+"#privacy";
     privacyLink.style.display="block";privacyLink.style.marginBottom="9px";
@@ -1852,6 +2081,7 @@ if (S.started){ enterChat(); if(!S.messages.length) openConversation(); }
 <script>
 /* Topics use the existing conversation and never send a request without Send. */
 const TRANSITION_TOPICS = [
+ ["updates","Updated Information and Benefits","מידע והטבות מעודכנים","Help me explore the latest dated benefits, events, discounts and career opportunities for discharged soldiers. Use the public source notes and be clear about availability and verification dates.","עזור לי לבדוק מידע מתוארך על הטבות, אירועים, הנחות והזדמנויות קריירה לחיילים משוחררים. השתמש במקורות וציין מועדי בדיקה ומגבלות זמינות."],
  ["cv","CV","קורות חיים","Help me write or improve my CV.","עזור לי לכתוב או לשפר את קורות החיים שלי."],
  ["applications","Job applications","מועמדות לעבודה","Help me prepare a job application.","עזור לי להכין מועמדות לעבודה."],
  ["career","Work and career","עבודה וקריירה","Help me explore work and career options that fit my experience and goals.","עזור לי לבדוק אפשרויות עבודה וקריירה שמתאימות לניסיון ולמטרות שלי."],
@@ -1865,6 +2095,9 @@ const TRANSITION_TOPICS = [
 ];
 function paintTopicPanel(){
  const he=S.lang==="he";
+ const updates=$("benefitsUpdates");
+ if(updates){updates.hidden=S.activeTopic!=="updates";if(!updates.hidden&&window.MomentumBenefits)window.MomentumBenefits.mount(updates,S.lang,text=>{$("input").value=text;$("input").focus();$("composer").scrollIntoView?.({block:"nearest"});});}
+ const shortcut=$("openBenefitsUpdates");if(shortcut)shortcut.textContent=he?"מידע והטבות מעודכנים":"Updated Information and Benefits";
  $("topicTitle").textContent=he?"במה תרצה עזרה?":"What would you like help with?";
  $("topicHint").textContent=he?"בחר נושא. העוזר מגיב לנושא שבחרת.":"Choose a topic. The assistant responds to the topic you choose.";
  $("topicButtons").setAttribute("aria-label",he?"נושאים למעבר":"Transition topics");
@@ -1876,7 +2109,7 @@ function paintTopicPanel(){
  });
 }
 
-const TOPIC_RESPONSES={"cv":["A useful CV connects your actual responsibilities and achievements to the work you want. I can build a first draft with your service experience, education and confirmed skills.\n\nWhat kind of job is this CV for?","קורות חיים טובים מחברים את האחריות וההישגים שלך לעבודה שאתה רוצה. אוכל להכין טיוטה עם הניסיון מהשירות, ההשכלה והכישורים שאושרו.\n\nלאיזה סוג עבודה מיועדים קורות החיים?"],"applications":["I can help tailor an application to a specific job, including a cover letter and examples that match the requirements.\n\nCan you paste the job description or tell me which position you want?","אוכל לעזור להתאים מועמדות למשרה מסוימת, כולל מכתב פנייה ודוגמאות שמתאימות לדרישות.\n\nתוכל להדביק את תיאור המשרה או לומר לאיזה תפקיד אתה רוצה להגיש מועמדות?"],"career":["We can compare work options against your interests, experience, skills and practical needs, then choose a manageable first step.\n\nWhat kind of work interests you, even if you are still unsure?","נוכל להשוות אפשרויות עבודה לפי תחומי העניין, הניסיון, הכישורים והצרכים המעשיים שלך, ואז לבחור צעד ראשון.\n\nאיזה סוג עבודה מעניין אותך, גם אם אתה עדיין לא בטוח?"],"study":["I can help compare study routes and work backwards from your intended start date, including admission, preparation, time and costs.\n\nWhat would you like to study, or which fields are you considering?","אוכל לעזור להשוות מסלולי לימודים ולתכנן לאחור ממועד ההתחלה, כולל קבלה, הכנה, זמן ועלויות.\n\nמה תרצה ללמוד, או אילו תחומים אתה שוקל?"],"rights":["We can identify benefits to check and the documents you may need. Eligibility and deadlines must be verified with the responsible official service.\n\nAre you finishing regular service, serving in the reserves, or already discharged?","נוכל לזהות זכויות שכדאי לבדוק ומסמכים שייתכן שתצטרך. יש לאמת זכאות ומועדים מול הגוף הרשמי האחראי.\n\nאתה מסיים שירות סדיר, משרת במילואים או כבר השתחררת?"],"money":["We can make a practical budget around income, essential expenses and your next plans, then identify the first change that would help.\n\nWhat is the main money issue you want to work on?","נוכל לבנות תקציב מעשי לפי ההכנסה, ההוצאות החיוניות והתוכניות הבאות שלך, ולזהות שינוי ראשון שיעזור.\n\nמה הנושא הכלכלי העיקרי שתרצה לעבוד עליו?"],"travel":["I can help fit a trip around your budget, work or studies and important dates.\n\nWhere would you like to go, and roughly when?","אוכל לעזור להתאים טיול לתקציב, לעבודה או ללימודים ולמועדים חשובים.\n\nלאן תרצה לנסוע ובערך מתי?"],"family":["We can work on a particular conversation, changing expectations, or reconnecting with people close to you.\n\nWhich relationship or family situation would you like help with?","נוכל לעבוד על שיחה מסוימת, שינוי בציפיות או חידוש הקשר עם אנשים קרובים.\n\nבאיזה קשר או מצב משפחתי תרצה עזרה?"],"support":["You can describe what is happening at your own pace. I can help you sort through it and consider a next step; human support is also available through the Support button.\n\nWhat is weighing on you most right now?","אפשר לתאר את מה שקורה בקצב שלך. אוכל לעזור לעשות סדר ולחשוב על צעד הבא; תמיכה אנושית זמינה גם דרך כפתור התמיכה.\n\nמה הכי מכביד עליך עכשיו?"]};
+const TOPIC_RESPONSES={"updates":["Explore the dated listings above, or tell me which benefit or opportunity interests you. I can help check the conditions and prepare your next step. The source date matters; availability and personal eligibility must be confirmed with the provider.","עיינו בפריטים המתוארכים למעלה או ספרו איזו הטבה או הזדמנות מעניינת אתכם. אוכל לעזור להבין תנאים ולהכין את הצעד הבא. חשוב לשים לב למועד בדיקת המקור ולאמת זמינות וזכאות אישית מול הגוף המציע."],"cv":["A useful CV connects your actual responsibilities and achievements to the work you want. I can build a first draft with your service experience, education and confirmed skills.\n\nWhat kind of job is this CV for?","קורות חיים טובים מחברים את האחריות וההישגים שלך לעבודה שאתה רוצה. אוכל להכין טיוטה עם הניסיון מהשירות, ההשכלה והכישורים שאושרו.\n\nלאיזה סוג עבודה מיועדים קורות החיים?"],"applications":["I can help tailor an application to a specific job, including a cover letter and examples that match the requirements.\n\nCan you paste the job description or tell me which position you want?","אוכל לעזור להתאים מועמדות למשרה מסוימת, כולל מכתב פנייה ודוגמאות שמתאימות לדרישות.\n\nתוכל להדביק את תיאור המשרה או לומר לאיזה תפקיד אתה רוצה להגיש מועמדות?"],"career":["We can compare job options based on your interests, experience, skills, and practical needs, and then choose a first step.\n\nWhat type of job interests you, even if you’re not sure yet?","נוכל להשוות אפשרויות עבודה לפי תחומי העניין, הניסיון, הכישורים והצרכים המעשיים שלך, ואז לבחור צעד ראשון.\n\nאיזה סוג עבודה מעניין אותך, גם אם אתה עדיין לא בטוח?"],"study":["I can help compare study routes and work backwards from your intended start date, including admission, preparation, time and costs.\n\nWhat would you like to study, or which fields are you considering?","אוכל לעזור להשוות מסלולי לימודים ולתכנן לאחור ממועד ההתחלה, כולל קבלה, הכנה, זמן ועלויות.\n\nמה תרצה ללמוד, או אילו תחומים אתה שוקל?"],"rights":["We can identify benefits to check and the documents you may need. Eligibility and deadlines must be verified with the responsible official service.\n\nAre you finishing regular service, serving in the reserves, or already discharged?","נוכל לזהות זכויות שכדאי לבדוק ומסמכים שייתכן שתצטרך. יש לאמת זכאות ומועדים מול הגוף הרשמי האחראי.\n\nאתה מסיים שירות סדיר, משרת במילואים או כבר השתחררת?"],"money":["We can make a practical budget around income, essential expenses and your next plans, then identify the first change that would help.\n\nWhat is the main money issue you want to work on?","נוכל לבנות תקציב מעשי לפי ההכנסה, ההוצאות החיוניות והתוכניות הבאות שלך, ולזהות שינוי ראשון שיעזור.\n\nמה הנושא הכלכלי העיקרי שתרצה לעבוד עליו?"],"travel":["I can help fit a trip around your budget, work or studies and important dates.\n\nWhere would you like to go, and roughly when?","אוכל לעזור להתאים טיול לתקציב, לעבודה או ללימודים ולמועדים חשובים.\n\nלאן תרצה לנסוע ובערך מתי?"],"family":["We can work on a particular conversation, changing expectations, or reconnecting with people close to you.\n\nWhich relationship or family situation would you like help with?","נוכל לעבוד על שיחה מסוימת, שינוי בציפיות או חידוש הקשר עם אנשים קרובים.\n\nבאיזה קשר או מצב משפחתי תרצה עזרה?"],"support":["You can describe what is happening at your own pace. I can help you sort through it and consider a next step; human support is also available through the Support button.\n\nWhat is weighing on you most right now?","אפשר לתאר את מה שקורה בקצב שלך. אוכל לעזור לעשות סדר ולחשוב על צעד הבא; תמיכה אנושית זמינה גם דרך כפתור התמיכה.\n\nמה הכי מכביד עליך עכשיו?"]};
 function skillsTopicText(){
  const he=S.lang==="he", strengths=(S.profile.strengths||[]).filter(s=>SKILLS.some(row=>+row[0]===+s.id));
  const list=strengths.map(s=>{
@@ -1889,14 +2122,18 @@ function skillsTopicText(){
   :"No personal skills have been identified in your conversation yet. We can explore skills such as teamwork, problem-solving or leadership based on your experience — these are examples to check, not claims about your skills.\n\nWhat kind of service did you do, and what were your role and rank? You can name the unit generally, without classified details.";
 }
 function prepareTopic(topic){
- if($("thinking"))return;
+ if(sendingUserMessage || $("thinking"))return;
  closeDrawer(); stopSpeaking();
- S.started=true; S.activeTopic=topic[0]; S.ack=true;
+ const existing = conversationEntries().some(entry => entry.topic === topic[0]);
+ S.started=true; activateTopic(topic[0]); S.ack=true;
  enterChat(); paintTopicPanel();
- const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
- pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
+ if (!existing) {
+   const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
+   pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
+ } else save();
  if(window.matchMedia("(max-width:1099px)").matches)$("topicPanel").open=false;
- $("input").focus();
+ $("input").focus({preventScroll:true});
+ scrollDown();
 }
 function openMySkills(){prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));}
 function topicPracticeReply(userText){
@@ -1912,15 +2149,21 @@ function topicPracticeReply(userText){
  const labels=TRANSITION_TOPICS.find(t=>t[0]===id);
  return {reply:he
   ?"שמרתי את הפרטים שלך בנושא "+labels[2]+". שירות ה-AI אינו זמין כרגע, ולכן איני יכול להכין תשובה מותאמת לפרטים החדשים. אפשר לנסות שוב מאוחר יותר או להשתמש בכפתור ׳שאל AI׳.\n\n"+TOPIC_RESPONSES[id][1]
-  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask an AI.\n\n"+TOPIC_RESPONSES[id][0]};
+  :"Your details for "+labels[1]+" are saved. The AI service is currently unavailable, so I cannot tailor a response to the new details. You can try again later or use Ask AI.\n\n"+TOPIC_RESPONSES[id][0]};
 }
 
 const topicBreakpoint=window.matchMedia("(min-width:1100px)");
 function sizeTopicPanel(){ $("topicPanel").open=topicBreakpoint.matches; }
 topicBreakpoint.addEventListener("change",sizeTopicPanel);
 sizeTopicPanel(); paintTopicPanel();
+$("openBenefitsUpdates").onclick=()=>prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="updates"));
+const requestedLanguage=new URLSearchParams(location.search).get("lang");
+if(["en","he"].includes(requestedLanguage)){S.lang=requestedLanguage;save();paintStatic();renderThread();}
+if(new URLSearchParams(location.search).get("section")==="updates")prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="updates"));
 </script>
 
+<script src="./onboarding.js"></script>
+<script src="./chat-history.js"></script>
 <script id="journey-offline-register">
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {

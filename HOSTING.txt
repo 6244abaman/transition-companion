@@ -1,0 +1,110 @@
+TRANSITION COMPANION - SHARE AND MANAGE THE REVIEW SITE
+
+OPEN AND SHARE: https://transition-companion-review.onrender.com/
+MANAGE IN RENDER: https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0
+FIND BOTH APPS FROM ANY DEVICE:
+https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md
+
+Everyday use
+Open the review site's public web address in a browser and share that same
+address with reviewers. It opens the Hebrew Companion. English is available
+inside the app, or at /app/index.html on the same site.
+Your computer and Codex can be closed. There is no daily Start step in Render.
+The Windows Start.cmd and Stop.cmd control only the copy on your computer.
+
+Where it runs
+Render workspace: Momentum Claude
+Review site service: transition-companion-review (Static Site)
+GitHub repository: https://github.com/6244abaman/transition-companion
+Deployed branch: complete/continuity-and-followup
+AI backend service: momentum-proxy (the existing Render Starter service)
+
+The review build packages the app under /app/ and opens it in Hebrew. Its
+browser scripts and AI consent controls are the same ones used locally.
+Only public frontend assets are published; Windows controls, runtime logs,
+server/database code, development dependencies and credentials are excluded.
+
+How to use Render yourself
+1. Sign in at https://dashboard.render.com and choose Momentum Claude.
+2. Open the transition-companion-review Static Site.
+3. Its public URL is the link to share. Bookmark it; reviewers need no Render
+   account. Render dashboard access is only for managing the service.
+4. On the service's Events page, a Live deployment means it is published.
+   A failed new build leaves the previous successful version available.
+
+How updates reach the same link
+This review service follows complete/continuity-and-followup on GitHub.
+Save or merge changes to that branch. With the connected Git provider and
+Auto-Deploy enabled, Render builds, runs the offline regression tests and
+publishes the new version. The public URL stays the same.
+
+To deploy yourself from Render: open this Static Site, select Manual Deploy,
+then Deploy latest commit. Wait for Live, open the public URL and refresh.
+Use this command for the latest configured branch; deploying a specific old
+commit can disable automatic deployment. Never deploy an unfamiliar branch
+just to clear an error.
+
+Settings to preserve
+Branch: complete/continuity-and-followup
+Auto-Deploy: On Commit
+Build command: npm ci --ignore-scripts --no-audit --no-fund && npm test && npm run build:review
+Publish directory: dist
+Environment setting: SKIP_INSTALL_DEPS=true (not a secret)
+Node.js: 24, as required by package.json
+Do not run Start.cmd, npm start, or windows/server.cjs on Render. They are
+local startup/sync commands; the hosted interface is a Static Site.
+
+When this review branch is merged into main, change the Render service's
+linked Branch to main in Settings and deploy the latest commit. Keep this
+same service and URL so reviewers keep their browser-local data.
+
+If something fails
+- Site will not load: inspect the latest deployment status and build logs
+  in the Static Site's Render dashboard. If the new build failed, correct
+  the reported source/test failure and deploy again.
+- The page opens but AI does not answer: use the app's connection check.
+  Then open momentum-proxy in Render and check its Events and Logs. The AI
+  service and its provider credentials are managed there, not in frontend
+  source. Use synthetic questions when troubleshooting.
+- You see Practice Mode: that is the built-in script, not a live LLM reply.
+- /build-info.json on the review site reports the deployed source commit.
+- For Render-wide incidents, check https://status.render.com/.
+
+Data and review boundaries
+Each reviewer's conversation and Journey are saved in their own browser
+profile for this site's address. Localhost/GitHub Pages data is a separate
+store; use My Journey's encrypted export/import to transfer it. No reviewer
+data was copied into the deployment. An approved live question is sent to the
+existing external AI backend. Device sync still requires a separate opt-in
+service setup and is not activated by hosting the review interface.
+
+This is a development review build. Use invented examples while examining
+the app. Read README.md and TEST_REPORT.md for the current release limits.
+
+Costs
+The new frontend uses Render Static Site hosting. Static site bandwidth and
+build time count toward your workspace's included usage and can incur overage.
+The existing momentum-proxy service and LLM provider usage continue on their
+existing billing arrangements. This setup does not add a paid compute server.
+
+Official references
+https://render.com/docs/static-sites
+https://render.com/docs/deploys
+
+Fresh version: Transition Companion V2
+https://transition-companion-review.onrender.com/companion-v2/indexH.html
+English: https://transition-companion-review.onrender.com/companion-v2/index.html
+All frontend assets have new paths to bypass older cached copies. Saved browser data
+and consent stay on the same origin. Use this new link for testing.
+
+Integrated benefits workflow
+Open "Updated Information and Benefits" inside either Companion language.
+Optional matching and document checklists stay in this browser. Save a next
+step into the existing My Journey plan for status, backup and calendar export.
+Calendar reminders need importing into the user's calendar; no new server or
+soldier database is created. Existing external AI consent remains in place.
+Editors can export the public edition or prepare a draft in the section.
+Publishing requires authorized source changes to benefits-updates.json and
+the existing tested Render deployment. Draft downloads do not publish.
+
+The Hebrew and English welcome and chat screens show the deployed commit as a short version identifier. Opening online checks public app files for changes; offline use takes the saved copy.

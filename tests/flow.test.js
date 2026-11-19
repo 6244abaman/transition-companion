@@ -1,8 +1,8 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
 
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html', 'utf8');
-const dom = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+const html = fs.readFileSync(__dirname + '/../index.html', 'utf8');
+const dom = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
 const { window } = dom;
 const doc = window.document;
 const peek = (expr) => window.eval(expr);
@@ -54,7 +54,7 @@ function lastTurnText(){
   check('Phase advanced to "direction"', peek('S.phase') === 'direction');
 
   // --- fresh session: test the SHIFT rule in isolation ---
-  const dom2 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+  const dom2 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
   const w2 = dom2.window, d2 = w2.document, peek2 = (e)=>w2.eval(e);
   d2.getElementById('btnStart').click();
   async function send2(t){ d2.getElementById('input').value = t; d2.getElementById('btnSend').click(); await new Promise(r=>setTimeout(r,300)); }
@@ -63,7 +63,7 @@ function lastTurnText(){
   await send2("אני לא יודע מה לעשות, מה אתה מציע?"); // no constraint named -> should fire shift once
   check('Shift-naming fires when no constraint is named', peek2('S.shift') === true, lastText2().slice(0,70));
 
-  const dom3 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+  const dom3 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
   const w3 = dom3.window, d3 = w3.document, peek3 = (e)=>w3.eval(e);
   d3.getElementById('btnStart').click();
   async function send3(t){ d3.getElementById('input').value = t; d3.getElementById('btnSend').click(); await new Promise(r=>setTimeout(r,300)); }

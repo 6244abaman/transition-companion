@@ -1,6 +1,6 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html','utf8');
+const html = fs.readFileSync(__dirname + '/../index.html','utf8');
 const dom = new JSDOM(html,{url:'https://localhost/?debug',runScripts:'dangerously',pretendToBeVisual:true});
 const {window}=dom, doc=window.document;
 const send = async t => { doc.getElementById('input').value=t; doc.getElementById('btnSend').click(); await new Promise(r=>setTimeout(r,300)); };

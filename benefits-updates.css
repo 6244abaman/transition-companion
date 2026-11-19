@@ -1,0 +1,24 @@
+#benefitsUpdates{margin:0 0 24px;padding:22px;border:1px solid #a4c4cf;border-radius:18px;background:#f5faf7;color:#183d4d}
+#benefitsUpdates[hidden]{display:none}
+#benefitsUpdates h2{font-size:1.55rem;line-height:1.25;margin:0 0 10px}
+#benefitsUpdates p{line-height:1.55;margin:10px 0}
+.benefits-small{font-size:.82rem;color:#52665e}
+.benefits-warning{background:#fff2d1;border-inline-start:3px solid #956816;padding:10px;border-radius:6px}
+.benefits-filters,.benefits-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+#benefitsUpdates button,#benefitsUpdates a{font:inherit;line-height:1.4;border:1px solid #527668;background:white;color:#234e3f;border-radius:9px;padding:10px 12px;min-height:44px;cursor:pointer;text-decoration:none;overflow-wrap:anywhere}
+#benefitsUpdates button[aria-pressed=true]{background:#234e3f;color:white}
+#benefitsUpdates button:focus-visible,#benefitsUpdates a:focus-visible{outline:3px solid #bb8c34;outline-offset:3px}
+.benefits-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.benefits-card{min-width:0;background:white;border:1px solid #cedbd3;padding:18px;border-radius:12px}
+.benefits-card h3{font-size:1.1rem;line-height:1.4;margin:8px 0}
+.benefits-card small{font-size:.78rem;color:#52665e}
+@media(max-width:700px){.benefits-grid{grid-template-columns:1fr}#benefitsUpdates{padding:15px}.benefits-card{padding:14px}}
+.benefits-preparation{border:1px solid #b5cbbd;border-radius:10px;padding:14px;margin:15px 0;background:#f8fbf8}
+.benefits-preparation summary{cursor:pointer;font-weight:700;min-height:40px;line-height:1.5}
+.benefits-field{display:block;margin:12px 0;font-size:.95rem}
+.benefits-field input,.benefits-field select,.benefits-field textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;background:white;color:#183d4d;padding:10px;border:1px solid #789687;border-radius:7px;font:inherit;min-width:0}
+.benefits-field textarea{min-height:120px;resize:vertical}
+.benefits-check{display:flex;gap:10px;align-items:start;margin:12px 0;font-size:.92rem;line-height:1.5}
+.benefits-check input{width:20px;height:20px;flex:none}
+.benefits-match{border-inline-start:3px solid #64876e;padding:10px;background:#eaf3eb}
+.benefits-preparation>button{margin:5px}
