@@ -375,37 +375,21 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <h2 tabindex="-1">
 <span data-en="A little about you" data-he="קצת עליך">A little about you</span>
 </h2>
-<p>
-<span data-en="We ask about your life before and during service so we can get to know you better. Two people can have the same role and enjoy very different parts of it. What you did, what you enjoyed, and what you did well can help us explore work and study options that fit you." data-he="אנחנו שואלים על החיים שלך לפני השירות ובמהלכו כדי להכיר אותך טוב יותר. גם מי ששירתו באותו תפקיד יכולים ליהנות מדברים שונים. כשנדע מה עשית, ממה נהנית ובמה הצלחת, נוכל לחשוב יחד על אפשרויות עבודה ולימודים שמתאימות לך.">אנחנו שואלים על החיים שלך לפני השירות ובמהלכו כדי להכיר אותך טוב יותר. גם מי ששירתו באותו תפקיד יכולים ליהנות מדברים שונים. כשנדע מה עשית, ממה נהנית ובמה הצלחת, נוכל לחשוב יחד על אפשרויות עבודה ולימודים שמתאימות לך.</span>
-</p><p>
-<span data-en="Take a moment to answer in your own words. Even one example helps. There’s no right answer, and you can skip any question." data-he="כדאי להקדיש רגע ולענות במילים שלך. אפילו דוגמה אחת יכולה לעזור. אין תשובה נכונה, ואפשר לדלג על כל שאלה.">כדאי להקדיש רגע ולענות במילים שלך. אפילו דוגמה אחת יכולה לעזור. אין תשובה נכונה, ואפשר לדלג על כל שאלה.</span>
-</p>
+<p><span data-en="A few optional details can help us understand your service experience. You can skip any question." data-he="כמה פרטים לבחירתך יעזרו לנו להבין את הניסיון שלך מהשירות. אפשר לדלג על כל שאלה.">A few optional details can help us understand your service experience. You can skip any question.</span></p>
 <label>
-<span data-en="What should I call you?" data-he="איך לפנות אליך?">What should I call you?</span>
-<input id="bg-name" maxlength="100">
+<span data-en="How can we contact you? (Phone or email)" data-he="איך אפשר ליצור איתך קשר? (טלפון או אימייל)">How can we contact you? (Phone or email)</span>
+<input id="bg-contact" type="text" maxlength="254" autocomplete="off" aria-describedby="contactNote">
 </label>
+<p id="contactNote"><span data-en="Optional. Saved in this browser only; entering it does not send a contact request." data-he="לא חובה. נשמר רק בדפדפן הזה; מילוי הפרטים אינו שולח בקשה ליצירת קשר.">Optional. Saved in this browser only; entering it does not send a contact request.</span></p>
 <label>
-<span data-en="What kind of service did you do?" data-he="מה היה סוג השירות שלך?">What kind of service did you do?</span>
-<input id="bg-service" maxlength="100">
+<span data-en="Where did you serve?" data-he="איפה שירתת?">Where did you serve?</span>
+<input id="bg-service" maxlength="100" aria-describedby="serviceNote">
 </label>
-<label>
-<span data-en="About how long did you serve?" data-he="כמה זמן בערך נמשך השירות שלך?">About how long did you serve?</span>
-<input id="bg-length" maxlength="100">
-</label>
-<label>
-<span data-en="Where are you in your transition?" data-he="באיזה שלב של המעבר לחיים האזרחיים את או אתה?">Where are you in your transition?</span>
-<select id="bg-status">
-<option value="" data-en="Choose if you wish" data-he="אפשר לבחור">Choose if you wish</option>
-<option value="serving" data-en="Still serving" data-he="במהלך השירות">Still serving</option>
-<option value="leaving" data-en="Preparing for discharge" data-he="לקראת שחרור">Preparing for discharge</option>
-<option value="discharged" data-en="Already discharged" data-he="אחרי השחרור">Already discharged</option>
-<option value="other" data-en="Something else" data-he="משהו אחר">Something else</option>
-</select>
-</label>
+<p id="serviceNote"><span data-en="Unit or branch, in general terms. Please leave out classified or operational details." data-he="יחידה או חיל, באופן כללי. אין לכלול פרטים מסווגים או מבצעיים.">Unit or branch, in general terms. Please leave out classified or operational details.</span></p>
 <label>
 <span data-en="Which role best describes your service?" data-he="איזו אפשרות מתארת את תפקידך בשירות?">איזו אפשרות מתארת את תפקידך בשירות?</span>
 <select id="bg-role">
-<option value="" data-en="Choose if you wish" data-he="אפשר לבחור">אפשר לבחור</option>
+<option value="" data-en="Choose" data-he="בחרו">בחרו</option>
 <option value="soldier" data-en="Soldier without a command role" data-he="חייל/ת ללא תפקיד פיקודי">חייל/ת ללא תפקיד פיקודי</option>
 <option value="commander" data-en="Commander (non-officer)" data-he="מפקד/ת שאינו/ה קצין/ה">מפקד/ת שאינו/ה קצין/ה</option>
 <option value="officer" data-en="Officer" data-he="קצין/ה">קצין/ה</option>
@@ -413,13 +397,13 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 </select>
 </label>
 <label>
-<input type="checkbox" id="bg-reserve"> <span data-en="Also serving in the reserves" data-he="גם בשירות מילואים">Also serving in the reserves</span>
+<input type="checkbox" id="bg-reserve"> <span data-en="Reserve service" data-he="שירות מילואים">Reserve service</span>
 </label>
 <button type="button" id="nextSetup">
 <span data-en="Continue" data-he="המשך">Continue</span>
 </button>
 <button type="button" id="skipBackground">
-<span data-en="Skip for now" data-he="דילוג">Skip for now</span>
+<span data-en="Skip" data-he="דילוג">Skip</span>
 </button>
 </div>
 <div id="interests" hidden>
@@ -427,7 +411,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <span data-en="What’s on your mind?" data-he="מה מעסיק אותך עכשיו?">What’s on your mind?</span>
 </h2>
 <p>
-<span data-en="Choose as many as you like." data-he="אפשר לבחור כמה נושאים.">Choose as many as you like.</span>
+<span data-en="Choose as many as you like." data-he="בחרו כמה נושאים.">Choose as many as you like.</span>
 </p>
 <div class="interestGrid">
 <label>
@@ -513,7 +497,7 @@ en:{
   wEyebrow:"MOMENTUM · YOUR NEXT CHAPTER",
   chatTitle:"A little more clarity, one conversation at a time",
   chatSubtitle:"We can start from where you are. Let’s think together about the next step.",
-  guideTitle:"Ask for help. Help me get to know you.",
+  guideTitle:"Ask for help. Let me get to know you.",
   guideCV:"CVs", guideJob:"Job applications", guideStudy:"Work & study",
   guideDirect:"You can ask this companion directly for information or help with a CV, a job application, study choices, or your next steps. For a separate question, the ‘Ask AI’ button also opens other AI services.",
   guideEmphasis:"For assistance that fits you, let the companion learn about your experience, goals, strengths, and what matters to you. You do not need to tell everything at once. Share only what you feel comfortable sharing.",
@@ -563,7 +547,7 @@ he:{
   wEyebrow:"מומנטום · הפרק הבא שלך",
   chatTitle:"קצת יותר בהירות, שיחה אחת בכל פעם",
   chatSubtitle:"אפשר להתחיל מהמקום שבו אתה נמצא. נחשוב יחד על הצעד הבא.",
-  guideTitle:"אפשר לבקש עזרה. כדאי גם לתת לי להכיר אותך.",
+  guideTitle:"אפשר לבקש עזרה. תנו לי להכיר אתכם.",
   guideCV:"קורות חיים", guideJob:"מועמדות לעבודה", guideStudy:"עבודה ולימודים",
   guideDirect:"אפשר לשאול את העוזר ישירות ולקבל מידע או עזרה בקורות חיים, במועמדות לעבודה, בבחירת לימודים ובצעדים הבאים. לשאלה נפרדת, הכפתור ׳שאל AI׳ מאפשר גם לפתוח שירותי AI אחרים.",
   guideEmphasis:"כדי לקבל סיוע שמתאים לך, כדאי לאפשר לעוזר ללמוד על הניסיון שלך, המטרות, החוזקות ומה שחשוב לך. לא צריך לספר הכול בבת אחת. שתף רק במה שנוח לך לשתף.",
@@ -859,13 +843,24 @@ function matchFamilies(text){
 
 /* Keep the saved transcript, but start each topic's AI context at its boundary.
    Old unanswered questions must not become the new topic's instructions. */
+// Classify legacy messages without rewriting saved chats. Hide repeated topic
+// introductions only; preserve all user messages and substantive replies.
+function conversationEntries(){
+  let topic = null;
+  const introductions = new Set();
+  return S.messages.flatMap((message,index) => {
+    if (Object.prototype.hasOwnProperty.call(message, "topic")) topic = message.topic;
+    if (message.kind === "topic" && message.role === "assistant") {
+      const key = topic + "\n" + message.text;
+      if (introductions.has(key)) return [];
+      introductions.add(key);
+    }
+    return [{message,index,topic}];
+  });
+}
 function currentTopicMessages(){
-  if(!S.activeTopic)return S.messages;
-  for(let i=S.messages.length-1;i>=0;i--){
-    const m=S.messages[i];
-    if((m.kind==="topic"||m.kind==="topic-switch")&&m.topic===S.activeTopic)return S.messages.slice(i);
-  }
-  return S.messages;
+  return conversationEntries().filter(entry => !S.activeTopic || entry.topic === S.activeTopic)
+    .map(entry => entry.message);
 }
 function requestedTopic(text){
   // Match requests at the beginning, not incidental words in a follow-up
@@ -1238,10 +1233,7 @@ function enterChat(){
    ========================================================================== */
 function renderThread(){
   const box = $("thread"); box.innerHTML = "";
-  // Topic markers also classify older saved messages without rewriting them.
-  let topic = null;
-  S.messages.forEach((m,i) => {
-    if ((m.kind === "topic" || m.kind === "topic-switch") && m.topic) topic = m.topic;
+  conversationEntries().forEach(({message:m,index:i,topic}) => {
     if (S.activeTopic && topic !== S.activeTopic) return;
     const opening = openingText(S.lang), text = messageText(m).trim();
     const welcome = m.role === "assistant" && (m.kind === "opening" || text.startsWith(opening.slice(0,32)));
@@ -1346,7 +1338,7 @@ function scrollDown(){
 }
 
 function pushMsg(role, text, extra){
-  const m = Object.assign({role, text}, extra||{});
+  const m = Object.assign({role, text, topic:S.activeTopic || null}, extra||{});
   S.messages.push(m); S.updatedAt = new Date().toISOString(); save();
   if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
   else { $("thread").appendChild(turnNode(m)); scrollDown(); }
@@ -1446,8 +1438,8 @@ ${state}`;
 async function askModel(userMessageId){
   const current = currentTopicMessages();
   // Include recent conversation context under the active external AI consent.
-  const background = S.messages.slice(0,S.messages.length-current.length)
-    .filter(m=>m.role==="user").map(m=>({...m,kind:"topic-background"}));
+  const background = S.messages
+    .filter(m=>m.role==="user" && !current.includes(m)).map(m=>({...m,kind:"topic-background"}));
   const hist = [...background,...current]
     .filter(m => m.role === "user" || m.role === "assistant")
     .slice(-CONFIG.HISTORY_TURNS)
@@ -2127,14 +2119,18 @@ function skillsTopicText(){
   :"No personal skills have been identified in your conversation yet. We can explore skills such as teamwork, problem-solving or leadership based on your experience — these are examples to check, not claims about your skills.\n\nWhat kind of service did you do, and what were your role and rank? You can name the unit generally, without classified details.";
 }
 function prepareTopic(topic){
- if($("thinking"))return;
+ if(sendingUserMessage || $("thinking"))return;
  closeDrawer(); stopSpeaking();
+ const existing = conversationEntries().some(entry => entry.topic === topic[0]);
  S.started=true; activateTopic(topic[0]); S.ack=true;
  enterChat(); paintTopicPanel();
- const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
- pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
+ if (!existing) {
+   const reply=topic[0]==="skills"?skillsTopicText():TOPIC_RESPONSES[topic[0]][S.lang==="he"?1:0];
+   pushMsg("assistant",reply,{kind:"topic",topic:topic[0]});
+ } else save();
  if(window.matchMedia("(max-width:1099px)").matches)$("topicPanel").open=false;
- $("input").focus();
+ $("input").focus({preventScroll:true});
+ scrollDown();
 }
 function openMySkills(){prepareTopic(TRANSITION_TOPICS.find(t=>t[0]==="skills"));}
 function topicPracticeReply(userText){
