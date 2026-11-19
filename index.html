@@ -395,6 +395,16 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <label>
 <input type="checkbox" id="bg-reserve"> <span data-en="Reserve service" data-he="שירות מילואים">Reserve service</span>
 </label>
+<label id="reserveRoleField" hidden>
+<span data-en="Which role describes your reserve service?" data-he="איזו אפשרות מתארת את תפקידך בשירות המילואים?">Which role describes your reserve service?</span>
+<select id="bg-reserve-role" disabled>
+<option value="" data-en="Choose" data-he="בחרו">Choose</option>
+<option value="soldier" data-en="Soldier without a command role" data-he="חייל/ת ללא תפקיד פיקודי">Soldier without a command role</option>
+<option value="commander" data-en="Commander (non-officer)" data-he="מפקד/ת שאינו/ה קצין/ה">Commander (non-officer)</option>
+<option value="officer" data-en="Officer" data-he="קצין/ה">Officer</option>
+<option value="other" data-en="Other or unsure" data-he="אחר או לא בטוח/ה">Other or unsure</option>
+</select>
+</label>
 <button type="button" id="nextSetup">
 <span data-en="Continue" data-he="המשך">Continue</span>
 </button>

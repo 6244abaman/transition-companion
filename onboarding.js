@@ -28,9 +28,15 @@
   }
   window.paintOnboarding = paint;
   $('btnStart').onclick = () => step(1);
+  $('bg-reserve').onchange = () => {
+    const enabled = $('bg-reserve').checked;
+    $('reserveRoleField').hidden = !enabled;
+    $('bg-reserve-role').disabled = !enabled;
+  };
   $('nextSetup').onclick = () => {
     background = Object.fromEntries(fields.map(key => [key, $('bg-'+key).value.trim()]));
     background.reserve = $('bg-reserve').checked;
+    background.reserveRole = background.reserve ? $('bg-reserve-role').value : '';
     step(2);
   };
   $('skipBackground').onclick = () => { background = {}; step(2); };
