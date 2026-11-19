@@ -2,7 +2,7 @@
 (() => {
   const local = (en, he) => S.lang === 'he' ? he : en;
   const boxes = [...document.querySelectorAll('.interestGrid input')];
-  const fields = ['name', 'service', 'length', 'status'];
+  const fields = ['name', 'service', 'length', 'status', 'role'];
   let background = {};
   function step(number) {
     $('intro').hidden = number !== 0;
