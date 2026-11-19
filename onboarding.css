@@ -60,3 +60,8 @@ body:has(#welcome:not([hidden])){padding-inline-end:0}
  #thread{gap:14px}
  .composer{padding-top:8px}
 }
+
+/* Help precedes the conversation introduction without expanding the green panel. */
+#chat .chat-guidance{margin:0 0 10px}
+#chatNavigationHint{margin-top:6px;font-weight:600}
+html[lang="en"] :is(h1,h2,h3,h4,h5,h6)::first-letter{text-transform:uppercase}

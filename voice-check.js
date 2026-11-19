@@ -21,7 +21,7 @@ d.getElementById('input').value='unsent draft';
 recognizer.onerror({error:'not-allowed'}); recognizer.onend();
 assert.match(d.getElementById('hint').textContent,/נדחתה/); assert.equal(w.eval('S.messages.length'),count);
 d.getElementById('btnLang').click();
-assert.equal(d.getElementById('btnAI').textContent,'Ask an AI'); assert.equal(d.documentElement.dir,'ltr');
+assert.equal(d.getElementById('btnAI').textContent,'Ask AI'); assert.equal(d.documentElement.dir,'ltr');
 d.getElementById('btnMic').click(); recognizer.start=()=>{throw Error('failed');};
 recognizer.onerror({error:'network'}); recognizer.onend(); assert.match(d.getElementById('hint').textContent,/internet/);
 d.getElementById('btnMic').click();
