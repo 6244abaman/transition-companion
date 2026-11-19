@@ -1,0 +1,17 @@
+<!doctype html><html lang="he" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Momentum Knowledge Companion</title>
+<style>body{font:17px/1.55 system-ui;color:#173c37;background:#f4f8f5;max-width:50rem;margin:auto;padding:1.2rem}nav,section{margin:1rem 0}input,select,button{font:inherit;padding:.65rem;max-width:100%}article{padding:1rem 1.3rem;border:1px solid #cad9d4;border-radius:12px;background:white;margin:.8rem 0}h2{font-size:1.2rem;margin:0}a{color:#09614d}</style>
+<nav><a id="home"></a> · <a id="language"></a> · <a href="./editor.html" id="edit"></a></nav><h1></h1><input id="query" type="search"><select id="collection"></select><section id="results" aria-live="polite"></section>
+<script src="./search.js"></script><script src="./reader.js"></script><script>
+const en=new URLSearchParams(location.search).get('lang')==='en',lang=en?'en':'he',t=(a,b)=>en?a:b;
+document.documentElement.lang=lang;document.documentElement.dir=en?'ltr':'rtl';
+home.href=en?'./index.html':'./indexH.html';home.textContent=t('Open Companion','פתיחת המלווה');language.href='?lang='+t('he','en');language.textContent=t('עברית','English');
+edit.textContent=t('Editor','עריכה');document.querySelector('h1').textContent=t('Momentum Knowledge Companion','מלווה הידע של מומנטום');
+query.placeholder=t('Search knowledge','חיפוש במאגר');query.setAttribute('aria-label',query.placeholder);
+collection.setAttribute('aria-label',t('Collection','אוסף'));for(const [v,a,b] of [['','All collections','כל האוספים'],['rights','Rights and opportunities','זכויות והזדמנויות'],['programs','Programs and referrals','תוכניות והפניות'],['tools','Work and study tools','כלים לעבודה וללימודים']])collection.add(new Option(t(a,b),v));
+function add(parent,tag,value){const n=document.createElement(tag);n.textContent=value;parent.append(n);return n}
+Knowledge.load().then(items=>{
+ function render(){const rows=searchKnowledge(items,query.value,collection.value,lang);results.replaceChildren();if(!rows.length)add(results,'p',t('No current matches. Try another search or check the provider.','לא נמצאו תוצאות עדכניות. אפשר לחפש שוב או לברר מול הגוף המפרסם.'));
+ for(const i of rows){const card=add(results,'article',''),v=i[lang];add(card,'h2',v.title);add(card,'small',({government:t('Government','ממשלתי'),momentum:t('Momentum guidance','הכוונת מומנטום'),nonprofit:t('Nonprofit','עמותה'),provider:t('Provider','הגוף המפרסם')})[i.sourceType]+' · '+i.checkedAt.slice(0,10));for(const k of ['summary','eligibility','documents','cost','location','nextStep'])if(v[k])add(card,'p',v[k]);if(i.deadline)add(card,'p',t('Deadline ','מועד אחרון ')+i.deadline);const a=add(card,'a',t('View source','למקור'));a.href=i.sourceUrl;if(i.actionUrl){add(card,'span',' · ');add(card,'a',t('Next step','לצעד הבא')).href=i.actionUrl;}}
+ }query.oninput=collection.onchange=render;render();
+});
+</script></html>

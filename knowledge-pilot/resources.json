@@ -1,0 +1,17 @@
+[
+  {
+    "id":"back-to-future","collection":"programs","status":"published","sourceType":"momentum","sourceUrl":"https://www.momentum4u.org/latid/","checkedAt":"2026-11-19","keywords":"Momentum referral program transition workshop combat discharge מומנטום הפניה סדנה מסע שחרור לוחמים",
+    "en":{"title":"Back to the Future","summary":"Momentum’s discharge workshop helps combat soldiers reflect on skills from service and explore civilian directions.","eligibility":"The program page describes combat soldiers approaching discharge. Confirm participation with Momentum.","nextStep":"Read the program overview and ask your discharge coordinator about the next workshop."},
+    "he":{"title":"בחזרה לעתיד","summary":"מסע השחרור של מומנטום עוזר ללוחמים לזהות מיומנויות מהשירות ולבחון כיוונים באזרחות.","eligibility":"המסע מיועד ללוחמים לקראת שחרור. את ההשתתפות יש לברר מול מומנטום.","nextStep":"קראו על המסע ובדקו עם הגורם המלווה בשחרור מתי תתקיים הסדנה הבאה."}
+  },
+  {
+    "id":"skills-example","collection":"tools","status":"published","sourceType":"momentum","sourceUrl":"./skills-business.html","checkedAt":"2026-11-19","keywords":"work job CV résumé resume skills career experience עבודה קריירה כישורים מיומנויות קורות חיים ניסיון",
+    "en":{"title":"Describe a skill from service","summary":"Choose one experience. Describe the goal, what you personally did and what happened. Use that evidence to decide which skill fits.","nextStep":"Open the skills assessment and record one example."},
+    "he":{"title":"לתאר מיומנות מהשירות","summary":"בחרו מקרה אחד. מה הייתה המטרה, מה עשיתם בעצמכם ומה הייתה התוצאה? היעזרו בדוגמה כדי לזהות את המיומנות.","nextStep":"פתחו את הערכת המיומנויות ותעדו דוגמה אחת."}
+  },
+  {
+    "id":"study-compare","collection":"tools","status":"published","sourceType":"momentum","sourceUrl":"./my-journey.html","checkedAt":"2026-11-19","keywords":"studies education course degree evening training certificate school לימודים ללמוד קורס תואר הכשרה תעודה",
+    "en":{"title":"Compare two study options","summary":"For each option, check entry requirements, timetable, full cost, qualification and the work it can lead to. Mark unknown details for confirmation with the provider.","nextStep":"Save the two options in My Journey and choose one detail to verify."},
+    "he":{"title":"השוואה בין שני מסלולי לימודים","summary":"לכל מסלול בדקו תנאי קבלה, מערכת שעות, עלות מלאה, תעודה ואפשרויות תעסוקה. סמנו מה נותר לברר מול המוסד.","nextStep":"שמרו את שתי האפשרויות במסע שלי ובחרו פרט אחד לבירור."}
+  }
+]
