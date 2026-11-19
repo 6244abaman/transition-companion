@@ -474,11 +474,11 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
     <div class="chat-heading"><h2 id="chatTitle">קצת יותר בהירות, שיחה אחת בכל פעם</h2><p id="chatSubtitle">אפשר להתחיל מהמקום שבו אתה נמצא. נחשוב יחד על הצעד הבא.</p></div>
     <section id="benefitsUpdates" hidden aria-label="Updated Information and Benefits"></section>
     <div id="thread"></div>
-    <section class="guidance" aria-labelledby="chatGuideTitle">
+    <details class="guidance chat-guidance"><summary data-en="How to get more from your companion" data-he="איך להיעזר במלווה שלך">איך להיעזר במלווה שלך</summary><section aria-labelledby="chatGuideTitle">
       <h2 class="guide-title" id="chatGuideTitle"></h2>
       <div class="guide-topics"><span class="guide-cv"></span><span class="guide-job"></span><span class="guide-study"></span></div>
       <p class="guide-direct"></p><p class="guide-emphasis"></p><p class="guide-example"></p>
-    </section>
+    </section></details>
   </div>
 </main>
 
@@ -1004,7 +1004,7 @@ function copyText(text, btn){
 const KEY = "gtc_H_state";
 let lastChatWrite;
 let S = load() || {
-  lang: "he", mode: "both", speak: true, started: false,
+  lang: "he", mode: "both", speak: false, started: false,
   phase: "opening",           // opening → foundation → discovery → direction → open
   messages: [],               // {role:'user'|'assistant', text, surfaced?, props?}
   profile: { strengths: [], costs: [], open: [], directions: [] },
@@ -1026,7 +1026,8 @@ function writeChatState(state){
 function save(){ return writeChatState(S); }
 // This separate edition always uses Hebrew, including restored sessions.
 S.lang = "he";
-if (S.voiceEdition !== 2) { S.speak = true; S.mode = "both"; S.voiceURI = null; S.voiceEdition = 2; save(); }
+// Listen is one-shot playback; old automatic voice preferences are retired.
+S.speak = false;
 const L = () => T.he;
 /* Bridge between Momentum 36-skill self-assessment and this ongoing private profile.
    Ratings are self-reports. Only soldier-confirmed examples can be reused in drafts.
@@ -1154,15 +1155,14 @@ function paintStatic(){
 document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
   document.querySelectorAll(".choice").forEach(x=>x.classList.remove("on"));
   b.classList.add("on"); S.mode = b.dataset.mode;
-  if (S.mode !== "type") { S.speak = true; $("btnVoice").classList.add("on"); }
+  // Input mode does not enable read-aloud.
   paintStatic(); save();
 });
 
 $("btnVoice").onclick = () => {
   if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); return; }
-  S.speak = true; $("btnVoice").classList.add("on"); save();
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
-  speak(last ? messageText(last) : "ברוכים הבאים. אני כאן בשביל השלב הבא. לחצו על התחל כדי לדבר איתי.");
+  speak(last ? messageText(last) : (S.lang === "he" ? "ברוכים הבאים. אני כאן בשביל השלב הבא." : "Welcome. I’m here for what comes next."));
 };
 $("btnVoiceSettings").onclick = openVoiceSettings;
 $("btnAI").onclick = openExternalAI;
@@ -1331,8 +1331,16 @@ function turnNode(m, idx){
   return wrap;
 }
 function scrollDown(){
-  const s=$("chat"), last=$("thread").lastElementChild;
-  if (last) s.scrollTop = Math.max(0, last.offsetTop + last.offsetHeight - s.clientHeight + 24);
+  // Wait for the first reply, composer and topic panel to finish laying out.
+  const reveal = () => {
+    const screen = $("chat"), last = $("thread").lastElementChild;
+    if (!last || screen.hidden) return;
+    const bounds = screen.getBoundingClientRect(), reply = last.getBoundingClientRect();
+    // Show the beginning of a long reply, rather than skipping to its last line.
+    screen.scrollTop = Math.max(0, screen.scrollTop + reply.top - bounds.top - 12);
+  };
+  if (window.requestAnimationFrame) requestAnimationFrame(reveal);
+  else setTimeout(reveal, 0);
 }
 
 function pushMsg(role, text, extra){
@@ -1340,7 +1348,7 @@ function pushMsg(role, text, extra){
   S.messages.push(m); S.updatedAt = new Date().toISOString(); save();
   if (m.kind === "topic" || m.kind === "topic-switch") renderThread();
   else { $("thread").appendChild(turnNode(m)); scrollDown(); }
-  if (role === "assistant" && S.speak) speak(text);
+  document.dispatchEvent(new Event("companion:chat-updated"));
   return m;
 }
 function showThinking(){

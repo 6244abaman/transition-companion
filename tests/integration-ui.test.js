@@ -64,7 +64,7 @@ for (const [file,key] of [['index.html','gtc_v2_state'],['indexH.html','gtc_H_st
       panel.open = true;
       await until(() => panel.textContent.includes('Earlier question'));
       assert.ok(panel.querySelector('a').href.includes(file === 'index.html' ? 'indexH.html':'index.html'));
-      [...panel.querySelectorAll('button')].find(b => /Start a new|פתיחת שיחה/.test(b.textContent)).click();
+      panel.querySelector('.new-chat').click();
       assert.equal(w.eval('S.savedChats[0].messages[0].text'),'Earlier question');
       w.eval('pushMsg("user","Second question")');
       panel.open = true;

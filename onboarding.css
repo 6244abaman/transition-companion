@@ -14,3 +14,49 @@ body:has(#welcome:not([hidden])){padding-inline-end:0}
 .interestGrid label:has(:checked){background:#dfefe8}
 .messageLabel{display:block;max-width:48rem;margin:0 auto .2rem;font-size:.88rem}
 #setup :is(input,select):focus,#composer #input:focus{border-color:#28649b;outline:2px solid #28649b;outline-offset:1px;box-shadow:0 0 0 4px #3679bb26}
+
+/* Compact introduction and conversation panels leave room for the actual chat. */
+#welcome .pad,#chat .pad{padding:16px 16px 24px}
+.welcome-hero{padding:18px 20px;margin-bottom:12px;border-radius:18px}
+.welcome-hero .eyebrow{margin-bottom:6px}
+.welcome-hero .hello{font-size:28px;margin-bottom:8px}
+.welcome-hero .lede{font-size:15px;line-height:1.55}
+#btnStart{font-size:18px!important;padding:12px 16px!important;margin-top:10px}
+.chat-heading{padding:10px 14px;margin-bottom:12px;border-radius:14px}
+.chat-heading h2{font-size:20px;margin-bottom:3px}
+.chat-heading p{font-size:13px}
+.chat-guidance{padding:10px 14px;margin-top:16px;border-width:1px;border-radius:14px}
+.chat-guidance summary{cursor:pointer;font-size:14px;font-weight:600;min-height:24px}
+.chat-guidance section{padding-top:12px}
+.bar{padding:10px 14px}
+#chatHistory{flex:0 0 auto;padding:8px 14px;background:#edf5f2;border-bottom:1px solid #cedfd7;z-index:20}
+#chatHistory>summary{padding:6px 4px;min-height:36px;color:#183d39}
+#chatHistory>div{max-height:none;padding:8px;gap:8px}
+#chatHistory .chat-list{display:grid;gap:6px}
+#chatHistory .chat-item{border-radius:10px;overflow-wrap:anywhere;padding:10px;min-height:44px}
+#chatHistory .chat-item[aria-current="true"]{background:#dceee5;border-color:#21695f;font-weight:600}
+#chatHistory .new-chat{background:#21695f;color:white;border-radius:10px;min-height:44px}
+#chatHistory .chat-tools{border-top:1px solid #cedfd7;margin-top:10px;padding-top:10px;font-size:13px}
+#chatHistory .chat-tools summary{font-size:13px;padding:8px 0}
+#chatHistory .chat-tools p{margin:8px 0}
+#chatHistory .chat-tools button,#chatHistory .chat-tools label{display:block;margin:8px 0}
+#chatHistory .chat-tools input{width:100%;font-size:12px}
+@media(min-width:1100px){
+ body{padding-inline-start:250px}
+ #chatHistory{position:fixed;inset-inline-start:0;top:0;bottom:0;width:250px;border-inline-end:1px solid #cedfd7;padding:14px 10px;overflow:auto}
+ #chatHistory>summary{pointer-events:none;list-style:none;font-size:18px;padding:10px}
+ #chatHistory .close-chats{display:none}
+}
+@media(max-width:1099px){
+ #chatHistory[open]>div{position:fixed;inset-inline-start:0;top:0;bottom:0;width:min(340px,90vw);background:#f4f8f6;overflow:auto;box-shadow:0 0 0 100vmax #183d3955,0 0 30px #183d3930;align-content:start;padding:16px}
+ #chatHistory .close-chats{justify-self:end;min-height:44px}
+}
+@media(max-width:540px){
+ #welcome .pad,#chat .pad{padding:12px 12px 20px}
+ .welcome-hero{padding:14px 16px}
+ .welcome-hero .hello{font-size:26px}
+ .chat-heading h2{font-size:19px}
+ .turn.them{padding:14px}
+ #thread{gap:14px}
+ .composer{padding-top:8px}
+}

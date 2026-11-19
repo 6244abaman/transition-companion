@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v13-chat-history";
+const CACHE = "tc-v14-compact-chat";
 const APP_FILES = [
   "./",
   "./index.html",

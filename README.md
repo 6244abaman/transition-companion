@@ -213,3 +213,17 @@ A username and password alone cannot recover browser data. Optional automatic
 cross-device recovery would require explicit opt-in, encrypted transcript
 storage, device authentication, a key or recovery code held by the soldier,
 and deletion and lost-key procedures. Existing Journey sync excludes chats.
+
+## Compact chat experience — November 19, 2026
+
+The welcome and conversation panels take less vertical space. Hebrew chat guidance
+can be expanded when wanted. Listen reads only the current reply when tapped;
+choosing voice input, changing language or receiving another reply never enables
+automatic read-aloud, including for returning users with old voice preferences.
+
+Previous conversations appear in a persistent desktop sidebar. On smaller screens,
+Previous conversations opens a side drawer with New chat and saved conversations;
+selecting one or pressing Escape closes it. Backups and privacy information remain
+available in its expandable section. The existing language-specific browser stores
+are preserved. New replies scroll into view after layout, beginning at the start
+of long answers so their opening lines are not skipped.
