@@ -227,3 +227,18 @@ selecting one or pressing Escape closes it. Backups and privacy information rema
 available in its expandable section. The existing language-specific browser stores
 are preserved. New replies scroll into view after layout, beginning at the start
 of long answers so their opening lines are not skipped.
+
+## Simplified background and topic resumption
+
+The optional background step asks for phone/email, a general unit or branch,
+service role and reserve-service status, in that order, with Continue and Skip.
+Contact details remain in the existing browser-local profile and are not included
+in AI requests or used to send a contact request. Removed questions do not erase
+previously saved background answers.
+
+Selecting the same topic again, or returning to an earlier topic, resumes its
+conversation rather than inserting another introductory question. Duplicate
+legacy topic introductions are hidden in the displayed conversation and AI
+context; the original saved transcript and user messages are preserved. The
+single-interest onboarding path also produces only one introduction. Help stays
+above the compact chat heading, with the navigation hint and readable topic chips.

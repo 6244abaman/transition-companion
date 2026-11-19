@@ -2,7 +2,8 @@
 (() => {
   const local = (en, he) => S.lang === 'he' ? he : en;
   const boxes = [...document.querySelectorAll('.interestGrid input')];
-  const fields = ['name', 'service', 'length', 'status', 'role'];
+  const fields = ['contact', 'service', 'role'];
+  let finished = false;
   let background = {};
   function step(number) {
     $('intro').hidden = number !== 0;
@@ -35,17 +36,25 @@
   $('skipBackground').onclick = () => { background = {}; step(2); };
   $('backSetup').onclick = () => step(1);
   function finish(direct) {
+    if (finished) return;
+    finished = true;
     const chosen = direct ? [] : boxes.filter(box => box.checked);
-    S.profile.background = background;
+    S.profile.background = {...(S.profile.background || {}), ...background};
     S.profile.interests = chosen.map(box => box.value);
     S.started = true;
+    const selectedTopic = chosen.length === 1 && TRANSITION_TOPICS.find(topic => topic[0] === chosen[0].value);
+    if (selectedTopic) {
+      prepareTopic(selectedTopic);
+      save();
+      return;
+    }
+    S.activeTopic = null;
     enterChat();
     const labels = chosen.filter(box => box.value !== 'unsure').map(box => box.nextElementSibling.textContent);
     let reply = local('How are you doing today? What would help most right now?', 'מה שלומך היום? במה הכי יעזור לך שנתחיל?');
     if (direct) reply = local('What would you like to ask?', 'מה השאלה שלך?');
     else if (labels.length === 1) reply = local('What would you like to explore about '+labels[0].toLowerCase()+'?', 'מה מעניין אותך לבדוק בנושא '+labels[0]+'?');
     else if (labels.length > 1) reply = local('You picked '+labels.join(', ')+'. Which would you like to start with?', 'בחרת '+labels.join(', ')+'. במה נתחיל?');
-    if (chosen.length === 1 && TRANSITION_TOPICS.some(topic => topic[0] === chosen[0].value)) activateTopic(chosen[0].value);
     pushMsg('assistant',reply,{kind:'setup',topic:S.activeTopic});
     save();
     paintTopicPanel();

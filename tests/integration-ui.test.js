@@ -94,3 +94,68 @@ test('chat file restore is additive, repeatable and excludes unrelated profile f
   assert.throws(() => history.restore(target,{...backup,chats:[...backup.chats,[{role:'user'}]]}));
   assert.equal(target.savedChats,undefined);
 });
+
+for (const [file,key] of [['index.html','gtc_v2_state'],['indexH.html','gtc_H_state']]) {
+ test(file+': shortened intake and one selected interest produce exactly one topic prompt',async()=>{
+  const {dom,w,d,errors,requests}=await boot(file);
+  try {
+   if(file==='index.html')d.getElementById('btnLang').click();
+   d.getElementById('btnStart').click();
+   assert.deepEqual([...d.querySelectorAll('#background input,#background select')].map(n=>n.id),['bg-contact','bg-service','bg-role','bg-reserve']);
+   d.getElementById('bg-contact').value='tester@example.invalid';
+   d.getElementById('bg-service').value='General training unit';
+   d.getElementById('bg-role').value='commander';
+   d.getElementById('bg-reserve').checked=true;
+   d.getElementById('nextSetup').click();
+   d.querySelector('.interestGrid input[value="study"]').checked=true;
+   d.getElementById('finishSetup').click();d.getElementById('finishSetup').click();
+   assert.equal(w.eval('S.profile.background.contact'),'tester@example.invalid');
+   assert.equal(w.eval('S.profile.background.service'),'General training unit');
+   assert.equal(w.eval('S.profile.background.role'),'commander');assert.equal(w.eval('S.profile.background.reserve'),true);
+   assert.equal(w.eval('S.activeTopic'),'study');
+   assert.equal(d.querySelectorAll('#thread .turn').length,1);
+   for(let i=0;i<3;i++)d.querySelector('[data-topic="study"]').click();
+   assert.equal(d.querySelectorAll('#thread .turn').length,1);
+   assert.equal(w.eval('S.messages.length'),1);
+   assert.equal(requests.length,0,'contact and onboarding do not send a request');
+   assert.ok(!w.eval('systemPrompt(buildReference())').includes('tester@example.invalid'),'contact excluded from AI instructions');
+   assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
+  }finally{dom.window.close();}
+ });
+ test(file+': reselecting topics resumes answers and preserves their AI context',async()=>{
+  const {dom,w,d,requests,errors}=await boot(file);
+  try {
+   const topic=id=>d.querySelector('[data-topic="'+id+'"]').click();
+   topic('study');w.eval('pushMsg("user","STUDY_PERSONAL_QUESTION");pushMsg("assistant","STUDY_PERSONAL_REPLY")');
+   topic('travel');w.eval('pushMsg("user","TRAVEL_PERSONAL_QUESTION");pushMsg("assistant","TRAVEL_PERSONAL_REPLY")');
+   const count=w.eval('S.messages.length');
+   for(let i=0;i<3;i++){topic('study');topic('travel');}topic('study');
+   assert.equal(w.eval('S.messages.length'),count);
+   assert.match(d.querySelector('#thread').textContent,/STUDY_PERSONAL_REPLY/);
+   assert.ok(!d.querySelector('#thread').textContent.includes('TRAVEL_PERSONAL_REPLY'));
+   const pending=w.eval('sendUser("Please continue with my study plan")');
+   await until(()=>d.getElementById('ai-approve'));d.getElementById('ai-approve').click();await pending;
+   const payload=JSON.parse(requests[0].options.body);
+   assert.ok(payload.messages.some(m=>m.content==='STUDY_PERSONAL_REPLY'));
+   assert.ok(!payload.messages.some(m=>m.content==='TRAVEL_PERSONAL_REPLY'));
+   assert.ok(payload.messages.some(m=>m.content.includes('TRAVEL_PERSONAL_QUESTION')),'earlier user facts retained');
+   assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
+  }finally{dom.window.close();}
+ });
+ test(file+': saved duplicate topic introductions are hidden without deleting user history',async()=>{
+  const intro={role:'assistant',kind:'topic',topic:'study',text:'Repeated study introduction'};
+  const saved={started:true,lang:file==='index.html'?'en':'he',activeTopic:'study',phase:'open',profile:{strengths:[],costs:[],open:[],directions:[]},messages:[intro,intro,intro,{role:'user',text:'My real question'},{role:'assistant',text:'My useful answer'}]};
+  const {dom,w,d}=await boot(file,{storage:{[key]:JSON.stringify(saved)}});
+  try {
+   assert.equal(d.querySelectorAll('#thread .turn').length,3);
+   assert.match(d.querySelector('#thread').textContent,/My real question/);
+   assert.match(d.querySelector('#thread').textContent,/My useful answer/);
+   assert.equal(w.eval('S.messages.length'),5,'original transcript retained');
+   d.querySelector('[data-topic="study"]').click();assert.equal(w.eval('S.messages.length'),5);
+  }finally{dom.window.close();}
+ });
+ test(file+': Skip allows entry without contact details',async()=>{
+  const {dom,w,d}=await boot(file);
+  try{d.getElementById('btnStart').click();d.getElementById('skipBackground').click();d.getElementById('ownQuestion').click();assert.equal(d.getElementById('chat').hidden,false);assert.equal(w.eval('S.profile.background.contact'),undefined);}finally{dom.window.close();}
+ });
+}
