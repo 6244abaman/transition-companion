@@ -34,7 +34,13 @@
       const agree=node('button',copy('Agree and continue','מסכים/ה ולהמשיך',l));agree.id='ai-approve';agree.type='button';agree.onclick=()=>{if(identity(destination,provider)!==id){finish(false);return;}write({status:'granted',identity:id,provider,destination,scope:scope(),count:0,lastMessageId:null,at:new Date().toISOString()});finish(true);};
       const cancel=node('button',copy('Cancel','ביטול',l));cancel.id='ai-cancel';cancel.type='button';cancel.onclick=()=>{write({status:'declined'});finish(false);};
       d.oncancel=e=>{e.preventDefault();cancel.click();};pending={cancel:()=>finish(false)};
-      d.append(agree,cancel);document.body.append(d);d.showModal();cancel.focus();
+      const choices = node('div');
+      choices.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-block-start:18px';
+      for (const choice of [agree, cancel]) {
+        choice.style.cssText = 'width:auto;max-width:100%;min-height:44px;padding:8px 16px;border:2px solid #376164;border-radius:8px;background:#fff;color:#183d39;font:inherit;cursor:pointer';
+        choices.append(choice);
+      }
+      d.append(choices);document.body.append(d);d.showModal();cancel.focus();
     });
   }
   function settings(l=lang()){
