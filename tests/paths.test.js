@@ -7,7 +7,7 @@ const check = (n, ok, d) => { results.push(ok); console.log(ok?'✅':'❌', n, d
 function boot(storage){
   // localStorage must exist BEFORE the page scripts run, or the app boots empty
   return new JSDOM(html,{
-    url:'https://localhost/', runScripts:'dangerously', pretendToBeVisual:true,
+    url:'https://localhost/?practice=1', runScripts:'dangerously', pretendToBeVisual:true,
     beforeParse(win){ require('./browser-env').prepare(win); if (storage) win.localStorage.setItem('gtc_v2_state', storage); }
   });
 }
