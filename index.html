@@ -358,7 +358,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
       <p style="margin:0 0 12px">Keep your skills, goals, CV drafts, education plans and next steps in one place. You can return, edit, export or erase your information.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <a href="./my-journey.html?lang=en" style="display:inline-block;background:#145b76;color:white;font-weight:700;text-decoration:none;padding:12px 16px;border-radius:10px">Open My Journey</a>
-        <a href="./skills-business.html?lang=en" style="display:inline-block;border:1px solid #155b73;color:#155b73;font-weight:700;text-decoration:none;padding:11px 15px;border-radius:10px">Discover my 36 skills</a>
+        <a href="./adaptive-skills.html?lang=en" style="display:inline-block;border:1px solid #155b73;color:#155b73;font-weight:700;text-decoration:none;padding:11px 15px;border-radius:10px">Discover my strengths</a>
       </div>
       <p style="font-size:.81rem;margin:11px 0 0;opacity:.9">Saved locally in this browser. Sharing profile details with AI is off by default.</p>
     </section>
@@ -1067,7 +1067,7 @@ function businessSkillsPanel(body){
     ?"הדירוגים הם הערכה עצמית. רק דוגמאות שאישרתם יוכלו לשמש בטיוטות."
     :"Ratings are self-assessments. Only examples you confirm can be used in drafts."));
   const link=el("a","prop",S.lang==="he"?"פתיחה או עדכון של הערכת המיומנויות":"Open or update my skill assessment");
-  link.href="./skills-business.html?lang="+S.lang;link.style.display="block";link.style.margin="10px 0";
+  link.href="./adaptive-skills.html?lang="+S.lang;link.style.display="block";link.style.margin="10px 0";
   section.appendChild(link);
   b.slice().sort((a,b)=>b.rating-a.rating).forEach(x=>{
     const item=el("div","entry strength");
