@@ -48,9 +48,10 @@
       const node=item[4]?document.createElement('a'):document.createElement('button');
       node.className='combined-tool';
       if(item[4]) {
-        node.href=item[4].replace('index.html', S.lang==='he'?'indexH.html':'index.html');
-        if(node.href.includes('my-journey.html')||node.href.includes('adaptive-skills.html'))
-          node.href+=(node.href.includes('?')?'&':'?')+'lang='+S.lang;
+        const path=item[4].replace('index.html', S.lang==='he'?'indexH.html':'index.html');
+        const uri=new URL(path,location.href);
+        if(path.includes('my-journey.html')||path.includes('adaptive-skills.html'))uri.searchParams.set('lang',S.lang);
+        node.href=uri.href;
       } else {
         node.type='button';
         node.onclick=()=>{ $('btnStart').click(); };
