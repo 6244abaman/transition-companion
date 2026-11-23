@@ -1136,11 +1136,12 @@ function paintStatic(){
   document.documentElement.dir = t.dir;
   $("mark").firstChild.nodeValue = t.mark;
   $("markSub").textContent = t.markSub;
+  $("btnLang").textContent = S.lang==="he"?"English":"עברית";
   $("btnProfile").textContent = t.profile;
   $("btnHelp").textContent = t.support;
   $("btnAI").textContent = S.lang === "he" ? "שאל AI" : "Ask AI";
   $("btnVoiceSettings").textContent = S.lang === "he" ? "הגדרות קול" : "Voice settings";
-  $("btnVoice").textContent = "🔊 האזן";
+  $("btnVoice").textContent = S.lang==="he"?"🔊 האזן":"🔊 Listen";
   $("btnVoice").title = "האזן לתשובה";
   $("btnVoice").setAttribute("aria-label", $("btnVoice").title);
   $("btnMic").setAttribute("aria-label", S.lang === "he" ? "דבר" : "Speak");
@@ -1171,6 +1172,13 @@ document.querySelectorAll(".choice").forEach(b => b.onclick = () => {
   paintStatic(); save();
 });
 
+$("btnLang").onclick = () => {
+  S.lang = S.lang === "he" ? "en" : "he";
+  stopSpeaking();
+  S.voiceURI=null;
+  save();paintStatic();renderThread();
+  if($("drawer").classList.contains("on")) closeDrawer();
+};
 $("btnVoice").onclick = () => {
   if (window.speechSynthesis && window.speechSynthesis.speaking) { stopSpeaking(); return; }
   const last = [...S.messages].reverse().find(m => m.role === "assistant");
