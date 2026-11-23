@@ -42,3 +42,38 @@ test('separate skills page has bilingual, browser-local controls',()=>{
  for(const v of ['lang="en"','adaptive-skills-engine.js','journey-store.js','מומנטום','id="lang"','id="export"','id="confirm"','id="skip"','id="more"'])assert.ok(text.includes(v),v);
  assert.ok(!text.includes('100% Privacy'));
 });
+
+test('mobile-friendly assessment flows through evidence, skip, results and Hebrew switch',()=>{
+ const {JSDOM}=require('jsdom');
+ const path=require('node:path');
+ const root=path.join(__dirname,'..');
+ let page=fs.readFileSync(path.join(root,'adaptive-skills.html'),'utf8');
+ page=page.replace(/<script src="\.\/(skills-source\.js|adaptive-skills-engine\.js|journey-store\.js)"><\/script>/g,(_,name)=>{
+   const js=fs.readFileSync(path.join(root,name),'utf8').replace(/<\/script/gi,'<\\/script');
+   return '<script>'+js+'</script>';
+ });
+ const dom=new JSDOM(page,{runScripts:'dangerously',url:'https://example.test/adaptive-skills.html',beforeParse(win){win.scrollTo=()=>{};}});
+ const doc=dom.window.document;
+ assert.equal(doc.getElementById('role').options.length,15);
+ const acts=doc.querySelectorAll('#activities input');
+ assert.ok(acts.length>=6);acts[2].checked=true;
+ doc.getElementById('role').value='7';
+ doc.getElementById('begin').click();
+ assert.equal(doc.getElementById('setup').hidden,true);
+ assert.equal(doc.getElementById('question').hidden,false);
+ doc.querySelector('#practice button').click(); // repeated experience
+ assert.equal(doc.getElementById('evidenceFields').hidden,false);
+ doc.getElementById('evidence').value='I coordinated a non-sensitive task and recorded a useful result.';
+ doc.getElementById('autonomy').value='independent';
+ doc.getElementById('result').checked=true;
+ doc.getElementById('confirm').checked=true;
+ doc.getElementById('next').click();
+ assert.equal(dom.window.MomentumJourney.read().lifeSkills.length,1);
+ for(let i=1;i<7;i++)doc.getElementById('skip').click();
+ assert.equal(doc.getElementById('results').hidden,false);
+ assert.ok(doc.getElementById('resultList').textContent.length>0);
+ doc.getElementById('lang').click();
+ assert.equal(doc.documentElement.dir,'rtl');
+ assert.equal(doc.getElementById('jLink').href.includes('lang=he'),true);
+ dom.window.close();
+});
