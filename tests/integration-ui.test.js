@@ -50,15 +50,15 @@ test('unavailable AI reports an error rather than inventing a personal answer',a
   await until(()=>d.getElementById('ai-approve'));
   d.getElementById('ai-approve').click();await p;
   assert.equal(w.eval('S.practice'),false);
-  assert.match(d.getElementById('thread').textContent,/AI service is not responding/);
-  const retry=[...d.querySelectorAll('button')].find(x=>/Retry my question/.test(x.textContent));
+  assert.match(d.getElementById('thread').textContent,/AI service is not responding|שירות ה-AI אינו מחובר/);
+  const retry=[...d.querySelectorAll('button')].find(x=>/Retry my question|לנסות שוב עם השאלה/.test(x.textContent));
   assert.ok(retry);
   retry.click();
   assert.equal(d.getElementById('input').value,'Hello');
   fail=false; // Even an empty 200 response must not masquerade as a real answer.
   await w.eval('sendUser("Try again")');
   assert.equal(w.eval('S.practice'),false);
-  assert.match(d.getElementById('thread').textContent,/AI service is not responding/);
+  assert.match(d.getElementById('thread').textContent,/AI service is not responding|שירות ה-AI אינו מחובר/);
  }finally{dom.window.close();}
 });
 test('malformed model metadata cannot create unevidenced skills or break the conversation',async()=>{
