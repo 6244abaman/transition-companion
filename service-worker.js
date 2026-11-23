@@ -23,6 +23,8 @@ const APP_FILES = [
   "./index.html",
   "./indexH.html",
   "./skills-business.html",
+  "./adaptive-skills.html",
+  "./adaptive-skills-engine.js",
   "./my-journey.html",
   "./my-journey.js",
   "./journey-store.js",
