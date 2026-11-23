@@ -39,11 +39,26 @@ for(const file of ['index.html','indexH.html'])test(file+': cancel sends nothing
  assert.equal(errors.length,0,errors.map(e=>e.message).join('\n'));
  }finally{dom.window.close();}
 });
-test('unavailable AI can be retried and empty responses cannot masquerade as live answers',async()=>{
- let fail=true;const {dom,w,d}=await boot('index.html',{fetch:async()=>{if(fail)throw new Error('Unavailable');return {ok:true,json:async()=>({content:[]})};}});
- try{d.getElementById('btnStart').click();let p=w.eval('sendUser("Hello")');await until(()=>d.getElementById('ai-approve'));d.getElementById('ai-approve').click();await p;assert.equal(w.eval('S.practice'),true);
- const retry=[...d.querySelectorAll('button')].find(x=>/Retry live|ניסיון חיבור/.test(x.textContent));assert.ok(retry);retry.click();assert.equal(w.eval('S.practice'),false);fail=false;
- p=w.eval('sendUser("Try again")');await p;assert.equal(w.eval('S.practice'),true);
+test('unavailable AI reports an error rather than inventing a personal answer',async()=>{
+ let fail=true;const {dom,w,d}=await boot('index.html',{fetch:async()=>{
+   if(fail)throw new Error('Unavailable');
+   return {ok:true,json:async()=>({content:[]})};
+ }});
+ try{
+  d.getElementById('btnStart').click();
+  let p=w.eval('sendUser("Hello")');
+  await until(()=>d.getElementById('ai-approve'));
+  d.getElementById('ai-approve').click();await p;
+  assert.equal(w.eval('S.practice'),false);
+  assert.match(d.getElementById('thread').textContent,/AI service is not responding/);
+  const retry=[...d.querySelectorAll('button')].find(x=>/Retry my question/.test(x.textContent));
+  assert.ok(retry);
+  retry.click();
+  assert.equal(d.getElementById('input').value,'Hello');
+  fail=false; // Even an empty 200 response must not masquerade as a real answer.
+  await w.eval('sendUser("Try again")');
+  assert.equal(w.eval('S.practice'),false);
+  assert.match(d.getElementById('thread').textContent,/AI service is not responding/);
  }finally{dom.window.close();}
 });
 test('malformed model metadata cannot create unevidenced skills or break the conversation',async()=>{
