@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const KEY='tc-public-benefits-v1', DAY=86400000;
- let feed=null, pending=null, offline=false, host=null, lang='en', filter='all', ask=null, search='';
+ let feed=null, pending=null, offline=false, host=null, lang='en', filter='all', ask=null, search='', expanded=false;
  const words={
   en:{title:'Updated Information and Benefits',intro:'Government rights, shows, discounts, career opportunities and special offers for life after service.',cadence:'Sources are scheduled for review every 3 days. This is dated information, not a live ticket or eligibility check.',checked:'Sources checked',due:'Next review due',stale:'Review overdue — verify current details with the provider before acting.',offline:'Could not download a newer edition. Saved information may be out of date.',empty:'No verified listings in this category yet. Check the source links again after the next review.',loading:'Loading the latest published information…',failed:'Information is unavailable. Please reconnect and try again.',refresh:'Load latest edition',source:'Open source',action:'Open provider / registration',chat:'Ask the Companion',eligible:'Who it is for',next:'Next step',date:'Event / deadline',unknown:'Not announced or not verified',all:'All',rights:'Government rights',shows:'Shows & culture',discounts:'Discounts',career:'Career fairs & jobs',training:'Courses & scholarships',private:'Private & nonprofit offers',ongoing:'Ongoing route',watch:'Awaiting announcement',restricted:'Provider access required',upcoming:'Upcoming',open:'Open at last check',closed:'Closed',ended:'Ended',expired:'Expired',government:'Government',provider:'Private provider',nonprofit:'Nonprofit',notice:'Checking an edition does not re-verify its sources. Open the provider for current prices, places and personal eligibility.'},
   he:{title:'מידע והטבות מעודכנים',intro:'זכויות ממשלתיות, הופעות, הנחות, הזדמנויות קריירה והצעות מיוחדות לחיים אחרי השירות.',cadence:'בדיקת המקורות מתוכננת אחת ל־3 ימים. זהו מידע מתוארך, לא בדיקת מלאי כרטיסים או זכאות אישית בזמן אמת.',checked:'המקורות נבדקו',due:'הבדיקה הבאה',stale:'עבר מועד הבדיקה — יש לאמת פרטים עדכניים מול הגוף המציע לפני פעולה.',offline:'לא ניתן להוריד מהדורה חדשה יותר. ייתכן שהמידע השמור אינו עדכני.',empty:'אין עדיין פריטים מאומתים בקטגוריה זו. בדקו שוב במקורות לאחר העדכון הבא.',loading:'טוען את המידע האחרון שפורסם…',failed:'המידע אינו זמין. התחברו לרשת ונסו שוב.',refresh:'טעינת המהדורה האחרונה',source:'פתיחת המקור',action:'לאתר הגוף / הרשמה',chat:'שאלו את המלווה',eligible:'למי זה מיועד',next:'הצעד הבא',date:'מועד האירוע / מועד אחרון',unknown:'טרם פורסם או לא אומת',all:'הכול',rights:'זכויות ממשלתיות',shows:'הופעות ותרבות',discounts:'הנחות',career:'ירידי תעסוקה ומשרות',training:'קורסים ומלגות',private:'הצעות פרטיות ועמותות',ongoing:'מסלול מתמשך',watch:'ממתינים לפרסום',restricted:'נדרשת גישה אצל הספק',upcoming:'אירוע קרוב',open:'פתוח לפי הבדיקה האחרונה',closed:'סגור',ended:'הסתיים',expired:'פג תוקף',government:'ממשלתי',provider:'ספק פרטי',nonprofit:'עמותה',notice:'טעינת מהדורה אינה בדיקה מחדש של המקורות. מחיר, מקום פנוי וזכאות אישית יש לבדוק באתר הגוף המציע.'}
@@ -112,10 +112,13 @@
   const stamp=node('p',w.checked+': '+date(feed.reviewedAt)+' · '+w.due+': '+date(feed.nextReviewDue),'benefits-small');stamp.setAttribute('role','status');host.append(stamp);
   if(offline)host.append(node('p',w.offline,'benefits-warning'));
   if(Date.now()>=Date.parse(feed.nextReviewDue))host.append(node('p',w.stale,'benefits-warning'));
-  host.append(matchingPanel());
-  const searchForm=node('form'),searchField=field(tr('חיפוש זכויות והזדמנויות','Search rights and opportunities'),'search',search),searchButton=node('button',tr('חיפוש','Search'));searchButton.type='submit';searchForm.append(searchField.wrap,searchButton);searchForm.onsubmit=e=>{e.preventDefault();search=searchField.input.value.trim().toLowerCase();render();};host.append(searchForm);
+  const explorer=node('details'); explorer.className='benefits-explorer'; explorer.open=expanded;
+  const browse=node('summary',lang==='he'?'פתיחת רשימת זכויות והזדמנויות ('+feed.items.length+')':'Browse rights and opportunities ('+feed.items.length+')');
+  explorer.append(browse);explorer.addEventListener('toggle',()=>{expanded=explorer.open;});host.append(explorer);
+  explorer.append(matchingPanel());
+  const searchForm=node('form'),searchField=field(tr('חיפוש זכויות והזדמנויות','Search rights and opportunities'),'search',search),searchButton=node('button',tr('חיפוש','Search'));searchButton.type='submit';searchForm.append(searchField.wrap,searchButton);searchForm.onsubmit=e=>{e.preventDefault();search=searchField.input.value.trim().toLowerCase();expanded=true;render();};explorer.append(searchForm);
   const tabs=node('div',null,'benefits-filters');tabs.setAttribute('aria-label',w.title);
-  for(const key of ['all',...categories]){const b=node('button',w[key]);b.type='button';b.setAttribute('aria-pressed',String(filter===key));b.onclick=()=>{filter=key;render();};tabs.append(b);}host.append(tabs);
+  for(const key of ['all',...categories]){const b=node('button',w[key]);b.type='button';b.setAttribute('aria-pressed',String(filter===key));b.onclick=()=>{filter=key;expanded=true;render();};tabs.append(b);}explorer.append(tabs);
   const cards=node('div',null,'benefits-grid');let count=0;
   for(const item of feed.items.filter(i=>(filter==='all'||i.category===filter)&&(!search||JSON.stringify([i.en,i.he]).toLowerCase().includes(search)))){
    const t=item[lang],status=state(item),old=stale(item);count++;
@@ -128,7 +131,7 @@
    if(ask){const b=node('button',w.chat);b.type='button';b.onclick=()=>ask((lang==='he'?'עזור לי לבדוק אם זה מתאים לי ומה הצעד הבא: ':'Help me check whether this applies to me and what to do next: ')+t.title+'\n'+item.sourceUrl);actions.append(b);}
    card.append(actions,workflow(item));cards.append(card);
   }
-  if(!count)cards.append(node('p',w.empty));host.append(cards,node('p',w.notice,'benefits-small'),editorialPanel());
+  if(!count)cards.append(node('p',w.empty));explorer.append(cards,node('p',w.notice,'benefits-small'),editorialPanel());
  }
  async function refresh(force=false){
   if(pending)return pending;
