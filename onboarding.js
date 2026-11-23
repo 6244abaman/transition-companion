@@ -50,7 +50,7 @@
       if(item[4]) {
         const path=item[4].replace('index.html', S.lang==='he'?'indexH.html':'index.html');
         const uri=new URL(path,location.href);
-        if(path.includes('my-journey.html')||path.includes('adaptive-skills.html'))uri.searchParams.set('lang',S.lang);
+        uri.searchParams.set('lang',S.lang);
         node.href=uri.href;
       } else {
         node.type='button';
