@@ -19,14 +19,55 @@
     for (const item of document.querySelectorAll('[data-en][data-he]')) {
       item.textContent = item.dataset[S.lang];
     }
-    $('wEyebrow').textContent = local('Back to the Future','בחזרה לעתיד');
-    $('wTitle').textContent = local('Welcome to Momentum','ברוכים הבאים למומנטום');
-    $('wLede').textContent = local('Thank you for your service. This companion is here to answer your questions and help you find your next step. You can type or speak.', 'תודה על השירות שלך. המלווה כאן כדי לענות על שאלות ולעזור לך למצוא את הצעד הבא. אפשר לכתוב או לדבר.');
-    $('btnStart').textContent = local('Start','התחלה');
+    $('wEyebrow').textContent = local('MOMENTUM · YOUR NEXT CHAPTER','מומנטום · הפרק הבא שלך');
+    $('wTitle').textContent = local('Your next chapter starts with a conversation.','הפרק הבא שלך מתחיל בשיחה.');
+    $('wLede').textContent = local('Thank you for your service. Whether you have a clear plan or are still exploring, we can talk, discover your strengths and find the next step that fits you.', 'תודה על השירות שלך. בין שיש לך תוכנית ברורה ובין שאתה עדיין בודק כיוונים, נוכל לשוחח, לגלות חוזקות ולמצוא יחד את הצעד הבא שמתאים לך.');
+    $('btnStart').textContent = local('Start — let’s talk','נתחיל — בואו נדבר');
     const n = $('setupProgress').value;
     $('stepCount').textContent = local('Step '+n+' of 2','שלב '+n+' מתוך 2');
   }
-  window.paintOnboarding = paint;
+
+  const toolDefs=[
+    ["strength","✦","Discover my strengths","לגלות את החוזקות שלי","./adaptive-skills.html","Short personalized assessment","הערכה אישית קצרה"],
+    ["journey","◎","My Journey","המסע שלי","./my-journey.html","Goals, plans and confirmed skills","יעדים, תוכניות ומיומנויות מאושרות"],
+    ["cv","▤","CV builder","בניית קורות חיים","./my-journey.html#cvs","Draft and edit with real examples","טיוטה ועריכה על סמך דוגמאות"],
+    ["study","◈","Studies and next steps","לימודים והמשך הדרך","./my-journey.html#education","Keep study ideas and dates","לשמור כיווני לימוד ומועדים"],
+    ["benefit","₪","Rights and opportunities","זכויות והזדמנויות","./index.html?section=updates","Dated information, check official sources","מידע עם תאריך וקישורים רשמיים"],
+    ["career","◉","Explore work and interviews","עבודה וראיונות",null,"Discuss paths and practice questions","לשוחח על כיוונים ולתרגל שאלות"]
+  ];
+  const extras=document.createElement('section');
+  extras.id='combined-tools';
+  extras.className='combined-tools';
+  extras.innerHTML='<div class="combined-head"><button type="button" id="toggleCombinedTools" aria-expanded="false" aria-controls="combinedToolGrid"></button><p id="toolsDisclosure"></p></div><div id="combinedToolGrid" class="combined-grid" hidden></div>';
+  $('btnStart').after(extras);
+  function paintExtras(){
+    $('toggleCombinedTools').textContent=local('Explore tools','לגלות את הכלים');
+    $('toolsDisclosure').textContent=local('Optional. Start a conversation, or choose a tool when you need one.','אפשר לבחור כלי או להתחיל בשיחה. אין צורך למלא שאלון.');
+    const grid=$('combinedToolGrid');grid.replaceChildren();
+    toolDefs.forEach(item=>{
+      const node=item[4]?document.createElement('a'):document.createElement('button');
+      node.className='combined-tool';
+      if(item[4]) {
+        node.href=item[4].replace('index.html', S.lang==='he'?'indexH.html':'index.html');
+        if(node.href.includes('my-journey.html')||node.href.includes('adaptive-skills.html'))
+          node.href+=(node.href.includes('?')?'&':'?')+'lang='+S.lang;
+      } else {
+        node.type='button';
+        node.onclick=()=>{ $('btnStart').click(); };
+      }
+      const icon=document.createElement('strong');icon.textContent=item[1];icon.setAttribute('aria-hidden','true');
+      const title=document.createElement('b');title.textContent=local(item[2],item[3]);
+      const desc=document.createElement('small');desc.textContent=local(item[5],item[6]);
+      node.append(icon,title,desc);grid.append(node);
+    });
+  }
+  $('toggleCombinedTools').onclick=()=>{
+    const grid=$('combinedToolGrid');grid.hidden=!grid.hidden;
+    $('toggleCombinedTools').setAttribute('aria-expanded',String(!grid.hidden));
+  };
+  const originalPaint=paint;
+  window.paintOnboarding=()=>{originalPaint();paintExtras();};
+
   $('btnStart').onclick = () => step(1);
   $('bg-reserve').onchange = () => {
     const enabled = $('bg-reserve').checked;
@@ -68,5 +109,5 @@
   }
   $('finishSetup').onclick = () => finish(false);
   $('ownQuestion').onclick = () => finish(true);
-  paint();
+  window.paintOnboarding();
 })();
