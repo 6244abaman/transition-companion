@@ -69,3 +69,22 @@ html[lang="en"] :is(h1,h2,h3,h4,h5,h6)::first-letter{text-transform:uppercase}
 #contactNote,#serviceNote{font-size:.85rem;color:var(--ink-2);margin:-.3rem 0 .8rem}
 .guide-topics{gap:10px}
 .guide-topics span{display:inline-block;margin-inline-end:4px}
+
+/* Combined separate-app welcome: hero first, optional tools below. */
+#intro{max-width:46rem}
+.welcome-hero{background:linear-gradient(130deg,#e9f4f1,#f5f9fc)!important;padding:25px 25px 20px!important;border:1px solid #c8dfdf}
+.welcome-hero .eyebrow{letter-spacing:.09em;text-transform:uppercase;font-size:12px;font-weight:800}
+.welcome-hero .hello{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(27px,5.8vw,40px);font-weight:750;line-height:1.16;letter-spacing:-.03em}
+.welcome-hero .lede{font-size:15px;line-height:1.65;max-width:39rem}
+#btnStart{width:100%;max-width:360px;font-weight:750;min-height:52px}
+.combined-tools{margin:16px 0 20px}
+.combined-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#toggleCombinedTools{border:1px solid #a6c4cc;border-radius:10px;background:white;color:#185b6f;padding:11px 16px;font-weight:700;cursor:pointer;min-height:44px}
+#toolsDisclosure{font-size:13px;color:#63747b;margin:0;flex:1 1 220px}
+.combined-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0}
+.combined-tool{display:grid;grid-template-columns:30px 1fr;column-gap:9px;align-items:center;padding:13px;border:1px solid #d0e0e5;background:white;color:#18495c;border-radius:12px;text-decoration:none;text-align:start;min-height:83px;cursor:pointer;font:inherit}
+.combined-tool strong{grid-row:span 2;color:#24768b;font-size:23px;text-align:center}
+.combined-tool b{font-size:14px;line-height:1.35}
+.combined-tool small{color:#5b7180;font-size:12px}
+.combined-tool:hover,.combined-tool:focus-visible{border-color:#1e7896;background:#f0f8f9}
+@media(max-width:560px){.welcome-hero{padding:20px 17px!important}.combined-grid{grid-template-columns:1fr}}
