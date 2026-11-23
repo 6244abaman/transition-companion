@@ -889,7 +889,7 @@ function requestedTopic(text){
   ];
   // Natural benefit questions are direct topic changes even when the speaker says
   // "What are my rights?" rather than selecting a topic chip.
-  if (/^(?:what (?:are|is) (?:my|the) (?:rights|benefits)\b|what (?:rights|benefits)\b|which (?:rights|benefits)\b|what am i entitled to\b|מה (?:הן |הם )?(?:הזכויות|ההטבות)(?: שלי)?\b|אילו (?:זכויות|הטבות)\b|לאילו (?:זכויות|הטבות)\b)/i.test(String(text||"").trim()))
+  if (/^(?:what (?:are|is) (?:my|the) (?:rights|benefits)\b|what (?:rights|benefits)\b|which (?:rights|benefits)\b|what am i entitled to\b|מה (?:הן |הם )?(?:הזכויות|ההטבות)(?: שלי)?(?=\s|[?!.]|$)|אילו (?:זכויות|הטבות)\b|לאילו (?:זכויות|הטבות)\b)/i.test(String(text||"").trim()))
     return "rights";
   const match=intents.find(([,pattern])=>pattern.test(request));
   return match?match[0]:null;
