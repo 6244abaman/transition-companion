@@ -22,3 +22,8 @@
 .benefits-check input{width:20px;height:20px;flex:none}
 .benefits-match{border-inline-start:3px solid #64876e;padding:10px;background:#eaf3eb}
 .benefits-preparation>button{margin:5px}
+
+#benefitsUpdates .benefits-explorer{margin-top:16px;border:1px solid #c7dad8;border-radius:12px;background:#fff;overflow:hidden}
+#benefitsUpdates .benefits-explorer>summary{cursor:pointer;padding:14px 16px;min-height:52px;font-weight:750;line-height:1.4;list-style-position:inside;color:#145d6d}
+#benefitsUpdates .benefits-explorer>summary:focus-visible{outline:3px solid #2a7da6;outline-offset:-3px}
+#benefitsUpdates .benefits-explorer[open]{padding:0 14px 14px}
