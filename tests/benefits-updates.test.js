@@ -84,3 +84,24 @@ test('integrated preparation stays local, saves one Journey action, and does not
   assert.match(e({id:'grant'},{date:'2026-08-01',service:'other'},new Date('2026-11-17')),/דורש בירור/);
  }finally{dom.window.close();}
 });
+
+test('relationships to benefits is a short conversation with a collapsed bilingual catalogue',async()=>{
+ const {dom,w,d,errors}=boot('indexH.html');
+ try{
+  d.querySelector('[data-topic="family"]').click();
+  d.querySelector('[data-topic="updates"]').click();
+  await w.MomentumBenefits.refresh();
+  const panel=d.getElementById('benefitsUpdates');
+  const explorer=panel.querySelector('details.benefits-explorer');
+  assert.ok(explorer,'dated catalogue has an optional details control');
+  assert.equal(explorer.open,false,'full catalogue is not expanded automatically');
+  assert.equal(panel.querySelectorAll('article').length,data.items.length,'sources remain available by choice');
+  assert.match(d.getElementById('thread').textContent,/אפשר למצוא את ההטבות/);
+  d.getElementById('btnLang').click();
+  assert.equal(panel.dir,'ltr');
+  assert.match(panel.querySelector('.benefits-explorer summary').textContent,/Browse rights and opportunities/);
+  assert.equal(w.eval('requestedTopic("What are my rights and benefits after discharge?")'),'rights');
+  assert.equal(w.eval('requestedTopic("מה הזכויות שלי אחרי השחרור?")'),'rights');
+  assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
+});
