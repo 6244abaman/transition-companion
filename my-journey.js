@@ -242,8 +242,8 @@
       ["saveRecord","save"],["cancelRecord","cancel"],["footerText","footer"]
     ].forEach(x => setText(x[0], x[1]));
     $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html");
-    $("skillsLink").href = "./skills-business.html?lang=" + lang;
-    $("skillEditLink").href = "./skills-business.html?lang=" + lang;
+    $("skillsLink").href = "./adaptive-skills.html?lang=" + lang;
+    $("skillEditLink").href = "./adaptive-skills.html?lang=" + lang;
     $("importMode").options[0].textContent = T().importMerge;
     $("importMode").options[1].textContent = T().importReplace;
     document.querySelectorAll("[data-tab]").forEach(b => {
