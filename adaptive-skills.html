@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#164c72">
+<title>Discover your strengths · Momentum</title>
+<style>
+:root{font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#20384c;background:#f4f7f8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}
+a{color:#125777}header{background:#fff;border-bottom:1px solid #dbe7ed}
+.nav{max-width:980px;margin:auto;min-height:68px;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:.025em;color:#194861}.navlinks{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.navlinks a{font-size:.9rem}
+button,.btn{border:1px solid #a6c2cc;background:#fff;color:#14546b;border-radius:11px;min-height:43px;padding:10px 16px;font-weight:650;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button.primary,.btn.primary{color:white;border-color:#145d79;background:#145d79}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #2d82af;outline-offset:2px}
+button[disabled]{opacity:.48;cursor:not-allowed}button.selected{background:#ddf1ef;border:2px solid #187081;color:#0f5365}
+main{max-width:820px;margin:0 auto;padding:25px 18px 70px}
+.eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:.76rem;font-weight:800;color:#347888}
+h1{font-size:clamp(2rem,6vw,3.55rem);line-height:1.14;letter-spacing:-.035em;margin:14px 0}
+h2{font-size:1.5rem;margin:6px 0 14px;line-height:1.22}h3{font-size:1.07rem;margin:10px 0 5px}
+p{margin:8px 0 15px}.lead{font-size:1.08rem;color:#445f70;max-width:630px}
+.card{background:#fff;border:1px solid #d9e6eb;border-radius:20px;padding:23px;margin:19px 0;box-shadow:0 3px 18px #0f4d6b08}
+.info{background:#eaf4f5;border:1px solid #c6dfe3;border-radius:13px;padding:13px 16px;color:#315969}
+.warning{font-size:.87rem;color:#5c6e76}.field{margin:16px 0}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+.field select,.field textarea{width:100%;background:#fff;color:#1d3747;border:1px solid #abc6d0;border-radius:11px;padding:12px}
+.field textarea{min-height:110px;resize:vertical}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:11px 0 18px}
+.options label{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1px solid #bdd3db;border-radius:12px;cursor:pointer}
+.options label:has(input:checked){background:#e7f4f3;border-color:#297e86}
+.options input{margin-top:5px;accent-color:#146b79}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.progress{height:9px;background:#e3edf0;border-radius:12px;overflow:hidden}
+.progress>div{height:100%;background:#237789;transition:width .25s ease;width:0}
+.meta{display:flex;justify-content:space-between;gap:9px;margin:8px 0 18px;color:#536a76;font-size:.86rem}
+.pills{display:flex;gap:8px;flex-wrap:wrap}.pills button{flex:1 1 160px}
+.row{display:flex;gap:12px;align-items:center}.row input[type=checkbox]{width:21px;height:21px;flex:none}
+.item{padding:16px;border:1px solid #d9e6e9;border-radius:12px;margin:10px 0}
+.item p{color:#496879;font-size:.92rem}.counter{font-size:.82rem;color:#4b7180;font-weight:750}
+hr{border:0;border-top:1px solid #dfe8eb;margin:22px 0}
+[hidden]{display:none!important}footer{color:#59717b;font-size:.85rem;padding:10px 18px 40px;text-align:center}
+@media(max-width:600px){main{padding:15px 13px 50px}.card{padding:17px;border-radius:16px}.options{grid-template-columns:1fr}.nav{padding:11px 14px}.navlinks a{font-size:.8rem}.pills button{flex-basis:120px}}
+</style>
+<script src="./skills-source.js"></script>
+<script src="./adaptive-skills-engine.js"></script>
+<script src="./journey-store.js"></script>
+</head>
+<body>
+<header><nav class="nav">
+<div class="brand">מומנטום · MOMENTUM</div>
+<div class="navlinks"><a id="back" href="./index.html">← Companion</a><a id="journey" href="./my-journey.html?lang=en#skills">My Journey</a><button id="lang" type="button">עברית</button></div>
+</nav></header>
+<main>
+<div class="eyebrow" id="eyebrow">PERSONAL STRENGTHS DISCOVERY</div>
+<h1 id="title">The strengths you built are worth discovering.</h1>
+<p class="lead" id="lead">You will not be asked to rate 36 or 63 skills. Tell us a little about what you actually did and explore seven relevant strengths. Your role suggests questions; only your examples confirm a skill.</p>
+<div class="info" id="privacy">Private by default: answers are saved in this browser, not sent by this assessment to AI or Momentum. Browser storage is not encrypted. Please do not include operational details, locations or other people's names.</div>
+<section class="card" id="setup">
+<h2 id="setupTitle">Start with your experience</h2>
+<div class="field"><label id="roleLabel" for="role">What type of role best describes your service?</label><select id="role"></select></div>
+<div class="field"><label id="rankLabel" for="rank">What was your level of responsibility?</label><select id="rank"></select></div>
+<div class="field"><label id="activityLabel">What did you actually spend time doing? Choose any that fit.</label><div class="options" id="activities"></div></div>
+<p class="warning" id="changeNote">Your role and rank only choose which questions to ask. Soldiers from any service background can demonstrate any skill.</p>
+<div class="actions"><button type="button" id="begin" class="primary">Explore my seven strengths</button></div>
+</section>
+<section class="card" id="question" hidden>
+<div class="progress" aria-hidden="true"><div id="progress"></div></div>
+<div class="meta"><span id="counter"></span><span id="domain"></span></div>
+<h2 id="qTitle"></h2><p id="qDetail"></p>
+<div class="field"><label id="practiceLabel">How often did you use this skill?</label><div class="pills" id="practice"></div></div>
+<div id="evidenceFields" hidden>
+<div class="field"><label id="evidenceLabel" for="evidence">One real example: what did you personally do?</label><textarea id="evidence" maxlength="1500" placeholder="Describe your action and its result without operational details."></textarea></div>
+<div class="field"><label id="autonomyLabel" for="autonomy">How independently did you act?</label><select id="autonomy"></select></div>
+<label class="row"><input type="checkbox" id="result"><span id="resultLabel">My action had an observable result</span></label>
+<label class="row"><input type="checkbox" id="confirm"><span id="confirmLabel">This is accurate, non-sensitive, and may be used in my own CV drafts</span></label>
+</div>
+<p class="warning" id="evidenceHint">Only a confirmed example can be saved as evidence of a skill. You can skip any question.</p>
+<div class="actions"><button id="previous" type="button">Previous</button><button id="skip" type="button">Skip</button><button id="next" type="button" class="primary">Next</button></div>
+</section>
+<section class="card" id="results" hidden>
+<div class="eyebrow" id="finishEyebrow">YOUR OWN EVIDENCE</div>
+<h2 id="resultTitle">Your emerging strengths</h2>
+<p id="resultIntro">These are possibilities to explore, not an official assessment. Only confirmed examples are available for CV drafting.</p>
+<div id="resultList"></div>
+<div class="actions"><button id="resume" type="button">Review answers</button><button id="more" type="button">Explore three more skills</button><button id="export" type="button">Export my results</button><button id="reset" type="button">Start a new assessment</button></div>
+<hr>
+<h3 id="nextHeading">Where would you like to go next?</h3>
+<div class="actions"><a id="jLink" class="btn primary" href="./my-journey.html?lang=en#skills">View My Journey</a><a id="chatLink" class="btn" href="./index.html">Continue the conversation</a></div>
+</section>
+</main>
+<footer id="footer">Momentum's 63-skill source is used for question selection. Source entry 63 repeats entry 55 and is not counted twice. This assessment is not a job qualification test.</footer>
+<script>
+(function(){
+"use strict";
+const source=window.MomentumSkillSource,engine=window.MomentumAdaptiveSkills,journey=window.MomentumJourney;
+const $=id=>document.getElementById(id);
+const KEY="momentum-adaptive-short-v1";
+const heRoles=["לחימה ישירה","שריון / תותחנים / הגנה אווירית","הנדסה קרבית / תמיכה טכנית בשטח","תצפית / איסוף מודיעין","רפואה קרבית / חילוץ","מבצעים / חדר בקרה","מודיעין / מחקר","סייבר / תוכנה / נתונים","תחזוקה טכנית","לוגיסטיקה / אספקה / תובלה","הדרכה","משאבי אנוש / פרט / רווחה","שירות וקישור","מנהלה / משפט / כספים / תקשורת","פיקוד (תפקיד רוחבי)"];
+const heRanks=["ללא אחריות פיקודית רשמית","מפקד/ת צוות, נגד/ת או מדריך/ה","קצין/ה זוטר/ה או בתפקיד מקצועי","סרן/ית או אחריות בכירה"];
+const labels={
+ en:{eyebrow:"PERSONAL STRENGTHS DISCOVERY",title:"The strengths you built are worth discovering.",lead:"Not 36 or 63 questions. Start with seven tailored skills. Your role suggests questions; only your own experiences confirm a strength.",privacy:"Private by default: this assessment saves answers only in this browser and does not send them to AI or Momentum. Browser storage is not encrypted. Avoid operational details, locations and other people's names.",setupTitle:"Start with your experience",roleLabel:"Which general type of work describes your service?",rankLabel:"What level of responsibility did you have?",activityLabel:"What did you actually do? Choose any that fit.",changeNote:"The same role can develop very different skills. Rank does not prove proficiency.",begin:"Explore my seven strengths",practiceLabel:"How often did you personally practice this skill?",evidenceLabel:"Give one real example: what did you personally do?",autonomyLabel:"How independently did you act?",resultLabel:"My action had an observable outcome",confirmLabel:"This is accurate, non-sensitive and may be used in my own CV drafts",evidenceHint:"A confirmed non-sensitive example is needed before any skill claim. Skipping is always okay.",previous:"Previous",skip:"Skip",next:"Next",see:"See my strengths",finishEyebrow:"YOUR OWN EVIDENCE",resultTitle:"Your emerging strengths",resultIntro:"This is an exploration, not a credential or psychological test. Confirmed examples can be reused in My Journey.",resume:"Review answers",more:"Explore three more skills",export:"Export my results",reset:"Start a new assessment",nextHeading:"Where would you like to go next?",jLink:"View My Journey",chatLink:"Continue the conversation",footer:"The original Momentum 63-skill framework guides question selection. Source #63 duplicates #55 and is not counted twice.",back:"← Companion",journey:"My Journey",placeholder:"What I did and what happened — without names, locations or operational details.",repeat:"Often / repeatedly",once:"A few times",none:"Not really",unsure:"Not sure / skip",assisted:"With guidance",independent:"Independently",guided:"I guided or improved work for others",at:"Question ",of:" of ",confirmed:"Confirmed example",possible:"Reflection only",noExamples:"You haven't saved any examples yet. That is fine—your next conversation can help you find one.",saved:"Saved to My Journey",notSaved:"Example not saved",warning:"Enter an example and tick the confirmation box to save this skill to My Journey.",resetConfirm:"Start a new short assessment? This clears only this assessment's answers; previously confirmed skills in My Journey remain.",discard:"You can return later in this browser.",status:"Saved in this browser",empty:"No answer yet"},
+ he:{eyebrow:"גילוי חוזקות אישיות",title:"כדאי לגלות את החוזקות שפיתחת.",lead:"לא 36 ולא 63 שאלות. מתחילים בשבע מיומנויות מתאימות לניסיון שלך. התפקיד רק מציע שאלות; הניסיון האישי שלך הוא שקובע.",privacy:"פרטי כברירת מחדל: ההערכה הזו נשמרת רק בדפדפן ואינה שולחת מידע ל-AI או למומנטום. אחסון הדפדפן אינו מוצפן. אין לרשום פרטים מבצעיים, מיקומים או שמות של אחרים.",setupTitle:"מתחילים מהניסיון שלך",roleLabel:"איזה סוג תפקיד מתאר את השירות שלך?",rankLabel:"מה הייתה רמת האחריות שלך?",activityLabel:"מה עשית בפועל? אפשר לבחור כמה תשובות.",changeNote:"גם באותו תפקיד אפשר לפתח מיומנויות שונות. דרגה אינה הוכחה ליכולת.",begin:"לגלות שבע חוזקות",practiceLabel:"באיזו תדירות השתמשת במיומנות הזו?",evidenceLabel:"דוגמה אמיתית אחת: מה עשית בעצמך?",autonomyLabel:"עד כמה פעלת באופן עצמאי?",resultLabel:"לפעולה שלי הייתה תוצאה שניתן לתאר",confirmLabel:"הדוגמה מדויקת, לא רגישה, ומותר להשתמש בה בטיוטות קורות חיים שלי",evidenceHint:"כדי להציג מיומנות כיכולת מוכחת צריך דוגמה אישית מאושרת. אפשר לדלג.",previous:"הקודם",skip:"דלג",next:"הבא",see:"לראות חוזקות",finishEyebrow:"הניסיון שלך",resultTitle:"החוזקות שלך",resultIntro:"זו אפשרות להתבוננות, לא תעודה או אבחון. דוגמאות שאישרת יכולות להישמר ב'מסע שלי'.",resume:"לבדוק תשובות",more:"לבדוק עוד שלוש מיומנויות",export:"לייצא תוצאות",reset:"להתחיל הערכה מחדש",nextHeading:"מה השלב הבא שלך?",jLink:"המסע שלי",chatLink:"להמשיך בשיחה",footer:"רשימת 63 המיומנויות של מומנטום משמשת לבחירת שאלות. פריט 63 כפול של פריט 55 ולכן אינו נספר פעמיים.",back:"→ חזרה למלווה",journey:"המסע שלי",placeholder:"מה עשיתי ומה הייתה התוצאה — בלי שמות, מיקומים או פרטים מבצעיים.",repeat:"הרבה פעמים",once:"כמה פעמים",none:"לא ממש",unsure:"לא בטוח/ה / דילוג",assisted:"בעזרת אחרים",independent:"באופן עצמאי",guided:"הובלתי או שיפרתי עבודה של אחרים",at:"שאלה ",of:" מתוך ",confirmed:"דוגמה מאושרת",possible:"למחשבה בלבד",noExamples:"עדיין לא שמרת דוגמאות. זה בסדר — אפשר למצוא אותן יחד בשיחה הבאה.",saved:"נשמר במסע שלי",notSaved:"הדוגמה לא נשמרה",warning:"צריך לרשום דוגמה ולסמן אישור כדי לשמור את המיומנות במסע שלי.",resetConfirm:"להתחיל הערכה חדשה? זה ימחק רק את תשובות ההערכה הנוכחית. מיומנויות שנשמרו בעבר במסע שלי יישארו.",discard:"אפשר לחזור בהמשך דרך הדפדפן הזה.",status:"נשמר בדפדפן",empty:"אין תשובה עדיין"}
+};
+const activities=[
+ ["field","Carrying out tasks in the field","ביצוע משימות בשטח"],
+ ["coordinate","Planning and coordinating work","תכנון ותיאום משימות"],
+ ["lead","Leading or supporting a team","הובלה או תמיכה בצוות"],
+ ["analyze","Analyzing information or decisions","ניתוח מידע וקבלת החלטות"],
+ ["technical","Using, repairing or building systems","הפעלה, תיקון או בניית מערכות"],
+ ["teach","Training or teaching others","הדרכה או לימוד של אחרים"],
+ ["care","Helping, caring or responding to needs","סיוע, טיפול או מענה לצרכים"],
+ ["communicate","Communicating across groups","תקשורת בין קבוצות"],
+ ["create","Creating new solutions","יצירת פתרונות חדשים"]
+];
+let lang=new URLSearchParams(location.search).get("lang")==="he"?"he":"en";
+let state={role:0,rank:0,activities:[],count:7,index:0,answers:{}};
+try{const raw=JSON.parse(localStorage.getItem(KEY)||"null");if(raw&&Array.isArray(raw.activities)&&raw.answers&&typeof raw.answers==="object"){state={...state,...raw};}}catch(_){}
+let chosen=[],practiceChoice="";
+function t(id){return labels[lang][id]||id;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){$("privacy").textContent=t("privacy")+" Storage unavailable.";}}
+function set(id,key){$(id).textContent=t(key||id);}
+function paint(){
+ document.documentElement.lang=lang;document.documentElement.dir=lang==="he"?"rtl":"ltr";
+ $("lang").textContent=lang==="he"?"English":"עברית";
+ ["eyebrow","title","lead","privacy","setupTitle","roleLabel","rankLabel","activityLabel","changeNote","begin","practiceLabel","evidenceLabel","autonomyLabel","resultLabel","confirmLabel","evidenceHint","previous","skip","finishEyebrow","resultTitle","resultIntro","resume","more","export","reset","nextHeading","jLink","chatLink","footer","back","journey"].forEach(x=>set(x));
+ $("evidence").placeholder=t("placeholder");
+ $("role").replaceChildren();
+ source.roles.forEach((item,i)=>{const el=document.createElement("option");el.value=i;el.textContent=lang==="he"?heRoles[i]:item;$("role").append(el);});
+ $("role").value=state.role;
+ $("rank").replaceChildren();
+ source.ranks.forEach((item,i)=>{const el=document.createElement("option");el.value=i;el.textContent=lang==="he"?heRanks[i]:item;$("rank").append(el);});
+ $("rank").value=state.rank;
+ $("activities").replaceChildren();
+ activities.forEach(a=>{const l=document.createElement("label"),input=document.createElement("input"),s=document.createElement("span");input.type="checkbox";input.value=a[0];input.checked=state.activities.includes(a[0]);s.textContent=lang==="he"?a[2]:a[1];l.append(input,s);$("activities").append(l);});
+ $("autonomy").replaceChildren();
+ [["assisted",t("assisted")],["independent",t("independent")],["guided",t("guided")]].forEach(a=>{const x=document.createElement("option");x.value=a[0];x.textContent=a[1];$("autonomy").append(x);});
+ $("jLink").href="./my-journey.html?lang="+lang+"#skills";
+ $("journey").href=$("jLink").href;
+ $("chatLink").href="./"+(lang==="he"?"indexH.html":"index.html");
+ $("back").href=$("chatLink").href;
+ if(!$("question").hidden)showQuestion();
+ if(!$("results").hidden)showResults();
+}
+function candidates(){return engine.choose(source,{role:state.role,rank:state.rank,activities:state.activities,count:state.count});}
+function show(id){["setup","question","results"].forEach(name=>$(name).hidden=name!==id);window.scrollTo(0,0);}
+function start(){state.role=+$("role").value;state.rank=+$("rank").value;state.activities=[...$("activities").querySelectorAll("input:checked")].map(x=>x.value);state.count=7;state.index=0;state.answers={};save();chosen=candidates();show("question");showQuestion();}
+function current(){return chosen[state.index];}
+function showQuestion(){
+ const skill=current();if(!skill){showResults();return;}
+ $("counter").textContent=t("at")+(state.index+1)+t("of")+chosen.length;
+ $("domain").textContent=skill.domain;
+ $("progress").style.width=Math.round(state.index/chosen.length*100)+"%";
+ $("qTitle").textContent=lang==="he"?skill.he:skill.original;
+ $("qDetail").textContent=lang==="he"?"האם הייתה לך הזדמנות להשתמש ביכולת הזאת? חשוב מה עשית בפועל, לא רק מה שנדרש בתפקיד.":skill.civilian+". Think about what you personally did, not what the job title might imply.";
+ const a=state.answers[skill.id]||{};
+ practiceChoice=a.practice||"";
+ $("practice").replaceChildren();
+ [["repeated","repeat"],["once","once"],["none","none"],["unsure","unsure"]].forEach(pair=>{
+   const b=document.createElement("button");b.type="button";b.textContent=t(pair[1]);
+   b.className=practiceChoice===pair[0]?"selected":"";
+   b.onclick=()=>{practiceChoice=pair[0];updateFields();};
+   $("practice").append(b);
+ });
+ $("evidence").value=a.evidence||"";
+ $("autonomy").value=a.autonomy||"assisted";
+ $("result").checked=a.result===true;
+ $("confirm").checked=a.confirmed===true;
+ $("previous").disabled=state.index===0;
+ $("next").textContent=state.index===chosen.length-1?t("see"):t("next");
+ updateFields();
+}
+function updateFields(){
+ [...$("practice").children].forEach((b,i)=>b.className=[["repeated","once","none","unsure"][i]===practiceChoice?"selected":""]);
+ $("evidenceFields").hidden=!["repeated","once"].includes(practiceChoice);
+}
+function commitAnswer(){
+ const skill=current();if(!skill)return;
+ const relevant=["repeated","once"].includes(practiceChoice);
+ const a={practice:practiceChoice||"unsure",evidence:relevant?$("evidence").value.trim().slice(0,1500):"",autonomy:$("autonomy").value,result:$("result").checked,confirmed:relevant&&$("confirm").checked&&!!$("evidence").value.trim()};
+ state.answers[skill.id]=a;save();
+ if(a.confirmed){
+   try{journey.saveLifeSkills([{id:skill.id,en:skill.original,he:skill.he,evidence:a.evidence,level:engine.evidenceLevel(a),confirmed:true}]);}
+   catch(e){alert(lang==="he"?"לא ניתן לשמור במסע שלי: "+e.message:"Could not save to My Journey: "+e.message);}
+ }
+}
+function advance(skip){
+ if(skip){state.answers[current().id]={practice:"unsure",confirmed:false};save();}
+ else commitAnswer();
+ if(state.index<chosen.length-1){state.index++;save();showQuestion();}
+ else showResults();
+}
+function showResults(){
+ show("results");$("progress").style.width="100%";$("resultList").replaceChildren();
+ const found=chosen.filter(skill=>state.answers[skill.id]?.confirmed);
+ if(!found.length){const p=document.createElement("p");p.textContent=t("noExamples");$("resultList").append(p);}
+ for(const skill of chosen){
+   const a=state.answers[skill.id];if(!a||a.practice==="unsure"||a.practice==="none")continue;
+   const div=document.createElement("div");div.className="item";
+   const h=document.createElement("h3");h.textContent=lang==="he"?skill.he:skill.original;
+   const tag=document.createElement("span");tag.className="counter";tag.textContent=a.confirmed?t("confirmed")+" · "+engine.evidenceLevel(a)+"/4":t("possible");
+   const p=document.createElement("p");p.textContent=a.confirmed?a.evidence:t("notSaved");
+   div.append(h,tag,p);$("resultList").append(div);
+ }
+ $("more").hidden=state.count>=10;
+}
+function exportData(){
+ const safe={source:"Momentum 63-skill source",exportedAt:new Date().toISOString(),serviceRole:source.roles[state.role],responsibility:source.ranks[state.rank],selectedActivities:state.activities,answers:chosen.map(s=>({skill:s.original,id:s.id,...(state.answers[s.id]||{})}))};
+ const blob=new Blob([JSON.stringify(safe,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");a.href=url;a.download="momentum-my-strengths.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+$("begin").onclick=start;
+$("next").onclick=()=>advance(false);
+$("skip").onclick=()=>advance(true);
+$("previous").onclick=()=>{commitAnswer();state.index=Math.max(0,state.index-1);save();showQuestion();};
+$("resume").onclick=()=>{state.index=0;save();show("question");showQuestion();};
+$("more").onclick=()=>{state.count=10;chosen=candidates();state.index=7;save();show("question");showQuestion();};
+$("export").onclick=exportData;
+$("reset").onclick=()=>{if(!confirm(t("resetConfirm")))return;state={role:state.role,rank:state.rank,activities:[],count:7,index:0,answers:{}};save();show("setup");paint();};
+$("lang").onclick=()=>{lang=lang==="he"?"en":"he";paint();};
+const starting=new URLSearchParams(location.search).get("reset");
+paint();
+chosen=candidates();
+if(starting!=="1"&&Object.keys(state.answers).length){if(state.index>=chosen.length)showResults();else{show("question");showQuestion();}}else show("setup");
+})();
+</script>
+</body>
+</html>
