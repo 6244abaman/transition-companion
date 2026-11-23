@@ -8,7 +8,7 @@ function boot(file,saved){
  const requests=[],errors=[];
  const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const dom=new JSDOM(fs.readFileSync(path.join(root,file),'utf8'),{
-  url:'https://app.test/'+file,runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,
+  url:'https://app.test/'+file+'?practice=1',runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,
   beforeParse(w){
    require('./browser-env').prepare(w);
    if(saved)w.localStorage.setItem(file==='indexH.html'?'gtc_H_state':'gtc_v2_state',saved);
