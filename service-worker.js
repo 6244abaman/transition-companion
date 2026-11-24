@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v17-reserve-role";
+const CACHE = "tc-v18-home-followthrough";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -31,7 +31,7 @@ const APP_FILES = [
   "./journey-reminders.js",
   "./journey-tools-ui.js",
   "./journey-rights.js",
-  "./onboarding.js", "./onboarding.css", "./chat-history.js",
+  "./onboarding.js", "./onboarding.css", "./chat-history.js", "./companion-home.js", "./companion-home.css",
   "./benefits-updates.js",
   "./benefits-updates.css",
   "./benefits-updates.json",
