@@ -66,7 +66,7 @@
       selfRating: "Self-rating", edit: "Edit", erase: "Delete", done: "Mark done", undo: "Reopen",
       nextActionForGoal: "Add next action", makeStep: "Create next action", downloadCV: "Download draft",
       copyCV: "Copy draft", goal: "Goal", due: "Due", target: "Target", institution: "Institution",
-      field: "Program / field", nextStep: "Next step", category: "Area", targetRole: "Target role",
+      field: "Program / field", nextStep: "Next step", durationField: "Duration (as stated by school)", costField: "Cost (currency and fees)", sourceField: "Official information source URL", checkedField: "Date verified", category: "Area", targetRole: "Target role",
       languageCV: "CV language", summary: "Profile summary", bullets: "Experience bullets (one per line)",
       notes: "Private notes (not sent as Journey context to AI)", status: "Status", titleField: "Title",
       create: "Add", update: "Edit", save: "Save", cancel: "Cancel",
@@ -153,7 +153,7 @@
       selfRating: "דירוג עצמי", edit: "עריכה", erase: "מחיקה", done: "בוצע", undo: "פתיחה מחדש",
       nextActionForGoal: "הוספת צעד", makeStep: "יצירת צעד", downloadCV: "הורדת טיוטה",
       copyCV: "העתקת טיוטה", goal: "מטרה", due: "עד", target: "יעד", institution: "מוסד",
-      field: "מסלול / תחום", nextStep: "הצעד הבא", category: "תחום", targetRole: "תפקיד מבוקש",
+      field: "מסלול / תחום", nextStep: "הצעד הבא", durationField: "משך הלימודים (לפי המוסד)", costField: "עלות (מטבע ועמלות)", sourceField: "קישור למקור רשמי", checkedField: "תאריך בדיקה", category: "תחום", targetRole: "תפקיד מבוקש",
       languageCV: "שפת קורות החיים", summary: "תקציר אישי", bullets: "ניסיון ויכולות (סעיף בכל שורה)",
       notes: "הערות פרטיות (אינן נשלחות כהקשר מהמסע ל-AI)", status: "מצב", titleField: "כותרת",
       create: "הוספה", update: "עריכה", save: "שמירה", cancel: "ביטול",
@@ -220,6 +220,7 @@
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
     document.title = T().title + " · Momentum";
+    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html") + "#home";
     [
       ["homeLink","back"],["skillsLink","assess"],["language","language"],
       ["pageTitle","title"],["pageSubtitle","subtitle"],["storageNotice","local"],
@@ -424,22 +425,72 @@
       root.appendChild(row);
     });
   }
+  function renderEducationCompare() {
+    const root = $("educationCompare");
+    if (!root) return;
+    root.replaceChildren();
+    const plans = profile.education.slice(0, 4);
+    if (!plans.length) {
+      root.append(e("p","education-compare-note",
+        lang === "he" ? "הוסיפו שני מסלולים כדי להשוות זה לצד זה. אין מידע שנשלף אוטומטית מהמוסדות."
+          : "Add two education plans to compare them side by side. No school information is fetched automatically."));
+      return;
+    }
+    root.append(e("h3",null,lang === "he" ? "השוואת מסלולים ששמרתם" : "Compare your saved study options"));
+    root.append(e("p","education-compare-note",lang === "he"
+      ? "הנתונים הוזנו על ידכם ואינם אימות של זכאות, שכר לימוד או מועדים. יש לבדוק כל מסלול באתר המוסד."
+      : "Information is user-entered, not verified prices, eligibility or deadlines. Check the official institution source before deciding."));
+    const scroll = e("div","education-compare-scroll");
+    const table = e("table","education-compare-table");
+    const caption = e("caption",null,lang === "he" ? "השוואת מסלולי לימוד" : "Study options comparison");
+    caption.style.cssText = "padding:8px;font-weight:650;text-align:start";
+    table.append(caption);
+    const head = e("thead"), tr = e("tr"), lead = e("th",null,lang === "he" ? "נתון" : "Detail");
+    lead.scope = "col";tr.append(lead);
+    plans.forEach(plan => {
+      const th = e("th",null,plan.title);th.scope = "col";tr.append(th);
+    });
+    head.append(tr);table.append(head);
+    const body = e("tbody");
+    const rows = [
+      ["institution","Institution","מוסד"],
+      ["field","Program","מסלול"],
+      ["duration","Duration","משך"],
+      ["cost","Cost","עלות"],
+      ["targetDate","Target date","מועד יעד"],
+      ["status","Status","מצב"],
+      ["nextStep","Next step","הצעד הבא"],
+      ["sourceUrl","Source to verify","מקור לבדיקה"],
+      ["checkedOn","Checked on","נבדק בתאריך"]
+    ];
+    rows.forEach(([key,en,he]) => {
+      const r = e("tr"), th = e("th",null,lang === "he" ? he : en);
+      th.scope = "row";r.append(th);
+      plans.forEach(plan => r.append(e("td",null,String(plan[key] || "—"))));
+      body.append(r);
+    });
+    table.append(body);scroll.append(table);root.append(scroll);
+    if (profile.education.length > plans.length) root.append(e("p","education-compare-note",
+      lang === "he" ? "מוצגים ארבעת המסלולים הראשונים. השאר מופיעים למטה."
+        : "Showing the first four plans; other saved plans appear below."));
+  }
   function render() {
     profile=tryAction(()=>Store.read())||Store.blank();
     renderStats();renderSkills();
     ["goals","actions","education","cvs"].forEach(renderRecords);
+    renderEducationCompare();
     renderPrivacy();
   }
   const fieldDefs = {
     goals: ["title","category","status","targetDate","notes"],
     actions: ["title","goalId","status","dueDate","notes"],
-    education: ["title","goalId","field","institution","status","targetDate","nextStep","notes"],
+    education: ["title","goalId","field","institution","duration","cost","status","targetDate","nextStep","sourceUrl","checkedOn","notes"],
     cvs: ["title","targetRole","language","status","summary","bullets","notes"]
   };
   function labelFor(name){return {
     title:"titleField",category:"category",status:"status",targetDate:"target",
     dueDate:"due",notes:"notes",goalId:"goal",field:"field",institution:"institution",
-    nextStep:"nextStep",targetRole:"targetRole",language:"languageCV",
+    nextStep:"nextStep",duration:"durationField",cost:"costField",sourceUrl:"sourceField",checkedOn:"checkedField",targetRole:"targetRole",language:"languageCV",
     summary:"summary",bullets:"bullets"
   }[name]||name;}
   function selectOptions(name,type) {
@@ -461,9 +512,11 @@
       let control;
       if(["notes","summary","bullets"].includes(field))control=e("textarea");
       else if(["status","category","language","goalId"].includes(field))control=e("select");
-      else { control=e("input");control.type=["targetDate","dueDate"].includes(field)?"date":"text"; }
+      else { control=e("input");control.type=["targetDate","dueDate","checkedOn"].includes(field)?"date":"text"; }
       control.id=label.htmlFor;control.name=field;
       if(field==="title"){control.required=true;control.maxLength=160;}
+      if(field==="duration"||field==="cost") control.maxLength=80;
+      if(field==="sourceUrl") control.maxLength=500;
       if(field==="goalId"||field==="status"||field==="category"||field==="language"){
         selectOptions(field,type).forEach(([val,txt])=>{
           const opt=e("option",null,txt);opt.value=val;control.append(opt);
