@@ -89,6 +89,7 @@ for (const [file,key,lang] of [['index.html','gtc_v2_state','en'],['indexH.html'
       d.querySelector('[data-path="benefit"]').click();
       assert.equal(w.eval('S.activeTopic'),'updates','Benefit takes soldier to dated updates');
       assert.equal(d.getElementById('chat').hidden,false);
+      await new Promise(resolve=>setTimeout(resolve,50)); // Let public benefit JSON finish rendering before closing the browser.
       assert.equal(requests.length,0,'No AI requests on Home or navigation');
       assert.deepEqual(errors.map(e=>e.message),[],'No browser runtime errors');
     } finally { dom.window.close(); }
