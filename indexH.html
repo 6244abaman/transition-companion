@@ -1252,9 +1252,24 @@ function renderThread(){
   });
   scrollDown();
 }
+function renderSafeMessageText(container, value){
+  const source=String(value||"");
+  // Text nodes, not innerHTML: formatting never executes model- or user-supplied HTML.
+  const pattern=/\*\*([^*\n]{1,300})\*\*|__([^_\n]{1,300})__|\x60([^\x60\n]{1,160})\x60/g;
+  let previous=0, match;
+  while((match=pattern.exec(source))){
+    if(match.index>previous)container.appendChild(document.createTextNode(source.slice(previous,match.index)));
+    const element=document.createElement(match[3]!==undefined?"code":"strong");
+    element.textContent=match[1]||match[2]||match[3];
+    container.appendChild(element);
+    previous=pattern.lastIndex;
+  }
+  if(previous<source.length)container.appendChild(document.createTextNode(source.slice(previous)));
+}
 function turnNode(m, idx){
   const wrap = el("div","turn "+(m.role==="user"?"me":m.role==="system"?"sys":"them"));
-  const body = el("div","body", messageText(m));
+  const body = el("div","body");
+  renderSafeMessageText(body, messageText(m));
   body.dir = "auto";
   wrap.appendChild(body);
   if (m.doc && m.role === "assistant"){
