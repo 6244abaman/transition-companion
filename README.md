@@ -4,6 +4,45 @@
 · [Render dashboard](https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0)
 · [Permanent links to both apps](https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md)
 
+## Home, follow-through and soldier testing (24 November 2026)
+
+The **Home / בית** button works from an open conversation or the profile/settings drawer.
+It returns to a small hub **without deleting chats, consent, profile details, Journey
+records or an unsent message draft**. Choose *Continue conversation* to return to the
+same thread. My Journey and the 36-skill assessment also have a Home return path;
+the language is preserved. No username or password is needed for this browser-local
+feature. The separate, optional encrypted Journey sync has its own credentials.
+
+The Home hub makes five existing tasks discoverable:
+
+1. **Find a benefit:** open Updated Information and Benefits with dated
+   sources and verification cautions. This is not an eligibility decision.
+2. **Prepare a resume:** open My Journey → CV drafts; review before sharing.
+3. **Resume an earlier conversation:** open the private chat-history drawer,
+   choose a past chat, or use the existing separate-language backup tools.
+4. **Compare education choices:** record up to four plans with school,
+   duration, cost, source URL and verification date for a side-by-side
+   comparison. Values are entered by the soldier, not verified by the app.
+5. **Save a follow-up:** use My Journey → Next actions to record and
+   complete a task. Browser/calendar reminders remain optional.
+
+The toolbar now shows Home, My Journey and More, with existing AI, voice, profile
+and support controls in More. On mobile and desktop, topic selection and chat
+history can be collapsed to give the conversation more room. Basic bold and
+inline-code output is rendered using text nodes rather than untrusted HTML.
+
+An optional **Help test these five tasks** section on Home lets a volunteer
+mark steps, write where they became confused and download feedback. Nothing is
+collected or uploaded automatically. Do not include names, health or sensitive
+service information. For supervised testing, use the observer worksheet
+in [SOLDIER-UX-TEST.md](SOLDIER-UX-TEST.md).
+
+Run `npm test` (including `npm run test:home`) and `npm run build:review`.
+This update does **not** enable automatic follow-up notifications, accounts,
+encrypted localStorage, cross-language or cross-device chat sync, PDF/DOCX CV
+generation, a live job feed, verified school price lookup or clinical support.
+Retain the existing review/pilot release restrictions.
+
 ## Share the hosted review build
 
 The Render review site serves this development branch independently of Aba's
