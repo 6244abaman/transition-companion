@@ -55,7 +55,8 @@
     if (type === "actions") return { ...common, goalId: str(v.goalId, 90), dueDate: date(v.dueDate),
       completedAt: common.status === "done" ? str(v.completedAt, 40) || iso() : "" };
     if (type === "education") return { ...common, goalId: str(v.goalId, 90), field: str(v.field, 180), institution: str(v.institution, 180),
-      targetDate: date(v.targetDate), nextStep: str(v.nextStep, 400) };
+      targetDate: date(v.targetDate), nextStep: str(v.nextStep, 400),
+      duration: str(v.duration, 80), cost: str(v.cost, 80), sourceUrl: str(v.sourceUrl, 500), checkedOn: date(v.checkedOn) };
     return { ...common, targetRole: str(v.targetRole, 180),
       language: v.language === "he" ? "he" : "en", summary: str(v.summary, 4000),
       bullets: arr(v.bullets).slice(0, 50).map(x => str(x, 1000)).filter(Boolean) };

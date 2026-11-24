@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const PUBLIC_FILES = [
   'index.html', 'indexH.html', 'my-journey.html', 'skills-business.html',
-  'onboarding.css', 'onboarding.js', 'chat-history.js', 'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
+  'onboarding.css', 'onboarding.js', 'chat-history.js', 'companion-home.js', 'companion-home.css', 'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
   'ai-consent.js', 'response-schema.js', 'skills-source.js', 'companion-safety.js',
   'journey-store.js', 'journey-backup.js', 'journey-reminders.js', 'journey-rights.js',
   'journey-sync.js', 'journey-tools-ui.js', 'life-skills-ui.js', 'my-journey.js',
@@ -30,7 +30,7 @@ function buildReview(root = path.resolve(__dirname, '..')) {
     const dir = path.join(output, directory);
     const workerPath = path.join(dir, 'service-worker.js');
     const worker = fs.readFileSync(workerPath, 'utf8')
-      .replace('tc-v17-reserve-role', prefix + version)
+      .replace('tc-v18-home-followthrough', prefix + version)
       .replace('k.startsWith("tc-")', directory === 'app'
         ? '(k.startsWith("tc-review-app-") || /^tc-v[0-9]/.test(k))'
         : 'k.startsWith("tc-companion-v2-")');

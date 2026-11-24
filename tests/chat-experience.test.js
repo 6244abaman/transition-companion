@@ -33,18 +33,21 @@ for(const file of ['index.html','indexH.html']){
    assert.equal(restored.spoken[0].text,'After reload');
   }finally{await new Promise(resolve=>setTimeout(resolve,30));a.dom.window.close();restored?.dom.window.close();}
  });
- test(file+': desktop history stays visible and new/resumed chats retain messages across reload',async()=>{
+ test(file+': desktop history is collapsible and new/resumed chats retain messages across reload',async()=>{
   const a=boot(file,true);let restored;
   try{
-   assert.equal(a.d.querySelector('#chatHistory').open,true);
+   assert.equal(a.d.querySelector('#chatHistory').open,false);
+   a.d.querySelector('#chatHistory').open=true;
    a.w.eval('S.started=true; enterChat(); pushMsg("user","My original question");pushMsg("assistant","My original answer")');
    assert.match(a.d.querySelector('.chat-item').textContent,/My original question/);
    a.d.querySelector('.new-chat').click();
    assert.equal(a.w.eval('S.savedChats.length'),1);
    a.d.querySelector('.chat-item[aria-current="false"]').click();
    assert.match(a.d.querySelector('#thread').textContent,/My original answer/);
-   assert.equal(a.d.querySelector('#chatHistory').open,true);
+   assert.equal(a.d.querySelector('#chatHistory').open,false,'selection closes drawer on desktop too');
    restored=boot(file,true,a.w.localStorage.getItem(a.w.eval('KEY')));
+   assert.equal(restored.d.querySelector('#chatHistory').open,false,'drawer remains collapsed after reload');
+   restored.d.querySelector('#chatHistory').open=true;
    assert.match(restored.d.querySelector('.chat-item').textContent,/My original question/);
   }finally{await new Promise(resolve=>setTimeout(resolve,30));a.dom.window.close();restored?.dom.window.close();}
  });

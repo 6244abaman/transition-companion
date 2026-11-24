@@ -69,6 +69,13 @@ section[hidden],div[hidden]{display:none!important}
 footer{max-width:1100px;margin:0 auto;padding:0 18px 38px;font-size:.86rem;color:var(--sub)}
 hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.card{padding:15px}main{padding:12px 11px 45px}header{padding-inline:15px}}
+
+.education-compare-scroll{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px}
+.education-compare-table{border-collapse:collapse;min-width:660px;width:100%;background:#fff}
+.education-compare-table th,.education-compare-table td{padding:10px 12px;border-bottom:1px solid var(--line);border-inline-end:1px solid var(--line);text-align:start;vertical-align:top;min-width:125px;overflow-wrap:anywhere}
+.education-compare-table th{background:#f1f6f9;font-weight:700}
+.education-compare-table tbody th{min-width:140px}
+.education-compare-note{font-size:.86rem;color:var(--sub)}
 </style>
 <script src="./journey-store.js"></script>
 <script src="./journey-backup.js"></script>
@@ -83,7 +90,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 <body>
 <header>
 <div class="nav">
-<a id="homeLink" href="./index.html">← Back to Companion</a>
+<a id="homeLink" href="./index.html#home">← Back to Companion</a>
 <a id="skillsLink" href="./skills-business.html">Skill assessment</a>
 <button type="button" id="language" aria-label="Switch language">עברית</button>
 </div>
@@ -124,6 +131,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 </section>
 <section id="view-education" class="card" data-view="education" hidden>
 <div class="topline"><div><h2 id="educationTitle">Education and training plans</h2><p id="educationSubtitle" class="muted">Compare paths, plan applications and record the next step.</p></div><button class="primary" id="addEducation" data-add="education">Add plan</button></div>
+<div id="educationCompare" aria-live="polite"></div>
 <div id="educationList"></div>
 </section>
 <section id="view-actions" class="card" data-view="actions" hidden>
