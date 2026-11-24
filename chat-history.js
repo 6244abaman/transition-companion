@@ -72,7 +72,7 @@ if (typeof document !== 'undefined') {
   function resume(next) {
     if (!commit(next)) return;
     stopSpeaking();
-    panel.open = desktop.matches;
+    panel.open = false;
     enterChat();
     if (!S.messages.length) openConversation();
     paintTopicPanel();
@@ -145,12 +145,11 @@ if (typeof document !== 'undefined') {
     };
   }
   panel.ontoggle = () => {
-    if (desktop.matches && !panel.open) panel.open = true;
     if (panel.open) draw();
   };
-  desktop.addEventListener('change', () => { panel.open = desktop.matches; });
+  desktop.addEventListener('change', () => { panel.open = false; });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && panel.open && !desktop.matches) {
+    if (e.key === 'Escape' && panel.open) {
       panel.open = false;
       panel.querySelector('summary').focus();
     }
@@ -158,5 +157,5 @@ if (typeof document !== 'undefined') {
   document.addEventListener('companion:chat-updated', draw);
   new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   draw();
-  if (desktop.matches || location.hash === '#chatHistory') panel.open = true;
+  if (location.hash === '#chatHistory') panel.open = true;
 }
