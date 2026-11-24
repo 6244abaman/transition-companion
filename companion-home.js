@@ -31,6 +31,12 @@
   const journey = make('a', undefined, 'chip companion-journey-link');
   journey.id = 'companionJourneyLink';
   header.append(homeButton, journey, more);
+  header.querySelectorAll('button').forEach(button => { button.type = 'button'; });
+  const drawerHome = make('button', undefined, 'chip companion-drawer-home');
+  drawerHome.id = 'companionDrawerHome';
+  drawerHome.type = 'button';
+  const drawerHeader = document.querySelector('#drawer .dhead');
+  if (drawerHeader) drawerHeader.insertBefore(drawerHome, $('btnClose'));
 
   // This is not onboarding. Moving home does not reset S.started, the message
   // draft, profile, savedChats, Journey, consent or any other user information.
@@ -90,6 +96,7 @@
     for (const [id, pair] of Object.entries(labels)) $(id).textContent = say(...pair);
     homeButton.textContent = say('Home', 'בית');
     homeButton.title = say('Return home without losing the conversation', 'חזרה לבית בלי למחוק את השיחה');
+    drawerHome.textContent = say('Home', 'בית');
     summary.textContent = say('More', 'עוד');
     journey.textContent = say('My Journey', 'המסע שלי');
     journey.href = journeyUrl('overview');
@@ -146,6 +153,7 @@
     return true;
   }
   homeButton.addEventListener('click', showHome);
+  drawerHome.addEventListener('click', showHome);
   $('hubResume').addEventListener('click', openChat);
   hub.querySelector('[data-path="benefit"]').addEventListener('click', () => {
     const topic = TRANSITION_TOPICS.find(t => t[0] === 'updates');
