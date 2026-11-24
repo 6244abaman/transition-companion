@@ -30,7 +30,12 @@ async function start(file, storage={}, search='') {
       w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open')};
       Object.defineProperty(w,'crypto',{value:webcrypto});
       w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;w.AbortController=AbortController;
-      w.fetch=async (...args) => {requests.push(args);throw Error('Network must not be required for navigation');};
+      w.fetch=async (...args) => {
+        if (String(args[0]).includes('benefits-updates.json'))
+          return {ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,'benefits-updates.json'),'utf8'))};
+        requests.push(args);
+        throw Error('Unexpected external request from navigation');
+      };
     }
   });
   await new Promise((resolve,reject)=>{
@@ -92,7 +97,8 @@ for (const [file,key,lang] of [['index.html','gtc_v2_state','en'],['indexH.html'
 test('My Journey allows comparing user-entered courses and saving a follow-up step',async()=>{
   const {dom,w,d,errors}=await start('my-journey.html',{},'?lang=he#education');
   try {
-    assert.ok(d.getElementById('homeLink').getAttribute('href').endsWith('indexH.html#home'));
+    assert.ok(d.getElementById('homeLink').getAttribute('href').endsWith('indexH.html#home'),
+      'Expected Hebrew Home link; actual: '+d.getElementById('homeLink').getAttribute('href')+'; lang: '+d.documentElement.lang+'; errors: '+errors.map(e=>e.message).join(';'));
     w.MomentumJourney.upsert('education',{
       title:'QA course',institution:'Example College',field:'Testing',duration:'8 months',
       cost:'NIS 12,000',sourceUrl:'https://example.org/qa',checkedOn:'2026-11-24',status:'exploring'
