@@ -220,7 +220,6 @@
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
     document.title = T().title + " · Momentum";
-    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html") + "#home";
     [
       ["homeLink","back"],["skillsLink","assess"],["language","language"],
       ["pageTitle","title"],["pageSubtitle","subtitle"],["storageNotice","local"],
@@ -242,7 +241,7 @@
       ["deleteHelp","deleteHelp"],["deleteAllText","deleteAllText"],["deleteButton","deleteButton"],
       ["saveRecord","save"],["cancelRecord","cancel"],["footerText","footer"]
     ].forEach(x => setText(x[0], x[1]));
-    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html");
+    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html") + "#home";
     $("skillsLink").href = "./skills-business.html?lang=" + lang;
     $("skillEditLink").href = "./skills-business.html?lang=" + lang;
     $("importMode").options[0].textContent = T().importMerge;
