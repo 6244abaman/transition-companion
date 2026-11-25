@@ -1,5 +1,12 @@
 # Windows local use
 
+Next Generation is isolated on `development/next-generation`. Read
+`next-generation/AGENTS.md` and `docs/MASTER_ARCHITECTURE.md` for its boundary.
+This explicitly requested development branch must not change the existing Render
+deployment or merge into the working app without a later release instruction.
+Run its additional checks with `npm run test:nextgen`. Its separate Windows
+launchers use 43128; the existing app continues to use 43127.
+
 Read [APP-OPERATIONS.md](APP-OPERATIONS.md) before changing or delivering this
 app. It is the shared source/deployment workflow for Codex and Claude Code.
 

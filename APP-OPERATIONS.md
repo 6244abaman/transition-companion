@@ -1,5 +1,16 @@
 # App delivery and stable access
 
+## Next Generation isolation (25 November 2026)
+
+`development/next-generation` is an explicitly separate Phase 1 foundation.
+Its local app and Start/Stop-Next-Generation launchers use port 43128. Do not
+retarget the existing Render review service, change the model proxy, merge this
+work or provision new services as part of this development task. Root `CLAUDE.md`
+imports these shared instructions. Next Generation has no public deployed URL;
+the public owner directory and current review link continue to describe the
+working app. A later authorized review deployment should use an isolated service
+and explicit authentication/retention review before receiving personal data.
+
 Read `app-deployment.json` when present for the actual public URL, Render
 service/workspace, deployment branch and build settings. `HOSTING.txt` is the
 plain owner guide. Keep the live link near the top of the public README so the

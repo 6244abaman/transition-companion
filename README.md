@@ -4,6 +4,17 @@
 · [Render dashboard](https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0)
 · [Permanent links to both apps](https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md)
 
+## Next Generation — separate development foundation
+
+On `development/next-generation`, see the [new app and Windows opening guide](next-generation/README.md)
+and [master architecture](docs/MASTER_ARCHITECTURE.md). Double-click
+**Start-Next-Generation.cmd** for **http://127.0.0.1:43128/** and
+**Stop-Next-Generation.cmd** to stop it. Node.js 24 is the only prerequisite for
+local guided mode; optional live AI needs server-side credentials and explicit
+per-request consent. This is a tested Phase 1 foundation, not the full finished
+next-generation companion. The existing app and hosted review above are preserved;
+no Next Generation deployment or production release has been made.
+
 ## Home, follow-through and soldier testing (24 November 2026)
 
 The **Home / בית** button works from an open conversation or the profile/settings drawer.

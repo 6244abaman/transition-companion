@@ -1,7 +1,7 @@
 {
   "name": "transition-companion",
   "version": "2.0.0",
-  "description": "Guided Transition Companion \u2014 dialogue-first support for Israelis finishing IDF service",
+  "description": "Guided Transition Companion — dialogue-first support for Israelis finishing IDF service",
   "private": true,
   "scripts": {
     "test": "npm run test:legacy && npm run test:integration && npm run test:next && npm run test:review && npm run test:home",
@@ -19,7 +19,9 @@
     "test:next": "node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
     "test:business-skills": "node tests/business-skills.test.js",
     "test:sync": "node tests/sync-client.test.js && node tests/sync-service.test.js",
-    "test:knowledge": "node tests/knowledge-store.test.js"
+    "test:knowledge": "node tests/knowledge-store.test.js",
+    "test:nextgen": "npm --prefix next-generation test",
+    "dev:nextgen": "npm --prefix next-generation start"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
