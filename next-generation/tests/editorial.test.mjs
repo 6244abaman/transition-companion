@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname, basename, resolve } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import {
   EditorialStore,
@@ -351,6 +351,8 @@ test("embedded knowledge persists across a clean process-level database close an
     assert.equal((await new EditorialStore(db).list()).length, 4);
   } finally {
     await db?.close();
+    assert.equal(dirname(resolve(directory)), resolve(tmpdir()));
+    assert.ok(basename(directory).startsWith("momentum-knowledge-"));
     await rm(directory, { recursive: true, force: true });
   }
 });

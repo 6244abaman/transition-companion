@@ -4,10 +4,15 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { mkdtemp, rm, writeFile, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openDeskDatabase } from "../server/desk-database.mjs";
 const exec = promisify(execFile);
+async function removeTestDirectory(dir) {
+  assert.equal(dirname(resolve(dir)), resolve(tmpdir()));
+  assert.ok(/^momentum-(durable-|storage-failure-)/.test(basename(dir)));
+  await rm(dir, { recursive: true, force: true });
+}
 test("separate Node processes reopen the same durable knowledge and staff accounts", async () => {
   const dir = await mkdtemp(join(tmpdir(), "momentum-durable-"));
   try {
@@ -22,7 +27,7 @@ test("separate Node processes reopen the same durable knowledge and staff accoun
       assert.match(result.stdout, /DURABLE_OK/);
     }
   } finally {
-    await rm(dir, { recursive: true, force: true });
+    await removeTestDirectory(dir);
   }
 });
 test("durable storage failures leave the previous snapshot intact and fail subsequent reads closed", async () => {
@@ -49,6 +54,6 @@ test("durable storage failures leave the previous snapshot intact and fail subse
     assert.deepEqual(await readFile(path), before);
   } finally {
     await db?.close();
-    await rm(dir, { recursive: true, force: true });
+    await removeTestDirectory(dir);
   }
 });

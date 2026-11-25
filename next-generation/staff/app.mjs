@@ -340,6 +340,7 @@ export function mountDesk({ document: doc = document, fetcher = fetch } = {}) {
     }
     parent.append(bilingual);
     const source = el("div", undefined, "source-box");
+    if (c.source.url) source.append(link(c.source.url, t("source")));
     const url = input(source, t("source"), c.source.url, {
         type: "url",
         max: 1000,
