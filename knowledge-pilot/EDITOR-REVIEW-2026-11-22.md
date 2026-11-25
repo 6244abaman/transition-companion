@@ -43,3 +43,22 @@ These are substantive editorial proposals, not approved Momentum claims.
 - Isrotel preferred-work amount differs from BTL. Feed retains the warning.
 - Behatsdaa returned 403; tax guide rendered no readable content. Previous
   checkedAt retained. No inventory or current tax thresholds asserted.
+
+## Recheck: 25 November 2026
+
+The program and work/education sources above were reread. The December workshop
+proposal and its eligibility discrepancy remain for editorial approval; no
+substantive Momentum wording was published. Back-to-the-Future check date alone
+was refreshed. Existing pilot-only tools remain unchanged.
+
+Public-data additions are in benefits-updates.json by stable ID: detailed rent,
+separate retroactive top-up, temporary lodging, improved grant/deposit cards,
+enduring career guidance, Mimadim, and Hadera's 27 December fair. Netivot and
+Afula now show verification challenges; old check dates retained. HESEG's
+application page has both closed and stale open headings with past 2026 dates;
+no new open opportunity inferred. Gruss's amount is labelled for the prior year.
+
+Content QA only: both languages and distinct grant/deposit action links are
+checked in JSON. The fictional S13 20-combat/4-support-month estimates remain
+QA arithmetic, not a new card or universal payment. This does not establish live
+chat behavior, language switching or soldier follow-through; no external AI used.
