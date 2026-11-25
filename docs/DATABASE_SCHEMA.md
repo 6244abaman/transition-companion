@@ -1,5 +1,15 @@
 # Data and schema boundary
 
+Current workflow migration: `next-generation/server/migrations/002-editorial.sql`.
+`db:migrate` applies both migrations. The local Knowledge Desk applies them to its
+own embedded PostgreSQL and imports four draft topics, without external provisioning.
+New tables: knowledge_staff (named staff roles/salted hashes), knowledge_topics,
+knowledge_revisions (paired bilingual JSON, contributors, state, lock version,
+reviewer/attestation/expiry), and knowledge_review_events (immutable audit).
+knowledge_items.revision_id links each public language row to the approved revision.
+The published_knowledge view rejects records whose content, source or review metadata
+differs from that immutable revision. Staff identity is excluded from public reads.
+
 The central database contains Momentum knowledge, not identifiable soldiers.
 Executable migration: `next-generation/server/schema.sql`. Apply explicitly with
 `npm run db:migrate` from next-generation after configuring a dedicated development
@@ -18,15 +28,25 @@ never interpolated. Return at most eight records with bounded text and provenanc
 No URL is fetched by the gateway. Broad gov.il suffix matching is deliberately
 avoided. Expiry removes a record from retrieval without deleting editorial history.
 
-Current schema does not enforce two-person review, translations, immutable revision
-history or database grants. The staff portal stage must add revision lineage,
-editor/reviewer separation and atomic approval+audit writes. Do not expose SQL
+The editorial schema and application enforce paired translations, versioned immutable
+reviewed content/events, editor/reviewer separation and atomic approval+audit writes.
+A contributor cannot approve their revision. Local account enrolment does not verify
+professional qualifications. Organizational SSO/MFA and database grants remain. Do not expose SQL
 credentials or administrative writes to the soldier app. Runtime should receive a
 SELECT-only role; migration/editor roles must be separate before hosted deployment.
 
 No soldiers, profiles, conversations, personal goals, embeddings of personal text,
 device IDs, IP events or individual consent history tables exist. No analytics table
 is installed. Future aggregates require a new explicit privacy/governance decision.
+
+## Staff workbench persistence
+
+The desk stores a compressed PostgreSQL snapshot at .local/knowledge.snapshot,
+including staff names, role descriptions and salted password hashes. No plaintext
+password, soldier record or session cookie is persisted. Each mutation runs through
+a serialized transaction and flush/atomic rename before acknowledgement. The file
+is private, excluded from git and not served. Stop before making a private backup;
+restore deliberately, considering old approval/withdrawal states. See the review guide.
 
 ## Private device schema
 

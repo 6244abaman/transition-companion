@@ -118,7 +118,7 @@ export function createApp({
       if (req.url === "/healthz" && req.method === "GET")
         return reply(200, {
           service: "momentum-next-generation",
-          version: "0.1.0",
+          version: "0.2.0",
         });
       if (req.url === "/__owner" && req.method === "GET")
         return reply(
@@ -144,6 +144,21 @@ export function createApp({
           ai: configured,
           mode: configured ? "consent-required" : "local-guided",
         });
+      if (req.url.startsWith("/api/knowledge?") && req.method === "GET") {
+        const query = new URL(req.url, origin).searchParams;
+        if ([...query.keys()].sort().join() !== "domain,language")
+          return reply(400, { error: "Only domain and language are accepted" });
+        try {
+          return reply(200, {
+            items: await knowledge.retrieve({
+              domain: query.get("domain"),
+              language: query.get("language"),
+            }),
+          });
+        } catch {
+          return reply(200, { items: [] });
+        }
+      }
       if (req.url.startsWith("/api/")) {
         if (req.method !== "POST")
           return reply(405, { error: "POST required" });

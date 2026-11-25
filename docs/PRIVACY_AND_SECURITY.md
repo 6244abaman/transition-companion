@@ -1,5 +1,25 @@
 # Privacy and security — development design, not a policy change
 
+## Staff workflow addition
+
+The separate local Knowledge Desk on 43129 persists public knowledge and staff
+names, role descriptions, salted scrypt password hashes and editorial actions.
+These are not soldier accounts. No soldier text, profile, goal or activity reaches
+that service: the companion asks only for public domain/language knowledge.
+Staff sign-in uses HttpOnly/SameSite=Strict cookies, in-memory 15-minute sessions,
+same-origin/Host checks, CSRF, body/rate limits and fresh role checks. Local owner
+setup uses an unserved instance token; no default accounts or public enrolment.
+Passwords are hidden in interactive setup and stored only as salted hashes.
+Professional role descriptions are attestations, not independent credential checks.
+
+The knowledge.snapshot file includes staff metadata/hashes and is private, not
+encrypted. Protect local OS access and backups; it is excluded from git/HTTP.
+Windows-safe atomic snapshot writes finish before mutations are acknowledged;
+disk failure blocks further reads. Never auto-restore an old snapshot that might
+reinstate withdrawn content. Named professional review remains pending for all
+starter drafts. Local authentication is not hosted SSO/MFA. No production privacy
+policy, new paid resource or public deployment is introduced by this workflow.
+
 Updated 25 November 2026. No production privacy policy or provider contract was
 changed. This foundation needs independent security/privacy review before a pilot.
 

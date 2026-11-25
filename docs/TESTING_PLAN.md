@@ -1,5 +1,25 @@
 # Testing plan and verification record
 
+## Knowledge Desk update — 25 November 2026
+
+All 34 foundation tests passed (the original 18 plus 16 knowledge workflow,
+staff HTTP/UI and durability tests). They cover two-person role checks, contributor
+rejection, bilingual/source/date validation, stale edits, immutable revisions/events,
+atomic two-language publication and rollback, replacement, withdrawal/expiry,
+publication-view integrity, staff login/CSRF/logout/disable/session expiry/rates,
+private asset boundaries, companion public retrieval and safe local client failure.
+Durability tests use separate Node processes to reopen knowledge and staff login;
+disk replacement failure blocks reads. Existing suite results below describe Phase 1.
+
+Real Windows desk startup/reuse/stop/restart has been verified after correcting a
+native PostgreSQL filesystem permission issue. The desk now uses atomic snapshots.
+Browser verified the real four-draft preview in Hebrew and English at 390px width,
+without horizontal overflow or console errors. Staff editing/approval is covered by
+HTTP and DOM tests using isolated test accounts, not fake professional approvals
+in the owner's actual database. Real staff enrolment/sign-off is an owner action.
+The full original root regression suite and npm run build:review also passed after
+the change. npm audit reports zero vulnerabilities for the new dependency tree.
+
 25 November 2026. Node.js 24.15.0 on Aba's Windows computer.
 
 ## Required regression commands

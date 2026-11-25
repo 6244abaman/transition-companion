@@ -1,6 +1,6 @@
 # Momentum Next Generation: master architecture
 
-Status: Phase 1 development foundation, 25 November 2026. Branch:
+Status: Phase 1 foundation plus local knowledge review workflow, 25 November 2026. Branch:
 `development/next-generation`. Operational base: `a45bf753045682e6afdd8c998ab5bf00eca6126b`
 on `complete/continuity-and-followup`. This document distinguishes implemented
 foundations from the long-term design. Nothing here authorizes a production release.
@@ -24,7 +24,7 @@ flowchart TD
   O --> V[Validate structure and citation identifiers]
   V --> C
   C -->|Explicit save| M
-  A[Future Momentum staff portal] -.-> K
+  A[Local staff Knowledge Desk] --> K
   X[Future optional aggregate reporting] -.-> A
 ```
 
@@ -43,7 +43,8 @@ request, cross-device sync, telemetry, automatic export or migration in Phase 1.
 | Coordinator | Bilingual domain routing with recent topic continuity in the one memory | Deterministic router, not autonomous multi-agent planning |
 | Education/employment specialists | Domain-scoped instructions selected by the coordinator in one gateway call; local guided fallback | Live model quality has not been evaluated; local guidance is scripted |
 | OpenAI gateway | Responses API, fixed server instructions, strict structured output, local validation, no tools, one-use request approval | Local development access token, not a public identity system |
-| Knowledge | Explicit SQL migration, parameterized repository, approved/date/source filters | Empty by default; no production database or corpus installed |
+| Knowledge | SQL migrations, immutable paired revisions, approved publication view, date/source filters | Four source-checked bilingual draft topics; no professional sign-off yet |
+| Staff workflow | Separate local editor/reviewer accounts; bilingual editing, review, approval, rejection, replacement, withdrawal and audit | Local workbench; organizational SSO/MFA and actual professional sign-off remain |
 | Automated checks | Existing regression suite, new crypto/HTTP/SQL/UI tests, Linux and Windows CI jobs | Mock provider and embedded PostgreSQL, not hosted integration |
 
 ## UI foundation and review
@@ -63,13 +64,15 @@ app does not register a service worker; offline use means a running local Node h
 
 ## Long-term components, not yet implemented
 
-**Knowledge operations and administration.** Separate staff-only portal using
-organizational SSO, MFA, editor/reviewer roles and independent approval. Staff can
+**Knowledge operations and administration.** The local staff portal now implements
+named editor/reviewer accounts and independent approval. Staff can
 draft bilingual claims, attach original official sources, record the verification
 date and expiry, approve or withdraw a version, and inspect staff action history.
 Automated checks may flag stale links; they must not silently approve new claims.
-Use separate migration/editor/read-only runtime database roles. This schema and
-read interface are the first step; the portal and role deployment remain unbuilt.
+The local PostgreSQL engine persists through atomic snapshots and enforces immutable
+history. See KNOWLEDGE_REVIEW_GUIDE.md. Organizational SSO/MFA, remote role deployment,
+independent qualifications verification and a hosted portal remain future work.
+Use separate migration/editor/read-only runtime database roles when hosting.
 
 **Verified retrieval.** Current retrieval is domain/language/date based, bounded
 to eight records. Later add reviewed search indexes and semantic retrieval over
@@ -125,3 +128,10 @@ AGENTS, APP-OPERATIONS and CLAUDE share the same deployment boundary.
   This is an engineering guard, not proof of legal consent or a new privacy policy.
 - ADR-007: No new paid service, existing deployment change, production merge or
   personal-data migration. Future releases use explicit pilot gates.
+- ADR-008: Add a separate local staff desk on 43129. Imported source checks are
+  drafts; an independently enrolled reviewer must attest to both languages and
+  source/scope before atomic publication. Revisions and audit are append-only.
+- ADR-009: A native PGlite filesystem restart failed on this Windows computer.
+  Use its memory filesystem with flushed, atomic snapshots and serialized durable
+  transactions. Test independent Node processes; do not infer durability from a
+  same-process reopen. Hosted PostgreSQL remains a separate deployment decision.

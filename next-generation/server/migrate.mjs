@@ -1,5 +1,5 @@
 import pg from "pg";
-import { readFile } from "node:fs/promises";
+import { migrateEditorial } from "./editorial.mjs";
 if (!process.env.DATABASE_URL)
   throw new Error("Set DATABASE_URL for a dedicated knowledge database");
 const pool = new pg.Pool({
@@ -9,9 +9,7 @@ const pool = new pg.Pool({
   max: 2,
 });
 try {
-  await pool.query(
-    await readFile(new URL("./schema.sql", import.meta.url), "utf8"),
-  );
+  await migrateEditorial(pool);
   console.log("Knowledge schema ready. No soldier data tables.");
 } finally {
   await pool.end();

@@ -45,3 +45,26 @@ jobs:
           & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/stop.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Shutdown failed' }
           & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/stop.ps1
+      - name: Check staff desk setup, persistence, isolation and stop
+        shell: powershell
+        run: |
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/start.ps1 -KnowledgeDesk -NoBrowser
+          if ($LASTEXITCODE -ne 0) { throw 'Knowledge desk startup failed' }
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/start.ps1 -KnowledgeDesk -NoBrowser
+          if ($LASTEXITCODE -ne 0) { throw 'Knowledge desk reuse failed' }
+          $preview = Invoke-RestMethod http://127.0.0.1:43129/staff/preview
+          if ($preview.items.Count -ne 4 -or $preview.status -ne 'pending-professional-review') { throw 'Seed set must remain draft' }
+          $public = Invoke-RestMethod 'http://127.0.0.1:43129/knowledge?domain=benefits&language=he'
+          if ($public.items.Count -ne 0) { throw 'Unreviewed facts were published' }
+          try { Invoke-WebRequest http://127.0.0.1:43129/.local/knowledge.snapshot -UseBasicParsing; throw 'Snapshot exposed' }
+          catch { if ($_.Exception.Response.StatusCode.value__ -ne 404) { throw } }
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/stop.ps1 -KnowledgeDesk
+          if ($LASTEXITCODE -ne 0) { throw 'Knowledge desk stop failed' }
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/start.ps1 -KnowledgeDesk -NoBrowser
+          if ($LASTEXITCODE -ne 0) { throw 'Knowledge desk restart failed' }
+          $preview = Invoke-RestMethod http://127.0.0.1:43129/staff/preview
+          if ($preview.items.Count -ne 4) { throw 'Seed preview changed after restart' }
+          node --test next-generation/tests/durability.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Cross-process durability failed' }
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./next-generation/windows/stop.ps1 -KnowledgeDesk
+          if ($LASTEXITCODE -ne 0) { throw 'Knowledge desk final stop failed' }

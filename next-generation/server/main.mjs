@@ -1,5 +1,6 @@
 import { createApp } from "./gateway.mjs";
-import { KnowledgeRepository } from "./knowledge.mjs";
+import { PublishedKnowledgeRepository } from "./editorial.mjs";
+import { LocalKnowledgeClient } from "./local-knowledge.mjs";
 let pool;
 if (process.env.DATABASE_URL) {
   const { default: pg } = await import("pg");
@@ -17,7 +18,9 @@ if (process.env.DATABASE_URL) {
 }
 const server = createApp({
   env: process.env,
-  knowledge: new KnowledgeRepository(pool),
+  knowledge: pool
+    ? new PublishedKnowledgeRepository(pool)
+    : new LocalKnowledgeClient(),
   managementToken: process.env.NEXTGEN_MANAGEMENT_TOKEN || "",
 });
 server.listen(Number(process.env.PORT || 43128), "127.0.0.1", () =>

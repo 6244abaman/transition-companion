@@ -420,13 +420,69 @@ export function mountApp({
       source(t("rehab"), "https://shikum.mod.gov.il/"),
     );
   }
-  function benefits() {
+  async function benefits() {
+    const lang = memory.language;
     const p = panel(t("benefits"));
     p.append(
       para(t("sources")),
       source(t("benefitSource"), "https://www.hachvana.mod.gov.il/"),
       source(t("rehab"), "https://shikum.mod.gov.il/"),
     );
+    const library = el("div");
+    p.prepend(library);
+    try {
+      const groups = await Promise.all(
+        ["benefits", "education", "employment"].map(async (domain) => {
+          const r = await fetcher(
+            `/api/knowledge?domain=${domain}&language=${lang}`,
+          );
+          if (!r.ok) return [];
+          const value = await r.json();
+          return Array.isArray(value.items) ? value.items : [];
+        }),
+      );
+      if (
+        disposed ||
+        !$("panel")?.open ||
+        $("panel-title").textContent !== t("benefits") ||
+        memory.language !== lang
+      )
+        return;
+      const records = groups
+        .flat()
+        .filter(
+          (x) => safeOfficial(x.url) && new Date(x.expires_at) > new Date(),
+        );
+      if (records.length) {
+        p.querySelector("p")?.remove();
+        library.append(
+          para(
+            lang === "he"
+              ? "מידע שעבר בדיקה מקצועית. יש לבדוק התאמה אישית מול הגוף הרשמי."
+              : "Professionally reviewed information. Check your individual situation with the official body.",
+          ),
+        );
+        for (const r of records) {
+          const row = el("article", undefined, "goal");
+          row.append(
+            el("h3", r.title),
+            para(r.body),
+            source(
+              r.title,
+              r.url,
+              (lang === "he" ? "נבדק: " : "Reviewed: ") +
+                new Date(r.reviewed_at).toLocaleDateString(lang) +
+                " · " +
+                (lang === "he" ? "בתוקף עד: " : "Valid until: ") +
+                new Date(r.expires_at).toLocaleDateString(lang),
+            ),
+          );
+          library.append(row);
+        }
+      }
+    } catch {
+      /* The official source links remain usable when the local desk is stopped. */
+    }
   }
   function field(parent, text, type = "text") {
     const label = el("label", text),

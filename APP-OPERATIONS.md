@@ -2,6 +2,12 @@
 
 ## Next Generation isolation (25 November 2026)
 
+The local Knowledge Desk uses port 43129 and its own Start/Stop-Knowledge-Desk.cmd
+launchers. Setup-Knowledge-Staff.cmd enrols named editor/reviewer accounts. Read
+docs/KNOWLEDGE_REVIEW_GUIDE.md for approval, durability and privacy boundaries.
+The four source-checked bilingual topics stay draft until real professional review.
+This task does not authorize a hosted staff portal or retargeting the current review.
+
 `development/next-generation` is an explicitly separate Phase 1 foundation.
 Its local app and Start/Stop-Next-Generation launchers use port 43128. Do not
 retarget the existing Render review service, change the model proxy, merge this

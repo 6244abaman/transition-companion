@@ -1,5 +1,25 @@
 # Development log
 
+## 25 November 2026 — Staff knowledge workflow
+
+- Implemented local Knowledge Desk, named editor/reviewer accounts, paired bilingual
+  drafting, submit/approve/reject/revise/withdraw, expiry and immutable action history.
+- Added SQL constraints, contributor checks, optimistic locking, atomic paired
+  publication, revision-bound read view and independent source/scope/language checks.
+- Checked four official Hebrew sources and loaded four bilingual draft topics.
+  English is a proposed translation. No real professional approval is claimed.
+- Connected public approved knowledge to the companion sources panel and gateway;
+  no soldier data is sent to the desk. No live LLM calls or paid services.
+- Added portable Start/Stop-Knowledge-Desk.cmd and interactive staff setup, local
+  guide, staff browser UI and shared GitHub/Claude operations guidance.
+- Windows restart exposed a PGlite native lock-file permission failure. Replaced
+  that storage adapter with flushed atomic PostgreSQL snapshots, serialized durable
+  transactions and fail-closed disk errors. Added independent-process reopen tests.
+- New suite totals 34 tests; workflow, SQL rollback/integrity, HTTP auth/CSRF,
+  bilingual staff UI and cross-process durability pass. Existing app remains separate.
+- Professional sign-off, hosted SSO/MFA, remote PostgreSQL deployment, physical
+  phone/AT checks and public hosting remain outstanding.
+
 ## 25 November 2026 — Phase 1 foundation
 
 - Read the provided architecture request and attached app review; examined source,

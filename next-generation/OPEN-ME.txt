@@ -1,5 +1,11 @@
 MOMENTUM NEXT GENERATION — SEPARATE DEVELOPMENT APP
 
+STAFF KNOWLEDGE: Double-click Start-Knowledge-Desk.cmd in the repository root for
+http://127.0.0.1:43129/staff/. First staff setup: Setup-Knowledge-Staff.cmd.
+Stop-Knowledge-Desk.cmd stops that separate service. Read KNOWLEDGE-DESK.txt.
+Only independently approved, unexpired items enter companion answers or sources.
+The starter set is loaded as four bilingual drafts awaiting professional review.
+
 1. Install Node.js 24 LTS from https://nodejs.org/ once.
 2. In the repository folder, double-click Start-Next-Generation.cmd.
 3. Use http://127.0.0.1:43128/ in the same browser each time.

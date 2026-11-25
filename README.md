@@ -6,6 +6,13 @@
 
 ## Next Generation — separate development foundation
 
+The new **[Knowledge Desk](docs/KNOWLEDGE_REVIEW_GUIDE.md)** provides staff editing,
+independent bilingual review, approval, withdrawal and audit. Double-click
+**Start-Knowledge-Desk.cmd** for **http://127.0.0.1:43129/staff/**. First enrol actual
+staff using **Setup-Knowledge-Staff.cmd**; finish with **Stop-Knowledge-Desk.cmd**.
+Four official-source topics (eight language versions) are loaded as drafts awaiting
+professional sign-off. [Plain opening/review instructions](next-generation/KNOWLEDGE-DESK.txt).
+
 On `development/next-generation`, see the [new app and Windows opening guide](next-generation/README.md)
 and [master architecture](docs/MASTER_ARCHITECTURE.md). Double-click
 **Start-Next-Generation.cmd** for **http://127.0.0.1:43128/** and

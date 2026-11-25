@@ -47,6 +47,13 @@ notifications, deadlines, external messages or progress surveillance.
 
 ## Verified benefits — retrieval guard, not entitlement engine
 
+The local Knowledge Desk now feeds the companion's approved-publication repository.
+Only independently approved paired revisions that still match source/content/review
+metadata enter retrieval. Four starter topics remain drafts pending professional
+review. The companion sends only domain/language to the desk. Public knowledge can
+also be read in the sources panel without enabling an LLM. Publication does not
+authorize a model call or access to private memory.
+
 Only approved, reviewed, unexpired public knowledge from explicitly allowed sources
 may enter the gateway. Missing knowledge returns one clear limitation without a
 provider call for benefits requests. The server accepts citation IDs only from its

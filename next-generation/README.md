@@ -15,6 +15,13 @@ No existing data, proxy configuration, deployment branch or public URL was chang
 
 ## Working foundations
 
+The [Knowledge Desk](../docs/KNOWLEDGE_REVIEW_GUIDE.md) now adds the local staff
+workflow: Start-Knowledge-Desk.cmd → http://127.0.0.1:43129/staff/. Separate editor
+and reviewer accounts, bilingual drafts, submit/review/approve/reject, versioned
+replacement, expiry, withdrawal and immutable audit are implemented. Four source-checked
+topics are loaded as drafts; a real Momentum professional must sign off before
+they enter answers. See [KNOWLEDGE-DESK.txt](KNOWLEDGE-DESK.txt) for setup and use.
+
 - A direct bilingual conversation, Hebrew RTL / English LTR, four starter topics,
   compact composer, optional voice with disclosure, and separate help/benefits panels.
 - Temporary conversation by default; optional AES-GCM encrypted IndexedDB memory,
@@ -24,7 +31,9 @@ No existing data, proxy configuration, deployment branch or public URL was chang
 - A server-only OpenAI Responses gateway with bearer access, origin/host controls,
   size/rate/time limits, exact-packet single-use approval and validated structured replies.
 - A PostgreSQL knowledge adapter and schema. Only approved, reviewed, unexpired
-  official-source records can be retrieved. The shipped database contains **no claims**.
+  official-source records can be retrieved. Starter claims remain **unpublished drafts**
+  until independent professional approval. Published items are available in the
+  companion source panel without an AI key when the local desk is running.
 
 ## Develop
 
@@ -51,8 +60,8 @@ it is not a promise of zero provider retention. No live provider test was perfor
 
 ## Limits
 
-This is a tested foundation, not a completed soldier pilot. Administration SSO,
-editorial approval UI, additional specialist implementations, real phone/assistive
+This is a tested foundation, not a completed soldier pilot. Administration SSO/MFA,
+real professional content approval, additional specialist implementations, real phone/assistive
 technology testing, hardened public authentication, privacy review and deployment
 remain separate work. No central analytics or individual activity collection is
 enabled. No automatic migration of old personal data. No promises of complete

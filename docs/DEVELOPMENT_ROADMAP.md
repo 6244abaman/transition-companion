@@ -1,6 +1,6 @@
 # Development roadmap
 
-Updated 25 November 2026. Only Phase 1 foundations below have been implemented.
+Updated 25 November 2026. Phase 1 and a local staff workflow are implemented.
 
 | Stage | Deliverable | Status / release gate |
 | --- | --- | --- |
@@ -9,7 +9,7 @@ Updated 25 November 2026. Only Phase 1 foundations below have been implemented.
 | 1C | Secure gateway, minimized approval packet, bilingual router, education/work instructions | Implemented with mock-provider tests; live provider behavior not tested |
 | 1D | Public-knowledge SQL schema and filtered read interface | Implemented/tested in embedded PostgreSQL; no hosted DB or live corpus |
 | 1E | Mobile-first standalone chat shell, Windows launchers and CI | Implemented; desktop responsive browser and local Windows checks; physical phones/AT pending |
-| 2 | Editorial admin portal: staff SSO/MFA, roles, two-person approval, bilingual records, expiry queues | Design only; dedicated development DB and content owners needed |
+| 2 | Local editorial desk: staff roles, independent approval, paired revisions, expiry/withdrawal/audit | Implemented and tested locally; real professional sign-off, organizational SSO/MFA and hosted roles remain |
 | 3 | Live end-to-end AI and verified retrieval pilot | Needs authorized credentials/model, reviewed bilingual content, invented-data evaluations and privacy review |
 | 4 | More specialists and richer follow-through | Design contracts exist; add one domain at a time, no new independent memory |
 | 5 | Accessible mobile/voice pilot and optional local reminders | Physical iOS/Android, Hebrew voice, keyboard/AT testing; explicit permissions |
@@ -18,11 +18,13 @@ Updated 25 November 2026. Only Phase 1 foundations below have been implemented.
 
 ## Recommended next task
 
-Build the **knowledge administration vertical slice** on this same development
-branch: staff-only draft/review/approve/withdraw workflow, a small professionally
-reviewed bilingual source set, and claim-level retrieval/answer tests. Connect it
-to a dedicated local development PostgreSQL before proposing hosting. This makes
-the companion useful with verified facts without uploading soldier histories.
+Enrol a named Momentum editor and independent professional reviewer in the local
+Knowledge Desk, then review and approve the four source-checked bilingual topics.
+The workflow and embedded PostgreSQL are ready; human professional approval has
+not been supplied. Next evaluate claim-level retrieval and answers with invented
+soldier examples, then plan organizational SSO/MFA and a dedicated hosted review
+environment before proposing public access. Do not describe source checks as
+independent professional sign-off.
 
 In parallel with later live-AI authorization, evaluate education and employment
 conversations with invented examples: abrupt topic changes, returning goals,
