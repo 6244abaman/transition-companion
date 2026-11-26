@@ -32,6 +32,7 @@
     const t = iso();
     return { schema: SCHEMA, version: VERSION, createdAt: t, updatedAt: t,
       goals: [], actions: [], education: [], cvs: [], skills: [], lifeSkills: [],
+      links: [], manualSkills: [],
       privacy: { shareWithAI: false, shareSkills: true, shareGoals: true,
         shareEducation: true, shareActions: true, shareCVs: false },
       meta: { skillsImported: false } };
@@ -68,6 +69,19 @@
     return {id:Number(v.id),en:str(v.en,120),he:str(v.he,120),evidence,confirmed:true,
       level:Number.isInteger(Number(v.level)) && Number(v.level)>=1 && Number(v.level)<=4 ? Number(v.level):0};
   }
+  // Saved external links and skills the soldier adds beyond the 36 (optional, additive fields).
+  function cleanLink(v) {
+    if (!v || typeof v !== "object") return null;
+    const url = str(v.url, 500);
+    if (!/^https?:\/\//i.test(url)) return null;
+    return { id: str(v.id, 90) || id(), title: str(v.title, 160) || url, url, note: str(v.note, 600), createdAt: str(v.createdAt, 40) || iso() };
+  }
+  function cleanManualSkill(v) {
+    if (!v || typeof v !== "object") return null;
+    const name = str(v.name, 120);
+    if (!name) return null;
+    return { id: str(v.id, 90) || id(), name, evidence: str(v.evidence, 1500), createdAt: str(v.createdAt, 40) || iso() };
+  }
   function normalize(raw) {
     if (!raw || raw.schema !== SCHEMA || raw.version !== VERSION) throw new Error("Unsupported Journey profile format");
     const result = blank();
@@ -85,6 +99,9 @@
     result.lifeSkills=arr(raw.lifeSkills).slice(0,63).map(cleanLifeSkill).filter(v=>{
       if(!v||seenLife.has(v.id))return false;seenLife.add(v.id);return true;
     });
+    const uniq = (list, clean, max) => { const seen = new Set(); return arr(list).slice(0, max).map(clean).filter(v => { if (!v || seen.has(v.id)) return false; seen.add(v.id); return true; }); };
+    result.links = uniq(raw.links, cleanLink, 200);
+    result.manualSkills = uniq(raw.manualSkills, cleanManualSkill, 100);
     const p = raw.privacy || {};
     result.privacy = {
       shareWithAI: p.shareWithAI === true,
@@ -210,6 +227,12 @@
       p.lifeSkills=[...map.values()];return p;
     });
   }
+  function addLink(value) { const v = cleanLink(value); if (!v) throw new Error("Enter a link that starts with http:// or https://");
+    return write(p => { if (p.links.length >= 200) throw new Error("Too many records"); p.links.push(v); return p; }); }
+  function removeLink(linkId) { return write(p => { p.links = p.links.filter(x => x.id !== linkId); return p; }); }
+  function addManualSkill(value) { const v = cleanManualSkill(value); if (!v) throw new Error("A skill name is required");
+    return write(p => { if (p.manualSkills.length >= 100) throw new Error("Too many records"); p.manualSkills.push(v); return p; }); }
+  function removeManualSkill(skillId) { return write(p => { p.manualSkills = p.manualSkills.filter(x => x.id !== skillId); return p; }); }
   function removeLifeSkill(id){return write(p=>{p.lifeSkills=p.lifeSkills.filter(x=>x.id!==Number(id));return p;});}
   function syncAssessment() {
     const assessment = getRaw(SKILLS_KEY);
@@ -228,6 +251,8 @@
     }
     if(p.privacy.shareSkills) arr(p.lifeSkills).filter(x=>x.confirmed&&x.evidence&&x.id!==63).slice(0,8)
       .forEach(x=>lines.push("Life skill (soldier-confirmed example): "+(he?(x.he||x.en):(x.en||x.he))+" — "+str(x.evidence,260)));
+    if (p.privacy.shareSkills) arr(p.manualSkills).filter(x => x.evidence).slice(0, 6)
+      .forEach(x => lines.push("Skill added by the soldier (own example): " + x.name + " — " + str(x.evidence, 260)));
     if (p.privacy.shareGoals) p.goals.filter(x => x.status !== "achieved").slice(0, 6)
       .forEach(x => lines.push("Goal: " + x.title + " [" + x.status + "]" +
         (x.targetDate ? " target " + x.targetDate : "")));
@@ -264,6 +289,11 @@
       current.skills = [...skills.values()].slice(0, 36);
       const lifeSkills=new Map(current.lifeSkills.map(x=>[x.id,x]));
       incoming.lifeSkills.forEach(x=>lifeSkills.set(x.id,x));current.lifeSkills=[...lifeSkills.values()].slice(0,63);
+      for (const [key, max] of [["links", 200], ["manualSkills", 100]]) {
+        const map = new Map(arr(current[key]).map(x => [x.id, x]));
+        arr(incoming[key]).forEach(x => map.set(x.id, x));
+        current[key] = [...map.values()].slice(0, max);
+      }
       // Never implicitly enable AI sharing through a merged backup.
       return current;
     });
@@ -282,8 +312,10 @@
       ls.removeItem("tc-benefits-preparation-v1");
       ls.removeItem("gtc_v2_state");
       ls.removeItem("gtc_H_state");
+      ls.removeItem("momentum-companion-plus-v1");
     }
   }
   return { KEY, VERSION, read, write, upsert, remove, updatePrivacy, syncAssessment,
-    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels, saveLifeSkills, removeLifeSkill };
+    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels, saveLifeSkills, removeLifeSkill,
+    addLink, removeLink, addManualSkill, removeManualSkill };
 });

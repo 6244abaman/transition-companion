@@ -3,7 +3,8 @@
 (function(root){
   'use strict';
   function urgent(text){
-    const s=String(text||'').toLowerCase();
+    // iPhone keyboards type curly apostrophes; normalize them before matching.
+    const s=String(text||'').replace(/[\u2018\u2019\u02BC\u0060\u00B4]/g,"'").toLowerCase();
     return /\b(?:kill myself|end my life|hurt myself|harm myself|suicidal|want to die|planning suicide|overdos(?:e|ed)|kill someone|hurt someone)\b/.test(s)||
       /(?:להתאבד|לשים קץ לחיי|לפגוע בעצמי|להרוג את עצמי|רוצה למות|אובדני|אובדנית|בלעתי כדורים|לפגוע במישהו)/.test(s);
   }

@@ -38,7 +38,29 @@ const ChatHistory = (() => {
     }
     return {...state, savedChats:[...(state.savedChats || []), ...additions]};
   }
-  return {chats, select, backup, restore};
+  // Delete one conversation. index 0 is the current chat; i > 0 is savedChats[i - 1].
+  function remove(state, index) {
+    if (index === 0) return {...state, ...blank()};
+    const archived = [...(state.savedChats || [])];
+    if (!archived[index - 1]) throw Error('Unknown conversation');
+    archived.splice(index - 1, 1);
+    return {...state, savedChats: archived};
+  }
+  // Indexes (as in chats()) of conversations whose text contains every word of the query.
+  function search(state, query) {
+    const words = String(query || '').toLowerCase().split(/\s+/).filter(Boolean);
+    return chats(state).map((chat, i) => ({chat, i})).filter(({chat}) => {
+      if (!chat.messages.length) return false;
+      const text = chat.messages.map(m => String(m.text || '')).join(' ').toLowerCase();
+      return words.every(w => text.includes(w));
+    }).map(({i}) => i);
+  }
+  function summary(chat) {
+    const users = chat.messages.filter(m => m.role === 'user').length;
+    const last = [...chat.messages].reverse().find(m => m.role === 'assistant');
+    return {users, last: last ? String(last.text).replace(/\s+/g, ' ').slice(0, 90) : ''};
+  }
+  return {chats, select, backup, restore, remove, search, summary};
 })();
 if (typeof module !== 'undefined') module.exports = ChatHistory;
 
@@ -80,6 +102,7 @@ if (typeof document !== 'undefined') {
     document.getElementById('input').focus({preventScroll:true});
     scrollDown();
   }
+  let query = '';
   function draw() {
     panel.querySelector('summary').textContent = label('Previous conversations','שיחות קודמות');
     body.replaceChildren();
@@ -88,20 +111,49 @@ if (typeof document !== 'undefined') {
       panel.querySelector('summary').focus();
     }).classList.add('close-chats');
     button(label('+ New chat','+ שיחה חדשה'), () => resume(ChatHistory.select(S,-1))).classList.add('new-chat');
+    const find = add('input','');
+    find.type = 'search';
+    find.className = 'chat-search';
+    find.placeholder = label('Search conversations…','חיפוש בשיחות…');
+    find.setAttribute('aria-label',label('Search conversations','חיפוש בשיחות'));
+    find.value = query;
     const list = add('nav','');
     list.className = 'chat-list';
     list.setAttribute('aria-label',label('Saved conversations','שיחות שמורות'));
     const records = ChatHistory.chats(S);
-    records.forEach((chat,i) => {
-      if (!chat.messages.length) return;
-      const first = chat.messages.find(m => m.role === 'user') || chat.messages[0];
-      const date = chat.updatedAt ? new Date(chat.updatedAt).toLocaleDateString(S.lang) : '';
-      const title = [i === 0 ? label('Current','נוכחית') : '', date, first.text.slice(0,72)].filter(Boolean).join(' · ');
-      const item = button(title, () => resume(i ? ChatHistory.select(S,i-1) : {...S,started:true}));
-      item.classList.add('chat-item');
-      item.setAttribute('aria-current',String(i === 0));
-      list.append(item);
-    });
+    const paintList = () => {
+      query = find.value;
+      const matches = new Set(ChatHistory.search(S, query));
+      list.replaceChildren();
+      records.forEach((chat,i) => {
+        if (!chat.messages.length || !matches.has(i)) return;
+        const first = chat.messages.find(m => m.role === 'user') || chat.messages[0];
+        const date = chat.updatedAt ? new Date(chat.updatedAt).toLocaleDateString(S.lang) : '';
+        const info = ChatHistory.summary(chat);
+        const title = [i === 0 ? label('Current','נוכחית') : '', date, first.text.slice(0,72)].filter(Boolean).join(' · ');
+        const row = document.createElement('div');
+        row.className = 'chat-row';
+        const item = document.createElement('button');
+        item.type = 'button'; item.className = 'chip chat-item';
+        item.textContent = title;
+        if (info.last) { const small = document.createElement('small'); small.textContent = label(info.users + ' messages · ', info.users + ' הודעות · ') + info.last; item.append(document.createElement('br'), small); }
+        item.onclick = () => resume(i ? ChatHistory.select(S,i-1) : {...S,started:true});
+        item.setAttribute('aria-current',String(i === 0));
+        const del = document.createElement('button');
+        del.type = 'button'; del.className = 'chip chat-delete';
+        del.textContent = label('Delete','מחיקה');
+        del.setAttribute('aria-label', label('Delete this conversation: ','מחיקת השיחה: ') + first.text.slice(0,40));
+        del.onclick = () => {
+          if (!confirm(label('Delete this conversation from this device? This cannot be undone.','למחוק את השיחה הזאת מהמכשיר? אי אפשר לבטל.'))) return;
+          if (commit(ChatHistory.remove(S,i))) { if (i === 0) { renderThread(); paintTopicPanel(); } draw(); }
+        };
+        row.append(item, del);
+        list.append(row);
+      });
+      if (!list.children.length && query) { const p = document.createElement('p'); p.textContent = label('No conversations match.','לא נמצאו שיחות מתאימות.'); list.append(p); }
+    };
+    find.oninput = paintList;
+    paintList();
     if (!records.some(c => c.messages.length)) add('p',label('No saved chats in this edition yet.','עדיין אין שיחות שמורות בגרסה זו.'));
     const tools = add('details','');
     tools.className = 'chat-tools';

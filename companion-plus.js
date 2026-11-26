@@ -1,0 +1,786 @@
+/* Momentum Companion — home, navigation, onboarding, knowledge pages and personal tools.
+ * Loaded after companion-home.js in index.html and indexH.html.
+ * Everything here stays in this browser (localStorage key below). No network calls.
+ * It reuses the existing app functions (S, save, pushMsg, prepareTopic, sendUser,
+ * TRANSITION_TOPICS, MomentumJourney) and never changes the AI consent flow. */
+(function () {
+  'use strict';
+  if (typeof S === 'undefined' || !document.getElementById('companionHomeHub')) return;
+  const $ = id => document.getElementById(id);
+  const KB = window.MomentumKB || null;
+  const Journey = () => window.MomentumJourney || null;
+  const PKEY = 'momentum-companion-plus-v1';
+  const VERSION = '2026.11.26-full-brief';
+  const he = () => S.lang === 'he';
+  const tr = (en, hb) => he() ? hb : en;
+  const edition = () => (typeof KEY !== 'undefined' && KEY === 'gtc_H_state') ? 'he' : 'en';
+
+  /* ---------------- preferences (local only) ---------------- */
+  const DEFAULTS = {v: 1, onboarded: false, dischargeMonth: '', notDischarged: false, service: '', lone: false,
+    reservist: false, pressing: '', hidden: [], theme: 'auto', textSize: 'normal', reduceMotion: false,
+    infoOnly: false, moods: [], days: [], backupRemindedAt: '', seenVersion: '', todayStep: null, chatMode: ''};
+  function load() {
+    try { const v = JSON.parse(localStorage.getItem(PKEY) || 'null'); return v && typeof v === 'object' ? {...DEFAULTS, ...v} : {...DEFAULTS}; }
+    catch (_) { return {...DEFAULTS}; }
+  }
+  let P = load();
+  function store() { try { localStorage.setItem(PKEY, JSON.stringify(P)); return true; } catch (_) { return false; } }
+  const todayStr = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+  /* ---------------- tiny DOM helper ---------------- */
+  function h(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v === undefined || v === null || v === false) continue;
+      if (k === 'class') n.className = v;
+      else if (k === 'text') n.textContent = v;
+      else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false) n.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    return n;
+  }
+  // append() that skips null/false pieces (optional sections)
+  const put = (parent, ...kids) => { kids.flat().forEach(k => { if (k !== null && k !== undefined && k !== false) parent.append(k); }); return parent; };
+  const btn = (text, onclick, cls) => h('button', {type: 'button', class: cls || 'plus-btn', onclick}, text);
+
+  function toast(msg) {
+    let t = $('plusToast');
+    if (!t) { t = h('div', {id: 'plusToast', role: 'status', 'aria-live': 'polite'}); document.body.append(t); }
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ---------------- display preferences ---------------- */
+  function applyDisplay() {
+    const root = document.documentElement;
+    const dark = P.theme === 'dark' || (P.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.dataset.theme = dark ? 'dark' : 'light';
+    root.dataset.text = P.textSize;
+    root.dataset.motion = P.reduceMotion ? 'reduce' : 'full';
+    root.dataset.infoOnly = P.infoOnly ? 'true' : 'false';
+  }
+
+  /* ---------------- visits, streak, discharge timing ---------------- */
+  function recordVisit() {
+    const t = todayStr();
+    const first = !P.days.includes(t);
+    if (first) { P.days = [...P.days, t].slice(-120); store(); }
+    return first;
+  }
+  function streak() {
+    const set = new Set(P.days); let n = 0; const d = new Date();
+    while (set.has(todayStr(d))) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function monthsSinceDischarge() {
+    if (!/^\d{4}-\d{2}$/.test(P.dischargeMonth || '')) return null;
+    const [y, m] = P.dischargeMonth.split('-').map(Number), now = new Date();
+    return Math.max(0, (now.getFullYear() - y) * 12 + (now.getMonth() + 1 - m));
+  }
+  function timingMessage() {
+    const G = KB && KB.GUIDES.timeSinceDischarge, m = monthsSinceDischarge();
+    if (!G || m === null) return '';
+    if (m < 1) return G.week; if (m < 3) return G.months1to3; if (m < 12) return G.months3to12; return G.overYear;
+  }
+
+  /* ---------------- journey helpers ---------------- */
+  function journey() { try { return Journey() ? Journey().read() : null; } catch (_) { return null; } }
+  function saveAction(title, notes, dueDate) {
+    const J = Journey(); if (!J) { toast(tr('My Journey is unavailable in this browser.', 'המסע שלי אינו זמין בדפדפן הזה.')); return null; }
+    try {
+      const rec = J.upsert('actions', {title: String(title).slice(0, 160), notes: String(notes || '').slice(0, 3000), status: 'todo', dueDate: dueDate || ''});
+      toast(tr('Saved to My Journey ✓', 'נשמר במסע שלך ✓'));
+      return rec && rec.actions ? rec.actions[rec.actions.length - 1] : null;
+    } catch (e) { toast(tr('Could not save: ', 'השמירה נכשלה: ') + e.message); return null; }
+  }
+  const journeyUrl = tab => './my-journey.html?lang=' + S.lang + '#' + tab;
+
+  /* ---------------- encouragement ---------------- */
+  const CHEERS_HE = ['כל הכבוד שחזרת היום.', 'זה בסדר לא לדעת עדיין.', 'צעד קטן הוא עדיין צעד.', 'אין לוח זמנים אחד נכון למעבר.', 'מותר לנוח גם בתוך תקופה של שינוי.', 'עצם זה שאתה בודק — זו כבר התקדמות.'];
+  const CHEERS_EN = ['Good to see you back today.', "It's okay not to know yet.", 'A small step is still a step.', "There's no single right timeline for this transition.", "It's okay to rest in a time of change.", 'Checking things out is already progress.'];
+  const cheer = () => { const list = he() ? CHEERS_HE : CHEERS_EN; return list[(new Date().getDate() + P.days.length) % list.length]; };
+
+  /* ================================================================
+     PAGE SYSTEM — one screen for every module, with a consistent back button
+     ================================================================ */
+  const hub = $('companionHomeHub');
+  const page = h('main', {class: 'screen plus-page', id: 'plusPage', hidden: true, tabindex: '-1'});
+  hub.before(page);
+  let pageStack = [];
+  function hideScreens() {
+    ['welcome', 'chat', 'composer'].forEach(id => { if ($(id)) $(id).hidden = true; });
+    hub.hidden = true;
+  }
+  function showPage(id, push = true) {
+    if (typeof sendingUserMessage !== 'undefined' && sendingUserMessage) { toast(tr('Please wait for the reply.', 'נא להמתין לסיום התשובה.')); return; }
+    if (typeof stopSpeaking === 'function') stopSpeaking();
+    const render = PAGES[id]; if (!render) return;
+    if (push) pageStack.push(id);
+    hideScreens();
+    page.replaceChildren();
+    const back = btn(he() ? '→ חזרה' : '← Back', goBack, 'plus-back');
+    page.append(h('div', {class: 'plus-inner'}, back, render()));
+    page.hidden = false;
+    page.dir = he() ? 'rtl' : 'ltr';
+    page.scrollTop = 0; try { document.scrollingElement.scrollTop = 0; } catch (_) {}
+    page.focus({preventScroll: true});
+    setNav(id === 'help' ? 'help' : 'home');
+  }
+  function hidePage() { page.hidden = true; pageStack = []; }
+  function goBack() {
+    pageStack.pop();
+    const prev = pageStack.pop();
+    if (prev) showPage(prev); else goHome();
+  }
+  function goHome() {
+    hidePage();
+    if (window.CompanionHome) window.CompanionHome.show();
+    renderHome(); setNav('home');
+  }
+  function goChat(mode) {
+    if (P.infoOnly) { showPage('rights'); return; }
+    hidePage();
+    if (window.CompanionHome) window.CompanionHome.continueChat();
+    setNav('chat');
+    if (mode) startMode(mode); else maybeOfferModes();
+  }
+  function openTopic(id, question) {
+    if (P.infoOnly) { toast(tr('Information-only mode is on. Turn it off in Help to chat.', 'מצב "מידע בלבד" פעיל. אפשר לכבות אותו בעזרה כדי לשוחח.')); return; }
+    const topic = typeof TRANSITION_TOPICS !== 'undefined' && TRANSITION_TOPICS.find(t => t[0] === id);
+    hidePage(); hub.hidden = true;
+    if (topic && typeof prepareTopic === 'function') prepareTopic(topic);
+    else if (window.CompanionHome) window.CompanionHome.continueChat();
+    setNav('chat');
+    if (question && $('input')) { $('input').value = question; $('input').focus(); }
+  }
+
+  /* ================================================================
+     HOME — four large buttons with a short explanation each
+     ================================================================ */
+  const plusHome = h('section', {id: 'plusHome', class: 'plus-home', 'aria-labelledby': 'plusHomeTitle'});
+  const inner = hub.querySelector('.hub-inner');
+  const legacy = h('details', {class: 'plus-legacy', id: 'plusLegacy'}, h('summary', {id: 'plusLegacySummary'}));
+  [...inner.children].forEach(c => legacy.append(c));
+  inner.append(plusHome, legacy);
+
+  const HOME_BUTTONS = [
+    {id: 'feel', icon: '💬', he: ['איך אני מרגיש עכשיו', 'לדבר, לפרוק, או לבדוק מה שלומך — בלי שיפוט.'], en: ['How I feel right now', 'Talk, vent or check in with yourself — no judgment.']},
+    {id: 'rights', icon: '✓', he: ['מה מגיע לי', 'מענק, פיקדון, נקודות זיכוי ועוד — בשפה פשוטה.'], en: ['What I am entitled to', 'Grant, deposit, tax points and more — in plain words.']},
+    {id: 'practical', icon: '🧭', he: ['עבודה / לימודים / כסף', 'קורות חיים, לימודים, תקציב, טיול ומשפחה.'], en: ['Work / studies / money', 'CV, studies, budget, travel and family.']},
+    {id: 'journey', icon: '🗺', he: ['המסע שלי', 'המטרות, הכישורים והצעדים שלך במקום אחד.'], en: ['My Journey', 'Your goals, skills and steps in one place.']}
+  ];
+  function homeAction(id) {
+    if (id === 'journey') { location.href = journeyUrl('overview'); return; }
+    showPage(id);
+  }
+
+  function renderHome() {
+    plusHome.replaceChildren();
+    plusHome.dir = he() ? 'rtl' : 'ltr';
+    $('plusLegacySummary').textContent = tr('More options', 'אפשרויות נוספות');
+    const s = streak();
+    plusHome.append(
+      h('p', {class: 'plus-cheer'}, cheer() + (s >= 2 ? '  ·  ' + tr(s + ' days in a row', s + ' ימים ברצף') + ' 🔥' : '')),
+      h('h1', {id: 'plusHomeTitle', class: 'plus-title'}, tr('What would help right now?', 'מה הכי יעזור עכשיו?'))
+    );
+    const grid = h('div', {class: 'plus-home-grid'});
+    HOME_BUTTONS.forEach(b => {
+      const [title, why] = he() ? b.he : b.en;
+      grid.append(h('button', {type: 'button', class: 'plus-home-btn', 'data-home': b.id, onclick: () => homeAction(b.id)},
+        h('span', {class: 'plus-home-icon', 'aria-hidden': 'true'}, b.icon), h('strong', {}, title), h('span', {class: 'plus-home-why'}, why)));
+    });
+    plusHome.append(grid);
+    plusHome.append(btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'));
+    if (!P.infoOnly) plusHome.append(btn(tr('Start a conversation', 'לפתוח שיחה'), () => goChat(), 'plus-btn plus-wide'));
+    const cards = h('div', {class: 'plus-cards'});
+    const wn = whatsNewCard(); if (wn) cards.append(wn);
+    cards.append(todayStepCard());
+    const rec = recommendationCard(); if (rec) cards.append(rec);
+    const bk = backupCard(); if (bk) cards.append(bk);
+    const tm = timingMessage(); if (tm) cards.append(h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('Where you are now', 'איפה אתה עכשיו')), h('p', {}, tm)));
+    plusHome.append(cards);
+  }
+
+  /* -------- small step for today + progress -------- */
+  function todayStepCard() {
+    const card = h('div', {class: 'plus-card', id: 'plusToday'});
+    card.append(h('h2', {}, tr('One small step for today', 'צעד קטן אחד להיום')));
+    const p = journey(), t = todayStr();
+    const actions = p ? p.actions : [];
+    const step = P.todayStep && P.todayStep.date === t && actions.find(a => a.id === P.todayStep.id);
+    if (step) {
+      const done = step.status === 'done';
+      card.append(h('p', {class: done ? 'plus-done' : ''}, (done ? '✓ ' : '') + step.title),
+        btn(done ? tr('Mark as not done', 'לסמן כלא בוצע') : tr('Done!', 'עשיתי!'), () => {
+          try { Journey().upsert('actions', {...step, status: done ? 'todo' : 'done'}); toast(done ? tr('Updated', 'עודכן') : tr('Well done ✓', 'כל הכבוד ✓')); } catch (e) { toast(e.message); }
+          renderHome();
+        }, 'plus-btn primary'),
+        btn(tr('Change', 'להחליף'), () => { P.todayStep = null; store(); renderHome(); }, 'plus-link'));
+    } else {
+      const input = h('input', {type: 'text', maxlength: '160', id: 'plusTodayInput', placeholder: tr('e.g. check my grant in the personal area', 'למשל: לבדוק את המענק באזור האישי'), 'aria-label': tr('Small step for today', 'צעד קטן להיום')});
+      card.append(h('p', {class: 'plus-muted'}, tr('Something you can do in 15 minutes. Skipping is fine too.', 'משהו שאפשר לעשות ב-15 דקות. גם לדלג זה בסדר.')), input,
+        h('div', {class: 'plus-row'}, btn(tr('Save step', 'שמירת הצעד'), () => {
+          const v = input.value.trim(); if (!v) { input.focus(); return; }
+          const rec = saveAction(v, tr('Small step for today', 'צעד קטן להיום'), t);
+          if (rec) { P.todayStep = {date: t, id: rec.id}; store(); renderHome(); }
+        }, 'plus-btn primary'), suggestStepButton(input)));
+    }
+    if (actions.length) {
+      const done = actions.filter(a => a.status === 'done').length;
+      card.append(h('div', {class: 'plus-progress', role: 'img', 'aria-label': tr(done + ' of ' + actions.length + ' steps done', done + ' מתוך ' + actions.length + ' צעדים')},
+        h('div', {class: 'plus-progress-fill', style: 'width:' + Math.round(done / actions.length * 100) + '%'})),
+        h('p', {class: 'plus-muted'}, tr(done + ' of ' + actions.length + ' steps done', done + ' מתוך ' + actions.length + ' צעדים הושלמו')));
+    }
+    return card;
+  }
+  function suggestStepButton(input) {
+    const ideas = he()
+      ? ['לבדוק את המענק באזור האישי', 'לבדוק כמה יש בפיקדון', 'לשלוח טופס 101 למעסיק', 'לקבוע שיחה במרכז צעירים', 'לכתוב 3 שורות על מה שעשיתי בשירות', 'לצאת להליכה של 20 דקות']
+      : ['Check my grant in the personal area', 'Check my deposit balance', 'Give form 101 to my employer', 'Book a talk at a youth center', 'Write 3 lines about what I did in service', 'Take a 20-minute walk'];
+    return btn(tr('Suggest one', 'תציע לי'), () => { input.value = ideas[Math.floor(Math.random() * ideas.length)]; input.focus(); }, 'plus-link');
+  }
+
+  /* -------- personal recommendation -------- */
+  function recentUserText() {
+    try { return (S.messages || []).filter(m => m.role === 'user').slice(-12).map(m => m.text).join(' '); } catch (_) { return ''; }
+  }
+  function recommendationCard() {
+    const text = recentUserText() + ' ' + (P.pressing || '');
+    const p = journey();
+    const confirmed = p ? p.skills.filter(x => x.confirmed && x.evidence).length + (p.lifeSkills || []).length + (p.manualSkills || []).length : 0;
+    const card = (title, body, actions) => h('div', {class: 'plus-card plus-rec'}, h('strong', {}, title), h('p', {}, body), h('div', {class: 'plus-row'}, actions));
+    if (/studies|לימוד|תואר|ממדים|study/i.test(text))
+      return card(tr('You mentioned studies', 'ראיתי שדיברת על לימודים'),
+        tr('Here are options that may fit — check Mimadim, preparatory programs and scholarships.', 'הנה אפשרויות שאולי מתאימות לך — ממדים ללימודים, מכינות ומלגות.') + (confirmed ? ' ' + tr('The Companion can also match them to your confirmed skills.', 'המלווה יכול גם להתאים אותן לכישורים שאישרת.') : ''),
+        [btn(tr('Study options', 'אפשרויות לימוד'), () => showPage('studies')), confirmed && !P.infoOnly ? btn(tr('Match to my skills', 'התאמה לכישורים שלי'), () => openTopic('study', tr('Suggest study options that fit my confirmed skills.', 'הצע לי אפשרויות לימוד שמתאימות לכישורים שאישרתי.')), 'plus-link') : null]);
+    if (/work|עבודה|משרה|קורות|job|cv/i.test(text) || (confirmed && !(p && p.cvs.length)))
+      return card(confirmed ? tr('You have ' + confirmed + ' confirmed skills', 'יש לך ' + confirmed + ' כישורים מאושרים') : tr('Looking for work?', 'מחפש עבודה?'),
+        confirmed ? tr('Want a first CV draft built from them?', 'רוצה טיוטת קורות חיים ראשונה שנבנית מהם?') : tr('Start with your skills, a CV and preferred work.', 'אפשר להתחיל מהכישורים, קורות חיים ועבודה מועדפת.'),
+        [!P.infoOnly ? btn(tr('Draft my CV', 'טיוטת קורות חיים'), () => openTopic('cv', tr('Draft a CV from my confirmed skills, without inventing anything.', 'הכן טיוטת קורות חיים מהכישורים שאישרתי, בלי להמציא פרטים.'))) : null, btn(tr('Work page', 'עמוד עבודה'), () => showPage('work'), 'plus-link')]);
+    if (/money|כסף|מענק|פיקדון|grant|deposit/i.test(text))
+      return card(tr('Money questions', 'שאלות על כסף'), tr('Grant, deposit, tax points and preferred work — in one page.', 'מענק, פיקדון, נקודות זיכוי ועבודה מועדפת — בעמוד אחד.'), [btn(tr('Money page', 'עמוד כסף'), () => showPage('money'))]);
+    if (/feel|רגש|מרגיש|feelings/i.test(text))
+      return card(tr('How are you, really?', 'מה שלומך באמת?'), tr('A short check-in can help.', 'בדיקה קצרה יכולה לעזור.'), [btn(tr('Check in', 'בדיקה קצרה'), () => showPage('feel'))]);
+    if (!confirmed)
+      return card(tr('Discover your skills', 'גלה את הכישורים שלך'), tr('Translate what you did in service into civilian strengths.', 'לתרגם את מה שעשית בשירות לחוזקות אזרחיות.'), [h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים'))]);
+    return null;
+  }
+
+  /* -------- backup reminder -------- */
+  function backupCard() {
+    const p = journey();
+    const has = p && (p.goals.length + p.actions.length + p.education.length + p.cvs.length + p.skills.length) > 0;
+    const last = P.backupRemindedAt ? Date.parse(P.backupRemindedAt) : 0;
+    if (!has || P.days.length < 3 || Date.now() - last < 14 * 864e5) return null;
+    return h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('Keep your journey safe', 'שמירה על המסע שלך')),
+      h('p', {}, tr('Everything is saved only on this device. A password-protected backup lets you restore it if the phone changes.', 'הכול נשמר רק במכשיר הזה. גיבוי מוצפן בסיסמה יאפשר לשחזר אם מחליפים טלפון.')),
+      h('div', {class: 'plus-row'}, h('a', {class: 'plus-btn primary', href: journeyUrl('privacy'), onclick: () => { P.backupRemindedAt = new Date().toISOString(); store(); }}, tr('Back up now', 'לגיבוי עכשיו')),
+        btn(tr('Later', 'אחר כך'), () => { P.backupRemindedAt = new Date().toISOString(); store(); renderHome(); }, 'plus-link')));
+  }
+
+  /* -------- what's new -------- */
+  const WHATS_NEW_HE = ['מסך בית חדש עם 4 כפתורים וסרגל ניווט תחתון', 'עמודי זכויות, כסף, לימודים, עבודה, טיולים ומשפחה — עם חיפוש', 'כפתור "אני לא מרגיש בסדר" ועזרה אנושית', 'צעד קטן להיום, מעקב מצב רוח ורצף ימים', 'שמירה מהשיחה למסע, סיכום שיחה וחיפוש בשיחות', 'מצב כהה, גודל טקסט ומצב "מידע בלבד"'];
+  const WHATS_NEW_EN = ['New home screen with 4 buttons and a bottom navigation bar', 'Rights, money, studies, work, travel and family pages — with search', '"I\'m not feeling okay" button and human help', 'Small step for today, mood check and day streak', 'Save from chat to My Journey, chat summary and chat search', 'Dark mode, text size and information-only mode'];
+  function whatsNewList() { return h('ul', {class: 'plus-list'}, (he() ? WHATS_NEW_HE : WHATS_NEW_EN).map(x => h('li', {}, x))); }
+  function whatsNewCard() {
+    if (P.seenVersion === VERSION) return null;
+    return h('div', {class: 'plus-card plus-new'}, h('strong', {}, tr("What's new", 'מה חדש')), whatsNewList(),
+      btn(tr('Got it', 'הבנתי'), () => { P.seenVersion = VERSION; store(); renderHome(); }, 'plus-btn'));
+  }
+
+  /* ================================================================
+     PAGES
+     ================================================================ */
+  const section = (title, ...kids) => h('section', {class: 'plus-card'}, h('h2', {}, title), ...kids);
+  const disclaimer = () => h('p', {class: 'plus-disclaimer', role: 'note'}, '⚠ ' + (KB ? (he() ? KB.DISCLAIMER_HE : KB.DISCLAIMER_EN) : '') +
+    (KB && KB.data ? ' ' + tr('Knowledge base updated: ', 'מאגר הידע עודכן: ') + KB.data.metadata.last_updated + '.' : ''));
+  const hebrewNote = () => he() ? null : h('p', {class: 'plus-muted'}, 'This information is currently available in Hebrew.');
+  const askButton = (topic, q) => P.infoOnly ? null : btn(tr('Ask the Companion about this', 'לשאול את המלווה על זה'), () => openTopic(topic, q), 'plus-btn');
+  const list = items => h('ul', {class: 'plus-list'}, (items || []).map(x => h('li', {}, x)));
+  const hideable = (id, node) => { if (P.hidden.includes(id)) return null; return node; };
+  function notRelevantButton(id, label) {
+    return btn(tr('Not relevant to me', 'לא רלוונטי לי'), () => {
+      if (!P.hidden.includes(id)) P.hidden = [...P.hidden, id]; store();
+      toast(tr('Hidden. You can restore it in Help.', 'הוסתר. אפשר להחזיר בעזרה.') + (label ? ' (' + label + ')' : ''));
+      showPage(pageStack.pop() || 'rights');
+    }, 'plus-link');
+  }
+
+  function rightCard(c) {
+    const box = h('article', {class: 'plus-card plus-right', 'data-right': c.id}, h('h3', {}, c.title));
+    c.lines.forEach(l => box.append(h('p', {}, l)));
+    if (c.rates && c.rates.length) {
+      const mine = KB.SERVICE_RATE_KEY[P.service];
+      const table = h('table', {class: 'plus-table'}, h('caption', {}, tr('Monthly rate by service type (Oct 2026)', 'סכום לחודש שירות לפי סוג שירות (אוקטובר 2026)')),
+        h('tbody', {}, c.rates.map(r => h('tr', {class: r.key === mine ? 'plus-mine' : ''}, h('th', {scope: 'row'}, r.label + (r.key === mine ? tr(' (you)', ' (אתה)') : '')), h('td', {}, KB.fmtMoney(r.value))))));
+      box.append(table);
+      if (c.examples && c.examples.length) box.append(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
+    }
+    if (c.list && c.list.length) box.append(h('strong', {}, c.listTitle || ''), list(c.list));
+    const row = h('div', {class: 'plus-row'});
+    if (c.link) row.append(h('a', {class: 'plus-btn', href: KB.officialLink(c.link), target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')));
+    row.append(btn(tr('Save to My Journey', 'לשמור במסע'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (c.link ? KB.officialLink(c.link) + '\n' : '') + c.lines.join('\n'))));
+    const ask = askButton('rights', tr('Explain "' + c.title + '" and what I should check.', 'תסביר לי על ' + c.title + ' ומה כדאי לי לבדוק.')); if (ask) row.append(ask);
+    row.append(notRelevantButton('right:' + c.id, c.title));
+    box.append(row);
+    return box;
+  }
+
+  function personalBanner() {
+    const parts = [];
+    if (P.service) parts.push(tr('Service: ', 'שירות: ') + (KB.SERVICE_LABEL[P.service] || P.service));
+    if (P.lone) parts.push(tr('lone soldier', 'חייל/ת בודד/ה'));
+    if (P.reservist) parts.push(tr('reservist', 'משרת/ת מילואים'));
+    const m = monthsSinceDischarge(); if (m !== null) parts.push(tr(m + ' months since discharge', m + ' חודשים מהשחרור'));
+    if (!parts.length) return h('p', {class: 'plus-muted'}, tr('Tip: answer 3 quick questions in Help → "My details" to highlight what is relevant to you.', 'טיפ: אפשר לענות על 3 שאלות קצרות בעזרה → "הפרטים שלי" כדי להדגיש מה רלוונטי לך.'));
+    return h('p', {class: 'plus-soft plus-pill'}, parts.join(' · '));
+  }
+
+  function checklist() {
+    const G = KB.data && KB.data.practical_guides; if (!G) return null;
+    const m = monthsSinceDischarge();
+    const early = m === null || m < 2;
+    return section(early ? tr('First 30 days', '30 הימים הראשונים') : tr('First 6 months', '6 החודשים הראשונים'),
+      h('p', {class: 'plus-muted'}, tr('Tap a line to save it as a step.', 'אפשר ללחוץ על שורה כדי לשמור אותה כצעד.')),
+      h('ul', {class: 'plus-checklist'}, (early ? G.first_30_days : G.first_6_months).map(x => h('li', {}, btn('＋ ' + x, () => saveAction(x, tr('From the checklist', 'מתוך רשימת הבדיקה')), 'plus-link')))));
+  }
+
+  function specialGroups() {
+    const sg = KB.data && KB.data.special_groups; if (!sg) return null;
+    const box = section(tr('Special paths', 'מסלולים מיוחדים'));
+    const order = [['lone_soldiers', tr('Lone soldiers', 'חיילים בודדים'), P.lone], ['reservists', tr('Reservists', 'משרתי מילואים'), P.reservist], ['national_service', tr('National service', 'שירות לאומי'), P.service === 'national'], ['olim', tr('New immigrants', 'עולים חדשים'), false]];
+    order.sort((a, b) => Number(b[2]) - Number(a[2]));
+    for (const [key, title, mine] of order) {
+      if (P.hidden.includes('group:' + key) || !sg[key]) continue;
+      const d = h('details', {class: 'plus-details', open: mine || undefined}, h('summary', {}, title + (mine ? tr(' — relevant to you', ' — רלוונטי לך') : '')));
+      if (sg[key].extra) d.append(list(sg[key].extra));
+      if (sg[key].notes) d.append(h('p', {}, sg[key].notes));
+      if (key === 'lone_soldiers' && KB.data.housing) d.append(h('p', {}, KB.data.housing.lone_soldiers_extra));
+      if (key === 'reservists') d.append(list(KB.GUIDES.reservists));
+      d.append(h('div', {class: 'plus-row'}, notRelevantButton('group:' + key, title)));
+      box.append(d);
+    }
+    return box;
+  }
+
+  function officialLinks() {
+    return section(tr('Official forms and sites', 'קישורים רשמיים'),
+      h('ul', {class: 'plus-list'}, KB.GUIDES.officialLinksInfo.map(x => h('li', {},
+        h('a', {href: KB.officialLink(x.key), target: '_blank', rel: 'noopener noreferrer'}, x.title + ' ↗'), ' — ', x.why))));
+  }
+
+  function faqSection(items) {
+    if (!items.length) return null;
+    return section(tr('Common questions', 'שאלות נפוצות'), ...items.map(f => h('details', {class: 'plus-details'}, h('summary', {}, f.question), h('p', {}, f.answer))));
+  }
+
+  const PAGES = {
+    /* ----- How I feel ----- */
+    feel() {
+      const wrap = h('div');
+      const t = todayStr(), todays = P.moods.find(m => m.d === t);
+      put(wrap, h('h1', {class: 'plus-title'}, tr('How are you feeling today?', 'איך אתה מרגיש היום?')),
+        h('p', {class: 'plus-soft plus-pill'}, KB && KB.data ? KB.data.emotional_support.normalization : tr('Many people feel empty, confused or without direction after discharge. That is completely normal.', 'הרבה אנשים מרגישים ריקים, מבולבלים או חסרי כיוון אחרי השחרור. זה נורמלי לגמרי.')));
+      const faces = ['😞', '🙁', '😐', '🙂', '😄'];
+      const row = h('div', {class: 'plus-mood', role: 'group', 'aria-label': tr('Mood from 1 to 5', 'מצב רוח מ-1 עד 5')});
+      faces.forEach((f, i) => row.append(h('button', {type: 'button', class: 'plus-mood-btn', 'aria-pressed': String(todays && todays.v === i + 1), 'aria-label': String(i + 1), onclick: () => {
+        P.moods = [...P.moods.filter(m => m.d !== t), {d: t, v: i + 1}].slice(-90); store(); showPage('feel', false);
+        if (i === 0) toast(tr('Thank you for sharing. Human help is below.', 'תודה ששיתפת. עזרה אנושית נמצאת למטה.'));
+      }}, f)));
+      put(wrap, section(tr('Quick check (optional)', 'בדיקה קצרה (לא חובה)'), row, moodTrend(),
+        h('p', {class: 'plus-muted'}, tr('This is just for you, not a diagnosis. You can skip it.', 'זה רק בשבילך, לא אבחון. אפשר לדלג.'))));
+      if (!P.infoOnly) put(wrap, section(tr('What do you need right now?', 'מה אתה צריך עכשיו?'),
+        h('div', {class: 'plus-row'}, btn(tr('I just want to talk', 'אני רק רוצה לדבר'), () => goChat('talk'), 'plus-btn primary'),
+          btn(tr('I want to do something practical', 'אני רוצה לעשות משהו מעשי'), () => goChat('practical'), 'plus-btn'))));
+      put(wrap, section(tr('Common after discharge', 'דברים שמוכרים לרבים אחרי השחרור'), list(KB && KB.data ? KB.data.emotional_support.common_challenges : [])),
+        btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'),
+        h('div', {class: 'plus-row'}, btn(tr('Relationships & family', 'מערכות יחסים ומשפחה'), () => showPage('family'), 'plus-link')));
+      return wrap;
+    },
+    /* ----- Distress: gentle, calm, human help first ----- */
+    distress() {
+      const wrap = h('div');
+      put(wrap, h('h1', {class: 'plus-title'}, tr("It's okay not to be okay", 'זה בסדר לא להיות בסדר')),
+        h('p', {}, tr("Thank you for checking in. You don't have to handle this alone. Talking to a person can help, even when it feels hard to start.", 'תודה שעצרת לבדוק. אתה לא חייב להתמודד עם זה לבד. שיחה עם אדם יכולה לעזור, גם כשקשה להתחיל.')),
+        h('p', {class: 'plus-soft plus-pill'}, tr('If you or someone else is in immediate danger — call 101 (MDA) or 100 (police) now.', 'אם אתה או מישהו אחר בסכנה מיידית — חייג עכשיו 101 (מד"א) או 100 (משטרה).')));
+      put(wrap, humanHelpSection());
+      if (!P.infoOnly) put(wrap, section(tr('Prefer to write first?', 'מעדיף לכתוב קודם?'),
+        h('p', {}, tr('You can write to the Companion. It is not a person and does not replace help, but it will listen and help you find the next step.', 'אפשר לכתוב למלווה. הוא לא אדם ולא מחליף עזרה, אבל הוא יקשיב ויעזור למצוא את הצעד הבא.')),
+        btn(tr('Write to the Companion', 'לכתוב למלווה'), () => openTopic('support'), 'plus-btn')));
+      put(wrap, h('p', {class: 'plus-muted'}, tr('This app does not contact anyone and is not monitored.', 'האפליקציה לא פונה לאף אחד ואינה מנוטרת.')));
+      return wrap;
+    },
+    /* ----- Rights & benefits ----- */
+    rights() {
+      const wrap = h('div');
+      put(wrap, h('h1', {class: 'plus-title'}, tr('What am I entitled to?', 'מה מגיע לי?')), hebrewNote(), personalBanner(), disclaimer());
+      const input = h('input', {type: 'search', id: 'plusRightsSearch', placeholder: tr('Search: grant, deposit, studies…', 'חיפוש: מענק, פיקדון, לימודים…'), 'aria-label': tr('Search rights and benefits', 'חיפוש בזכויות והטבות')});
+      const results = h('div', {id: 'plusRightsResults', 'aria-live': 'polite'});
+      const draw = () => {
+        const {cards, faq} = KB.search(input.value);
+        results.replaceChildren(...cards.filter(c => !P.hidden.includes('right:' + c.id)).map(rightCard));
+        if (!results.children.length) results.append(h('p', {class: 'plus-muted'}, tr('No matches. Try another word or ask the Companion.', 'לא נמצאו תוצאות. אפשר לנסות מילה אחרת או לשאול את המלווה.')));
+        const f = faqSection(faq); if (f) results.append(f);
+      };
+      input.addEventListener('input', draw);
+      put(wrap, h('div', {class: 'plus-search'}, input), checklist(), results, specialGroups(), officialLinks(),
+        h('div', {class: 'plus-row'}, askButton('rights'), btn(tr('Updated benefits & events', 'הטבות ואירועים מעודכנים'), () => openTopic('updates'), 'plus-link')));
+      draw();
+      return wrap;
+    },
+    /* ----- Work / studies / money hub ----- */
+    practical() {
+      const tiles = [
+        ['money', '₪', tr('Money', 'כסף'), tr('Grant, deposit, tax points, budget', 'מענק, פיקדון, נקודות זיכוי, תקציב')],
+        ['work', '💼', tr('Work & CV', 'עבודה וקורות חיים'), tr('Preferred work, CV, interviews', 'עבודה מועדפת, קורות חיים, ראיונות')],
+        ['studies', '🎓', tr('Studies', 'לימודים'), tr('Mimadim, mechina, bagrut, scholarships', 'ממדים, מכינה, בגרויות, מלגות')],
+        ['skills', '⭐', tr('My skills', 'הכישורים שלי'), tr('36-skill assessment and translation', 'שאלון 36 כישורים ותרגום לאזרחות')],
+        ['travel', '✈', tr('Travel', 'טיולים ונסיעות'), tr('Budget, insurance, funding', 'תקציב, ביטוח, מימון')],
+        ['family', '🏠', tr('Relationships & family', 'מערכות יחסים ומשפחה'), tr('Coming back home', 'החזרה הביתה')],
+        ['feel', '💬', tr('Emotional support', 'תמיכה רגשית'), tr('Talk or find human help', 'לדבר או למצוא עזרה אנושית')]
+      ].filter(t => !P.hidden.includes('tile:' + t[0]));
+      const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work / studies / money', 'עבודה / לימודים / כסף')));
+      const grid = h('div', {class: 'plus-tiles'});
+      tiles.forEach(([id, icon, title, why]) => grid.append(h('button', {type: 'button', class: 'plus-tile', onclick: () => id === 'skills' ? (location.href = './skills-business.html?lang=' + S.lang) : showPage(id)},
+        h('span', {'aria-hidden': 'true'}, icon), h('strong', {}, title), h('small', {}, why))));
+      put(wrap, grid, decisionTree());
+      return wrap;
+    },
+    money() {
+      const cards = KB.rightsCards().filter(c => c.cat === 'money' || c.id === 'preferred_work_grant').filter(c => !P.hidden.includes('right:' + c.id));
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Money', 'כסף')), hebrewNote(), personalBanner(), disclaimer(), ...cards.map(rightCard),
+        section(tr('Saving and budget tips', 'טיפים לחיסכון ותקציב'), list(KB.GUIDES.savingsTips), h('p', {class: 'plus-muted'}, tr('General tips, not financial advice.', 'טיפים כלליים, לא ייעוץ פיננסי.'))),
+        h('div', {class: 'plus-row'}, askButton('money', tr('Help me plan a simple budget for my grant.', 'תעזור לי לתכנן תקציב פשוט למענק שלי.'))));
+    },
+    work() {
+      const W = KB.data && KB.data.work_and_career;
+      const pw = KB.rightsCards().find(c => c.id === 'preferred_work_grant');
+      const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work & CV', 'עבודה וקורות חיים')), hebrewNote(), disclaimer());
+      if (pw && !P.hidden.includes('right:' + pw.id)) put(wrap, rightCard(pw));
+      put(wrap, section(tr('Preferred work — examples', 'עבודה מועדפת — דוגמאות'), h('p', {}, tr('Approved sectors often include:', 'ענפים שמאושרים לרוב:')), list((KB.data.rights_and_benefits.preferred_work_grant || {}).sectors),
+        h('p', {class: 'plus-muted'}, tr('Check the current list of approved employers on the official site before you start.', 'לפני שמתחילים — לבדוק באתר הרשמי את רשימת המעסיקים המאושרים העדכנית.'))));
+      put(wrap, section(tr('Translate your role into civilian language', 'תרגום התפקיד לשפה אזרחית'),
+        h('div', {class: 'plus-roles'}, KB.GUIDES.roleTranslations.map(r => h('details', {class: 'plus-details'}, h('summary', {}, r.role), h('p', {}, h('strong', {}, tr('Strengths: ', 'חוזקות: ')), r.civilian), h('p', {}, h('strong', {}, tr('Directions: ', 'כיוונים: ')), r.jobs)))),
+        h('p', {class: 'plus-muted'}, tr('Suggestions only — keep what matches your real experience.', 'הצעות בלבד — לשמור רק מה שמתאים לניסיון האמיתי שלך.'))));
+      put(wrap, section(tr('CV tips', 'טיפים לקורות חיים'), list(W && W.cv_tips)));
+      put(wrap, section(tr('Ready CV examples by role', 'דוגמאות קורות חיים לפי תפקיד'), h('p', {class: 'plus-muted'}, KB.GUIDES.cvNote),
+        ...KB.GUIDES.cvExamples.map(x => h('details', {class: 'plus-details'}, h('summary', {}, x.role), h('p', {}, x.summary), list(x.bullets),
+          btn(tr('Copy', 'העתקה'), () => copy(x.summary + '\n' + x.bullets.map(b => '• ' + b).join('\n')), 'plus-link')))));
+      put(wrap, interviewSection());
+      put(wrap, section(tr('Free counseling', 'ייעוץ חינם'), h('p', {}, W ? W.counseling : '')));
+      put(wrap, h('div', {class: 'plus-row'}, askButton('cv', tr('Help me build my CV from my real experience.', 'תעזור לי לבנות קורות חיים מהניסיון האמיתי שלי.')),
+        h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים')),
+        h('a', {class: 'plus-btn', href: journeyUrl('cvs')}, tr('My CV drafts', 'טיוטות קורות החיים שלי'))));
+      return wrap;
+    },
+    interview() { return h('div', {}, h('h1', {class: 'plus-title'}, tr('Talking about your service in a job interview', 'איך לדבר על השירות בראיון עבודה')), interviewSection()); },
+    studies() {
+      const cards = KB.rightsCards().filter(c => c.cat === 'studies').filter(c => !P.hidden.includes('right:' + c.id));
+      const dep = KB.rightsCards().find(c => c.id === 'personal_deposit');
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Studies', 'לימודים')), hebrewNote(), disclaimer(), ...cards.map(rightCard),
+        dep ? section(tr('Paying with the deposit', 'מימון מהפיקדון'), h('p', {}, tr('The personal deposit can be used for studies, training and psychometric prep.', 'את הפיקדון האישי אפשר לממש ללימודים, הכשרה מקצועית והכנה לפסיכומטרי.')), btn(tr('Deposit details', 'פרטי הפיקדון'), () => showPage('money'), 'plus-link')) : null,
+        h('div', {class: 'plus-row'}, askButton('study', tr('Help me compare study options that fit me.', 'תעזור לי להשוות אפשרויות לימוד שמתאימות לי.')),
+          h('a', {class: 'plus-btn', href: journeyUrl('education')}, tr('My study plans', 'תוכניות הלימוד שלי'))));
+    },
+    travel() {
+      const T = KB.data && KB.data.travel;
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Travel', 'טיולים ונסיעות')), hebrewNote(),
+        section(tr('Funding', 'מימון'), h('p', {}, T.funding)),
+        section(tr('Budget and preparation', 'תקציב והכנה'), list(T.budget_tips)),
+        section(tr('Common destinations', 'יעדים נפוצים'), h('p', {}, T.common_destinations.join(' · '))),
+        section(tr('Safety', 'בטיחות'), h('p', {}, T.safety)),
+        disclaimer(),
+        h('div', {class: 'plus-row'}, askButton('travel', tr('Help me plan a trip budget alongside my other plans.', 'תעזור לי לתכנן תקציב לטיול לצד התוכניות האחרות שלי.')),
+          btn(tr('Save "check travel insurance"', 'לשמור "לבדוק ביטוח נסיעות"'), () => saveAction(tr('Check travel insurance (incl. extreme sports and rescue)', 'לבדוק ביטוח נסיעות (כולל ספורט אתגרי וחילוץ)'), ''), 'plus-link')));
+    },
+    family() {
+      const F = KB.GUIDES.family;
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Relationships & family', 'מערכות יחסים ומשפחה')), hebrewNote(),
+        h('p', {class: 'plus-soft plus-pill'}, F.intro), section(tr('Things that often help', 'דברים שלרוב עוזרים'), list(F.points)),
+        h('div', {class: 'plus-row'}, askButton('family'), btn(tr('Human help', 'עזרה אנושית'), () => showPage('distress'), 'plus-link')));
+    },
+    onboarding() { return onboardingForm(); },
+    help() { return helpPage(); }
+  };
+
+  function moodTrend() {
+    const last = P.moods.slice(-14);
+    if (last.length < 2) return h('p', {class: 'plus-muted'}, tr('Your trend appears after a few check-ins.', 'המגמה תופיע אחרי כמה בדיקות.'));
+    return h('div', {class: 'plus-trend', role: 'img', 'aria-label': tr('Mood over the last check-ins: ', 'מצב הרוח בבדיקות האחרונות: ') + last.map(m => m.v).join(', ')},
+      last.map(m => h('span', {style: 'height:' + (m.v * 18) + 'px', title: m.d + ': ' + m.v})));
+  }
+  function humanHelpSection() {
+    return section(tr('Talk to a person', 'לדבר עם אדם'), h('ul', {class: 'plus-help-list'}, KB.GUIDES.humanHelp.map(x => h('li', {},
+      h('strong', {}, x.name), ' — ', x.tel ? h('a', {href: 'tel:' + x.tel, class: 'plus-tel'}, x.contact) : x.contact, h('br'), h('small', {}, x.note)))));
+  }
+  function interviewSection() {
+    const I = KB.GUIDES.interview;
+    return section(tr('How to talk about your service in an interview', 'איך לדבר על השירות בראיון עבודה'), h('p', {}, I.intro), list(I.tips),
+      ...I.examples.map(x => h('details', {class: 'plus-details'}, h('summary', {}, '"' + x.q + '"'), h('p', {}, x.a))),
+      askButton('applications', tr('Help me practice a job interview answer about my service.', 'תתרגל איתי תשובה לראיון עבודה על השירות שלי.')));
+  }
+  function decisionTree() {
+    const D = KB.data && KB.data.practical_guides && KB.data.practical_guides.decision_tree; if (!D) return null;
+    const labels = {not_sure: tr("I'm not sure", 'אני לא בטוח'), want_studies: tr('I want to study', 'אני רוצה ללמוד'), want_work: tr('I want to work', 'אני רוצה לעבוד'), want_travel: tr('I want to travel', 'אני רוצה לטייל'), feel_stuck: tr('I feel stuck', 'אני מרגיש תקוע')};
+    const out = h('p', {class: 'plus-soft plus-pill', hidden: true, 'aria-live': 'polite'});
+    return section(tr('Not sure where to start?', 'לא בטוח מאיפה להתחיל?'), h('div', {class: 'plus-row'}, Object.keys(D).map(k => btn(labels[k] || k, () => { out.hidden = false; out.textContent = D[k]; }, 'plus-btn'))), out);
+  }
+  async function copy(text) {
+    try { await navigator.clipboard.writeText(text); toast(tr('Copied ✓', 'הועתק ✓')); }
+    catch (_) { toast(tr('Copy is unavailable here.', 'העתקה אינה זמינה כאן.')); }
+  }
+
+  /* ---------------- onboarding (first visit only, all skippable) ---------------- */
+  function onboardingForm() {
+    const radio = (name, value, label, checked) => h('label', {class: 'plus-choice'}, h('input', {type: 'radio', name, value, checked: checked || undefined}), h('span', {}, label));
+    const box = (id, label, checked) => h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', id, checked: checked || undefined}), h('span', {}, label));
+    const month = h('input', {type: 'month', id: 'plusDischarge', value: P.dischargeMonth || '', max: todayStr().slice(0, 7), 'aria-label': tr('Discharge month', 'חודש השחרור')});
+    const form = h('form', {class: 'plus-onboarding', onsubmit: e => { e.preventDefault(); finish(); }},
+      h('h1', {class: 'plus-title'}, tr('Three quick questions', 'שלוש שאלות קצרות')),
+      h('p', {class: 'plus-muted'}, tr('So I can show what is relevant to you. Saved only on this device. You can skip anything.', 'כדי שאוכל להראות לך מה רלוונטי. נשמר רק במכשיר הזה. אפשר לדלג על כל שאלה.')),
+      h('fieldset', {}, h('legend', {}, tr('1. When were you discharged?', '1. מתי השתחררת?')), month, box('plusNotYet', tr("I haven't been discharged yet", 'עוד לא השתחררתי'), P.notDischarged)),
+      h('fieldset', {}, h('legend', {}, tr('2. Type of service', '2. סוג שירות')),
+        radio('service', 'combat', tr('Combat', 'לוחם/ת'), P.service === 'combat'), radio('service', 'support', tr('Combat support', 'תומך/ת לחימה'), P.service === 'support'),
+        radio('service', 'other', tr('Other', 'אחר'), P.service === 'other'), radio('service', 'national', tr('National service', 'שירות לאומי'), P.service === 'national'),
+        box('plusLone', tr('I am / was a lone soldier', 'אני חייל/ת בודד/ה'), P.lone), box('plusReservist', tr('I serve in the reserves', 'אני משרת/ת במילואים'), P.reservist)),
+      h('fieldset', {}, h('legend', {}, tr('3. What weighs on you most right now?', '3. מה הכי מעיק עליך עכשיו?')),
+        ...[['money', tr('Money', 'כסף')], ['rights', tr('Rights & benefits', 'זכויות והטבות')], ['work', tr('Work', 'עבודה')], ['studies', tr('Studies', 'לימודים')], ['feelings', tr('How I feel', 'איך אני מרגיש')], ['unsure', tr("I don't know", 'לא יודע')]]
+          .map(([v, l]) => radio('pressing', v, l, P.pressing === v))),
+      h('div', {class: 'plus-row'}, h('button', {type: 'submit', class: 'plus-btn primary'}, tr('Done', 'סיום')), btn(tr('Skip', 'דילוג'), () => { if (!P.onboarded && !S.started) P.seenVersion = VERSION; P.onboarded = true; store(); goHome(); }, 'plus-link')));
+    function finish() {
+      const val = n => (form.querySelector('input[name="' + n + '"]:checked') || {}).value || '';
+      P.notDischarged = $('plusNotYet').checked;
+      P.dischargeMonth = P.notDischarged ? '' : (/^\d{4}-\d{2}$/.test(month.value) ? month.value : '');
+      P.service = val('service'); P.pressing = val('pressing');
+      P.lone = $('plusLone').checked; P.reservist = $('plusReservist').checked;
+      if (!P.onboarded && !S.started) P.seenVersion = VERSION; // brand-new users do not need "what's new"
+      P.onboarded = true; store();
+      try { S.profile.background = {...(S.profile.background || {}), serviceType: P.service, reserve: P.reservist || !!(S.profile.background || {}).reserve}; save(); } catch (_) {}
+      toast(tr('Saved ✓', 'נשמר ✓'));
+      if (P.pressing === 'feelings') showPage('feel'); else if (P.pressing === 'money') showPage('money');
+      else if (P.pressing === 'rights') showPage('rights'); else if (P.pressing === 'studies') showPage('studies');
+      else if (P.pressing === 'work') showPage('work'); else goHome();
+    }
+    return form;
+  }
+
+  /* ---------------- help & settings ---------------- */
+  function helpPage() {
+    const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Help', 'עזרה')));
+    put(wrap, btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'), humanHelpSection());
+    if ($('btnHelp')) put(wrap, btn(tr('More support options in the app', 'אפשרויות תמיכה נוספות באפליקציה'), () => { hidePage(); goChat(); $('btnHelp').click(); }, 'plus-link'));
+    // Display
+    const sel = (id, value, opts, onchange) => { const s = h('select', {id, onchange}); opts.forEach(([v, l]) => s.append(h('option', {value: v, selected: v === value || undefined}, l))); return s; };
+    put(wrap, section(tr('Display', 'תצוגה'),
+      h('label', {class: 'plus-field'}, h('span', {}, tr('Theme', 'מצב תצוגה')), sel('plusTheme', P.theme, [['auto', tr('Like my device', 'לפי המכשיר')], ['light', tr('Light', 'בהיר')], ['dark', tr('Dark', 'כהה')]], e => { P.theme = e.target.value; store(); applyDisplay(); })),
+      h('label', {class: 'plus-field'}, h('span', {}, tr('Text size', 'גודל טקסט')), sel('plusText', P.textSize, [['normal', tr('Normal', 'רגיל')], ['large', tr('Large', 'גדול')], ['xl', tr('Extra large', 'גדול מאוד')]], e => { P.textSize = e.target.value; store(); applyDisplay(); })),
+      h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', checked: P.reduceMotion || undefined, onchange: e => { P.reduceMotion = e.target.checked; store(); applyDisplay(); }}), h('span', {}, tr('Reduce animations', 'הפחתת אנימציות'))),
+      h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', checked: P.infoOnly || undefined, onchange: e => { P.infoOnly = e.target.checked; store(); applyDisplay(); paintNav(); showPage('help', false); }}), h('span', {}, tr('Information only (no chat)', 'מצב "מידע בלבד" (בלי שיחה)'))),
+      h('p', {}, h('a', {class: 'plus-btn', href: edition() === 'he' ? './index.html#home' : './indexH.html#home'}, edition() === 'he' ? 'English' : 'עברית'),
+        ' ', h('small', {class: 'plus-muted'}, tr('Each language keeps its own conversations.', 'לכל שפה יש היסטוריית שיחות משלה.')))));
+    // My details
+    put(wrap, section(tr('My details', 'הפרטים שלי'), personalBanner(), btn(tr('Edit my 3 answers', 'עריכת 3 התשובות'), () => showPage('onboarding'), 'plus-btn')));
+    // Privacy (short)
+    put(wrap, section(tr('Privacy in short', 'פרטיות בקצרה'), list(he()
+      ? ['הכול נשמר רק בדפדפן במכשיר הזה.', 'הודעות נשלחות ל-AI חיצוני רק אחרי שאישרת, ואפשר לבטל בכל רגע.', 'פרטי המסע נשלחים ל-AI רק אם הפעלת זאת בהגדרות המסע.', 'אפשר לייצא, לגבות או למחוק הכול.']
+      : ['Everything is saved only in this browser on this device.', 'Messages go to an external AI only after you approve, and you can withdraw anytime.', 'Journey details are shared with the AI only if you turn that on in My Journey.', 'You can export, back up or delete everything.']),
+      h('div', {class: 'plus-row'}, window.MomentumAIConsent ? btn(tr('Manage AI consent', 'ניהול הסכמה ל-AI'), () => window.MomentumAIConsent.settings(S.lang), 'plus-btn') : null,
+        h('a', {class: 'plus-btn', href: journeyUrl('privacy')}, tr('Journey sharing & backup', 'שיתוף וגיבוי המסע')))));
+    // Conversations
+    if (!P.infoOnly && $('chatHistory')) put(wrap, section(tr('Past conversations', 'שיחות קודמות'), h('p', {class: 'plus-muted'}, tr('Search, open or delete a single conversation.', 'חיפוש, פתיחה או מחיקה של שיחה אחת.')),
+      btn(tr('Open conversation history', 'לפתיחת היסטוריית השיחות'), () => { goChat(); $('chatHistory').open = true; }, 'plus-btn')));
+    // Hidden topics
+    if (P.hidden.length) put(wrap, section(tr('Topics I marked "not relevant"', 'נושאים שסימנתי "לא רלוונטי"'),
+      h('ul', {class: 'plus-list'}, P.hidden.map(id => h('li', {}, hiddenLabel(id), ' ', btn(tr('Show again', 'להחזיר'), () => { P.hidden = P.hidden.filter(x => x !== id); store(); showPage('help', false); }, 'plus-link'))))));
+    // What's new, invite
+    put(wrap, section(tr("What's new", 'מה חדש'), whatsNewList()));
+    put(wrap, section(tr('Invite a friend', 'להזמין חבר'), h('p', {class: 'plus-muted'}, tr('Shares only the app link — never your information.', 'משתף רק את הקישור לאפליקציה — אף פעם לא את המידע שלך.')),
+      btn(tr('Share the app', 'שיתוף האפליקציה'), invite, 'plus-btn')));
+    return wrap;
+  }
+  function hiddenLabel(id) {
+    const [kind, key] = id.split(':');
+    if (kind === 'right') { const c = KB.rightsCards().find(x => x.id === key); return c ? c.title : key; }
+    return key;
+  }
+  async function invite() {
+    const url = new URL(edition() === 'he' ? './indexH.html' : './index.html', location.href).href;
+    const data = {title: tr('Momentum Companion', 'המלווה של מומנטום'), text: tr('A companion for discharged soldiers: rights, work, studies and support.', 'מלווה לחיילים משוחררים: זכויות, עבודה, לימודים ותמיכה.'), url};
+    try { if (navigator.share) { await navigator.share(data); return; } } catch (_) { return; }
+    copy(url);
+  }
+
+  /* ================================================================
+     BOTTOM NAVIGATION
+     ================================================================ */
+  const nav = h('nav', {id: 'plusNav', class: 'plus-nav'});
+  document.body.append(nav);
+  const NAV = [
+    ['home', '⌂', () => goHome()],
+    ['chat', '💬', () => P.infoOnly ? showPage('rights') : goChat()],
+    ['journey', '🗺', () => { location.href = journeyUrl('overview'); }],
+    ['help', '?', () => showPage('help')]
+  ];
+  function paintNav() {
+    nav.setAttribute('aria-label', tr('Main navigation', 'ניווט ראשי'));
+    nav.replaceChildren(...NAV.map(([id, icon, fn]) => {
+      const label = {home: tr('Home', 'בית'), chat: P.infoOnly ? tr('Info', 'מידע') : tr('Chat', 'שיחה'), journey: tr('My Journey', 'המסע שלי'), help: tr('Help', 'עזרה')}[id];
+      return h('button', {type: 'button', 'data-nav': id, onclick: fn}, h('span', {'aria-hidden': 'true'}, id === 'chat' && P.infoOnly ? 'ℹ' : icon), h('span', {}, label));
+    }));
+    setNav(currentNav);
+  }
+  let currentNav = 'home';
+  function setNav(id) {
+    currentNav = id;
+    nav.querySelectorAll('[data-nav]').forEach(b => { if (b.dataset.nav === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  }
+
+  /* ================================================================
+     CHAT — conversation modes, tools, save-to-journey, listen
+     ================================================================ */
+  const tools = h('div', {id: 'plusChatTools', class: 'plus-chat-tools'});
+  if ($('composer')) $('composer').before(tools);
+  function paintTools() {
+    tools.replaceChildren(
+      btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-chip plus-chip-soft'),
+      btn(tr('Summary & next step', 'סיכום וצעד הבא'), summarize, 'plus-chip'),
+      btn(tr('Skip this question', 'דילוג על השאלה'), skipQuestion, 'plus-chip')
+    );
+  }
+  function summarize() {
+    if (typeof sendUser !== 'function') return;
+    const userCount = (S.messages || []).filter(m => m.role === 'user').length;
+    if (userCount < 2) { toast(tr('Talk a little more first, then I can summarize.', 'נדבר עוד קצת ואז אוכל לסכם.')); return; }
+    sendUser(tr('Please summarize our conversation so far in 3–5 short lines, then suggest one small, concrete next step I could save to My Journey.',
+      'סכם בבקשה את השיחה שלנו עד עכשיו ב-3–5 שורות קצרות, ואז הצע צעד הבא אחד קטן וקונקרטי שאוכל לשמור במסע שלי.'));
+  }
+  function skipQuestion() {
+    if (typeof sendUser !== 'function') return;
+    sendUser(tr("I'd rather skip that question for now.", 'אני מעדיף לדלג על השאלה הזאת כרגע.'));
+  }
+  function hasUserMessages() { return (S.messages || []).some(m => m.role === 'user'); }
+  function maybeOfferModes() {
+    const old = $('plusModes'); if (old) old.remove();
+    if (hasUserMessages() || S.activeTopic || P.infoOnly) return;
+    const bar = h('div', {id: 'plusModes', class: 'plus-modes', role: 'group', 'aria-label': tr('How would you like to start?', 'איך תרצה להתחיל?')},
+      h('span', {}, tr('How would you like to start?', 'איך תרצה להתחיל?')),
+      btn(tr('I just want to talk', 'אני רק רוצה לדבר'), () => startMode('talk'), 'plus-chip'),
+      btn(tr('I want to do something practical', 'אני רוצה לעשות משהו מעשי'), () => startMode('practical'), 'plus-chip'),
+      btn(tr('Skip', 'דילוג'), () => bar.remove(), 'plus-chip plus-chip-soft'));
+    tools.after(bar);
+  }
+  function startMode(mode) {
+    P.chatMode = mode; store();
+    const bar = $('plusModes'); if (bar) bar.remove();
+    if (typeof pushMsg !== 'function') return;
+    if (mode === 'talk') {
+      const norm = KB && KB.data ? KB.data.emotional_support.normalization : '';
+      pushMsg('assistant', tr('Many people feel empty, confused or without direction after discharge. That is completely normal.\n\nThere is no agenda here. What is on your mind?',
+        (norm || 'הרבה אנשים מרגישים ריקים, מבולבלים או חסרי כיוון אחרי השחרור. זה נורמלי לגמרי.') + '\n\nאין כאן סדר יום. מה עובר עליך?'), {kind: 'plus-mode'});
+    } else {
+      pushMsg('assistant', tr('Great — let us pick one practical thing. Rights and money, work and CV, or studies? Or write your own.',
+        'מעולה — בוא נבחר דבר מעשי אחד. זכויות וכסף, עבודה וקורות חיים, או לימודים? או שתכתוב משהו משלך.'), {kind: 'plus-mode'});
+      const quick = h('div', {class: 'plus-modes', id: 'plusModes'}, [['rights', tr('Rights & money', 'זכויות וכסף')], ['cv', tr('Work & CV', 'עבודה וקורות חיים')], ['study', tr('Studies', 'לימודים')]]
+        .map(([id, l]) => btn(l, () => { quick.remove(); openTopic(id); }, 'plus-chip')));
+      tools.after(quick);
+    }
+    try { save(); } catch (_) {}
+    if ($('input')) $('input').focus({preventScroll: true});
+  }
+
+  // Add "save to my journey" and "listen" to assistant replies.
+  function decorateTurns() {
+    const thread = $('thread'); if (!thread) return;
+    thread.querySelectorAll('.turn.them:not([data-plus])').forEach(turn => {
+      turn.dataset.plus = '1';
+      const body = turn.querySelector('.body'); if (!body) return;
+      const text = body.textContent.trim();
+      if (text.length < 40 || (typeof openingText === 'function' && text.startsWith(openingText(S.lang).slice(0, 30)))) return;
+      const row = h('div', {class: 'plus-turn-tools'});
+      const important = text.length > 280 || /צעד|step|תוכנית|plan|מטרה|goal/i.test(text);
+      const saveBtn = btn(important ? tr('Save this to My Journey?', 'רוצה לשמור את זה במסע שלך?') : tr('Save to My Journey', 'לשמור במסע'), () => {
+        const first = text.split(/[.!?:\n]/).map(x => x.trim()).find(x => x.length > 8) || text;
+        const rec = saveAction(first.slice(0, 150), text);
+        if (rec) { saveBtn.textContent = tr('Saved ✓', 'נשמר ✓'); saveBtn.disabled = true; }
+      }, 'plus-chip');
+      row.append(saveBtn);
+      if ('speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined')
+        row.append(btn('🔊 ' + tr('Listen', 'האזנה'), () => listen(text), 'plus-chip plus-chip-soft'));
+      turn.append(row);
+    });
+  }
+  function listen(text) {
+    try {
+      if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+      const u = new SpeechSynthesisUtterance(text); u.lang = he() ? 'he-IL' : 'en-US';
+      const v = (speechSynthesis.getVoices() || []).find(x => String(x.lang).toLowerCase().startsWith(he() ? 'he' : 'en')); if (v) u.voice = v;
+      speechSynthesis.speak(u);
+    } catch (_) { toast(tr('Read-aloud is not available in this browser.', 'הקראה אינה זמינה בדפדפן הזה.')); }
+  }
+  if ($('thread')) new MutationObserver(decorateTurns).observe($('thread'), {childList: true});
+
+  // Clear recording indicator for the existing microphone button.
+  const mic = $('btnMic');
+  if (mic) {
+    const rec = h('div', {id: 'plusRecording', class: 'plus-recording', role: 'status', hidden: true});
+    if ($('composer')) $('composer').prepend(rec);
+    new MutationObserver(() => {
+      const live = mic.classList.contains('live');
+      rec.hidden = !live;
+      rec.textContent = live ? '🎙 ' + tr('Recording… tap the microphone again to stop.', 'מקליט… לחצו שוב על המיקרופון כדי לעצור.') : '';
+    }).observe(mic, {attributes: true, attributeFilter: ['class']});
+  }
+
+  /* ---------------- offline message ---------------- */
+  const offline = h('div', {id: 'plusOffline', class: 'plus-offline', role: 'status', hidden: true});
+  document.body.prepend(offline);
+  function paintOffline() {
+    offline.hidden = navigator.onLine !== false;
+    offline.textContent = tr('You are offline. Information pages and My Journey still work; the AI chat returns when you reconnect.', 'אין חיבור לאינטרנט. עמודי המידע והמסע שלך זמינים; השיחה עם ה-AI תחזור כשהחיבור יחזור.');
+  }
+  window.addEventListener('online', paintOffline); window.addEventListener('offline', paintOffline);
+
+  /* ================================================================
+     AI CONTEXT — knowledge base + (opt-in) personal context
+     ================================================================ */
+  function promptContext(lastUserText) {
+    const parts = [];
+    if (KB) { const k = KB.promptContext(lastUserText, {topic: S.activeTopic || ''}); if (k) parts.push(k); }
+    if (P.chatMode === 'talk' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I just want to talk". Listen first, reflect briefly, normalize the feelings, and do not push tasks or lists unless they ask.');
+    if (P.chatMode === 'practical' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I want to do something practical". Be concrete and end with one small next step.');
+    const j = journey();
+    if (j && j.privacy && j.privacy.shareWithAI) {
+      const facts = [];
+      if (P.service) facts.push('service type: ' + P.service);
+      if (P.lone) facts.push('lone soldier');
+      if (P.reservist) facts.push('serves in reserves');
+      const m = monthsSinceDischarge(); if (m !== null) facts.push('about ' + m + ' months since discharge'); else if (P.notDischarged) facts.push('not yet discharged');
+      if (P.pressing) facts.push('most pressing now: ' + P.pressing);
+      if (facts.length) parts.push('SOLDIER-PROVIDED BACKGROUND (opted in; self-reported; do not infer eligibility from it): ' + facts.join('; ') + '.');
+    }
+    return parts.length ? '\n\n' + parts.join('\n\n') : '';
+  }
+
+  /* ================================================================
+     START-UP
+     ================================================================ */
+  function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); if (!hub.hidden) renderHome(); }
+  window.MomentumPlus = {promptContext, showPage, goHome, goChat, prefs: () => ({...P}), renderHome};
+  new MutationObserver(paintAll).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
+  new MutationObserver(() => { if (!hub.hidden) { hidePage(); renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});
+  if ($('chat')) new MutationObserver(() => { if (!$('chat').hidden) { setNav('chat'); decorateTurns(); } }).observe($('chat'), {attributes: true, attributeFilter: ['hidden']});
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyDisplay);
+
+  recordVisit();
+  paintAll();
+  decorateTurns();
+  const params = new URLSearchParams(location.search);
+  let draft = '';
+  try { draft = sessionStorage.getItem('momentum-plus-draft') || ''; sessionStorage.removeItem('momentum-plus-draft'); } catch (_) {}
+  if (draft) { openTopic('cv', draft); return; }
+  const wantsChat = location.hash === '#chatHistory' || params.get('section') === 'updates' || params.get('view') === 'chat';
+  if (params.get('page') && PAGES[params.get('page')]) showPage(params.get('page'));
+  else if (!P.onboarded && !S.started && !wantsChat) { if (window.CompanionHome) window.CompanionHome.show(); showPage('onboarding'); }
+  else if (!wantsChat && window.CompanionHome && !(typeof sendingUserMessage !== 'undefined' && sendingUserMessage)) { window.CompanionHome.show(); renderHome(); }
+})();

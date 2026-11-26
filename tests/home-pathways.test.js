@@ -58,7 +58,8 @@ for (const [file,key,lang] of [['index.html','gtc_v2_state','en'],['indexH.html'
     try {
       assert.ok(d.getElementById('companionHomeButton'),'Home always visible');
       assert.ok(d.getElementById('companionDrawerHome'),'Home in profile/settings');
-      assert.equal(d.getElementById('chat').hidden,false,'Returning soldier starts in chat');
+      // Brief 1.1 (Nov 2026): every visit opens on the Home screen; the chat is one tap away.
+      assert.equal(d.getElementById('companionHomeHub').hidden,false,'Returning soldier starts on Home');
       d.getElementById('input').value='Unsent draft';
       const before=w.eval('S.messages.length');
       d.getElementById('companionHomeButton').click();

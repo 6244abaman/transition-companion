@@ -308,6 +308,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 </style>
 <link rel="stylesheet" href="./onboarding.css">
 <link rel="stylesheet" href="./companion-home.css">
+<link rel="stylesheet" href="./companion-plus.css">
 </head>
 <body>
 
@@ -1479,6 +1480,8 @@ async function askModel(userMessageId){
     await window.MomentumBenefits.refresh();
     sys += "\n\n"+window.MomentumBenefits.context(S.lang);
   }
+  // Knowledge base + conversation mode (+ onboarding answers only when Journey AI sharing is on).
+  if(window.MomentumPlus) sys += window.MomentumPlus.promptContext(hist.at(-1)?.content||"");
   DIAG.source = "live API";
   DIAG.refs = ref.labels; DIAG.refChars = ref.text.length;
   DIAG.sentTurns = hist.length;
@@ -2181,6 +2184,9 @@ if(new URLSearchParams(location.search).get("section")==="updates")prepareTopic(
 <script src="./onboarding.js"></script>
 <script src="./chat-history.js"></script>
 <script src="./companion-home.js"></script>
+<script src="./knowledge-base-data.js"></script>
+<script src="./knowledge-base.js"></script>
+<script src="./companion-plus.js"></script>
 <script id="journey-offline-register">
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
