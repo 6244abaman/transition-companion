@@ -207,3 +207,5 @@ html[data-theme="dark"] body:has(#companionHomeHub:not([hidden])) { background:l
 html[data-theme="dark"] .plus-soft, html[data-theme="dark"] .plus-pill, html[data-theme="dark"] .jp-chip { border-color:#3F5446 !important; }
 html[data-theme="dark"] .plus-ticon { background:var(--surface); border-color:var(--border-strong); }
 html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }
+/* old "Updated information and benefits" panel is not shown in the new chat (owner decision) */
+#benefitsUpdates, #openBenefitsUpdates { display:none !important; }

@@ -1633,9 +1633,10 @@ function practiceReply(userText){
    9. CONVERSATION FLOW
    ========================================================================== */
 function openingText(lang){
+  // Short greeting (reference design). Older saved openings are recognised by kind:"opening" and shown with this text.
   return lang === "he"
-    ? "קודם כול — תודה. כמה זמן ששירתת, נתת חלק מהחיים שלך למדינה הזאת, וזה חשוב.\n\nתחשוב עליי פחות כמו מורה, מפקד או יועץ, ויותר כמו אח גדול שנמצא בצד שלך — בגובה העיניים, מעשי, ישר איתך, לא שופט, ונמצא כאן כי חשוב איך ייראה הצעד הבא שלך. אני לא אגיד לך מה אתה אמור להרגיש או מה אתה חייב לעשות. אפשר לחשוב יחד, להשוות אפשרויות אמיתיות, ולהפוך את מה שעומד מולך לצעד הבא שאפשר להתמודד איתו.\n\nאיך אתה עכשיו, ומה הדבר שהכי יעזור לך שניגש אליו קודם?"
-    : "First — thank you. However long you served, you gave part of your life to this country, and that matters.\n\nThink of me less like a teacher, commander, or counselor and more like an older brother in your corner — practical, straight with you, not judging you, and here because your next step matters. I won't tell you what you're supposed to feel or what you have to do. We can think things through, compare real options, and turn whatever is in front of you into a manageable next step.\n\nHow are you doing right now, and what would be most useful to help with first?";
+    ? "היי! 👋\nכאן בשבילך 😊\n\nמה תרצה לעשות עכשיו?"
+    : "Hi! 👋\nI'm here for you 😊\n\nWhat would you like to do now?";
 }
 function messageText(m){
   // Recognize openings saved by earlier versions as well as new ones.

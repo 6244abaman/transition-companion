@@ -91,7 +91,10 @@
     officialLinksInfo: [
       {key: 'agaf_keren', title: 'האגף והקרן לחיילים משוחררים', why: 'האזור האישי: מענק שחרור, פיקדון, ממדים ללימודים, עבודה מועדפת.'},
       {key: 'bituach_leumi', title: 'ביטוח לאומי', why: 'פטור זמני מתשלום, דמי אבטלה, עבודה מועדפת/נדרשת.'},
-      {key: 'taxes', title: 'רשות המסים', why: 'נקודות זיכוי לחיילים משוחררים ותיאום מס (טופס 101).'}
+      {key: 'taxes', title: 'רשות המסים', why: 'נקודות זיכוי לחיילים משוחררים ותיאום מס (טופס 101).'},
+      {key: 'transport', title: 'נסיעות חינם בתחבורה ציבורית', why: 'איך מעדכנים פרופיל "משוחרר" ברב-קו.'},
+      {key: 'preferred_work', title: 'עבודה מועדפת — ביטוח לאומי', why: 'תנאים, הגשת בקשה ורשימת העבודות המוכרות.'},
+      {key: 'mimadim', title: 'ממדים ללימודים', why: 'תנאי הזכאות והרשמה למימון שכר הלימוד.'}
     ],
     humanHelp: [
       {name: 'ער"ן — עזרה ראשונה נפשית', contact: '1201', tel: '1201', note: 'קו טלפוני 24/7, אנונימי. אפשר גם בצ\'אט באתר ער"ן.'},
@@ -172,7 +175,10 @@
     officialLinksInfo: [
       {key: 'agaf_keren', title: 'Discharged Soldiers Department and Fund', why: 'Personal area: discharge grant, deposit, Mimadim LeLimudim, preferred work.'},
       {key: 'bituach_leumi', title: 'National Insurance (Bituach Leumi)', why: 'Temporary payment exemption, unemployment benefit, preferred/required work.'},
-      {key: 'taxes', title: 'Israel Tax Authority', why: 'Tax credit points for discharged soldiers and tax coordination (Form 101).'}
+      {key: 'taxes', title: 'Israel Tax Authority', why: 'Tax credit points for discharged soldiers and tax coordination (Form 101).'},
+      {key: 'transport', title: 'Free public transport', why: 'How to set the "discharged soldier" profile on Rav-Kav.'},
+      {key: 'preferred_work', title: 'Preferred work — National Insurance', why: 'Conditions, applying and the list of approved jobs.'},
+      {key: 'mimadim', title: 'Mimadim LeLimudim', why: 'Eligibility and registration for tuition funding.'}
     ],
     humanHelp: [
       {name: 'ERAN — emotional first aid', contact: '1201', tel: '1201', note: '24/7 phone line, anonymous. There is also a chat on the ERAN website.'},
@@ -199,13 +205,18 @@
       rates: Object.entries(d.amounts_per_month_2026_oct || {}).map(([k, v]) => ({key: k, label: (isEn() ? SERVICE_LABEL_EN : SERVICE_LABEL_HE)[k] || k, value: v})), warning: d.scam_warning}); }
     if (r.tax_credit_points) { const tp = r.tax_credit_points; add('tax_credit_points', 'money', tp.name_he, [L('משך: ','Duration: ') + tp.duration_months + L(' חודשים מהשחרור',' months from discharge'), L('שירות של 23 חודשים ומעלה (גברים) / 22 ומעלה (נשים): ','Service of 23+ months (men) / 22+ (women): ') + tp.points.men_23plus_or_women_22plus + L(' נקודות',' points'), L('שירות של 12 חודשים ועד מתחת לסף הזה: ','Service of 12 months up to that threshold: ') + tp.points['12_to_23_months'] + L(' נקודה',' point'), tp.point_value_2026_monthly ? L('שווי נקודה ב-2026: כ-','Value of one point in 2026: about ') + tp.point_value_2026_monthly + L(' ₪ לחודש',' ₪ a month') : '', L('חיסכון משוער (2 נקודות): ','Estimated saving (2 points): ') + tp.estimated_monthly_saving_2_points + L(' לחודש',' a month'), L('איך: ','How: ') + tp.how_to_claim, tp.not_automatic, tp.refund], {link: 'taxes'}); }
     if (r.bituach_leumi_exemption) { const b = r.bituach_leumi_exemption; add('bituach_leumi_exemption', 'money', b.name_he, [L('משך: ','Duration: ') + b.duration, L('תנאי: ','Condition: ') + b.condition], {link: 'bituach_leumi'}); }
-    if (r.preferred_work_grant) { const p = r.preferred_work_grant; add('preferred_work_grant', 'work', p.name_he, [L('סכום: ','Amount: ') + p.amount_2026, p.work_period ? L('תקופת עבודה: ','Work period: ') + p.work_period : '', L('זכאות: ','Eligibility: ') + p.eligibility, L('מועד אחרון: ','Deadline: ') + p.deadline], {list: p.sectors, listTitle: L('ענפים לדוגמה','Example sectors'), link: 'agaf_keren'}); }
-    if (r.public_transport_free) add('public_transport_free', 'daily_life', r.public_transport_free.name_he, [L('משך: ','Duration: ') + r.public_transport_free.duration]);
+    if (r.preferred_work_grant) { const p = r.preferred_work_grant; add('preferred_work_grant', 'work', p.name_he, [p.description, L('סכום: ','Amount: ') + p.amount_2026, p.work_period ? L('תקופת עבודה: ','Work period: ') + p.work_period : '', L('זכאות: ','Eligibility: ') + p.eligibility, L('מועד אחרון: ','Deadline: ') + p.deadline], {list: p.sectors, listTitle: L('ענפים','Sectors'), extraLinks: p.extra_links || []}); }
+    if (r.public_transport_free) { const t = r.public_transport_free; add('public_transport_free', 'daily_life', t.name_he, [L('משך: ','Duration: ') + t.duration, t.how ? L('איך: ','How: ') + t.how : '', t.important ? L('חשוב: ','Important: ') + t.important : '']); }
     if (r.arnona) add('arnona', 'housing', r.arnona.name_he, [r.arnona.notes]);
     if (r.unemployment) add('unemployment', 'money', r.unemployment.name_he, [r.unemployment.notes], {link: 'bituach_leumi'});
     if (s.mimadim_lelimudim) { const m = s.mimadim_lelimudim; add('mimadim_lelimudim', 'studies', m.name_he, [m.description, L('משך: ','Duration: ') + m.duration, L('מועד: ','Deadline: ') + m.deadline, m.notes], {list: m.eligibility, listTitle: L('מי זכאי','Who is eligible'), link: 'agaf_keren'}); }
+    const lone = D().special_groups && D().special_groups.lone_soldiers;
+    if (lone) add('lone_soldiers_extra', 'special', L('חיילים בודדים — הטבות נוספות', 'Lone soldiers — extra benefits'), [lone.official_note ? L('איפה: ', 'Where: ') + lone.official_note : ''], {list: lone.extra, listTitle: L('מה מגיע', 'What you may get'), url: lone.official_url});
     for (const key of ['periphery_scholarships', 'mechina_bagrut', 'practical_engineering', 'psychometric'])
       if (s[key]) add(key, 'studies', s[key].name_he, [s[key].description || s[key].notes]);
+    const own = {discharge_grant: r.discharge_grant, personal_deposit: r.personal_deposit, tax_credit_points: r.tax_credit_points, bituach_leumi_exemption: r.bituach_leumi_exemption,
+      preferred_work_grant: r.preferred_work_grant, public_transport_free: r.public_transport_free, unemployment: r.unemployment, arnona: r.arnona, mimadim_lelimudim: s.mimadim_lelimudim};
+    cards.forEach(c => { const src = own[c.id]; if (src && src.official_url) c.url = src.official_url; });
     const meta = D().metadata || {};
     cards.forEach(c => { if (c.cat === 'money' || c.cat === 'work') c.source = {asOf: meta.amounts_as_of || meta.last_updated, by: meta.source || ''}; });
     return cards;

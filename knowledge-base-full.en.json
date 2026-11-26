@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Comprehensive knowledge base for discharged soldiers – Momentum Companion",
-    "version": "2.1",
+    "version": "2.2",
     "last_updated": "2026-11-26",
     "disclaimer": "Amounts and conditions are estimates based on official sources (October–November 2026). Always verify with the Discharged Soldiers Department and Fund, National Insurance (Bituach Leumi) and the Tax Authority.",
     "purpose": "Central knowledge base for the Transition Companion – for the companion, its pages and agents",
@@ -38,7 +38,8 @@
         "other_24_months": "about 11,000 ₪"
       },
       "timing": "Within 60 days of discharge. Lone soldiers – an advance within 14 days.",
-      "notes": "Training months are sometimes classified as combat support or other. The amount appears in your personal area."
+      "notes": "Training months are sometimes classified as combat support or other. The amount appears in your personal area.",
+      "official_url": "https://www.hachvana.mod.gov.il/"
     },
     "personal_deposit": {
       "name_he": "Personal deposit",
@@ -60,7 +61,8 @@
         "combat_support": 828.67,
         "other_national_service": 662.94
       },
-      "scam_warning": "Do not pay any company that offers to \"release your deposit early\" — it is illegal. The deposit is used only through the personal area on the Department's website, free of charge."
+      "scam_warning": "Do not pay any company that offers to \"release your deposit early\" — it is illegal. The deposit is used only through the personal area on the Department's website, free of charge.",
+      "official_url": "https://www.hachvana.mod.gov.il/"
     },
     "tax_credit_points": {
       "name_he": "Income tax credit points",
@@ -73,34 +75,45 @@
       "how_to_claim": "Form 101 with your employer, or tax coordination",
       "point_value_2026_monthly": 242,
       "not_automatic": "Tax credit points are not automatic — you must request them on Form 101 with your employer.",
-      "refund": "If you did not request them in time, you can ask the Tax Authority for a tax refund later."
+      "refund": "If you did not request them in time, you can ask the Tax Authority for a tax refund later.",
+      "official_url": "https://www.gov.il/he/departments/israel_tax_authority"
     },
     "bituach_leumi_exemption": {
       "name_he": "Temporary exemption from National Insurance and health tax",
       "duration": "Two months after the month of discharge",
-      "condition": "If you are not working"
+      "condition": "If you are not working",
+      "official_url": "https://www.btl.gov.il/"
     },
     "preferred_work_grant": {
       "name_he": "Preferred / required work grant",
       "amount_2026": "about 11,461 ₪ for 6 months",
       "eligibility": "Usually 24 months of service + work in approved sectors",
       "sectors": [
-        "Agriculture",
-        "Construction",
         "Industry",
+        "Construction",
+        "Agriculture",
         "Hotels",
-        "Care work",
-        "Security",
-        "Factories",
-        "Gas stations"
+        "Gas stations",
+        "Care for people with disabilities"
       ],
       "deadline": "Within 42 months of discharge",
       "amount_2026_number": 11461,
-      "work_period": "6 full months of work or 150 working days"
+      "work_period": "6 full months of work or 150 working days",
+      "official_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
+      "extra_links": [
+        {
+          "label": "List of approved jobs",
+          "url": "https://www.btl.gov.il/LandingPages/HayalMesocrar/Pages/default.aspx"
+        }
+      ],
+      "description": "A one-time grant for those who worked 6 full months (or 150 working days) full-time in defined sectors."
     },
     "public_transport_free": {
       "name_he": "Free public transport",
-      "duration": "12 months from discharge"
+      "duration": "12 months from discharge",
+      "official_url": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/PublicRights/Pages/transport.aspx",
+      "how": "Update the \"discharged soldier\" profile on your Rav-Kav card or in the app.",
+      "important": "You must validate every ride, even though it is free."
     },
     "arnona": {
       "name_he": "Municipal tax (arnona) discount / exemption",
@@ -108,7 +121,8 @@
     },
     "unemployment": {
       "name_he": "Unemployment benefit",
-      "notes": "Possible unemployment benefit in the first year under certain conditions (for example after 6 months of work)"
+      "notes": "Possible unemployment benefit in the first year, provided you worked at least 6 months (up to 6 months of service can be counted).",
+      "official_url": "https://www.btl.gov.il/"
     }
   },
   "studies": {
@@ -124,7 +138,8 @@
       ],
       "duration": "3 years (4 in engineering, medicine, architecture)",
       "deadline": "First application within 5 years of discharge (sometimes longer)",
-      "notes": "No volunteering hours required. Registration opens every year."
+      "notes": "No volunteering hours required. Registration opens every year.",
+      "official_url": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx"
     },
     "periphery_scholarships": {
       "name_he": "Periphery scholarships",
@@ -231,8 +246,12 @@
         "Fast advance on the grant",
         "Enhanced housing rights",
         "Longer validity for some benefits (up to 10 years)",
-        "Additional support"
-      ]
+        "Additional support",
+        "Rent assistance: up to 1,200 ₪ a month in the first year",
+        "Full funding of the psychometric exam registration"
+      ],
+      "official_url": "https://www.hachvana.mod.gov.il/",
+      "official_note": "Personal area → Benefits"
     },
     "reservists": {
       "notes": "Some rights are extended. There are dedicated benefits after long periods of reserve duty."
@@ -317,7 +336,10 @@
     "personal_area": "https://www.hachvana.mod.gov.il",
     "bituach_leumi": "https://www.btl.gov.il",
     "taxes": "https://www.gov.il/he/departments/israel_tax_authority",
-    "eran": "1201"
+    "eran": "1201",
+    "transport": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/PublicRights/Pages/transport.aspx",
+    "preferred_work": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
+    "mimadim": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx"
   },
   "skills_translation_examples": [
     {

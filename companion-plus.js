@@ -523,8 +523,10 @@
     if (c.warning) box.append(h('p', {class: 'plus-warning', role: 'note'}, '⚠ ' + c.warning));
     const src = sourceLine(c.source); if (src) box.append(src);
     const row = h('div', {class: 'plus-row'});
-    if (c.link) row.append(h('a', {class: 'plus-btn', href: KB.officialLink(c.link), target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')));
-    row.append(btn(tr('Save to My Journey', 'לשמור במסע'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (c.link ? KB.officialLink(c.link) + '\n' : '') + c.lines.join('\n'))));
+    const officialUrl = c.url || (c.link ? KB.officialLink(c.link) : '');
+    if (officialUrl) row.append(h('a', {class: 'plus-btn primary', href: officialUrl, target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')));
+    (c.extraLinks || []).forEach(x => row.append(h('a', {class: 'plus-btn', href: x.url, target: '_blank', rel: 'noopener noreferrer'}, x.label + ' ↗')));
+    row.append(btn(tr('Save to My Journey', 'לשמור במסע'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (officialUrl ? officialUrl + '\n' : '') + c.lines.join('\n'))));
     const ask = askButton('rights', tr('Explain "' + c.title + '" and what I should check.', 'תסביר לי על ' + c.title + ' ומה כדאי לי לבדוק.')); if (ask) row.append(ask);
     row.append(notRelevantButton('right:' + c.id, c.title));
     box.append(row);
@@ -633,7 +635,7 @@
       };
       input.addEventListener('input', draw);
       put(wrap, h('div', {class: 'plus-search'}, input), checklist(), results, specialGroups(), officialLinks(),
-        h('div', {class: 'plus-row'}, askButton('rights'), btn(tr('Updated benefits & events', 'הטבות ואירועים מעודכנים'), () => openTopic('updates'), 'plus-link')));
+        h('div', {class: 'plus-row'}, askButton('rights')));
       draw();
       return wrap;
     },

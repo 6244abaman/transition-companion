@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "מאגר ידע מקיף לחיילים משוחררים – Momentum Companion",
-    "version": "2.1",
+    "version": "2.2",
     "last_updated": "2026-11-26",
     "disclaimer": "הסכומים והתנאים משוערים לפי מקורות רשמיים (אוקטובר-נובמבר 2026). יש לאמת תמיד מול האגף והקרן לחיילים משוחררים, ביטוח לאומי ורשות המסים.",
     "purpose": "בסיס ידע מרכזי לאתר Transition Companion – לשימוש המלווה, הדפים והסוכנים",
@@ -36,7 +36,8 @@
         "other_24_months": "כ-11,000 ₪"
       },
       "timing": "עד 60 יום מהשחרור. חיילים בודדים – מקדמה תוך 14 יום.",
-      "notes": "חודשי הכשרה מסווגים לפעמים כתומך לחימה או אחר. הסכום מופיע באזור האישי."
+      "notes": "חודשי הכשרה מסווגים לפעמים כתומך לחימה או אחר. הסכום מופיע באזור האישי.",
+      "official_url": "https://www.hachvana.mod.gov.il/"
     },
     "personal_deposit": {
       "name_he": "פיקדון אישי",
@@ -58,7 +59,8 @@
         "combat_support": 828.67,
         "other_national_service": 662.94
       },
-      "scam_warning": "אל תשלמו לחברה שמציעה \"לשחרר את הפיקדון מוקדם\" — זה לא חוקי. מימוש הפיקדון נעשה רק דרך האזור האישי באתר האגף, ללא תשלום."
+      "scam_warning": "אל תשלמו לחברה שמציעה \"לשחרר את הפיקדון מוקדם\" — זה לא חוקי. מימוש הפיקדון נעשה רק דרך האזור האישי באתר האגף, ללא תשלום.",
+      "official_url": "https://www.hachvana.mod.gov.il/"
     },
     "tax_credit_points": {
       "name_he": "נקודות זיכוי במס הכנסה",
@@ -71,34 +73,45 @@
       "how_to_claim": "טופס 101 אצל המעסיק או תיאום מס",
       "point_value_2026_monthly": 242,
       "not_automatic": "נקודות הזיכוי לא ניתנות אוטומטית — צריך לבקש אותן בטופס 101 אצל המעסיק.",
-      "refund": "אם לא ביקשתם בזמן, אפשר לבקש החזר מס בדיעבד ברשות המסים."
+      "refund": "אם לא ביקשתם בזמן, אפשר לבקש החזר מס בדיעבד ברשות המסים.",
+      "official_url": "https://www.gov.il/he/departments/israel_tax_authority"
     },
     "bituach_leumi_exemption": {
       "name_he": "פטור זמני מביטוח לאומי וביטוח בריאות",
       "duration": "חודשיים אחרי חודש השחרור",
-      "condition": "אם לא עובדים"
+      "condition": "אם לא עובדים",
+      "official_url": "https://www.btl.gov.il/"
     },
     "preferred_work_grant": {
       "name_he": "מענק עבודה מועדפת / נדרשת",
       "amount_2026": "כ-11,461 ₪ על 6 חודשים",
       "eligibility": "לרוב 24 חודשי שירות + עבודה בענפים מאושרים",
       "sectors": [
-        "חקלאות",
-        "בניין",
         "תעשייה",
+        "בניין",
+        "חקלאות",
         "מלונאות",
-        "טיפול",
-        "אבטחה",
-        "מפעלים",
-        "תחנות דלק"
+        "תחנות דלק",
+        "טיפול באנשים עם מוגבלות"
       ],
       "deadline": "תוך 42 חודשים מהשחרור",
       "amount_2026_number": 11461,
-      "work_period": "6 חודשי עבודה מלאים או 150 ימי עבודה"
+      "work_period": "6 חודשי עבודה מלאים או 150 ימי עבודה",
+      "official_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
+      "extra_links": [
+        {
+          "label": "רשימת העבודות המוכרות",
+          "url": "https://www.btl.gov.il/LandingPages/HayalMesocrar/Pages/default.aspx"
+        }
+      ],
+      "description": "מענק חד-פעמי למי שעבד 6 חודשים מלאים (או 150 ימי עבודה) במשרה מלאה בענפים מוגדרים."
     },
     "public_transport_free": {
       "name_he": "נסיעות חינם בתחבורה ציבורית",
-      "duration": "12 חודשים מהשחרור"
+      "duration": "12 חודשים מהשחרור",
+      "official_url": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/PublicRights/Pages/transport.aspx",
+      "how": "עדכון פרופיל \"משוחרר\" בכרטיס הרב-קו או באפליקציה.",
+      "important": "חובה לתקף כל נסיעה, גם אם היא חינם."
     },
     "arnona": {
       "name_he": "הנחה / פטור בארנונה",
@@ -106,7 +119,8 @@
     },
     "unemployment": {
       "name_he": "דמי אבטלה",
-      "notes": "אפשרות לדמי אבטלה בשנה הראשונה בתנאים מסוימים (למשל אחרי 6 חודשי עבודה)"
+      "notes": "אפשרות לדמי אבטלה בשנה הראשונה, בתנאי שעבדת לפחות 6 חודשים (אפשר לספור עד 6 חודשי שירות).",
+      "official_url": "https://www.btl.gov.il/"
     }
   },
   "studies": {
@@ -122,7 +136,8 @@
       ],
       "duration": "3 שנים (4 בהנדסה, רפואה, אדריכלות)",
       "deadline": "בקשה ראשונה עד 5 שנים מהשחרור (לעיתים יותר)",
-      "notes": "ללא דרישת שעות התנדבות. ההרשמה מתבצעת מדי שנה."
+      "notes": "ללא דרישת שעות התנדבות. ההרשמה מתבצעת מדי שנה.",
+      "official_url": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx"
     },
     "periphery_scholarships": {
       "name_he": "מלגות פריפריה",
@@ -229,8 +244,12 @@
         "מקדמה מהירה על המענק",
         "זכויות דיור מוגברות",
         "תוקף ארוך יותר לחלק מההטבות (עד 10 שנים)",
-        "תמיכה נוספת"
-      ]
+        "תמיכה נוספת",
+        "סיוע בשכר דירה: עד 1,200 ₪ לחודש בשנה הראשונה",
+        "מימון מלא של הרישום לפסיכומטרי"
+      ],
+      "official_url": "https://www.hachvana.mod.gov.il/",
+      "official_note": "אזור אישי ← הטבות"
     },
     "reservists": {
       "notes": "חלק מהזכויות מתארכות. יש הטבות ייעודיות אחרי תקופות מילואים ארוכות."
@@ -315,7 +334,10 @@
     "personal_area": "https://www.hachvana.mod.gov.il",
     "bituach_leumi": "https://www.btl.gov.il",
     "taxes": "https://www.gov.il/he/departments/israel_tax_authority",
-    "eran": "1201"
+    "eran": "1201",
+    "transport": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/PublicRights/Pages/transport.aspx",
+    "preferred_work": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
+    "mimadim": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx"
   },
   "skills_translation_examples": [
     {
