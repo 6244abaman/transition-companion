@@ -311,6 +311,202 @@
       return wrap;
     }
 
+
+    /* ================= BATCH 2: life, work and progress tools ================= */
+    function copyText(text) {
+      try { navigator.clipboard.writeText(text).then(() => toast(tr('Copied ✓', 'הועתק ✓')), () => toast(tr('Could not copy', 'לא הצלחתי להעתיק'))); }
+      catch (_) { toast(tr('Could not copy', 'לא הצלחתי להעתיק')); }
+    }
+    const steps = items => h('ol', {class: 'plus-list'}, items.map(x => h('li', {}, x)));
+
+    /* First apartment */
+    function apartment() {
+      const wrap = h('div');
+      wrap.append(
+        section(tr('Before you sign', 'לפני שחותמים'), steps([
+          tr('Read the whole contract. Check rent, dates, who fixes what, and the exit/notice terms.', 'לקרוא את כל החוזה. לבדוק שכירות, תאריכים, מי מתקן מה, ותנאי יציאה והודעה מוקדמת.'),
+          tr('Ask what guarantee is required: guarantors, bank guarantee, promissory note or cash deposit. Know the risk of each.', 'לשאול איזו ערבות נדרשת: ערבים, ערבות בנקאית, שטר חוב או פיקדון כספי. להבין את הסיכון בכל אחת.'),
+          tr('The Fair Rent Law limits some demands (for example, the size of guarantees). Check on Kol Zchut.', 'חוק השכירות ההוגנת מגביל חלק מהדרישות (למשל גובה הערבויות). לבדוק ב"כל זכות".'),
+          tr('Visit at different hours. Check water pressure, mould, noise, phone signal.', 'לבקר בשעות שונות. לבדוק לחץ מים, עובש, רעש, קליטה.')
+        ]), ext(tr('Renting rights (Kol Zchut)', 'זכויות בשכירות (כל זכות)'), 'https://www.kolzchut.org.il/he/שכירות_דירה')),
+        section(tr('Moving-in day', 'יום הכניסה'), steps([
+          tr('Photograph every room and existing damage; send the photos to the landlord.', 'לצלם כל חדר וכל נזק קיים, ולשלוח את התמונות לבעל הדירה.'),
+          tr('Write down the electricity, water and gas meter readings.', 'לרשום את מוני החשמל, המים והגז.'),
+          tr('Transfer arnona, electricity, water and gas to your name.', 'להעביר על שמך ארנונה, חשמל, מים וגז.'),
+          tr('Ask the local authority for the arnona exemption if you are within 4 months of discharge.', 'לבקש ברשות המקומית פטור מארנונה, אם עוד לא עברו 4 חודשים מהשחרור.')
+        ]), h('div', {class: 'plus-row'}, btn(tr('My dates', 'המועדים שלי'), () => showPage('deadlines'), 'plus-link'), btn(tr('Monthly budget', 'תקציב חודשי'), () => showPage('money'), 'plus-link'))),
+        verify());
+      return wrap;
+    }
+
+    /* Insurance */
+    function insurance() {
+      const rows = [
+        [tr('Health fund (basic)', 'קופת חולים (בסיסי)'), tr('Required by law', 'חובה לפי חוק'), tr('Make sure you moved from IDF medical care to a health fund.', 'לוודא שעברת מהרפואה הצבאית לקופת חולים.')],
+        [tr('Supplementary health', 'ביטוח משלים בקופה'), tr('Optional', 'לבחירה'), tr('Extra services at the health fund. Compare what you actually need.', 'שירותים נוספים בקופה. להשוות מה באמת צריך.')],
+        [tr('Private health', 'ביטוח בריאות פרטי'), tr('Optional', 'לבחירה'), tr('Check for double coverage with the supplementary plan.', 'לבדוק כפל ביטוח מול המשלים.')],
+        [tr('Car — compulsory', 'רכב — חובה'), tr('Required if you have a car', 'חובה אם יש רכב'), tr('Covers bodily injury only.', 'מכסה רק נזקי גוף.')],
+        [tr('Car — third party / comprehensive', 'רכב — צד ג\' / מקיף'), tr('Recommended with a car', 'מומלץ עם רכב'), tr('Covers damage to others\' cars (third party) or also your own (comprehensive).', 'מכסה נזק לרכב של אחרים (צד ג\') או גם לרכב שלך (מקיף).')],
+        [tr('Apartment contents', 'תכולת דירה'), tr('Optional', 'לבחירה'), tr('Some landlords ask for third-party cover.', 'יש בעלי דירות שמבקשים צד ג\'.')],
+        [tr('Travel abroad', 'נסיעות לחו"ל'), tr('Strongly recommended', 'מומלץ מאוד'), tr('Check extreme sports and long-trip cover.', 'לבדוק כיסוי לספורט אתגרי ולטיול ארוך.')]
+      ];
+      return h('div', {}, section(tr('Which insurance do I need?', 'איזה ביטוח צריך?'),
+        h('ul', {class: 'plus-contacts'}, rows.map(([n, need, d]) => h('li', {}, h('div', {}, h('strong', {}, n), h('small', {}, d)), h('span', {class: 'plus-pill plus-soft'}, need)))),
+        h('p', {}, tr('Check all your existing policies in one place on the Insurance Mountain ("Har HaBituach") site.', 'אפשר לראות את כל הביטוחים שלך במקום אחד באתר "הר הביטוח".')),
+        ext(tr('Har HaBituach (Capital Market Authority)', 'הר הביטוח (רשות שוק ההון)'), 'https://harb.cma.gov.il/')), verify());
+    }
+
+    /* Ready-made letters */
+    const LETTERS = () => [
+      [tr('Short cover note', 'מכתב מקדים קצר'), tr('Hello [name],\nI am applying for the [role] position. I recently finished my military service as [role in service], where I [one concrete thing you did]. I would be glad to talk.\nThank you,\n[your name] · [phone]',
+        'שלום [שם],\nאני מגיש מועמדות למשרת [תפקיד]. סיימתי לאחרונה שירות צבאי כ[תפקיד בשירות], שם [דבר אחד מוחשי שעשית]. אשמח לשוחח.\nתודה,\n[השם שלך] · [טלפון]')],
+      [tr('Ask for form 106 / payslips', 'בקשת טופס 106 / תלושים'), tr('Hello,\nPlease send me form 106 for [year] and my payslips for [months], for a tax refund request.\nThank you,\n[your name] · ID [number]',
+        'שלום,\nאבקש לקבל טופס 106 לשנת [שנה] ותלושי שכר לחודשים [חודשים], לצורך בקשת החזר מס.\nתודה,\n[השם שלך] · ת"ז [מספר]')],
+      [tr('Ask for a preferred-work confirmation', 'בקשת אישור עבודה מועדפת'), tr('Hello,\nI worked at [workplace] from [date] to [date] as preferred work. Please give me the employer confirmation for National Insurance.\nThank you,\n[your name]',
+        'שלום,\nעבדתי ב[מקום העבודה] מ-[תאריך] עד [תאריך] בעבודה מועדפת. אבקש אישור מעסיק עבור ביטוח לאומי.\nתודה,\n[השם שלך]')],
+      [tr('Thank you after an interview', 'תודה אחרי ראיון'), tr('Hello [name],\nThank you for the interview today. I enjoyed hearing about [something from the interview] and I am still very interested in the role.\nBest,\n[your name]',
+        'שלום [שם],\nתודה על הראיון היום. נהניתי לשמוע על [משהו מהראיון] ואני עדיין מאוד מעוניין בתפקיד.\nבברכה,\n[השם שלך]')],
+      [tr('Resignation notice', 'הודעה על סיום עבודה'), tr('Hello [name],\nI am giving notice that my last day of work will be [date]. Thank you for the opportunity.\n[your name]',
+        'שלום [שם],\nאני מודיע שיום העבודה האחרון שלי יהיה [תאריך]. תודה על ההזדמנות.\n[השם שלך]')]
+    ];
+    function letters() {
+      const wrap = h('div');
+      wrap.append(note(tr('Replace the [brackets], then copy or share.', 'מחליפים את מה שבסוגריים [ ], ואז מעתיקים או משתפים.')));
+      LETTERS().forEach(([title, text]) => {
+        const ta = h('textarea', {class: 'plus-letter', rows: '6', 'aria-label': title}); ta.value = text;
+        wrap.append(h('details', {class: 'plus-details plus-card'}, h('summary', {}, title), ta,
+          h('div', {class: 'plus-row'}, btn(tr('Copy', 'העתקה'), () => copyText(ta.value), 'plus-btn primary'), btn(tr('Share', 'שיתוף'), () => share(title, ta.value), 'plus-btn'),
+            P.infoOnly ? null : btn(tr('Improve with the Companion', 'לשפר עם המלווה'), () => openTopic('applications', tr('Help me improve this letter:\n', 'תעזור לי לשפר את המכתב הזה:\n') + ta.value), 'plus-link'))));
+      });
+      return wrap;
+    }
+
+    /* Explain an official letter */
+    function explainLetter() {
+      const ta = h('textarea', {class: 'plus-letter', rows: '8', placeholder: tr('Paste the letter or message here (remove ID numbers first).', 'הדבק כאן את המכתב או ההודעה (רצוי למחוק קודם מספרי ת"ז).'), 'aria-label': tr('Official letter', 'מכתב רשמי')});
+      return h('div', {}, section(tr('Got an official letter you don\'t understand?', 'קיבלת מכתב רשמי ולא מבין אותו?'),
+        note(tr('Copy it from WhatsApp, email or a PDF and paste it here. The Companion explains it in simple words and what to do next. It is sent to the AI only after your approval.', 'מעתיקים מוואטסאפ, מייל או PDF ומדביקים כאן. המלווה מסביר במילים פשוטות ומה עושים עכשיו. נשלח ל-AI רק אחרי שאישרת.')),
+        ta, h('div', {class: 'plus-row'},
+          P.infoOnly ? note(tr('Information-only mode is on.', 'מצב "מידע בלבד" פעיל.')) : btn(tr('Explain it to me', 'תסביר לי'), () => {
+            const v = ta.value.trim(); if (!v) { ta.focus(); return; }
+            openTopic('rights', tr('Explain this official letter in simple words: what it says, whether I need to do something, and by when. Do not guess facts that are not written.\n\n', 'תסביר לי את המכתב הרשמי הזה במילים פשוטות: מה כתוב, האם אני צריך לעשות משהו, ועד מתי. אל תנחש פרטים שלא כתובים.\n\n') + v.slice(0, 4000));
+          }, 'plus-btn primary'),
+          btn(tr('Glossary', 'מילון מונחים'), () => showPage('glossary'), 'plus-link'))));
+    }
+
+    /* Which field fits me — a light 6-question quiz */
+    const QUIZ = () => [
+      [tr('What did you enjoy most in service?', 'מה הכי נהנית ממנו בשירות?'), [[tr('Leading people', 'להוביל אנשים'), 'people'], [tr('Fixing / technical things', 'לתקן ודברים טכניים'), 'tech'], [tr('Analysing information', 'לנתח מידע'), 'data'], [tr('Helping others', 'לעזור לאחרים'), 'care'], [tr('Action and outdoors', 'אקשן ושטח'), 'field']]],
+      [tr('A good workday for you is…', 'יום עבודה טוב בשבילך זה…'), [[tr('Talking with many people', 'לדבר עם הרבה אנשים'), 'people'], [tr('Building something', 'לבנות משהו'), 'tech'], [tr('Solving a puzzle', 'לפתור בעיה'), 'data'], [tr('Making a difference for someone', 'לעשות שינוי למישהו'), 'care'], [tr('Moving, not sitting', 'לזוז, לא לשבת'), 'field']]],
+      [tr('Which would you learn now?', 'מה היית לומד עכשיו?'), [[tr('Management / sales', 'ניהול / מכירות'), 'people'], [tr('Electricity / mechanics / code', 'חשמל / מכונאות / קוד'), 'tech'], [tr('Economics / data', 'כלכלה / נתונים'), 'data'], [tr('Education / health / social work', 'חינוך / בריאות / עבודה סוציאלית'), 'care'], [tr('Security / agriculture / sport', 'ביטחון / חקלאות / ספורט'), 'field']]]
+    ];
+    const FIELDS = {
+      people: [tr('People & leadership', 'אנשים והובלה'), tr('Sales, customer success, team management, HR, entrepreneurship.', 'מכירות, שירות לקוחות, ניהול צוות, משאבי אנוש, יזמות.')],
+      tech: [tr('Technical & hands-on', 'טכני ומעשי'), tr('Electrician, technician, practical engineer, maintenance, programming.', 'חשמלאי, טכנאי, הנדסאי, אחזקה, תכנות.')],
+      data: [tr('Analysis & systems', 'ניתוח ומערכות'), tr('Data, accounting, cyber, research, logistics planning.', 'נתונים, הנהלת חשבונות, סייבר, מחקר, תכנון לוגיסטי.')],
+      care: [tr('Care & education', 'טיפול וחינוך'), tr('Teaching, nursing, paramedic, social work, informal education.', 'הוראה, סיעוד, פרמדיק, עבודה סוציאלית, חינוך בלתי פורמלי.')],
+      field: [tr('Field & action', 'שטח ואקשן'), tr('Security, agriculture, tourism and guiding, sport, fitness training.', 'ביטחון, חקלאות, תיירות והדרכה, ספורט, אימון כושר.')]
+    };
+    function fieldQuiz() {
+      const wrap = h('div'); const answers = [];
+      const box = h('div', {'aria-live': 'polite'});
+      const paint = () => {
+        box.replaceChildren();
+        const Q = QUIZ();
+        if (answers.length < Q.length) {
+          const [q, opts] = Q[answers.length];
+          box.append(section(tr('Question ', 'שאלה ') + (answers.length + 1) + '/' + Q.length, h('p', {}, h('strong', {}, q)),
+            h('div', {class: 'plus-choices'}, opts.map(([label, k]) => btn(label, () => { answers.push(k); paint(); }, 'plus-chip')))));
+          return;
+        }
+        const score = {}; answers.forEach(k => score[k] = (score[k] || 0) + 1);
+        const top = Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 2);
+        box.append(section(tr('Directions worth checking', 'כיוונים ששווה לבדוק'),
+          ...top.map(k => h('div', {class: 'plus-card plus-soft'}, h('strong', {}, FIELDS[k][0]), h('p', {}, FIELDS[k][1]))),
+          note(tr('Just a starting point, not a verdict. A youth centre or the skills questionnaire go deeper.', 'זו רק נקודת התחלה, לא קביעה. מרכז צעירים או שאלון הכישורים מעמיקים יותר.')),
+          h('div', {class: 'plus-row'}, btn(tr('Again', 'שוב'), () => { answers.length = 0; paint(); }, 'plus-link'),
+            h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('Skills questionnaire', 'שאלון הכישורים')),
+            P.infoOnly ? null : btn(tr('Talk it through', 'לדבר על זה עם המלווה'), () => openTopic('career', tr('A short quiz suggested: ', 'שאלון קצר הציע לי: ') + top.map(k => FIELDS[k][0]).join(', ') + tr('. Help me check if it fits.', '. תעזור לי לבדוק אם זה מתאים.')), 'plus-btn'))));
+      };
+      paint(); wrap.append(box); return wrap;
+    }
+
+    /* Compare study paths */
+    function studyPaths() {
+      const rows = [
+        [tr('Bachelor\'s degree', 'תואר ראשון'), tr('3–4 years', '3–4 שנים'), tr('Bagrut + psychometric (or alternatives)', 'בגרות + פסיכומטרי (או חלופות)'), tr('Deposit, Mimadim, scholarships', 'פיקדון, ממדים, מלגות')],
+        [tr('Practical engineer (handasai)', 'הנדסאי'), tr('About 2 years', 'כשנתיים'), tr('Usually full bagrut in some subjects', 'בדרך כלל בגרות בחלק מהמקצועות'), tr('Deposit, Division funding', 'פיקדון, מימון האגף')],
+        [tr('Vocational course', 'קורס מקצועי'), tr('Months', 'חודשים'), tr('Varies by course', 'משתנה לפי קורס'), tr('Deposit, Labor Ministry courses', 'פיקדון, קורסים של משרד העבודה')],
+        [tr('Pre-academic mechina', 'מכינה קדם-אקדמית'), tr('Months to a year', 'חודשים עד שנה'), tr('For those without full bagrut', 'למי שאין בגרות מלאה'), tr('Often funded for discharged soldiers', 'לרוב במימון למשוחררים')],
+        [tr('Open University', 'האוניברסיטה הפתוחה'), tr('Flexible', 'גמיש'), tr('No entry requirements at the start', 'בלי תנאי קבלה בהתחלה'), tr('Deposit, scholarships', 'פיקדון, מלגות')]
+      ];
+      return h('div', {}, section(tr('Compare paths', 'השוואת מסלולים'),
+        ...rows.map(([n, len, req, fund]) => h('div', {class: 'plus-card plus-soft plus-compare'}, h('strong', {}, n),
+          h('dl', {class: 'plus-glossary'}, h('dt', {}, tr('Length', 'משך')), h('dd', {}, len), h('dt', {}, tr('Entry', 'קבלה')), h('dd', {}, req), h('dt', {}, tr('Funding', 'מימון')), h('dd', {}, fund)))),
+        note(tr('Typical, not exact. Costs change by institution — check before enrolling.', 'טיפוסי, לא מדויק. העלויות משתנות לפי מוסד — לבדוק לפני הרשמה.')),
+        h('div', {class: 'plus-row'}, btn(tr('Scholarships', 'מלגות'), () => showPage('scholarships'), 'plus-link'), btn(tr('Studies page', 'עמוד הלימודים'), () => showPage('studies'), 'plus-link'))), verify());
+    }
+
+    /* Lost direction — small steps, not a life plan */
+    function lostDirection() {
+      const S2 = [
+        tr('Today: sleep, eat and go outside for 20 minutes. That counts.', 'היום: לישון, לאכול ולצאת החוצה ל-20 דקות. זה נחשב.'),
+        tr('Write 3 things you liked doing — in service or before.', 'לכתוב 3 דברים שנהנית לעשות — בשירות או לפני.'),
+        tr('Pick one small task from "After discharge".', 'לבחור משימה קטנה אחת מ"אחרי השחרור".'),
+        tr('Talk with one person: a friend, a youth centre, or the Companion.', 'לדבר עם אדם אחד: חבר, מרכז צעירים או המלווה.'),
+        tr('Try something for a week (a job, a course, volunteering) — it is allowed to change.', 'לנסות משהו לשבוע (עבודה, קורס, התנדבות) — מותר לשנות.')
+      ];
+      const n = (KB && KB.data && KB.data.emotional_support && KB.data.emotional_support.normalization) || '';
+      return h('div', {}, section(tr('Lost direction? That\'s normal.', 'איבדת כיוון? זה נורמלי.'), n ? h('p', {}, n) : null,
+        h('ol', {class: 'plus-list'}, S2.map(x => h('li', {}, x, ' ', btn('＋', () => saveAction(x, tr('Small steps', 'צעדים קטנים')), 'plus-link')))),
+        h('div', {class: 'plus-row'}, btn(tr('After-discharge list', 'רשימה אחרי השחרור'), () => showPage('afterlist'), 'plus-link'), btn(tr('Which field fits me?', 'איזה תחום מתאים לי?'), () => showPage('fieldquiz'), 'plus-link'),
+          P.infoOnly ? null : btn(tr('Just talk', 'רק לדבר'), () => openTopic('support'), 'plus-btn'))));
+    }
+
+    /* Monthly summary + calm badges */
+    function summary() {
+      const J = (() => { try { return window.MomentumJourney ? window.MomentumJourney.read() : null; } catch (_) { return null; } })();
+      const now = new Date(), ym = now.toISOString().slice(0, 7);
+      const acts = J ? J.actions || [] : [];
+      const doneMonth = acts.filter(a => a.status === 'done' && String(a.updatedAt || a.dueDate || '').startsWith(ym)).length;
+      const doneAll = acts.filter(a => a.status === 'done').length;
+      const moods = (P.moods || []).filter(m => String(m.d).startsWith(ym));
+      const checks = (P.afterChecks || []).length;
+      const badges = [
+        [J && J.cvs && J.cvs.length, tr('CV started', 'קורות חיים בדרך')],
+        [(P.afterChecks || []).includes('tax'), tr('Tax points handled', 'נקודות זיכוי טופלו')],
+        [(P.afterChecks || []).includes('deposit'), tr('Deposit checked', 'הפיקדון נבדק')],
+        [P.dischargeDate, tr('Dates in place', 'המועדים מסודרים')],
+        [J && (J.skills || []).some(x => x.confirmed), tr('Skills confirmed', 'כישורים אושרו')],
+        [doneAll >= 5, tr('5 steps done', '5 צעדים הושלמו')]
+      ];
+      const text = () => [tr('My month', 'החודש שלי') + ' (' + ym + ')', tr('Steps done this month: ', 'צעדים שהושלמו החודש: ') + doneMonth, tr('Steps done overall: ', 'צעדים שהושלמו בסך הכול: ') + doneAll,
+        tr('After-discharge list: ', 'רשימה אחרי השחרור: ') + checks + '/12', tr('Achievements: ', 'הישגים: ') + badges.filter(b => b[0]).map(b => b[1]).join(', ')].join('\n');
+      return h('div', {}, section(tr('This month', 'החודש הזה'),
+        h('div', {class: 'plus-stats'},
+          h('div', {}, h('strong', {}, String(doneMonth)), h('small', {}, tr('steps this month', 'צעדים החודש'))),
+          h('div', {}, h('strong', {}, String(checks) + '/12'), h('small', {}, tr('after-discharge list', 'רשימה אחרי השחרור'))),
+          h('div', {}, h('strong', {}, String(moods.length)), h('small', {}, tr('mood check-ins', 'בדיקות מצב רוח')))),
+        h('h3', {}, tr('Calm achievements', 'הישגים שקטים')),
+        h('div', {class: 'plus-badges'}, badges.map(([ok, label]) => h('span', {class: 'plus-badge' + (ok ? ' is-on' : '')}, (ok ? '✓ ' : '○ ') + label))),
+        note(tr('No pressure — progress is not a race.', 'בלי לחץ — התקדמות היא לא מרוץ.')),
+        h('div', {class: 'plus-row'}, shareBtn(tr('My monthly summary', 'הסיכום החודשי שלי'), text), btn(tr('Open My Journey', 'לפתוח את המסע שלי'), () => { location.href = './my-journey.html?lang=' + (he() ? 'he' : 'en') + '#overview'; }, 'plus-link'))));
+    }
+
+    /* Install as an app */
+    let deferredInstall = null;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; });
+    function install() {
+      const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const standalone = window.matchMedia && matchMedia('(display-mode: standalone)').matches;
+      return h('div', {}, section(tr('Put the Companion on your home screen', 'להוסיף את המלווה למסך הבית'),
+        standalone ? h('p', {}, tr('It is already installed ✓', 'כבר מותקן ✓')) :
+          deferredInstall ? btn(tr('Install', 'התקנה'), () => { deferredInstall.prompt(); deferredInstall = null; }, 'plus-btn primary') :
+          steps(ios ? [tr('Tap the Share button in Safari.', 'ללחוץ על כפתור השיתוף בספארי.'), tr('Choose "Add to Home Screen".', 'לבחור "הוסף למסך הבית".')]
+            : [tr('Open the browser menu (⋮).', 'לפתוח את תפריט הדפדפן (⋮).'), tr('Choose "Install app" or "Add to Home screen".', 'לבחור "התקנת אפליקציה" או "הוספה למסך הבית".')]),
+        note(tr('Information pages and My Journey also work offline. Reminders come through the calendar ("My dates").', 'עמודי המידע והמסע שלי עובדים גם בלי אינטרנט. תזכורות מגיעות דרך היומן ("המועדים שלי").'))));
+    }
+
     /* ================= TOOLS HUB ================= */
     const GROUPS = () => [
       [tr('Money and dates', 'כסף ומועדים'), [
@@ -318,12 +514,23 @@
         ['deposit', 'coins', tr('Deposit planner', 'מתכנן פיקדון'), tr('What to prepare for each use', 'מה להכין לכל מטרה')],
         ['grantplan', 'gift', tr('Grant planner', 'מתכנן מענק'), tr('Split it your way', 'לחלק בדרך שלך')],
         ['payslip', 'wallet', tr('My payslip', 'התלוש שלי'), tr('Line by line + tax points', 'שורה אחרי שורה + נקודות זיכוי')]]],
-      [tr('Arrangements and help', 'סידורים ועזרה'), [
+      [tr('Arrangements and bureaucracy', 'סידורים ובירוקרטיה'), [
         ['afterlist', 'check', tr('After-discharge list', 'רשימה אחרי השחרור'), tr('12 things, tick as you go', '12 דברים, מסמנים תוך כדי')],
-        ['contacts', 'person', tr('Phone numbers & places', 'טלפונים ומקומות'), tr('Call, save, navigate', 'חיוג, שמירה, ניווט')]]],
-      [tr('Studies and words', 'לימודים ומילים'), [
-        ['scholarships', 'compass', tr('Scholarships', 'מלגות'), tr('List + reminders', 'רשימה + תזכורות')],
-        ['glossary', 'info', tr('Glossary & questions', 'מילון ושאלות'), tr('Bureaucracy in plain words', 'בירוקרטיה במילים פשוטות')]]]
+        ['contacts', 'person', tr('Phone numbers & places', 'טלפונים ומקומות'), tr('Call, save, navigate', 'חיוג, שמירה, ניווט')],
+        ['explain', 'help', tr('Explain a letter', 'להסביר מכתב רשמי'), tr('Paste it, get plain words', 'מדביקים ומקבלים הסבר פשוט')],
+        ['glossary', 'info', tr('Glossary & questions', 'מילון ושאלות'), tr('Bureaucracy in plain words', 'בירוקרטיה במילים פשוטות')]]],
+      [tr('Work and studies', 'עבודה ולימודים'), [
+        ['letters', 'send', tr('Ready letters', 'מכתבים מוכנים'), tr('Cover note, 106, thanks', 'מכתב מקדים, 106, תודה')],
+        ['fieldquiz', 'compass', tr('Which field fits me?', 'איזה תחום מתאים לי?'), tr('3 quick questions', '3 שאלות קצרות')],
+        ['studypaths', 'bulb', tr('Compare study paths', 'השוואת מסלולי לימוד'), tr('Degree, handasai, course', 'תואר, הנדסאי, קורס')],
+        ['scholarships', 'star', tr('Scholarships', 'מלגות'), tr('List + reminders', 'רשימה + תזכורות')]]],
+      [tr('Home and life', 'בית וחיים עצמאיים'), [
+        ['apartment', 'home', tr('First apartment', 'דירה ראשונה'), tr('Contract, guarantees, moving in', 'חוזה, ערבויות, כניסה')],
+        ['insurance', 'bookmark', tr('Insurance', 'ביטוחים'), tr('What you really need', 'מה באמת צריך')]]],
+      [tr('Me and my progress', 'אני וההתקדמות שלי'), [
+        ['summary', 'history', tr('My month', 'החודש שלי'), tr('Summary + calm achievements', 'סיכום + הישגים שקטים')],
+        ['lost', 'heart', tr('Lost direction', 'איבדתי כיוון'), tr('Small steps, not a life plan', 'צעדים קטנים, לא תוכנית חיים')],
+        ['install', 'logo', tr('App on my phone', 'אפליקציה בטלפון'), tr('Home-screen icon', 'אייקון במסך הבית')]]]
     ];
     function tools() {
       const wrap = h('div');
@@ -336,13 +543,18 @@
     }
 
     return {
-      pages: {tools, deadlines, deposit: depositPlanner, grantplan: grantPlanner, afterlist: checklistPage, contacts, scholarships, payslip, glossary},
+      pages: {tools, deadlines, deposit: depositPlanner, grantplan: grantPlanner, afterlist: checklistPage, contacts, scholarships, payslip, glossary,
+        apartment, insurance, letters, explain: explainLetter, fieldquiz: fieldQuiz, studypaths: studyPaths, lost: lostDirection, summary, install},
       heads: {
         tools: {icon: 'bulb', title: ['My tools', 'הכלים שלי']}, deadlines: {icon: 'calendar', title: ['My dates', 'המועדים שלי']},
         deposit: {icon: 'coins', title: ['Deposit planner', 'מתכנן פיקדון']}, grantplan: {icon: 'gift', title: ['Grant planner', 'מתכנן מענק']},
         afterlist: {icon: 'check', title: ['After discharge', 'אחרי השחרור']}, contacts: {icon: 'person', title: ['Numbers & places', 'טלפונים ומקומות']},
         scholarships: {icon: 'compass', title: ['Scholarships', 'מלגות']}, payslip: {icon: 'wallet', title: ['My payslip', 'התלוש שלי']},
-        glossary: {icon: 'info', title: ['Glossary', 'מילון']}
+        glossary: {icon: 'info', title: ['Glossary', 'מילון']},
+        apartment: {icon: 'home', title: ['First apartment', 'דירה ראשונה']}, insurance: {icon: 'bookmark', title: ['Insurance', 'ביטוחים']},
+        letters: {icon: 'send', title: ['Ready letters', 'מכתבים מוכנים']}, explain: {icon: 'help', title: ['Explain a letter', 'להסביר מכתב']},
+        fieldquiz: {icon: 'compass', title: ['Which field fits me?', 'איזה תחום מתאים לי?']}, studypaths: {icon: 'bulb', title: ['Study paths', 'מסלולי לימוד']},
+        lost: {icon: 'heart', title: ['Lost direction', 'איבדתי כיוון']}, summary: {icon: 'history', title: ['My month', 'החודש שלי']}, install: {icon: 'logo', title: ['App on my phone', 'אפליקציה בטלפון']}
       }
     };
   };

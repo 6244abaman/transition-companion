@@ -249,3 +249,13 @@ html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }
 .plus-glossary dd { margin:2px 0 0;color:var(--text-2); }
 .plus-warn { background:var(--beige);border-radius:12px;padding:10px 12px;color:var(--text); }
 #plusDischargeDate { padding:10px 12px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;max-width:100%; }
+.plus-letter { width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;line-height:1.5;margin:8px 0;resize:vertical; }
+.plus-stats { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 12px; }
+.plus-stats > div { background:var(--sage);border-radius:14px;padding:10px;text-align:center; }
+.plus-stats strong { display:block;font-size:22px;color:var(--accent); }
+.plus-stats small { color:var(--text-2);font-size:12.5px; }
+.plus-badges { display:flex;flex-wrap:wrap;gap:8px;margin:6px 0; }
+.plus-badge { padding:6px 12px;border-radius:999px;border:1px solid var(--border-strong);color:var(--text-3);font-size:14px; }
+.plus-badge.is-on { background:var(--accent);border-color:var(--accent);color:#fff; }
+.plus-compare { margin:0 0 10px; }
+.plus-tools-grid .plus-tool-ico .plus-ico svg { width:20px;height:20px; }
