@@ -384,3 +384,12 @@ body:not(:has(#chat:not([hidden]))) :is(#plusSavePill,#plusModes,#plusChatTools)
 body:has(#companionHomeHub:not([hidden])) .plus-lang { display:inline-flex; order:2; align-items:center; gap:2px; padding:3px; margin-inline-start:6px; border-radius:999px; background:rgba(255,255,255,.85); border:1px solid #CDBFA6; box-shadow:0 1px 4px rgba(40,32,15,.08); }
 .plus-lang-opt { min-width:40px; height:32px; padding:0 10px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; font-size:13px; font-weight:800; color:#2E4A40; text-decoration:none; }
 .plus-lang-opt[aria-current="true"] { background:#2E4A40; color:#fff; }
+
+/* personal calculation on "What am I entitled to" */
+.plus-sum-form { background:var(--surface,#fff); border:1px solid var(--border,#DDD3C0); border-radius:16px; padding:12px 14px; box-shadow:var(--shadow); margin:4px 0 8px; }
+.plus-sum-form > strong { display:block; font-size:15px; font-weight:800; margin-bottom:8px; }
+.plus-sum-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.plus-sum-fields label { display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:600; color:var(--text-2,#3A433D); }
+.plus-sum-fields :is(select,input) { min-height:46px; padding:8px 10px; border:1px solid var(--border-strong,#B9AD95); border-radius:12px; font:inherit; font-size:16px; background:var(--surface,#fff); color:var(--text,#17201B); }
+.plus-sum-note { margin:0 2px 10px; font-size:13px; }
+.plus-sum-wrap .plus-sum { margin-top:0; }

@@ -338,7 +338,8 @@
       icon(iconName, 'plus-row-ico'), h('span', {class: 'plus-row-text'}, h('small', {}, label, note ? h('em', {}, ' · ' + note) : null), h('strong', {}, value)), icon('chevron', 'plus-row-chev'));
   }
   function estimateRow() {
-    if (!P.service || !KB) return rowCard('plus-sage', 'bag', tr('How much might I get?', 'כמה אולי מגיע לי?'), tr('3 quick answers', 'למילוי 3 שאלות קצרות'), () => showPage('onboarding'));
+    if (!KB) return null;
+    if (!P.service || !P.monthsServed) return rowCard('plus-sage', 'bag', tr('How much might I get?', 'כמה אולי מגיע לי?'), tr('Enter your months of service →', 'הכנס כמה חודשים שירתת ←'), () => showPage('rights'));
     const e = KB.estimate(P.service, P.monthsServed);
     if (!e || !e.grantRate) return null;
     const value = e.grant !== null ? '≈ ' + money(e.grant) : money(e.grantRate) + tr(' per month served', ' לכל חודש שירות');
@@ -496,7 +497,7 @@
   const section = (title, ...kids) => h('section', {class: 'plus-card'}, h('h2', {}, title), ...kids);
   const disclaimer = () => h('p', {class: 'plus-disclaimer', role: 'note'}, '⚠ ' + (KB ? (he() ? KB.DISCLAIMER_HE : KB.DISCLAIMER_EN) : '') +
     (KB && KB.data ? ' ' + tr('Knowledge base updated: ', 'מאגר הידע עודכן: ') + KB.data.metadata.last_updated + '.' : ''));
-  const hebrewNote = () => he() ? null : h('p', {class: 'plus-muted'}, 'This information is currently available in Hebrew.');
+  const hebrewNote = () => null; // the knowledge base now has a full English version
   const askButton = (topic, q) => P.infoOnly ? null : btn(tr('Ask the Companion about this', 'לשאול את המלווה על זה'), () => openTopic(topic, q), 'plus-btn');
   const list = items => h('ul', {class: 'plus-list'}, (items || []).map(x => h('li', {}, x)));
   const hideable = (id, node) => { if (P.hidden.includes(id)) return null; return node; };
@@ -714,24 +715,50 @@
   /* Summary cards (reference layout): amount + "last updated" for the four main money rights */
   function rightsSummary() {
     if (!KB || !KB.data) return null;
-    const r = KB.data.rights_and_benefits, e = KB.estimate(P.service || 'combat', P.monthsServed) || {};
-    const asOf = tr('Last updated: ', 'עודכן לאחרונה: ') + asOfLabel(KB.data.metadata.amounts_as_of || KB.data.metadata.last_updated);
-    const perMonth = tr(' / month served', ' לחודש שירות');
-    const items = [
-      {icon: 'gift', title: r.discharge_grant.name_he, amount: e.grant ? money(e.grant) : money(e.grantRate) + perMonth, target: 'discharge_grant'},
-      {icon: 'coins', title: r.personal_deposit.name_he, amount: e.deposit ? money(e.deposit) : money(e.depositRate) + perMonth, target: 'personal_deposit'},
-      {icon: 'star', title: tr('Tax credit points', 'נקודות זיכוי'), amount: e.taxMonthly ? money(e.taxMonthly[1]) + tr(' / month', ' לחודש') : tr('up to ', 'עד ') + money(2 * (r.tax_credit_points.point_value_2026_monthly || 0)) + tr(' / month', ' לחודש'), target: 'tax_credit_points'},
-      {icon: 'briefcase', title: tr('Preferred work', 'עבודה מועדפת'), amount: money(r.preferred_work_grant.amount_2026_number || 0), target: 'preferred_work_grant'}
-    ];
-    const box = h('div', {class: 'plus-sum'});
-    items.forEach(it => box.append(h('button', {type: 'button', class: 'plus-sum-card', onclick: () => { const el = document.querySelector('[data-right="' + it.target + '"]'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); }},
-      h('span', {class: 'plus-sum-ico'}, icon(it.icon)),
-      h('span', {class: 'plus-sum-text'}, h('strong', {class: 'plus-sum-title'}, it.title), h('span', {class: 'plus-sum-amount'}, it.amount), h('small', {}, asOf, icon('refresh', 'plus-sum-ref'))))));
+    const wrap = h('div', {class: 'plus-sum-wrap'});
+    // Personal inputs: every amount below is calculated from these (saved on this device).
+    const svc = h('select', {id: 'plusSumService', 'aria-label': tr('Service type', 'סוג שירות')},
+      [['combat', tr('Combat', 'לוחם/ת')], ['support', tr('Combat support', 'תומך/ת לחימה')], ['other', tr('Other', 'אחר')], ['national', tr('National service', 'שירות לאומי')]]
+        .map(([v, l]) => h('option', {value: v, selected: v === (P.service || 'combat') || undefined}, l)));
+    const months = h('input', {type: 'number', id: 'plusSumMonths', min: '1', max: '60', inputmode: 'numeric', value: P.monthsServed || '', placeholder: tr('e.g. 32', 'למשל 32'), 'aria-label': tr('Months of service', 'חודשי שירות')});
+    const form = h('div', {class: 'plus-sum-form'},
+      h('strong', {}, tr('Calculate for me', 'חשב בשבילי')),
+      h('div', {class: 'plus-sum-fields'},
+        h('label', {}, h('span', {}, tr('Service type', 'סוג שירות')), svc),
+        h('label', {}, h('span', {}, tr('Months served', 'כמה חודשים שירתת?')), months)));
+    const cards = h('div', {class: 'plus-sum'});
+    const note = h('p', {class: 'plus-muted plus-sum-note'});
+    const paint = () => {
+      const r = KB.data.rights_and_benefits, m = Number(months.value);
+      const e = KB.estimate(svc.value, m) || {};
+      const valid = Number.isInteger(m) && m > 0 && m <= 60;
+      const asOf = tr('Last updated: ', 'עודכן לאחרונה: ') + asOfLabel(KB.data.metadata.amounts_as_of || KB.data.metadata.last_updated);
+      const perMonth = tr(' / month served', ' לחודש שירות');
+      const tax = e.taxMonthly ? (e.taxMonthly[0] === e.taxMonthly[1] ? money(e.taxMonthly[0]) : money(e.taxMonthly[0]) + '–' + money(e.taxMonthly[1])) + tr(' / month', ' לחודש')
+        : tr('up to ', 'עד ') + money(2 * (r.tax_credit_points.point_value_2026_monthly || 0)) + tr(' / month', ' לחודש');
+      const items = [
+        {icon: 'gift', title: r.discharge_grant.name_he, amount: valid ? (e.grant ? '≈ ' + money(e.grant) : tr('Needs 12+ months', 'דרושים 12 חודשים ומעלה')) : money(e.grantRate) + perMonth, target: 'discharge_grant'},
+        {icon: 'coins', title: r.personal_deposit.name_he, amount: valid && e.deposit ? '≈ ' + money(e.deposit) : money(e.depositRate) + perMonth, target: 'personal_deposit'},
+        {icon: 'star', title: tr('Tax credit points', 'נקודות זיכוי'), amount: tax, target: 'tax_credit_points'},
+        {icon: 'briefcase', title: tr('Preferred work', 'עבודה מועדפת'), amount: money(r.preferred_work_grant.amount_2026_number || 0), target: 'preferred_work_grant'}
+      ];
+      cards.replaceChildren(...items.map(it => h('button', {type: 'button', class: 'plus-sum-card', onclick: () => { const el = document.querySelector('[data-right="' + it.target + '"]'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); }},
+        h('span', {class: 'plus-sum-ico'}, icon(it.icon)),
+        h('span', {class: 'plus-sum-text'}, h('strong', {class: 'plus-sum-title'}, it.title), h('span', {class: 'plus-sum-amount'}, it.amount), h('small', {}, asOf, icon('refresh', 'plus-sum-ref'))))));
+      note.textContent = valid ? tr('Estimate for ' + m + ' months of service. You may be entitled to this — check your personal area.', 'הערכה ל-' + m + ' חודשי שירות. ייתכן שזה מגיע לך — בדוק באזור האישי.')
+        : tr('Enter your months of service to see your own amounts.', 'הכנס כמה חודשים שירתת כדי לראות את הסכומים שלך.');
+    };
+    const save = () => {
+      const m = Number(months.value);
+      P.service = svc.value; P.monthsServed = Number.isInteger(m) && m > 0 && m <= 60 ? m : ''; store(); paint();
+    };
+    svc.addEventListener('change', save); months.addEventListener('input', save);
+    paint();
+    wrap.append(form, note, cards);
     const w = (KB.data.important_warnings || [])[0];
-    if (w) box.append(h('div', {class: 'plus-know', role: 'note'}, h('div', {class: 'plus-know-head'}, h('strong', {}, tr('Good to know!', 'חשוב לדעת!')), icon('warn', 'plus-know-ico')),
+    if (w) wrap.append(h('div', {class: 'plus-know', role: 'note'}, h('div', {class: 'plus-know-head'}, h('strong', {}, tr('Good to know!', 'חשוב לדעת!')), icon('warn', 'plus-know-ico')),
       h('p', {}, w), btn(tr('More information →', 'למידע נוסף ←'), () => { const el = document.querySelector('.plus-disclaimer'); if (el) el.scrollIntoView({behavior: 'smooth'}); }, 'plus-know-more')));
-    if (!P.service) box.append(h('p', {class: 'plus-muted'}, tr('Amounts shown for combat service. Set your service type in "Me" for your own estimate.', 'הסכומים מוצגים לשירות קרבי. אפשר להגדיר סוג שירות ב"אישי" כדי לקבל הערכה משלך.')));
-    return box;
+    return wrap;
   }
   function calculator() {
     const out = h('div', {'aria-live': 'polite'});

@@ -162,7 +162,7 @@ if (typeof document !== 'undefined') {
     tools.append(summary);
     const toolsStart = body.children.length;
     const other = KEY === 'gtc_H_state';
-    add('a',other ? 'English conversation history' : 'היסטוריית שיחות בגרסה העברית').href =
+    add('a',other ? label('English conversation history','היסטוריית שיחות בגרסה האנגלית') : label('Hebrew conversation history','היסטוריית שיחות בגרסה העברית')).href =
       (other ? 'index.html?lang=en' : 'indexH.html?lang=he') + '#chatHistory';
     add('p',label('Chats stay in this browser on this site. Clearing site data can erase them. Back up each edition separately. The downloaded file contains readable conversation text. Keep it private. Restore adds missing transcripts.',
       'השיחות נשמרות בדפדפן הזה באתר הזה. מחיקת נתוני האתר עלולה למחוק אותן. יש לגבות כל גרסה בנפרד. הקובץ כולל טקסט קריא של השיחות ויש לשמור עליו בפרטיות. השחזור מוסיף שיחות חסרות.'));
