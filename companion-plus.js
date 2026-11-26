@@ -994,6 +994,17 @@
     }).observe(mic, {attributes: true, attributeFilter: ['class']});
   }
 
+  /* On phones, never pop the keyboard by itself: the many existing input.focus() calls
+     (entering chat, choosing a topic, starting a mode) are ignored on touch screens.
+     A tap on the text field still opens the keyboard normally. */
+  (function noAutoKeyboard() {
+    const input = $('input');
+    if (!input || !window.matchMedia || !matchMedia('(pointer: coarse)').matches) return;
+    const nativeFocus = HTMLElement.prototype.focus;
+    input.focus = function () { /* programmatic focus disabled on touch devices */ };
+    input.addEventListener('pointerdown', () => { input.focus = function (o) { return nativeFocus.call(input, o); }; setTimeout(() => { input.focus = function () {}; }, 400); });
+  })();
+
   /* ---------------- offline message ---------------- */
   const offline = h('div', {id: 'plusOffline', class: 'plus-offline', role: 'status', hidden: true});
   document.body.prepend(offline);
