@@ -227,6 +227,9 @@
   const inner = hub.querySelector('.hub-inner');
   const legacy = h('details', {class: 'plus-legacy', id: 'plusLegacy'}, h('summary', {id: 'plusLegacySummary'}));
   [...inner.children].forEach(c => legacy.append(c));
+  // The original hub (duplicate shortcuts + tester form) was replaced by the new Home. Kept in the DOM
+  // for existing links/tests, never shown (owner decision, 26 Nov 2026).
+  legacy.hidden = true;
   inner.append(plusHome, legacy);
 
   /* Line icons (static markup, no user data). Stroke uses currentColor. */
@@ -244,6 +247,7 @@
     calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 16.8h.01M12 16.8h.01"/></svg>',
     person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/></svg>',
     help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.7"/><path d="M12 17h.01"/></svg>',
+    speaker: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
     heart: '<svg viewBox="0 0 24 24" fill="#E0565B"><path d="M12 20.5s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.9c0 5.6-7.5 10-7.5 10Z"/></svg>',
     bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6.5 4h11v16l-5.5-4-5.5 4V4Z"/></svg>',
@@ -905,12 +909,14 @@
       pill('heart', tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress')),
       btn(tr('Skip', 'דילוג'), () => bar.remove(), 'plus-qr-skip'));
     const thread = $('thread'); if (thread) thread.after(bar); else tools.after(bar);
+    setTimeout(() => { const c = $('chat'); if (c) c.scrollTop = c.scrollHeight; }, 60);
   }
   // "Save to My Journey" for the latest reply (reference pill above the composer)
   function paintSavePill() {
     let p = $('plusSavePill');
     const last = [...(S.messages || [])].reverse().find(m => m.role === 'assistant' && m.text && m.text.length > 20);
-    if (!last || P.infoOnly) { if (p) p.remove(); return; }
+    // Nothing worth saving yet (only the greeting / mode prompt): keep the screen free for the quick replies.
+    if (!last || P.infoOnly || last.kind === 'opening' || last.kind === 'plus-mode' || !hasUserMessages()) { if (p) p.remove(); return; }
     if (!p) {
       p = h('button', {type: 'button', id: 'plusSavePill', class: 'plus-save-pill'}, h('span', {}), icon('bookmark', 'plus-qr-ico'));
       tools.before(p);
@@ -953,14 +959,15 @@
       if (text.length < 40 || (typeof openingText === 'function' && text.startsWith(openingText(S.lang).slice(0, 30)))) return;
       const row = h('div', {class: 'plus-turn-tools'});
       const important = text.length > 280 || /צעד|step|תוכנית|plan|מטרה|goal/i.test(text);
-      const saveBtn = btn(important ? tr('Save this to My Journey?', 'רוצה לשמור את זה במסע שלך?') : tr('Save to My Journey', 'לשמור במסע'), () => {
+      // Small icon buttons (save / listen) — the labelled "Save to My Journey" pill sits above the composer.
+      const saveBtn = h('button', {type: 'button', class: 'plus-ticon', title: tr('Save to My Journey', 'לשמור במסע'), 'aria-label': important ? tr('Save this to My Journey', 'רוצה לשמור את זה במסע שלך?') : tr('Save to My Journey', 'לשמור במסע'), onclick: () => {
         const first = text.split(/[.!?:\n]/).map(x => x.trim()).find(x => x.length > 8) || text;
         const rec = saveAction(first.slice(0, 150), text);
-        if (rec) { saveBtn.textContent = tr('Saved ✓', 'נשמר ✓'); saveBtn.disabled = true; }
-      }, 'plus-chip');
+        if (rec) { saveBtn.replaceChildren(icon('check')); saveBtn.disabled = true; }
+      }}, icon('bookmark'));
       row.append(saveBtn);
       if ('speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined')
-        row.append(btn('🔊 ' + tr('Listen', 'האזנה'), () => listen(text), 'plus-chip plus-chip-soft'));
+        row.append(h('button', {type: 'button', class: 'plus-ticon', title: tr('Listen', 'האזנה'), 'aria-label': tr('Listen', 'האזנה'), onclick: () => listen(text)}, icon('speaker')));
       turn.append(row);
     });
   }

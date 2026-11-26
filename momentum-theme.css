@@ -98,3 +98,75 @@ body:has(#assessment) :is(button.primary, .ratings .selected) { background:var(-
 body:has(#assessment) .fill { background:var(--m-green) !important; }
 body:has(#assessment) :is(.muted, small) { color:var(--m-sub) !important; }
 body:has(#assessment) main { max-width:640px; padding:8px 12px 30px; }
+
+/* removed from view (replaced by the new design; DOM kept for links and tests) */
+#plusLegacy, #welcome, .chat-guidance, .chat-heading { display:none !important; }
+/* reply actions as small icons */
+.plus-turn-tools { gap:6px; margin-top:6px; }
+.plus-ticon { width:34px; height:34px; border-radius:50%; border:1px solid #C9D4C2; background:rgba(255,255,255,.75); color:var(--m-green); display:inline-flex; align-items:center; justify-content:center; padding:0; cursor:pointer; }
+.plus-ticon .plus-ico { width:18px; height:18px; }
+.plus-ticon:disabled { opacity:.8; cursor:default; }
+.composer #input:focus, .composer #input:focus-visible { outline:none !important; border-color:#24513D !important; box-shadow:0 0 0 3px rgba(36,81,61,.15) !important; }
+
+/* =====================================================================
+   DEEPER PALETTE (owner feedback 26 Nov: background too pale, text hard to read)
+   Sand background, white cards, near-black text.
+   ===================================================================== */
+:root { --m-cream:#E6DCCA; --m-ink:#0E1511; --m-sub:#2C332D; --ink:#0E1511; --ink-2:#232A24; --dust:#3E453F; --sub:#2C332D; --stone:#E6DCCA; --paper-2:#E6DCCA; --m-line:#CDBFA6; }
+body { color:#0E1511 !important; }
+/* backgrounds */
+body:has(#chat:not([hidden])), body:has(#plusPage:not([hidden])), body:has(#view-overview), body:has(#assessment) { background:#E6DCCA !important; }
+body:has(#companionHomeHub:not([hidden])) {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.55' stop-color='%23fff' stop-opacity='.9'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='400' height='300' fill='url(%23f)'/%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M0 150 C60 120 110 132 170 118 S290 92 400 112 V300 H0Z' fill='%239C8A66' fill-opacity='.45'/%3E%3Cpath d='M0 175 C80 150 150 162 230 146 S340 134 400 148 V300 H0Z' fill='%236F6B4E' fill-opacity='.32'/%3E%3C/g%3E%3C/svg%3E") top center / 100% 320px no-repeat,
+    linear-gradient(180deg,#C9B693 0px,#D6C7A9 140px,#E0D5C0 260px,#E6DCCA 380px) !important;
+}
+.plus-head, .jp-head, body:has(#chat:not([hidden])) header.bar, body:has(#chat:not([hidden])) .composer { background:#E6DCCA !important; }
+body:has(#chat:not([hidden])) header.bar { border-bottom:1px solid #D2C5AC !important; }
+/* text */
+.plus-hello, .plus-head-title, .jp-head h1, .plus-quick h2, .jp-sec-head h2, .plus-home-btn strong, .plus-sum-title, .plus-sum-amount, .plus-row-text strong { color:#0E1511 !important; }
+.plus-hello-sub, .plus-muted, .plus-mood-label, .plus-row-text small, .plus-sum-text small, .plus-row-text small em, .plus-online, .plus-source, .plus-cheer, .plus-privacy-line, .muted, .jp-all, .jp-link-text small, .jp-week-detail, #storageNotice { color:#2C332D !important; }
+.plus-hello-sub { font-size:15.5px !important; font-weight:600 !important; }
+.plus-mood-label { font-weight:600; font-size:12.5px !important; }
+.plus-chat-head strong { color:#0E1511; }
+/* cards pop on sand */
+.plus-home-btn, .plus-mood-card, .plus-sum-card, .plus-page .plus-card, .plus-card, .jp-steps, .jp-card, .jp-wday:not(.jp-wday-on), .jp-link, .plus-qanswer, .plus-qchip, .plus-qr, .card, .stat, .record, .box { background:#FFFFFF !important; border:1px solid #D9CDB6 !important; box-shadow:0 2px 10px rgba(40,30,10,.10) !important; }
+.plus-sage { background:#CFDEC5 !important; } .plus-beige { background:#F3ECDD !important; border:1px solid #D9CDB6 !important; }
+.plus-soft, .plus-pill { background:#D9E6D1 !important; border-color:#B6CBAA !important; color:#0E1511 !important; }
+.plus-disclaimer { background:#FBEFD2 !important; border-color:#E3C98E !important; color:#4A3306 !important; }
+.plus-warning, .plus-know { background:#FBEBC8 !important; border-color:#E3C98E !important; color:#3D2A05 !important; }
+.plus-know p { color:#3D2A05 !important; }
+.turn.them { background:#D3E0CA !important; }
+.turn.them .body { color:#0E1511 !important; }
+.turn.me .body { border-color:#D9CDB6 !important; }
+.plus-save-pill { background:#D3E0CA !important; border-color:#A9BF9C !important; color:#0E1511 !important; }
+.plus-qr { color:#0E1511 !important; border-color:#C9BFA8 !important; font-weight:600 !important; }
+.plus-qchip { color:#1B221D !important; font-weight:600 !important; }
+.jp-chip { background:#E3EBDC !important; color:#0E1511 !important; border:1px solid #C7D4BC; font-weight:600; }
+.plus-tile { background:#fff !important; border:1px solid #D9CDB6 !important; color:#0E1511 !important; }
+.plus-tile small { color:#2C332D !important; }
+.plus-details { background:#F7F2E8 !important; border-color:#D9CDB6 !important; }
+.plus-table th, .plus-table td { border-color:#E3D9C6 !important; color:#0E1511; }
+.plus-search input, #plusToday input, .plus-field select, .plus-calc input, .plus-onboarding fieldset, .plus-onboarding input[type=month] { background:#fff !important; border-color:#B9AC93 !important; color:#0E1511 !important; }
+.plus-onboarding fieldset { border:1px solid #D9CDB6 !important; }
+.plus-link, .plus-btn:not(.primary) { color:#1D4634 !important; }
+.plus-chat-entry, .plus-chat-entry * { color:#fff !important; }
+.plus-btn { border-color:#9DB291 !important; }
+
+/* ---------- My Journey "All details" in the new style ---------- */
+#tabs { gap:8px; padding:6px 0 12px; }
+#tabs button { border-radius:999px !important; min-height:40px; background:#fff !important; border:1px solid #C9BFA8 !important; color:#1D4634 !important; font-weight:700; }
+#tabs button[aria-selected=true] { background:#24513D !important; border-color:#24513D !important; color:#fff !important; }
+.stat strong { color:#24513D !important; }
+.stat span, .record p, .mini { color:#2C332D !important; }
+.record h3, .card h2, .card h3 { color:#0E1511 !important; }
+.tag { background:#E3EBDC !important; color:#1D4634 !important; }
+.tag.done { background:#CFE5D3 !important; color:#174A2C !important; }
+.empty { border-color:#C9BFA8 !important; color:#2C332D !important; background:#F7F2E8; }
+.privacy-note { background:#F3ECDD !important; border-color:#D9CDB6 !important; color:#2C332D !important; }
+.field input, .field textarea, .field select { border-color:#B9AC93 !important; }
+body:has(#view-overview) main button:not(.jp-step):not(.jp-wday):not(.jp-goal-edit):not(.jp-all):not(.jp-lang):not(.jp-link):not(.quiet), body:has(#view-overview) main .button { border-radius:12px; border-color:#9DB291; color:#1D4634; font-weight:700; }
+body:has(#view-overview) main button.primary, body:has(#view-overview) main .button.primary { background:#24513D !important; border-color:#24513D !important; color:#fff !important; }
+body:has(#view-overview) main button.danger { color:#8E2A22 !important; border-color:#D4A9A2 !important; }
+.jp-cal .jp-day { background:#fff; border-color:#D9CDB6; color:#0E1511; }
+.jp-has { background:#D9E6D1 !important; }
