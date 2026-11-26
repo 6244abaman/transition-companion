@@ -248,6 +248,7 @@
   }
   function exportData() { return JSON.stringify(read(), null, 2); }
   function importData(raw, mode) {
+    if (!raw || typeof raw !== "object") throw new Error("The backup file is empty or not a valid Journey backup");
     if (JSON.stringify(raw).length > 1048576) throw new Error("Backup exceeds 1 MB");
     const incoming = normalize(raw);
     if (mode !== "merge" && mode !== "replace") throw new Error("Choose merge or replace");

@@ -28,6 +28,25 @@ db.exec(`PRAGMA journal_mode=WAL;
 db.prepare("DELETE FROM sync_records WHERE updated_at < ?").run(new Date(Date.now() - MAX_AGE_MS).toISOString());
 
 const createLimits = new Map();
+const CREATE_WINDOW_MS = 60 * 60 * 1000;
+// Behind Render (or another reverse proxy) every request arrives from the proxy's address,
+// so one shared limit would block everyone. Trust X-Forwarded-For only when a proxy is declared.
+const TRUST_PROXY = process.env.TRUST_PROXY === "1" || process.env.RENDER === "true";
+function clientAddress(req) {
+  if (TRUST_PROXY) {
+    // The proxy appends the real peer address last; earlier entries can be forged by the client.
+    const hops = String(req.headers["x-forwarded-for"] || "").split(",").map(x => x.trim()).filter(Boolean);
+    if (hops.length) return hops[hops.length - 1];
+  }
+  return req.socket.remoteAddress || "unknown";
+}
+function pruneCreateLimits(now = Date.now()) {
+  for (const [key, times] of createLimits) {
+    const recent = times.filter(t => now - t < CREATE_WINDOW_MS);
+    if (recent.length) createLimits.set(key, recent); else createLimits.delete(key);
+  }
+}
+setInterval(pruneCreateLimits, 10 * 60 * 1000).unref();
 function json(res, status, body) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" });
   res.end(JSON.stringify(body));
@@ -88,8 +107,8 @@ function createServer() {
     const url = new URL(req.url, "http://localhost");
     if (url.pathname === "/health" && req.method === "GET") return json(res, 200, { status: "ok" });
     if (url.pathname === "/v1/sync" && req.method === "POST") {
-      const clientIp = crypto.createHash("sha256").update(req.socket.remoteAddress || "unknown").digest("hex");
-      const now = Date.now(), recent = (createLimits.get(clientIp) || []).filter(t => now - t < 60 * 60 * 1000);
+      const clientIp = crypto.createHash("sha256").update(clientAddress(req)).digest("hex");
+      const now = Date.now(), recent = (createLimits.get(clientIp) || []).filter(t => now - t < CREATE_WINDOW_MS);
       if (recent.length >= 5) return json(res, 429, { error: "creation_rate_limited" });
       recent.push(now); createLimits.set(clientIp, recent);
       const id = crypto.randomBytes(18).toString("base64url");
@@ -133,4 +152,4 @@ if (require.main === module) {
   const port = Number(process.env.PORT || 8787);
   createServer().listen(port, "0.0.0.0", () => console.log(`Encrypted sync relay listening on ${port}`));
 }
-module.exports = { createServer, db, validEnvelope };
+module.exports = { createServer, db, validEnvelope, clientAddress, pruneCreateLimits, createLimits };

@@ -292,8 +292,11 @@ function bannerMatches(banner, state, nowMs = Date.now()) {
   return banner.match === 'any' ? normalized.some(t => have.has(t)) : normalized.every(t => have.has(t));
 }
 
+// A person as target, so "להרוג את המבחן" (kill the exam) is not read as a threat.
+const HE_PERSON_TARGET = '(?:אותו|אותה|אותם|אותן|אותך|מישהו|מישהי|אנשים|כולם|את כולם|את (?:ה)?(?:מפקד|מפקדת|בוס|שכן|שכנה|אבא|אמא|אח|אחות|אחי|אחותי|חבר|חברה|אשתי|בעלי|ההורים|המשפחה)|ב(?:ו|ה|הם|ך|מישהו|אנשים))';
 function classifySafety(text) {
-  const t = String(text || '').trim().toLowerCase();
+  // iPhone keyboards type curly apostrophes (I’m); normalize them so safety patterns still match.
+  const t = String(text || '').replace(/[\u2018\u2019\u02BC\u0060\u00B4]/g, "'").trim().toLowerCase();
   if (!t) return { level: 0, reason: 'empty' };
 
   const currentCue = /\b(now|right now|today|tonight|currently|again|lately|this week)\b|עכשיו|היום|הלילה|כרגע|שוב|לאחרונה|השבוע/i.test(t);
@@ -311,7 +314,7 @@ function classifySafety(text) {
     /\bi have (a )?(gun|knife|weapon|pills).*(kill|hurt|shoot|stab|overdose)\b/i,
     /אני (הולך|עומד|מתכוון|מתכנן) (להתאבד|לפגוע בעצמי|להרוג את עצמי|לירות בעצמי|לדקור את עצמי|לקחת מנת יתר)/,
     /יש לי (תכנית|תוכנית) (להתאבד|להרוג את עצמי|לפגוע בעצמי)/,
-    /אני (הולך|עומד|מתכוון|מתכנן) (להרוג|לפגוע ב|לירות ב|לדקור).+/
+    new RegExp('אני (הולך|עומד|מתכוון|מתכנן) (להרוג|לפגוע|לירות|לדקור) ?' + HE_PERSON_TARGET)
   ];
   if (immediate.some(r => r.test(t))) return { level: 4, reason: 'credible immediate-harm language' };
 
@@ -335,7 +338,7 @@ function classifySafety(text) {
     /אני (חושב|חושבת).*לפגוע בעצמי/,
     /אני (עלול|עלולה).*לפגוע בעצמי/,
     /אני רוצה (להרוג את עצמי|לשים קץ לחיים)/,
-    /אני רוצה (להרוג|לפגוע ב).+/,
+    new RegExp('אני רוצה (להרוג|לפגוע) ?' + HE_PERSON_TARGET),
     /(פגעתי|חתכתי|שרפתי) בעצמי (היום|אתמול|אמש|לאחרונה)/
   ];
   if (!pastOnly && significant.some(r => r.test(t))) return { level: 3, reason: 'significant safety concern' };
@@ -343,7 +346,7 @@ function classifySafety(text) {
   const ambiguousThreat = [
     /\bi could (kill|hurt) (him|her|them|someone)\b/i,
     /\bi feel like (hitting|punching|hurting) (him|her|them|someone)\b/i,
-    /אני כל כך כועס.*(יכול|עלול) (להרוג|לפגוע ב).+/,
+    new RegExp('אני כל כך כועס.*(יכול|עלול) (להרוג|לפגוע) ?' + HE_PERSON_TARGET),
     /בא לי (להרביץ|לפגוע) ב.+/
   ];
   if (!pastOnly && ambiguousThreat.some(r => r.test(t))) return { level: 2, reason: 'ambiguous threat language needing a calm check-in' };
@@ -1214,8 +1217,13 @@ function practiceReplyFor(text, safety){
       : "What you just wrote is new information, so I do not want to send you back to the same generic question. I'll keep it as part of the picture and continue from it. What part of what you just told me is most important for me to understand before we choose the next step?"};
 }
 
+let sendingUserMessage=false;
 async function sendUser(raw){
-  const text=String(raw||'').trim(); if(!text) return;
+  const text=String(raw||'').trim(); if(!text||sendingUserMessage) return;
+  sendingUserMessage=true;
+  try { await sendUserNow(text); } finally { sendingUserMessage=false; }
+}
+async function sendUserNow(text){
   if ($('welcome') && !$('welcome').classList.contains('hide')) startChat('');
   $('input').value=''; $('input').style.height='auto';
   state.messages.push({role:'user',text}); saveState(); renderThread();
@@ -1421,6 +1429,8 @@ function syncSnapshot(){
   try{if(window.MomentumJourney)journey=JSON.parse(MomentumJourney.exportData());businessAssessment=JSON.parse(localStorage.getItem('momentum-business-skills-v1')||'null');}catch{}
   return {version:1,lang:state.lang,activeTopic:state.activeTopic,practiceContext:state.practiceContext,profile:state.profile,messages:state.messages.slice(-3000),journey,businessAssessment};
 }
+// Language and the open topic are view preferences, not data: they must not cause sync conflicts.
+function syncFingerprint(snapshot){ const {lang,activeTopic,...data}=snapshot||{}; return MomentumSync.fingerprint(data); }
 function syncMessage(he,en){ $('syncStatus').textContent=state.lang==='he'?he:en; }
 function fillSyncDialog(){
   const credentials=state.settings.sync;
@@ -1443,7 +1453,7 @@ async function createSyncSpace(){
   try{
     $('btnCreateSync').disabled=true; syncMessage('יוצר מרחב סנכרון ומצפין את המידע…','Creating a sync space and encrypting your information…');
     const credentials=await MomentumSync.create(endpoint); state.settings.sync=credentials; $('pairingCode').value=MomentumSync.pairingCode(credentials); saveState();
-    const snapshot=syncSnapshot(), fingerprint=await MomentumSync.fingerprint(snapshot);
+    const snapshot=syncSnapshot(), fingerprint=await syncFingerprint(snapshot);
     const saved=await MomentumSync.upload(credentials,snapshot,0);
     credentials.revision=saved.revision; credentials.fingerprint=fingerprint; saveState(); fillSyncDialog();
     syncMessage('העותק המוצפן נשמר. קוד החיבור הוא סודי; העבר/י אותו רק למכשיר שלך.','Encrypted copy saved. The pairing code is secret; share it only with your own device.');
@@ -1471,7 +1481,7 @@ async function syncNow(){
   if(!credentials){syncMessage('עדיין אין קוד חיבור. צור/י סנכרון במכשיר הראשון.','No pairing yet. Create sync on the first device.');return;}
   try{
     $('btnSyncNow').disabled=true; syncMessage('בודק עדכונים מוצפנים…','Checking for encrypted updates…');
-    const remote=await MomentumSync.download(credentials), snapshot=syncSnapshot(), localFingerprint=await MomentumSync.fingerprint(snapshot);
+    const remote=await MomentumSync.download(credentials), snapshot=syncSnapshot(), localFingerprint=await syncFingerprint(snapshot);
     if(remote.revision===credentials.revision){
       if(!remote.snapshot||localFingerprint!==credentials.fingerprint){
         const saved=await MomentumSync.upload(credentials,snapshot,remote.revision);
@@ -1479,7 +1489,7 @@ async function syncNow(){
         syncMessage('המידע המעודכן הוצפן והועלה.','Your updated information was encrypted and uploaded.');
       }else syncMessage('המכשיר מעודכן.','This device is up to date.');
     }else if(remote.snapshot&&credentials.fingerprint&&localFingerprint===credentials.fingerprint){
-      applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot()); saveState();
+      applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await syncFingerprint(syncSnapshot()); saveState();
       syncMessage('העדכון מהמכשיר האחר שוחזר.','The update from your other device was restored.');
     }else if(remote.snapshot){
       pendingRemoteSync={remote,localFingerprint}; $('syncConflict').classList.remove('hide');
@@ -1500,7 +1510,7 @@ async function linkSyncDevice(){
     $('btnLinkSync').disabled=true; syncMessage('מוריד ומפענח את העותק…','Downloading and decrypting the copy…');
     const remote=await MomentumSync.download(credentials);
     if(!remote.snapshot) throw new Error('No encrypted profile has been uploaded for this pairing code yet.');
-    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot());
+    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await syncFingerprint(syncSnapshot());
     state.settings.sync=credentials; state.settings.syncEndpoint=credentials.endpoint; state.settings.syncConsent=true; saveState(); fillSyncDialog();
     syncMessage('המכשיר חובר והפרופיל שוחזר.','Device linked and profile restored.');
   }catch(error){syncMessage(error.message,'Could not link this device: '+error.message);}
@@ -1510,7 +1520,7 @@ async function usePendingRemote(){
   if(!pendingRemoteSync)return;
   try{
     const credentials=state.settings.sync, remote=pendingRemoteSync.remote;
-    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await MomentumSync.fingerprint(syncSnapshot());
+    applySyncSnapshot(remote.snapshot); credentials.revision=remote.revision; credentials.fingerprint=await syncFingerprint(syncSnapshot());
     pendingRemoteSync=null; $('syncConflict').classList.add('hide'); saveState();
     syncMessage('העותק מהשרת שוחזר.','The server copy was restored.');
   }catch(error){syncMessage(error.message,'Could not restore the server copy: '+error.message);}
@@ -1520,7 +1530,7 @@ async function keepLocalVersion(){
   try{
     const credentials=state.settings.sync, remote=await MomentumSync.download(credentials), snapshot=syncSnapshot();
     const saved=await MomentumSync.upload(credentials,snapshot,remote.revision);
-    credentials.revision=saved.revision; credentials.fingerprint=await MomentumSync.fingerprint(snapshot);
+    credentials.revision=saved.revision; credentials.fingerprint=await syncFingerprint(snapshot);
     pendingRemoteSync=null; $('syncConflict').classList.add('hide'); saveState();
     syncMessage('הגרסה מהמכשיר הזה החליפה את העותק הקודם.','This device copy replaced the previous server copy.');
   }catch(error){syncMessage(error.message,'Could not save this device copy: '+error.message);}
@@ -1539,10 +1549,23 @@ async function copyPairingCode(){
 }
 
 function exportData(){
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='transition-companion-next-export.json'; a.click(); URL.revokeObjectURL(a.href);
+  // Never export sync credentials: with token + secret anyone could read the server copy.
+  const copy=JSON.parse(JSON.stringify(state));
+  if(copy.settings){ delete copy.settings.sync; }
+  delete copy._banners;
+  const blob=new Blob([JSON.stringify(copy,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='transition-companion-next-export.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
-function deleteAll(){
-  const ok=confirm(state.lang==='he'?'למחוק את כל המידע המקומי באפליקציה הזו?':'Delete all local information in this app?'); if(!ok)return;
+async function deleteAll(){
+  const he=state.lang==='he';
+  const ok=confirm(he?'למחוק את כל המידע: השיחות, המסע שלי, הערכת המיומנויות, ואם קיים — גם את העותק המוצפן בשרת?':'Delete everything: conversations, My Journey, the skills assessment and, if it exists, the encrypted server copy?'); if(!ok)return;
+  // Delete the server copy first, while this device still holds the credentials needed to do it.
+  if(state.settings&&state.settings.sync){
+    try{ await MomentumSync.remove(state.settings.sync); }
+    catch(e){ if(!confirm(he?'לא הצלחתי למחוק את העותק בשרת ('+e.message+'). למחוק בכל זאת את המידע במכשיר? העותק בשרת יישאר ולא ניתן יהיה למחוק אותו מכאן.':'Could not delete the server copy ('+e.message+'). Delete device data anyway? The server copy will remain and cannot be deleted from here.'))return; }
+  }
+  try{ if(window.MomentumJourney) MomentumJourney.erase({assessment:true,companion:true}); }catch{}
+  try{ localStorage.removeItem('momentum-business-skills-v1'); }catch{}
   localStorage.removeItem(STORAGE_KEY); state=defaultState(); saveState(); $('infoDialog').close(); location.reload();
 }
 
@@ -1580,7 +1603,10 @@ function renderUpdates(){ const list=$('updatesList'); list.innerHTML=''; const 
 function localized(v){ if(typeof v==='string')return v; return v?.[state.lang]||v?.en||v?.he||''; }
 
 function askShareApproval(packet){
-  $('sharePreview').textContent=JSON.stringify(packet,null,2); $('shareDialog').showModal();
+  $('sharePreview').textContent=JSON.stringify(packet,null,2);
+  // Esc closes a <dialog> without a click: treat any close as Cancel so sendUser never hangs.
+  $('shareDialog').onclose=()=>{ if(shareResolver){shareResolver(false);shareResolver=null;} };
+  $('shareDialog').showModal();
   return new Promise(resolve=>{shareResolver=resolve;});
 }
 function finishShare(ok){ $('shareDialog').close(); if(shareResolver){shareResolver(ok);shareResolver=null;} }

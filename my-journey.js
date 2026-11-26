@@ -342,7 +342,10 @@
     row.append(button(T().edit,()=>openEditor(type,record),"small"));
     if(type==="goals")row.append(button(T().nextActionForGoal,()=>openEditor("actions",{goalId:record.id}),"small"));
     if(type==="education"&&record.nextStep)row.append(button(T().makeStep,()=>{
-      const x=Store.upsert("actions",{title:record.nextStep,goalId:record.goalId||"",notes:record.title,status:"todo"});
+      // One education next step maps to one action: repeated clicks open it instead of duplicating it.
+      const existing=Store.read().actions.find(a=>a.title===record.nextStep&&a.notes===record.title);
+      if(existing){notify(T().saved);view("actions");return;}
+      const x=tryAction(()=>Store.upsert("actions",{title:record.nextStep,goalId:record.goalId||"",notes:record.title,status:"todo"}));
       if(x){notify(T().saved);view("actions")}
     },"small"));
     if(type==="actions")row.append(button(record.status==="done"?T().undo:T().done,
@@ -653,7 +656,11 @@
       Store.updatePrivacy({shareWithAI:false});
       notify(T().imported);render();
       $("importFile").value="";
-    }catch(e){notify(T().error+e.message,true)}
+    }catch(e){
+      // WebCrypto reports a wrong password as an OperationError with no message.
+      const wrongPassword=e&&(e.name==="OperationError"||!e.message);
+      notify(T().error+(wrongPassword?(lang==="he"?"הסיסמה שגויה או שהקובץ פגום.":"Wrong password or damaged file."):e.message),true);
+    }
   }
   function deleteData(){
     if(!confirm(T().deletionConfirm))return;
@@ -669,7 +676,8 @@
   }
   function wire(){
     if(!Store){$("storageNotice").textContent="My Journey could not load. Please refresh.";return;}
-    $("language").onclick=()=>{lang=lang==="he"?"en":"he";updateLanguage();render()};
+    $("language").onclick=()=>{lang=lang==="he"?"en":"he";updateLanguage();render();
+      try{const u=new URL(location.href);u.searchParams.set("lang",lang);history.replaceState(null,"",u)}catch(_){}};
     document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>view(b.dataset.tab));
     document.querySelectorAll("[data-switch]").forEach(b=>b.onclick=()=>view(b.dataset.switch));
     document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>openEditor(b.dataset.add));

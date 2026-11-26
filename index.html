@@ -1027,6 +1027,7 @@ function writeChatState(state){
 }
 function save(){ return writeChatState(S); }
 S.speak = false; // Listen never enables automatic reading of future replies.
+S.practice = false; // A past server error must never lock this browser into Practice Mode.
 const L = () => T[S.lang];
 
 /* Bridge between Momentum 36-skill self-assessment and this ongoing private profile.
@@ -1083,7 +1084,7 @@ function businessSkillsPanel(body){
   const lbl=el("span",null,S.lang==="he"
     ?"אני מאשר/ת לשתף עם שירות ה-AI דוגמאות מיומנויות שאישרתי, רק כאשר אבקש סיוע. ניתן לבטל בכל עת."
     :"I allow confirmed skill examples to be sent to the AI service when I ask for help. I can turn this off anytime.");
-  row.append(cb,lbl);cb.onchange=()=>{if(window.MomentumJourney){window.MomentumJourney.updatePrivacy({shareWithAI:cb.checked,shareSkills:cb.checked,shareGoals:false,shareEducation:false,shareActions:false,shareCVs:false});}else{S.profile.shareBusinessSkillsWithAI=cb.checked;save()}};
+  row.append(cb,lbl);cb.onchange=()=>{if(window.MomentumJourney){window.MomentumJourney.updatePrivacy({shareWithAI:cb.checked||window.MomentumJourney.read().privacy.shareWithAI,shareSkills:cb.checked});}else{S.profile.shareBusinessSkillsWithAI=cb.checked;save()}};
   section.appendChild(row);
   const makeAction=(label,message)=>{
     const btn=el("button","prop",label);btn.type="button";
@@ -1612,9 +1613,7 @@ function practiceReply(userText){
     HINTS.forEach(([re,list]) => { if (re.test(S.messages.map(m=>m.text).join(" "))) list.forEach(x=>ids.push(x)); });
     if (ids.length) out.candidates = [...new Set(ids)].slice(0,4).map(id=>({id}));
   }
-  if (S.practiceStep === 4 && userText.trim().length > 25){
-    out.confirmed = [{ id: 26, evidence: userText.trim().slice(0,40) }];
-  }
+  // Practice Mode cannot understand text, so it never confirms a skill on the soldier's behalf.
   if (S.practiceStep >= 5){
     out.proposals = S.lang==="he"
       ? [{title:"לפרק את הצעד הראשון",why:"מה בדיוק צריך לקרות השבוע"},{title:"לבדוק שתי אפשרויות במקביל",why:"לא להתחייב לאחת מוקדם מדי"}]
@@ -1664,8 +1663,9 @@ async function sendUser(text){
 
   let out;
   try {
-    if (S.practice) throw new Error("practice");
+    // Always try the live AI first; Practice Mode is only a per-message fallback.
     out = await askModel(crypto.randomUUID());
+    if (S.practice) { S.practice = false; save(); }
   } catch (err) {
     if (err.canceled) { hideThinking(); if(err.sent){pushMsg("system",S.lang==="he"?"השיתוף העתידי הופסק. ביטול ההסכמה אינו מבטל מידע שכבר נשלח.":"Future sharing stopped. Withdrawal does not undo information already sent.");return;} pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
