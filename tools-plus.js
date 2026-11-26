@@ -490,7 +490,7 @@
         h('h3', {}, tr('Calm achievements', 'הישגים שקטים')),
         h('div', {class: 'plus-badges'}, badges.map(([ok, label]) => h('span', {class: 'plus-badge' + (ok ? ' is-on' : '')}, (ok ? '✓ ' : '○ ') + label))),
         note(tr('No pressure — progress is not a race.', 'בלי לחץ — התקדמות היא לא מרוץ.')),
-        h('div', {class: 'plus-row'}, shareBtn(tr('My monthly summary', 'הסיכום החודשי שלי'), text), btn(tr('Open My Journey', 'לפתוח את המסע שלי'), () => { location.href = './my-journey.html?lang=' + (he() ? 'he' : 'en') + '#overview'; }, 'plus-link'))));
+        h('div', {class: 'plus-row'}, shareBtn(tr('My monthly summary', 'הסיכום החודשי שלי'), text), btn(tr('My steps to calendar', 'הצעדים שלי ליומן'), journeyToCalendar, 'plus-btn'), btn(tr('Open My Journey', 'לפתוח את המסע שלי'), () => { location.href = './my-journey.html?lang=' + (he() ? 'he' : 'en') + '#overview'; }, 'plus-link'))));
     }
 
     /* Install as an app */
@@ -507,13 +507,98 @@
         note(tr('Information pages and My Journey also work offline. Reminders come through the calendar ("My dates").', 'עמודי המידע והמסע שלי עובדים גם בלי אינטרנט. תזכורות מגיעות דרך היומן ("המועדים שלי").'))));
     }
 
+
+    /* ================= BATCH 3 ================= */
+    /* Everything I may be entitled to — one total + rights not yet checked */
+    function total() {
+      const wrap = h('div');
+      const r = R();
+      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed) : null;
+      if (!e) { wrap.append(section(tr('First, your service details', 'קודם, פרטי השירות'), note(tr('Enter service type and months to calculate.', 'צריך להזין סוג שירות וחודשים כדי לחשב.')), btn(tr('Enter details', 'להזין פרטים'), () => showPage('rights'), 'plus-btn primary'))); return wrap; }
+      const taxMax = e.taxMonthly ? e.taxMonthly[1] * ((r.tax_credit_points || {}).duration_months || 36) : 0;
+      const pw = (r.preferred_work_grant || {}).amount_2026_number || 0;
+      const rows = [
+        [tr('Discharge grant', 'מענק שחרור'), e.grant, tr('Automatic', 'אוטומטי')],
+        [tr('Personal deposit', 'פיקדון אישי'), e.deposit, tr('For approved uses', 'למטרות מאושרות')],
+        [tr('Tax credit points (36 months, max)', 'נקודות זיכוי (36 חודשים, לכל היותר)'), taxMax, tr('Only if you work and ask on form 101', 'רק אם עובדים ומבקשים בטופס 101')],
+        [tr('Preferred-work grant', 'מענק עבודה מועדפת'), pw, tr('Only if you work in an approved sector', 'רק אם עובדים בענף מאושר')]
+      ];
+      const sure = (e.grant || 0) + (e.deposit || 0), maybe = taxMax + pw;
+      wrap.append(section(tr('Everything together (estimate)', 'הכול ביחד (הערכה)'),
+        h('ul', {class: 'plus-contacts'}, rows.map(([n, v, c]) => h('li', {}, h('div', {}, h('strong', {}, n), h('small', {}, c)), h('strong', {}, v ? '≈ ' + money(v) : '—')))),
+        h('div', {class: 'plus-stats'}, h('div', {}, h('strong', {}, money(sure)), h('small', {}, tr('grant + deposit', 'מענק + פיקדון'))), h('div', {}, h('strong', {}, money(maybe)), h('small', {}, tr('possible if you work', 'אפשרי אם עובדים'))), h('div', {}, h('strong', {}, money(sure + maybe)), h('small', {}, tr('total, at most', 'סך הכול, לכל היותר')))),
+        note(tr('Plus free public transport for 12 months and an arnona exemption for 4 months. Estimate only — exact amounts are in the personal area.', 'ובנוסף נסיעות חינם 12 חודשים ופטור מארנונה ל-4 חודשים. הערכה בלבד — הסכומים המדויקים באזור האישי.'))));
+      const missed = [['tax', tr('Tax credit points — did you give form 101?', 'נקודות זיכוי — מסרת טופס 101?')], ['ravkav', tr('Free travel — is your Rav-Kav profile updated?', 'נסיעות חינם — עדכנת פרופיל ברב-קו?')],
+        ['arnona', tr('Arnona exemption — did you ask the local authority?', 'פטור מארנונה — ביקשת ברשות המקומית?')], ['deposit', tr('Deposit — did you look at it in the personal area?', 'פיקדון — הצצת באזור האישי?')],
+        ['btl', tr('National Insurance — is your status right?', 'ביטוח לאומי — המצב שלך תקין?')]].filter(([k]) => !(P.afterChecks || []).includes(k));
+      if (missed.length) wrap.append(section(tr('Rights you may have missed', 'זכויות שאולי פספסת'), h('ul', {class: 'plus-list'}, missed.map(([, t]) => h('li', {}, t))),
+        btn(tr('Open the after-discharge list', 'לפתוח את הרשימה אחרי השחרור'), () => showPage('afterlist'), 'plus-btn')));
+      else wrap.append(section(tr('Rights you may have missed', 'זכויות שאולי פספסת'), h('p', {}, tr('Nice — you have checked the main ones ✓', 'יפה — בדקת את העיקריות ✓'))));
+      return wrap;
+    }
+
+    /* Psychometric planner */
+    function psychometric() {
+      const wrap = h('div');
+      const input = h('input', {type: 'date', id: 'plusPsyDate', value: P.psyDate || '', 'aria-label': tr('Test date', 'תאריך המבחן')});
+      const out = h('div', {'aria-live': 'polite'});
+      const paint = () => {
+        out.replaceChildren();
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(input.value)) { out.append(note(tr('Pick the test date you registered for (dates are on the NITE site).', 'בחר את תאריך המבחן שנרשמת אליו (המועדים באתר המרכז הארצי לבחינות).'))); return; }
+        const [y, m, d] = input.value.split('-').map(Number); const T = new Date(y, m - 1, d);
+        const weeks = Math.max(0, Math.ceil((T - new Date()) / (7 * 864e5)));
+        const plan = [
+          [tr('Diagnostic test and choose a course or self-study', 'מבחן אבחון ובחירת קורס או לימוד עצמי'), 1],
+          [tr('Basics: math formulas, vocabulary, English words', 'יסודות: נוסחאות במתמטיקה, אוצר מילים, מילים באנגלית'), 0.35],
+          [tr('Practice by chapter, timing yourself', 'תרגול לפי פרקים, עם זמן'), 0.65],
+          [tr('Full simulations each week and reviewing mistakes', 'סימולציות מלאות כל שבוע ולמידה מטעויות'), 0.9],
+          [tr('Last week: rest, light review, logistics', 'שבוע אחרון: מנוחה, חזרה קלה, סידורים'), 1]
+        ];
+        out.append(section(tr(weeks + ' weeks to the test', weeks + ' שבועות עד המבחן'),
+          h('ol', {class: 'plus-list'}, plan.map(([t]) => h('li', {}, t))),
+          note(tr('Many people prepare about 2–4 months. Psychometric prep can be paid from the deposit.', 'הרבה מתכוננים בערך 2–4 חודשים. אפשר לממן הכנה לפסיכומטרי מהפיקדון.')),
+          h('div', {class: 'plus-row'}, btn(tr('Test date to calendar', 'תאריך המבחן ליומן'), () => download('psychometric.ics', 'text/calendar', ics([{id: 'psy', date: T, title: tr('Psychometric test', 'מבחן פסיכומטרי'), text: tr('Good luck!', 'בהצלחה!')}])), 'plus-btn primary'),
+            btn(tr('Deposit planner', 'מתכנן פיקדון'), () => { P.depositGoal = 'studies'; store(); showPage('deposit'); }, 'plus-link'))));
+      };
+      input.addEventListener('change', () => { P.psyDate = input.value; store(); paint(); });
+      put(wrap, section(tr('Psychometric planner', 'מתכנן פסיכומטרי'), input, ext(tr('Test dates and registration (NITE)', 'מועדים והרשמה (מאל"ו)'), 'https://www.nite.org.il/')), out);
+      paint();
+      return wrap;
+    }
+
+    /* Interview practice */
+    function interview() {
+      const Qs = [tr('Tell me about yourself.', 'ספר לי על עצמך.'), tr('What did you do in the army, and what did you learn?', 'מה עשית בצבא ומה למדת?'), tr('Tell me about a difficult situation and how you handled it.', 'ספר על מצב קשה ואיך התמודדת.'),
+        tr('Why this job?', 'למה העבודה הזאת?'), tr('Where do you see yourself in a year?', 'איפה אתה רואה את עצמך בעוד שנה?')];
+      let i = 0;
+      const q = h('p', {class: 'plus-interview-q'});
+      const ta = h('textarea', {class: 'plus-letter', rows: '5', 'aria-label': tr('Your answer', 'התשובה שלך')});
+      const paint = () => { q.textContent = (i + 1) + '/' + Qs.length + ' — ' + Qs[i]; ta.value = ''; };
+      paint();
+      return h('div', {}, section(tr('Practice an interview', 'תרגול ראיון עבודה'),
+        note(tr('Answer in writing or out loud. Then the Companion can give feedback (sent only after your approval).', 'עונים בכתב או בקול. אחר כך המלווה יכול לתת משוב (נשלח רק אחרי אישור).')),
+        q, ta, h('div', {class: 'plus-row'},
+          P.infoOnly ? null : btn(tr('Get feedback', 'לקבל משוב'), () => { const a = ta.value.trim(); if (!a) { ta.focus(); return; } openTopic('applications', tr('Job interview practice. Question: "', 'תרגול ראיון עבודה. השאלה: "') + Qs[i] + tr('". My answer: "', '". התשובה שלי: "') + a + tr('". Give short, kind feedback and one improved version.', '". תן משוב קצר ועדין וגרסה משופרת אחת.')); }, 'plus-btn primary'),
+          btn(tr('Next question', 'שאלה הבאה'), () => { i = (i + 1) % Qs.length; paint(); }, 'plus-btn'),
+          btn(tr('Tips', 'טיפים'), () => showPage('interview'), 'plus-link'))));
+    }
+
+    /* Steps from My Journey → phone calendar */
+    function journeyToCalendar() {
+      let J = null; try { J = window.MomentumJourney ? window.MomentumJourney.read() : null; } catch (_) {}
+      const acts = (J ? J.actions || [] : []).filter(a => a.status !== 'done' && /^\d{4}-\d{2}-\d{2}/.test(a.dueDate || ''));
+      if (!acts.length) { toast(tr('No open steps with a date yet.', 'עדיין אין צעדים פתוחים עם תאריך.')); return; }
+      download('my-steps.ics', 'text/calendar', ics(acts.map((a, k) => { const [y, m, d] = a.dueDate.slice(0, 10).split('-').map(Number); return {id: 'step' + k, date: new Date(y, m - 1, d), title: a.title, text: a.notes || ''}; })));
+    }
+
     /* ================= TOOLS HUB ================= */
     const GROUPS = () => [
       [tr('Money and dates', 'כסף ומועדים'), [
         ['deadlines', 'calendar', tr('My dates', 'המועדים שלי'), tr('Personal timeline + calendar', 'ציר זמן אישי + יומן')],
         ['deposit', 'coins', tr('Deposit planner', 'מתכנן פיקדון'), tr('What to prepare for each use', 'מה להכין לכל מטרה')],
         ['grantplan', 'gift', tr('Grant planner', 'מתכנן מענק'), tr('Split it your way', 'לחלק בדרך שלך')],
-        ['payslip', 'wallet', tr('My payslip', 'התלוש שלי'), tr('Line by line + tax points', 'שורה אחרי שורה + נקודות זיכוי')]]],
+        ['payslip', 'wallet', tr('My payslip', 'התלוש שלי'), tr('Line by line + tax points', 'שורה אחרי שורה + נקודות זיכוי')],
+        ['total', 'bag', tr('Everything I may get', 'כל מה שאולי מגיע לי'), tr('One total + what you missed', 'סכום אחד + מה פספסת')]]],
       [tr('Arrangements and bureaucracy', 'סידורים ובירוקרטיה'), [
         ['afterlist', 'check', tr('After-discharge list', 'רשימה אחרי השחרור'), tr('12 things, tick as you go', '12 דברים, מסמנים תוך כדי')],
         ['contacts', 'person', tr('Phone numbers & places', 'טלפונים ומקומות'), tr('Call, save, navigate', 'חיוג, שמירה, ניווט')],
@@ -523,7 +608,9 @@
         ['letters', 'send', tr('Ready letters', 'מכתבים מוכנים'), tr('Cover note, 106, thanks', 'מכתב מקדים, 106, תודה')],
         ['fieldquiz', 'compass', tr('Which field fits me?', 'איזה תחום מתאים לי?'), tr('3 quick questions', '3 שאלות קצרות')],
         ['studypaths', 'bulb', tr('Compare study paths', 'השוואת מסלולי לימוד'), tr('Degree, handasai, course', 'תואר, הנדסאי, קורס')],
-        ['scholarships', 'star', tr('Scholarships', 'מלגות'), tr('List + reminders', 'רשימה + תזכורות')]]],
+        ['scholarships', 'star', tr('Scholarships', 'מלגות'), tr('List + reminders', 'רשימה + תזכורות')],
+        ['psychometric', 'calendar', tr('Psychometric planner', 'מתכנן פסיכומטרי'), tr('Countdown + weekly plan', 'ספירה לאחור + תוכנית')],
+        ['interviewprep', 'talk', tr('Interview practice', 'תרגול ראיון'), tr('Question, answer, feedback', 'שאלה, תשובה, משוב')]]],
       [tr('Home and life', 'בית וחיים עצמאיים'), [
         ['apartment', 'home', tr('First apartment', 'דירה ראשונה'), tr('Contract, guarantees, moving in', 'חוזה, ערבויות, כניסה')],
         ['insurance', 'bookmark', tr('Insurance', 'ביטוחים'), tr('What you really need', 'מה באמת צריך')]]],
@@ -544,13 +631,14 @@
 
     return {
       pages: {tools, deadlines, deposit: depositPlanner, grantplan: grantPlanner, afterlist: checklistPage, contacts, scholarships, payslip, glossary,
-        apartment, insurance, letters, explain: explainLetter, fieldquiz: fieldQuiz, studypaths: studyPaths, lost: lostDirection, summary, install},
+        total, psychometric, interviewprep: interview, apartment, insurance, letters, explain: explainLetter, fieldquiz: fieldQuiz, studypaths: studyPaths, lost: lostDirection, summary, install},
       heads: {
         tools: {icon: 'bulb', title: ['My tools', 'הכלים שלי']}, deadlines: {icon: 'calendar', title: ['My dates', 'המועדים שלי']},
         deposit: {icon: 'coins', title: ['Deposit planner', 'מתכנן פיקדון']}, grantplan: {icon: 'gift', title: ['Grant planner', 'מתכנן מענק']},
         afterlist: {icon: 'check', title: ['After discharge', 'אחרי השחרור']}, contacts: {icon: 'person', title: ['Numbers & places', 'טלפונים ומקומות']},
         scholarships: {icon: 'compass', title: ['Scholarships', 'מלגות']}, payslip: {icon: 'wallet', title: ['My payslip', 'התלוש שלי']},
         glossary: {icon: 'info', title: ['Glossary', 'מילון']},
+        total: {icon: 'bag', title: ['Everything I may get', 'כל מה שאולי מגיע לי']}, psychometric: {icon: 'calendar', title: ['Psychometric planner', 'מתכנן פסיכומטרי']}, interviewprep: {icon: 'talk', title: ['Interview practice', 'תרגול ראיון']},
         apartment: {icon: 'home', title: ['First apartment', 'דירה ראשונה']}, insurance: {icon: 'bookmark', title: ['Insurance', 'ביטוחים']},
         letters: {icon: 'send', title: ['Ready letters', 'מכתבים מוכנים']}, explain: {icon: 'help', title: ['Explain a letter', 'להסביר מכתב']},
         fieldquiz: {icon: 'compass', title: ['Which field fits me?', 'איזה תחום מתאים לי?']}, studypaths: {icon: 'bulb', title: ['Study paths', 'מסלולי לימוד']},

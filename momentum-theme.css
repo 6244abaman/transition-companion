@@ -259,3 +259,4 @@ html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }
 .plus-badge.is-on { background:var(--accent);border-color:var(--accent);color:#fff; }
 .plus-compare { margin:0 0 10px; }
 .plus-tools-grid .plus-tool-ico .plus-ico svg { width:20px;height:20px; }
+.plus-interview-q { font-weight:700;font-size:16.5px;margin:10px 0 4px; }
