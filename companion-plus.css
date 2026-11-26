@@ -378,3 +378,9 @@ body:has(#chat:not([hidden])) #plusHistoryBtn { grid-column:3; justify-self:end;
 body:not(:has(#chat:not([hidden]))) :is(#plusSavePill,#plusModes,#plusChatTools) { display:none !important; }
 .plus-sum-card { justify-content:flex-start; }
 .composer #input:focus { outline:none; border-color:#2F5A46 !important; box-shadow:0 0 0 3px rgba(47,90,70,.15) !important; }
+
+/* language switcher next to the gear (Home) */
+.plus-lang { display:none; }
+body:has(#companionHomeHub:not([hidden])) .plus-lang { display:inline-flex; order:2; align-items:center; gap:2px; padding:3px; margin-inline-start:6px; border-radius:999px; background:rgba(255,255,255,.85); border:1px solid #CDBFA6; box-shadow:0 1px 4px rgba(40,32,15,.08); }
+.plus-lang-opt { min-width:40px; height:32px; padding:0 10px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; font-size:13px; font-weight:800; color:#2E4A40; text-decoration:none; }
+.plus-lang-opt[aria-current="true"] { background:#2E4A40; color:#fff; }

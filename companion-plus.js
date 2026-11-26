@@ -277,6 +277,14 @@
       h('div', {id: 'plusChatHead', class: 'plus-chat-head'}, av, h('strong', {id: 'plusChatName'}), h('span', {class: 'plus-online'}, h('i'), h('span', {id: 'plusOnlineText'}))),
       h('button', {type: 'button', id: 'plusHistoryBtn', class: 'plus-chat-hbtn', onclick: () => { const p = $('chatHistory'); if (p) p.open = !p.open; }}, icon('history')));
   }
+  // Language switcher next to the gear (Home header). Each language is its own edition of the app.
+  if (bar && !$('plusLang')) {
+    const langBox = h('div', {id: 'plusLang', class: 'plus-lang', role: 'group', 'aria-label': 'שפה / Language'});
+    [['he', 'עב', 'עברית', './indexH.html?lang=he#home'], ['en', 'EN', 'English', './index.html?lang=en#home']].forEach(([code, short, name, url]) => {
+      langBox.append(h('a', {href: url, lang: code, 'aria-label': name, 'aria-current': edition() === code ? 'true' : null, class: 'plus-lang-opt'}, short));
+    });
+    bar.append(langBox);
+  }
   function paintChatHead() {
     if ($('plusChatName')) $('plusChatName').textContent = tr('Your Companion', 'המלווה שלך');
     if ($('plusOnlineText')) $('plusOnlineText').textContent = navigator.onLine === false ? tr('Offline', 'לא מחובר') : 'Online';
