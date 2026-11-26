@@ -524,7 +524,7 @@ en:{
   micOn:"Listening — tap the mic again to stop.", micOff:"", micNo:"This browser can't do speech recognition. Try Chrome, or type instead.",
   emptyP:"Nothing here yet. Strengths appear only once you have described something real that shows them — not because of your role.",
   pStr:"Built in service", pCost:"What it cost", pOpen:"Still open", pDir:"Directions raised",
-  offline:"⚠ PRACTICE MODE — the AI is NOT connected. These replies come from a fixed script and do NOT respond to what you write. This is not how the app really behaves. Tap Check connection on the start screen to fix it.",
+  offline:"⚠ PRACTICE MODE — the live AI did not answer, so these replies come from a fixed script and do NOT respond to what you write. Tap \"Try the real AI again\" under the reply.",
   sendFail:"That message didn't go through. Tap send again to retry.",
   concern:"This is a lot to carry. These people answer 24/7, and I'm still here after.",
   callit:"Call",
@@ -574,7 +574,7 @@ he:{
   micOn:"מקשיב — לחץ שוב על המיקרופון כדי לעצור.", micOff:"", micNo:"הדפדפן הזה לא תומך בזיהוי דיבור. נסה כרום, או פשוט תכתוב.",
   emptyP:"עדיין ריק. חוזקות מופיעות רק אחרי שתיארת משהו אמיתי שמראה אותן — לא בגלל התפקיד.",
   pStr:"מה נבנה בשירות", pCost:"מה זה עלה", pOpen:"עדיין פתוח", pDir:"כיוונים שעלו",
-  offline:"⚠ מצב תרגול — ה‑AI לא מחובר. התשובות האלה מגיעות מתסריט קבוע ולא מגיבות למה שכתבת. זו לא ההתנהגות האמיתית של האפליקציה. לחץ על בדיקת חיבור במסך הפתיחה כדי לתקן.",
+  offline:"⚠ מצב תרגול — ה-AI האמיתי לא ענה, ולכן התשובות כאן מגיעות מתסריט קבוע ולא מגיבות למה שכתבת. לחץ על \"נסה שוב את ה-AI האמיתי\" מתחת לתשובה.",
   sendFail:"ההודעה לא נשלחה. לחץ שוב על שליחה כדי לנסות שוב.",
   concern:"זה הרבה לשאת. האנשים האלה עונים מסביב לשעון, ואני כאן גם אחרי.",
   callit:"חיוג",
@@ -1646,12 +1646,47 @@ function openConversation(){
   pushMsg("assistant", openingText(S.lang), {kind:"opening"});
 }
 
-let sendingUserMessage = false;
+// Plain-language reason for a failed AI request (kept on this device only).
+function failureReason(err){
+  const msg=String(err&&err.message||"");
+  DIAG.error=msg||DIAG.error;
+  const he=S.lang==="he";
+  if(typeof navigator!=="undefined"&&navigator.onLine===false) return he?"אין כרגע חיבור לאינטרנט.":"You are offline right now.";
+  if(/abort|timeout|HTTP 50[234]/i.test(msg)||(err&&err.name==="AbortError")) return he?"ייתכן שהשרת מתעורר (זה קורה אחרי זמן בלי שימוש). נסה שוב בעוד חצי דקה.":"The server may be waking up (this happens after a quiet period). Try again in about 30 seconds.";
+  return he?"החיבור לשרת נכשל. אפשר לנסות שוב.":"The connection to the server failed. You can try again.";
+}
+// "Try the real AI again": drop the scripted reply and re-ask the live AI for the last question.
+async function retryLiveAI(){
+  if(sendingUserMessage)return;
+  S.practice=false;save();
+  let last=S.messages.length-1;
+  while(last>=0&&S.messages[last].role!=="user"){last--;}
+  if(last<0){$("input").focus();return;}
+  S.messages=S.messages.slice(0,last+1);save();renderThread();
+  sendingUserMessage=true;showThinking();
+  try{
+    const out=await askModel(crypto.randomUUID());
+    hideThinking();applyReply(out);
+  }catch(err){
+    hideThinking();
+    if(err&&err.canceled){pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent.");return;}
+    pushMsg("system",failureReason(err));
+    const again=el("button","linkish",S.lang==="he"?"נסה שוב את ה-AI האמיתי":"Try the real AI again");
+    again.onclick=()=>{again.remove();retryLiveAI();};
+    const turns=$("thread").querySelectorAll(".turn");if(turns.length)turns[turns.length-1].appendChild(again);
+  }finally{sendingUserMessage=false;}
+}
+let sendingUserMessage = false, lastSentText = "", lastSentAt = 0;
 async function sendUser(text){
   if(sendingUserMessage)return;
   text = (text||"").trim();
   if (!text) return;
+  // A double tap must not send the same text twice.
+  const now=Date.now();
+  if(lastSentText===text&&now-lastSentAt<600)return;
+  lastSentText=text;lastSentAt=now;
   sendingUserMessage=true;
+  if($("btnSend"))$("btnSend").disabled=true;
   try {
   $("input").value = ""; $("input").style.height="auto";
   stopSpeaking();
@@ -1672,7 +1707,7 @@ async function sendUser(text){
   } catch (err) {
     if (err.canceled) { hideThinking(); if(err.sent){pushMsg("system",S.lang==="he"?"השיתוף העתידי הופסק. ביטול ההסכמה אינו מבטל מידע שכבר נשלח.":"Future sharing stopped. Withdrawal does not undo information already sent.");return;} pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }
-    if (!S.practice) { S.practice = true; pushMsg("system", L().offline); }
+    if (!S.practice) { S.practice = true; pushMsg("system", L().offline + "\n" + failureReason(err)); }
     out = practiceReply(text);
     DIAG.source = "Practice Mode (built-in script)";
     DIAG.raw = "(no API call — scripted reply)";
@@ -1684,11 +1719,11 @@ async function sendUser(text){
   hideThinking();
   applyReply(out);
   if(S.practice){
-    const retry=el("button","linkish",S.lang==="he"?"ניסיון חיבור מחדש ל-AI":"Retry live AI connection");
-    retry.onclick=()=>{S.practice=false;save();retry.remove();$("input").focus();};
+    const retry=el("button","linkish",S.lang==="he"?"נסה שוב את ה-AI האמיתי":"Try the real AI again");
+    retry.onclick=()=>{retry.remove();retryLiveAI();};
     const turns=$("thread").querySelectorAll(".turn.them");if(turns.length)turns[turns.length-1].appendChild(retry);
   }
-  } finally { sendingUserMessage=false; }
+  } finally { sendingUserMessage=false; if($("btnSend"))$("btnSend").disabled=false; }
 }
 
 function applyReply(out){

@@ -106,17 +106,40 @@
         rates: Object.entries(g.amounts_per_month_2026_oct || {}).map(([k, v]) => ({key: k, label: SERVICE_LABEL[k] || k, value: v})),
         examples: Object.values(g.examples || {}), link: 'agaf_keren'});
     }
-    if (r.personal_deposit) { const d = r.personal_deposit; add('personal_deposit', 'money', d.name_he, [d.description, 'מתי: ' + d.timing, 'אחרי 5 שנים: ' + d.after_5_years, 'איך מממשים: ' + d.how_to_claim], {list: d.approved_uses, listTitle: 'שימושים מאושרים', link: 'agaf_keren'}); }
-    if (r.tax_credit_points) { const tp = r.tax_credit_points; add('tax_credit_points', 'money', tp.name_he, ['משך: ' + tp.duration_months + ' חודשים', 'גברים מגיל 23 / נשים מגיל 22 (או שירות מלא): ' + tp.points.men_23plus_or_women_22plus + ' נקודות', 'שירות של 12–23 חודשים: ' + tp.points['12_to_23_months'] + ' נקודה', 'חיסכון משוער (2 נקודות): ' + tp.estimated_monthly_saving_2_points + ' לחודש', 'איך: ' + tp.how_to_claim], {link: 'taxes'}); }
+    if (r.personal_deposit) { const d = r.personal_deposit; add('personal_deposit', 'money', d.name_he, [d.description, 'מתי: ' + d.timing, 'אחרי 5 שנים: ' + d.after_5_years, 'איך מממשים: ' + d.how_to_claim], {list: d.approved_uses, listTitle: 'שימושים מאושרים', link: 'agaf_keren',
+      rates: Object.entries(d.amounts_per_month_2026_oct || {}).map(([k, v]) => ({key: k, label: SERVICE_LABEL[k] || k, value: v})), warning: d.scam_warning}); }
+    if (r.tax_credit_points) { const tp = r.tax_credit_points; add('tax_credit_points', 'money', tp.name_he, ['משך: ' + tp.duration_months + ' חודשים מהשחרור', 'שירות של 23 חודשים ומעלה (גברים) / 22 ומעלה (נשים): ' + tp.points.men_23plus_or_women_22plus + ' נקודות', 'שירות של 12 חודשים ועד מתחת לסף הזה: ' + tp.points['12_to_23_months'] + ' נקודה', tp.point_value_2026_monthly ? 'שווי נקודה ב-2026: כ-' + tp.point_value_2026_monthly + ' ₪ לחודש' : '', 'חיסכון משוער (2 נקודות): ' + tp.estimated_monthly_saving_2_points + ' לחודש', 'איך: ' + tp.how_to_claim, tp.not_automatic, tp.refund], {link: 'taxes'}); }
     if (r.bituach_leumi_exemption) { const b = r.bituach_leumi_exemption; add('bituach_leumi_exemption', 'money', b.name_he, ['משך: ' + b.duration, 'תנאי: ' + b.condition], {link: 'bituach_leumi'}); }
-    if (r.preferred_work_grant) { const p = r.preferred_work_grant; add('preferred_work_grant', 'work', p.name_he, ['סכום: ' + p.amount_2026, 'זכאות: ' + p.eligibility, 'מועד אחרון: ' + p.deadline], {list: p.sectors, listTitle: 'ענפים לדוגמה', link: 'agaf_keren'}); }
+    if (r.preferred_work_grant) { const p = r.preferred_work_grant; add('preferred_work_grant', 'work', p.name_he, ['סכום: ' + p.amount_2026, p.work_period ? 'תקופת עבודה: ' + p.work_period : '', 'זכאות: ' + p.eligibility, 'מועד אחרון: ' + p.deadline], {list: p.sectors, listTitle: 'ענפים לדוגמה', link: 'agaf_keren'}); }
     if (r.public_transport_free) add('public_transport_free', 'daily_life', r.public_transport_free.name_he, ['משך: ' + r.public_transport_free.duration]);
     if (r.arnona) add('arnona', 'housing', r.arnona.name_he, [r.arnona.notes]);
     if (r.unemployment) add('unemployment', 'money', r.unemployment.name_he, [r.unemployment.notes], {link: 'bituach_leumi'});
     if (s.mimadim_lelimudim) { const m = s.mimadim_lelimudim; add('mimadim_lelimudim', 'studies', m.name_he, [m.description, 'משך: ' + m.duration, 'מועד: ' + m.deadline, m.notes], {list: m.eligibility, listTitle: 'מי זכאי', link: 'agaf_keren'}); }
     for (const key of ['periphery_scholarships', 'mechina_bagrut', 'practical_engineering', 'psychometric'])
       if (s[key]) add(key, 'studies', s[key].name_he, [s[key].description || s[key].notes]);
+    const meta = KB.metadata || {};
+    cards.forEach(c => { if (c.cat === 'money' || c.cat === 'work') c.source = {asOf: meta.amounts_as_of || meta.last_updated, by: meta.source || ''}; });
     return cards;
+  }
+
+  /* ---------- Estimate: rates × months of service (approximate, never a promise) ---------- */
+  function estimate(service, months) {
+    if (!KB) return null;
+    const r = KB.rights_and_benefits, key = SERVICE_RATE_KEY[service];
+    const m = Number(months);
+    const grantRate = key && r.discharge_grant.amounts_per_month_2026_oct[key];
+    const depositRate = key && r.personal_deposit.amounts_per_month_2026_oct && r.personal_deposit.amounts_per_month_2026_oct[key];
+    const pointValue = r.tax_credit_points.point_value_2026_monthly || 0;
+    const valid = Number.isFinite(m) && m > 0 && m <= 60;
+    // 23+ months (men) / 22+ (women) → 2 points; 12+ → 1 point. Gender is not asked, so 22 months shows a range.
+    const points = !valid ? null : m >= 23 ? [2, 2] : m >= 22 ? [1, 2] : m >= 12 ? [1, 1] : [0, 0];
+    return {
+      grantRate, depositRate, pointValue,
+      grant: valid && grantRate && m >= 12 ? Math.round(grantRate * m) : null,
+      deposit: valid && depositRate ? Math.round(depositRate * m) : null,
+      points, taxMonthly: points ? [points[0] * pointValue, points[1] * pointValue] : null,
+      asOf: (KB.metadata && (KB.metadata.amounts_as_of || KB.metadata.last_updated)) || '', source: (KB.metadata && KB.metadata.source) || ''
+    };
   }
 
   /* ---------- Simple Hebrew/English search over cards and FAQ ---------- */
@@ -171,7 +194,7 @@
 
   root.MomentumKB = {
     data: KB, GUIDES, DISCLAIMER_HE, DISCLAIMER_EN, SERVICE_RATE_KEY, SERVICE_LABEL,
-    rightsCards, search, promptContext, fmtMoney,
+    rightsCards, search, promptContext, fmtMoney, estimate,
     officialLink: key => (KB && KB.official_links && KB.official_links[key]) || ''
   };
 })(typeof window === 'undefined' ? globalThis : window);

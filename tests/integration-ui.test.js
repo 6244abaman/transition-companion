@@ -42,7 +42,7 @@ for(const file of ['index.html','indexH.html'])test(file+': cancel sends nothing
 test('unavailable AI can be retried and empty responses cannot masquerade as live answers',async()=>{
  let fail=true;const {dom,w,d}=await boot('index.html',{fetch:async()=>{if(fail)throw new Error('Unavailable');return {ok:true,json:async()=>({content:[]})};}});
  try{d.getElementById('btnStart').click();let p=w.eval('sendUser("Hello")');await until(()=>d.getElementById('ai-approve'));d.getElementById('ai-approve').click();await p;assert.equal(w.eval('S.practice'),true);
- const retry=[...d.querySelectorAll('button')].find(x=>/Retry live|ניסיון חיבור/.test(x.textContent));assert.ok(retry);retry.click();assert.equal(w.eval('S.practice'),false);fail=false;
+ const retry=[...d.querySelectorAll('button')].find(x=>/Try the real AI again|נסה שוב את ה-AI האמיתי/.test(x.textContent));assert.ok(retry);fail=false;retry.click();assert.equal(w.eval('S.practice'),false);await until(()=>!w.eval('sendingUserMessage'));
  p=w.eval('sendUser("Try again")');await p;assert.equal(w.eval('S.practice'),true);
  }finally{dom.window.close();}
 });

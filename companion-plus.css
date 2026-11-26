@@ -137,3 +137,15 @@ body:has(#plusPage:not([hidden])) :is(#chatHistory,#topicPanel,#benefitsUpdates)
 html[data-theme="dark"] :is(.bar,header.bar) { background:var(--paper) !important;border-color:var(--line); }
 html[data-theme="dark"] :is(.chip,.companion-more>summary,#chatHistory,.topic-panel,.topic-panel button) { background:var(--paper-2);color:var(--ink);border-color:var(--line); }
 html[data-theme="dark"] .bar .mark { color:var(--ink); }
+
+/* package additions: estimate, trust lines, warnings, skip, choices */
+.plus-estimate { border-color:#b5d6c8; }
+.plus-source { font-size:12px;color:var(--ink-2);margin:8px 0 0;border-top:1px dashed var(--line);padding-top:6px; }
+.plus-privacy-line { font-size:13px;color:var(--ink-2);text-align:center;margin:18px 8px 6px; }
+.plus-warning { padding:10px 12px;margin:10px 0;border-radius:12px;background:#fdecea;border:1px solid #e3b4ab;color:#6e2a1d;line-height:1.5; }
+html[data-theme="dark"] .plus-warning { background:#3b2420;border-color:#6d3c33;color:#ffd3c8; }
+.plus-skip { display:block;width:100%;min-height:52px;margin:12px 0;border-radius:14px;border:2px solid var(--line);background:var(--paper-2);color:var(--ink);font:inherit;font-size:1.05rem;font-weight:750;cursor:pointer; }
+.plus-chat-entry { font-size:1.05rem; }
+.plus-choices { display:flex;flex-wrap:wrap;gap:6px;margin:8px 0; }
+.plus-small-input { width:7em;min-height:44px;padding:6px 10px;border:1px solid #7a9b91;border-radius:10px;font:inherit;background:var(--paper);color:var(--ink); }
+.plus-calc input { width:7em;min-height:42px;padding:6px 10px;border:1px solid #7a9b91;border-radius:10px;font:inherit;background:var(--paper);color:var(--ink); }

@@ -17,7 +17,7 @@
 
   /* ---------------- preferences (local only) ---------------- */
   const DEFAULTS = {v: 1, onboarded: false, dischargeMonth: '', notDischarged: false, service: '', lone: false,
-    reservist: false, pressing: '', hidden: [], theme: 'auto', textSize: 'normal', reduceMotion: false,
+    reservist: false, monthsServed: '', pressing: '', hidden: [], theme: 'auto', textSize: 'normal', reduceMotion: false,
     infoOnly: false, moods: [], days: [], backupRemindedAt: '', seenVersion: '', todayStep: null, chatMode: ''};
   function load() {
     try { const v = JSON.parse(localStorage.getItem(PKEY) || 'null'); return v && typeof v === 'object' ? {...DEFAULTS, ...v} : {...DEFAULTS}; }
@@ -101,6 +101,57 @@
   const CHEERS_EN = ['Good to see you back today.', "It's okay not to know yet.", 'A small step is still a step.', "There's no single right timeline for this transition.", "It's okay to rest in a time of change.", 'Checking things out is already progress.'];
   const cheer = () => { const list = he() ? CHEERS_HE : CHEERS_EN; return list[(new Date().getDate() + P.days.length) % list.length]; };
 
+  /* ---------------- trust helpers: date + source, honest privacy line ---------------- */
+  function asOfLabel(v) {
+    const m = /^(\d{4})-(\d{2})/.exec(v || ''); if (!m) return v || '';
+    try { return new Date(Number(m[1]), Number(m[2]) - 1, 1).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {month: 'long', year: 'numeric'}); } catch (_) { return v; }
+  }
+  function sourceLine(src) {
+    if (!src) return null;
+    return h('p', {class: 'plus-source'}, tr('Last updated: ', 'עודכן: ') + asOfLabel(src.asOf) + (src.by ? ' · ' + tr('Source: ', 'מקור: ') + src.by : ''));
+  }
+  function privacyLine() {
+    return h('p', {class: 'plus-privacy-line'}, '🔒 ' + tr('Everything you write is saved only on this device. A message goes to the AI only after you approve.',
+      'כל מה שאתה כותב נשמר רק במכשיר הזה. הודעה נשלחת ל-AI רק אחרי שאישרת.'));
+  }
+  const money = n => n === null || n === undefined ? '—' : (KB ? KB.fmtMoney(n) : String(n));
+  function estimateBlock(service, months) {
+    const e = KB && KB.estimate(service, months);
+    if (!e || !e.grantRate) return null;
+    const rows = [
+      [tr('Discharge grant — per month of service', 'מענק שחרור — לכל חודש שירות'), money(e.grantRate)],
+      e.depositRate ? [tr('Personal deposit — per month of service', 'פיקדון אישי — לכל חודש שירות'), money(e.depositRate)] : null,
+      e.grant !== null ? [tr('Estimated grant for ' + months + ' months', 'מענק משוער ל-' + months + ' חודשים'), '≈ ' + money(e.grant)] : null,
+      e.deposit !== null ? [tr('Estimated deposit for ' + months + ' months', 'פיקדון משוער ל-' + months + ' חודשים'), '≈ ' + money(e.deposit)] : null,
+      e.points ? [tr('Tax credit points', 'נקודות זיכוי במס'), (e.points[0] === e.points[1] ? e.points[0] : e.points[0] + '–' + e.points[1]) + tr(' points ≈ ', ' נקודות ≈ ') + (e.taxMonthly[0] === e.taxMonthly[1] ? money(e.taxMonthly[0]) : money(e.taxMonthly[0]) + '–' + money(e.taxMonthly[1])) + tr(' a month', ' לחודש')]
+        : [tr('Tax credit points', 'נקודות זיכוי במס'), tr('up to 2 points ≈ ', 'עד 2 נקודות ≈ ') + money(2 * e.pointValue) + tr(' a month', ' לחודש')]
+    ].filter(Boolean);
+    return h('div', {}, h('table', {class: 'plus-table'}, h('tbody', {}, rows.map(([a, b]) => h('tr', {}, h('th', {scope: 'row'}, a), h('td', {}, b))))),
+      h('p', {class: 'plus-muted'}, tr('You may be entitled to this. It is an estimate, not a promise — check your personal area.', 'ייתכן שזה מגיע לך. זו הערכה בלבד ולא הבטחה — בדוק באזור האישי.')),
+      sourceLine({asOf: e.asOf, by: e.source}));
+  }
+  function estimateCard() {
+    if (!P.service) return h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('How much might I get?', 'כמה אולי מגיע לי?')),
+      h('p', {}, tr('Tell me your service type to see an estimate of the grant and tax points.', 'ספר לי מה סוג השירות שלך כדי לראות הערכה של המענק ונקודות הזיכוי.')),
+      btn(tr('Fill in 3 quick answers', 'למילוי 3 תשובות קצרות'), () => showPage('onboarding'), 'plus-btn'));
+    return h('div', {class: 'plus-card plus-estimate'}, h('h2', {}, tr('Your estimate', 'ההערכה שלך') + ' · ' + (KB.SERVICE_LABEL[P.service] || '')),
+      estimateBlock(P.service, P.monthsServed), h('div', {class: 'plus-row'}, btn(tr('Calculator & details', 'מחשבון ופרטים'), () => showPage('money'), 'plus-link')));
+  }
+  function quickAnswers() {
+    const faq = (KB && KB.data && KB.data.faq) || []; if (!faq.length) return null;
+    return h('div', {class: 'plus-card'}, h('h2', {}, tr('Quick answers', 'תשובות מהירות')),
+      ...faq.slice(0, 5).map(f => h('details', {class: 'plus-details'}, h('summary', {}, f.question), h('p', {}, f.answer))),
+      btn(tr('All rights & questions', 'כל הזכויות והשאלות'), () => showPage('rights'), 'plus-link'));
+  }
+  function warningsBox() {
+    const w = KB && KB.data && KB.data.important_warnings; if (!w || !w.length) return null;
+    return h('div', {class: 'plus-warning', role: 'note'}, h('strong', {}, '⚠ ' + tr('Important', 'חשוב לדעת')), h('ul', {class: 'plus-list'}, w.map(x => h('li', {}, x))));
+  }
+  function grantVsDeposit() {
+    const t = KB && KB.data && KB.data.grant_vs_deposit; if (!t) return null;
+    return h('div', {class: 'plus-card plus-soft'}, h('h2', {}, tr('Grant vs. deposit — the difference', 'מה ההבדל בין המענק לפיקדון?')), h('p', {}, t));
+  }
+
   /* ================================================================
      PAGE SYSTEM — one screen for every module, with a consistent back button
      ================================================================ */
@@ -120,7 +171,7 @@
     hideScreens();
     page.replaceChildren();
     const back = btn(he() ? '→ חזרה' : '← Back', goBack, 'plus-back');
-    page.append(h('div', {class: 'plus-inner'}, back, render()));
+    page.append(h('div', {class: 'plus-inner'}, back, render(), privacyLine()));
     page.hidden = false;
     page.dir = he() ? 'rtl' : 'ltr';
     page.scrollTop = 0; try { document.scrollingElement.scrollTop = 0; } catch (_) {}
@@ -191,15 +242,17 @@
         h('span', {class: 'plus-home-icon', 'aria-hidden': 'true'}, b.icon), h('strong', {}, title), h('span', {class: 'plus-home-why'}, why)));
     });
     plusHome.append(grid);
+    if (!P.infoOnly) plusHome.append(btn('💬 ' + tr('Talk with the Companion', 'דבר עם המלווה'), () => goChat(), 'plus-btn plus-wide plus-chat-entry'));
     plusHome.append(btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'));
-    if (!P.infoOnly) plusHome.append(btn(tr('Start a conversation', 'לפתוח שיחה'), () => goChat(), 'plus-btn plus-wide'));
     const cards = h('div', {class: 'plus-cards'});
     const wn = whatsNewCard(); if (wn) cards.append(wn);
+    if (!P.hidden.includes('home:estimate')) cards.append(estimateCard());
     cards.append(todayStepCard());
     const rec = recommendationCard(); if (rec) cards.append(rec);
     const bk = backupCard(); if (bk) cards.append(bk);
     const tm = timingMessage(); if (tm) cards.append(h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('Where you are now', 'איפה אתה עכשיו')), h('p', {}, tm)));
-    plusHome.append(cards);
+    const qa = quickAnswers(); if (qa) cards.append(qa);
+    plusHome.append(cards, privacyLine());
   }
 
   /* -------- small step for today + progress -------- */
@@ -220,6 +273,7 @@
     } else {
       const input = h('input', {type: 'text', maxlength: '160', id: 'plusTodayInput', placeholder: tr('e.g. check my grant in the personal area', 'למשל: לבדוק את המענק באזור האישי'), 'aria-label': tr('Small step for today', 'צעד קטן להיום')});
       card.append(h('p', {class: 'plus-muted'}, tr('Something you can do in 15 minutes. Skipping is fine too.', 'משהו שאפשר לעשות ב-15 דקות. גם לדלג זה בסדר.')), input,
+        h('div', {class: 'plus-choices'}, stepIdeas().slice(0, 4).map(idea => btn(idea, () => { input.value = idea; input.focus(); }, 'plus-chip'))),
         h('div', {class: 'plus-row'}, btn(tr('Save step', 'שמירת הצעד'), () => {
           const v = input.value.trim(); if (!v) { input.focus(); return; }
           const rec = saveAction(v, tr('Small step for today', 'צעד קטן להיום'), t);
@@ -233,6 +287,14 @@
         h('p', {class: 'plus-muted'}, tr(done + ' of ' + actions.length + ' steps done', done + ' מתוך ' + actions.length + ' צעדים הושלמו')));
     }
     return card;
+  }
+  function stepIdeas() {
+    const m = monthsSinceDischarge();
+    const early = he() ? ['לבדוק שהמענק הגיע לחשבון', 'לבקש נקודות זיכוי (טופס 101)', 'לבדוק כמה יש בפיקדון', 'לעדכן כתובת רשמית']
+      : ['Check the grant reached my account', 'Ask for tax credit points (form 101)', 'Check my deposit balance', 'Update my official address'];
+    const later = he() ? ['לבדוק זכאות לעבודה מועדפת', 'לתכנן שימוש בפיקדון', 'לקבוע שיחה במרכז צעירים', 'לכתוב 3 שורות על מה שעשיתי בשירות']
+      : ['Check preferred-work eligibility', 'Plan how to use my deposit', 'Book a talk at a youth center', 'Write 3 lines about what I did in service'];
+    return m !== null && m >= 2 ? later.concat(early) : early.concat(later);
   }
   function suggestStepButton(input) {
     const ideas = he()
@@ -312,12 +374,14 @@
     c.lines.forEach(l => box.append(h('p', {}, l)));
     if (c.rates && c.rates.length) {
       const mine = KB.SERVICE_RATE_KEY[P.service];
-      const table = h('table', {class: 'plus-table'}, h('caption', {}, tr('Monthly rate by service type (Oct 2026)', 'סכום לחודש שירות לפי סוג שירות (אוקטובר 2026)')),
+      const table = h('table', {class: 'plus-table'}, h('caption', {}, tr('You may be entitled to — per month of service, by service type', 'ייתכן שמגיע לך — לכל חודש שירות, לפי סוג שירות')),
         h('tbody', {}, c.rates.map(r => h('tr', {class: r.key === mine ? 'plus-mine' : ''}, h('th', {scope: 'row'}, r.label + (r.key === mine ? tr(' (you)', ' (אתה)') : '')), h('td', {}, KB.fmtMoney(r.value))))));
       box.append(table);
       if (c.examples && c.examples.length) box.append(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
     }
     if (c.list && c.list.length) box.append(h('strong', {}, c.listTitle || ''), list(c.list));
+    if (c.warning) box.append(h('p', {class: 'plus-warning', role: 'note'}, '⚠ ' + c.warning));
+    const src = sourceLine(c.source); if (src) box.append(src);
     const row = h('div', {class: 'plus-row'});
     if (c.link) row.append(h('a', {class: 'plus-btn', href: KB.officialLink(c.link), target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')));
     row.append(btn(tr('Save to My Journey', 'לשמור במסע'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (c.link ? KB.officialLink(c.link) + '\n' : '') + c.lines.join('\n'))));
@@ -341,9 +405,11 @@
     const G = KB.data && KB.data.practical_guides; if (!G) return null;
     const m = monthsSinceDischarge();
     const early = m === null || m < 2;
-    return section(early ? tr('First 30 days', '30 הימים הראשונים') : tr('First 6 months', '6 החודשים הראשונים'),
+    const year = !early && m >= 6 && G.first_year;
+    const items = year ? G.first_year : early ? G.first_30_days : G.first_6_months;
+    return section(year ? tr('First year', 'השנה הראשונה') : early ? tr('First 30 days', '30 הימים הראשונים') : tr('First 6 months', '6 החודשים הראשונים'),
       h('p', {class: 'plus-muted'}, tr('Tap a line to save it as a step.', 'אפשר ללחוץ על שורה כדי לשמור אותה כצעד.')),
-      h('ul', {class: 'plus-checklist'}, (early ? G.first_30_days : G.first_6_months).map(x => h('li', {}, btn('＋ ' + x, () => saveAction(x, tr('From the checklist', 'מתוך רשימת הבדיקה')), 'plus-link')))));
+      h('ul', {class: 'plus-checklist'}, items.map(x => h('li', {}, btn('＋ ' + x, () => saveAction(x, tr('From the checklist', 'מתוך רשימת הבדיקה')), 'plus-link')))));
   }
 
   function specialGroups() {
@@ -393,6 +459,8 @@
       if (!P.infoOnly) put(wrap, section(tr('What do you need right now?', 'מה אתה צריך עכשיו?'),
         h('div', {class: 'plus-row'}, btn(tr('I just want to talk', 'אני רק רוצה לדבר'), () => goChat('talk'), 'plus-btn primary'),
           btn(tr('I want to do something practical', 'אני רוצה לעשות משהו מעשי'), () => goChat('practical'), 'plus-btn'))));
+      const sentences = KB && KB.data && KB.data.emotional_support.normalization_sentences;
+      if (sentences) put(wrap, section(tr('Good to know', 'כדאי לדעת'), list(sentences)));
       put(wrap, section(tr('Common after discharge', 'דברים שמוכרים לרבים אחרי השחרור'), list(KB && KB.data ? KB.data.emotional_support.common_challenges : [])),
         btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'),
         h('div', {class: 'plus-row'}, btn(tr('Relationships & family', 'מערכות יחסים ומשפחה'), () => showPage('family'), 'plus-link')));
@@ -414,7 +482,7 @@
     /* ----- Rights & benefits ----- */
     rights() {
       const wrap = h('div');
-      put(wrap, h('h1', {class: 'plus-title'}, tr('What am I entitled to?', 'מה מגיע לי?')), hebrewNote(), personalBanner(), disclaimer());
+      put(wrap, h('h1', {class: 'plus-title'}, tr('What am I entitled to?', 'מה מגיע לי?')), hebrewNote(), personalBanner(), disclaimer(), warningsBox(), grantVsDeposit());
       const input = h('input', {type: 'search', id: 'plusRightsSearch', placeholder: tr('Search: grant, deposit, studies…', 'חיפוש: מענק, פיקדון, לימודים…'), 'aria-label': tr('Search rights and benefits', 'חיפוש בזכויות והטבות')});
       const results = h('div', {id: 'plusRightsResults', 'aria-live': 'polite'});
       const draw = () => {
@@ -449,7 +517,7 @@
     },
     money() {
       const cards = KB.rightsCards().filter(c => c.cat === 'money' || c.id === 'preferred_work_grant').filter(c => !P.hidden.includes('right:' + c.id));
-      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Money', 'כסף')), hebrewNote(), personalBanner(), disclaimer(), ...cards.map(rightCard),
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Money', 'כסף')), hebrewNote(), personalBanner(), disclaimer(), warningsBox(), calculator(), grantVsDeposit(), ...cards.map(rightCard),
         section(tr('Saving and budget tips', 'טיפים לחיסכון ותקציב'), list(KB.GUIDES.savingsTips), h('p', {class: 'plus-muted'}, tr('General tips, not financial advice.', 'טיפים כלליים, לא ייעוץ פיננסי.'))),
         h('div', {class: 'plus-row'}, askButton('money', tr('Help me plan a simple budget for my grant.', 'תעזור לי לתכנן תקציב פשוט למענק שלי.'))));
     },
@@ -504,6 +572,17 @@
     help() { return helpPage(); }
   };
 
+  function calculator() {
+    const out = h('div', {'aria-live': 'polite'});
+    const svc = h('select', {id: 'plusCalcService', 'aria-label': tr('Service type', 'סוג שירות')},
+      [['combat', tr('Combat', 'לוחם/ת')], ['support', tr('Combat support', 'תומך/ת לחימה')], ['other', tr('Other', 'אחר')], ['national', tr('National service', 'שירות לאומי')]]
+        .map(([v, l]) => h('option', {value: v, selected: v === (P.service || 'combat') || undefined}, l)));
+    const months = h('input', {type: 'number', id: 'plusCalcMonths', min: '1', max: '60', inputmode: 'numeric', value: P.monthsServed || '', placeholder: tr('e.g. 32', 'למשל 32'), 'aria-label': tr('Months of service', 'חודשי שירות')});
+    const draw = () => out.replaceChildren(estimateBlock(svc.value, months.value) || h('p', {class: 'plus-muted'}, tr('Choose a service type.', 'בחר סוג שירות.')));
+    svc.addEventListener('change', draw); months.addEventListener('input', draw); draw();
+    return section(tr('Calculator — grant, deposit and tax points', 'מחשבון — מענק, פיקדון ונקודות זיכוי'),
+      h('div', {class: 'plus-calc'}, h('label', {class: 'plus-field'}, h('span', {}, tr('Service type', 'סוג שירות')), svc), h('label', {class: 'plus-field'}, h('span', {}, tr('Months of service', 'חודשי שירות')), months)), out);
+  }
   function moodTrend() {
     const last = P.moods.slice(-14);
     if (last.length < 2) return h('p', {class: 'plus-muted'}, tr('Your trend appears after a few check-ins.', 'המגמה תופיע אחרי כמה בדיקות.'));
@@ -539,21 +618,26 @@
     const form = h('form', {class: 'plus-onboarding', onsubmit: e => { e.preventDefault(); finish(); }},
       h('h1', {class: 'plus-title'}, tr('Three quick questions', 'שלוש שאלות קצרות')),
       h('p', {class: 'plus-muted'}, tr('So I can show what is relevant to you. Saved only on this device. You can skip anything.', 'כדי שאוכל להראות לך מה רלוונטי. נשמר רק במכשיר הזה. אפשר לדלג על כל שאלה.')),
+      btn(tr('Skip — take me home', 'דילוג — ישר למסך הבית'), skip, 'plus-skip'),
       h('fieldset', {}, h('legend', {}, tr('1. When were you discharged?', '1. מתי השתחררת?')), month, box('plusNotYet', tr("I haven't been discharged yet", 'עוד לא השתחררתי'), P.notDischarged)),
       h('fieldset', {}, h('legend', {}, tr('2. Type of service', '2. סוג שירות')),
         radio('service', 'combat', tr('Combat', 'לוחם/ת'), P.service === 'combat'), radio('service', 'support', tr('Combat support', 'תומך/ת לחימה'), P.service === 'support'),
         radio('service', 'other', tr('Other', 'אחר'), P.service === 'other'), radio('service', 'national', tr('National service', 'שירות לאומי'), P.service === 'national'),
+        h('label', {class: 'plus-field'}, h('span', {}, tr('Months of service (optional, for an estimate)', 'כמה חודשים שירתת? (רשות, להערכת המענק)')),
+          h('input', {type: 'number', id: 'plusMonths', min: '1', max: '60', inputmode: 'numeric', value: P.monthsServed || '', class: 'plus-small-input'})),
         box('plusLone', tr('I am / was a lone soldier', 'אני חייל/ת בודד/ה'), P.lone), box('plusReservist', tr('I serve in the reserves', 'אני משרת/ת במילואים'), P.reservist)),
       h('fieldset', {}, h('legend', {}, tr('3. What weighs on you most right now?', '3. מה הכי מעיק עליך עכשיו?')),
         ...[['money', tr('Money', 'כסף')], ['rights', tr('Rights & benefits', 'זכויות והטבות')], ['work', tr('Work', 'עבודה')], ['studies', tr('Studies', 'לימודים')], ['feelings', tr('How I feel', 'איך אני מרגיש')], ['unsure', tr("I don't know", 'לא יודע')]]
           .map(([v, l]) => radio('pressing', v, l, P.pressing === v))),
-      h('div', {class: 'plus-row'}, h('button', {type: 'submit', class: 'plus-btn primary'}, tr('Done', 'סיום')), btn(tr('Skip', 'דילוג'), () => { if (!P.onboarded && !S.started) P.seenVersion = VERSION; P.onboarded = true; store(); goHome(); }, 'plus-link')));
+      h('div', {class: 'plus-row'}, h('button', {type: 'submit', class: 'plus-btn primary'}, tr('Done', 'סיום'))), btn(tr('Skip', 'דילוג'), skip, 'plus-skip'));
+    function skip() { if (!P.onboarded && !S.started) P.seenVersion = VERSION; P.onboarded = true; store(); goHome(); }
     function finish() {
       const val = n => (form.querySelector('input[name="' + n + '"]:checked') || {}).value || '';
       P.notDischarged = $('plusNotYet').checked;
       P.dischargeMonth = P.notDischarged ? '' : (/^\d{4}-\d{2}$/.test(month.value) ? month.value : '');
       P.service = val('service'); P.pressing = val('pressing');
       P.lone = $('plusLone').checked; P.reservist = $('plusReservist').checked;
+      const ms = Number($('plusMonths').value); P.monthsServed = Number.isInteger(ms) && ms > 0 && ms <= 60 ? ms : '';
       if (!P.onboarded && !S.started) P.seenVersion = VERSION; // brand-new users do not need "what's new"
       P.onboarded = true; store();
       try { S.profile.background = {...(S.profile.background || {}), serviceType: P.service, reserve: P.reservist || !!(S.profile.background || {}).reserve}; save(); } catch (_) {}
@@ -675,7 +759,8 @@
     const bar = $('plusModes'); if (bar) bar.remove();
     if (typeof pushMsg !== 'function') return;
     if (mode === 'talk') {
-      const norm = KB && KB.data ? KB.data.emotional_support.normalization : '';
+      const ns = KB && KB.data && KB.data.emotional_support.normalization_sentences;
+      const norm = ns ? ns.join(' ') : (KB && KB.data ? KB.data.emotional_support.normalization : '');
       pushMsg('assistant', tr('Many people feel empty, confused or without direction after discharge. That is completely normal.\n\nThere is no agenda here. What is on your mind?',
         (norm || 'הרבה אנשים מרגישים ריקים, מבולבלים או חסרי כיוון אחרי השחרור. זה נורמלי לגמרי.') + '\n\nאין כאן סדר יום. מה עובר עליך?'), {kind: 'plus-mode'});
     } else {
@@ -755,6 +840,7 @@
       if (P.service) facts.push('service type: ' + P.service);
       if (P.lone) facts.push('lone soldier');
       if (P.reservist) facts.push('serves in reserves');
+      if (P.monthsServed) facts.push('about ' + P.monthsServed + ' months of service');
       const m = monthsSinceDischarge(); if (m !== null) facts.push('about ' + m + ' months since discharge'); else if (P.notDischarged) facts.push('not yet discharged');
       if (P.pressing) facts.push('most pressing now: ' + P.pressing);
       if (facts.length) parts.push('SOLDIER-PROVIDED BACKGROUND (opted in; self-reported; do not infer eligibility from it): ' + facts.join('; ') + '.');

@@ -41,3 +41,23 @@ Branch: `feature/full-brief-20261126` (based on `fix/severe-bugs-20261126`, whic
   mode, text size, info-only, history search/delete, offline, My Journey widgets, English edition).
 - `npm run test:next` and `npm run build:review` pass. jsdom-based suites could not run in this environment
   (package install blocked) — run `npm test` locally. Safari was not tested.
+
+## Implementation package additions (26 Nov 2026, evening)
+
+- Backup branch also created under the package's name: `backup/before-full-improvements-20261126`
+  (same commit as `backup/before-improvements-20261126`). Work continued on `feature/full-brief-20261126`.
+- **Practice mode:** "Try the real AI again" now drops the scripted reply and immediately re-asks the live AI
+  for the last question; the failure reason is shown in plain words ("the server may be waking up…").
+  Same-text double taps within 600 ms are ignored and the send button is disabled while a reply is pending.
+  `tests/integration-ui.test.js` was updated for the new retry behavior.
+- **Strict `confirmed === true`** in `journey-store.js` (same rule as `next/business-skills.js`).
+- **Knowledge base v2.1:** deposit rates per month of service, tax point value (242 ₪), "not automatic" + refund,
+  preferred work period (6 months / 150 days), extra sectors, scam warning, important warnings,
+  normalization sentences, grant-vs-deposit explanation, extra checklist items and a first-year list, 3 FAQ.
+  Kept from v2.0: the deposit's 7 listed uses (the package lists 6; "rent, in some cases" was kept — verify).
+- **UX:** estimate (grant, deposit, tax points) on Home from service type + optional months served,
+  calculator on the Money page, "last updated + source" on every money card, scam warning, large Skip,
+  ready-made step options, quick-answer cards, "Talk with the Companion" button, privacy line on every screen.
+- **Privacy line wording:** the package's "everything you write stays only on this device" is not accurate
+  when the soldier chooses to use the AI, so it reads: "Everything you write is saved only on this device.
+  A message goes to the AI only after you approve."

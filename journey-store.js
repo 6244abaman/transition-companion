@@ -43,7 +43,7 @@
         Number(v.id) > 36 || !Number.isInteger(rating) || rating < 1 || rating > 7) return null;
     const evidence = str(v.evidence, 1500);
     return { id: Number(v.id), en: str(v.en, 120), he: str(v.he, 120),
-      rating, evidence, confirmed: !!v.confirmed && !!evidence };
+      rating, evidence, confirmed: v.confirmed === true && !!evidence }; // strict, same rule as next/business-skills.js
   }
   function cleanItem(type, v) {
     if (!v || typeof v !== "object") return null;
