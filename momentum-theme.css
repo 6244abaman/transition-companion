@@ -1,172 +1,209 @@
-/* Momentum theme — one look for every screen (Companion, My Journey, Skills).
-   Loaded last on each page. Darker, higher-contrast palette; legacy components restyled. */
-:root {
-  --m-green:#24513D; --m-green-2:#2F6650; --m-ink:#141C17; --m-sub:#3E453F; --m-cream:#F4EFE5;
-  --m-card:#FFFFFF; --m-sage:#DCE7D4; --m-beige:#EDE5D3; --m-line:#D8D0C0; --m-shadow:0 2px 12px rgba(20,30,22,.10);
-  /* legacy variables used by the original app, made darker */
-  --ink:#141C17; --ink-2:#333A34; --dust:#535A53; --line:#D8D0C0; --paper:#FFFFFF; --paper-2:#F4EFE5;
-  --olive:#24513D; --olive-soft:#DCE7D4; --stone:#F4EFE5; --sub:#3E453F;
-}
-body { color:var(--m-ink); -webkit-font-smoothing:antialiased; }
-p, li, small, label, td, th, summary { color:inherit; }
-.plus-muted, .plus-hello-sub, .plus-row-text small, .plus-mood-label, .plus-online, .plus-source, .muted, .hub-note { color:var(--m-sub) !important; }
-.plus-row-text small em, .plus-sum-text small { color:#454C46 !important; }
-.plus-hello-sub { font-weight:500; }
-.plus-home-why, .plus-tile small { color:#3E453F; }
-
-/* bottom navigation: darker labels, bolder */
-.plus-nav button, .jp-nav a { color:#3E453F !important; font-weight:600; font-size:12px !important; }
-.plus-nav button[aria-current="page"], .jp-nav a[aria-current="page"] { color:var(--m-green) !important; font-weight:800; }
-
-/* cards: a little more definition */
-.plus-home-btn, .plus-mood-card, .plus-sum-card, .plus-page .plus-card, .jp-steps, .jp-card, .jp-wday, .jp-link, .plus-qanswer { box-shadow:var(--m-shadow) !important; border:1px solid #E6DFD1 !important; }
-.plus-chat-entry, .jp-goal { background:var(--m-green) !important; }
-.plus-sage { background:var(--m-sage) !important; } .plus-beige { background:var(--m-beige) !important; }
-.plus-sum-ico { background:var(--m-sage) !important; color:var(--m-green) !important; }
-.turn.them { background:#DFE8D8 !important; }
-.turn.them .body { color:#141C17 !important; font-size:15.5px !important; }
-
-/* quick-question chips wrap instead of being cut at the screen edge */
-.plus-quick-chips { flex-wrap:wrap; overflow:visible; }
-.plus-qchip { white-space:normal; max-width:100%; text-align:start; color:#262D27; border-color:#CFC7B6; font-weight:500; }
-
-/* ---------- gear menu ---------- */
-.companion-more-items { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:16px !important; box-shadow:0 12px 32px rgba(20,30,22,.18) !important; padding:8px !important; gap:4px !important; min-width:220px !important; }
-.companion-more-items .chip, .companion-more-items button { display:flex !important; align-items:center; width:100%; min-height:46px; padding:10px 14px !important; border:0 !important; border-radius:12px !important; background:#fff !important; color:var(--m-ink) !important; font:inherit; font-size:15px !important; font-weight:600; text-align:start; }
-.companion-more-items button:hover, .companion-more-items button:focus-visible { background:var(--m-sage) !important; }
-
-/* ---------- side drawers (AI, voice, profile, support) → full sheet in the new style ---------- */
-.drawer { background:var(--m-cream) !important; color:var(--m-ink); box-shadow:0 0 40px rgba(20,30,22,.25) !important; }
-@media (max-width:700px) { .drawer { width:100% !important; max-width:100% !important; } }
-.dhead { background:var(--m-cream) !important; border-bottom:0 !important; padding:14px 14px 8px !important; }
-.dhead h2 { font-family:'Heebo',system-ui,sans-serif !important; font-size:19px !important; font-weight:800 !important; color:var(--m-ink); }
-.dhead .chip, #btnClose { width:40px; height:40px; min-height:40px; padding:0 !important; border-radius:50% !important; border:1px solid #D8D0C0 !important; background:#fff !important; color:var(--m-ink) !important; font-size:16px !important; }
-.dbody { padding:6px 14px 24px !important; font-size:15px; line-height:1.6; color:var(--m-ink); }
-.dbody > * + * { margin-top:10px; }
-.dbody :is(section, .card, .contact, .item, details) { background:#fff; border:1px solid #E6DFD1; border-radius:16px; padding:12px 14px; box-shadow:var(--m-shadow); }
-.dbody h3 { font-size:16px; font-weight:800; margin:4px 0; }
-.dbody p, .dbody li { color:#262D27; }
-.dbody a { color:var(--m-green); font-weight:700; }
-.dbody button, .dbody .chip { min-height:44px; padding:8px 16px; border-radius:12px; border:1px solid #BFCBB8; background:#fff; color:var(--m-green); font:inherit; font-weight:700; }
-.dbody button.primary, .dbody .go, .dbody button.go { background:var(--m-green); color:#fff; border-color:var(--m-green); }
-.dbody input, .dbody select, .dbody textarea { border:1px solid #CFC7B6; border-radius:10px; background:#fff; color:var(--m-ink); font:inherit; padding:8px 10px; }
-.dbody input[type=range] { accent-color:var(--m-green); padding:0; border:0; }
-.veil { background:rgba(20,30,22,.45) !important; }
-
-/* ---------- dialogs (AI consent, share, password …) ---------- */
-dialog { border:0 !important; border-radius:20px !important; padding:22px !important; background:#fff !important; color:var(--m-ink) !important; box-shadow:0 20px 60px rgba(20,30,22,.30) !important; font-family:'Heebo',system-ui,sans-serif; }
-dialog::backdrop { background:rgba(20,30,22,.5); }
-dialog h2 { font-size:19px; font-weight:800; margin:0 0 10px; color:var(--m-ink); }
-dialog p, dialog li, dialog label { color:#262D27 !important; line-height:1.6; }
-dialog button { min-height:46px !important; padding:10px 18px !important; border-radius:12px !important; border:1px solid #BFCBB8 !important; background:#fff !important; color:var(--m-green) !important; font:inherit !important; font-weight:700 !important; cursor:pointer; }
-dialog #ai-approve, dialog button.primary, dialog #shareApprove, dialog #passwordSubmit, dialog #saveRecord { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
-
-/* ---------- updated benefits panel ---------- */
-#benefitsUpdates { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:18px !important; color:var(--m-ink) !important; box-shadow:var(--m-shadow); padding:18px !important; }
-#benefitsUpdates h2 { font-size:1.25rem !important; font-weight:800; }
-#benefitsUpdates .benefits-small { color:var(--m-sub) !important; }
-#benefitsUpdates button, #benefitsUpdates a.button { border-radius:999px !important; border:1px solid #BFCBB8 !important; color:var(--m-green) !important; background:#fff !important; font-weight:700 !important; }
-#benefitsUpdates button[aria-pressed="true"] { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
-#benefitsUpdates :is(article, .benefits-card, li) { border-color:#E6DFD1 !important; border-radius:14px !important; }
-
-/* ---------- legacy "More options" on Home ---------- */
-.plus-legacy { border-top:1px solid #DCD4C4 !important; }
-.plus-legacy > summary { font-weight:800; color:var(--m-ink); }
-#hubKicker, #hubHeading, #hubLede { display:none; }
-.hub-resume { background:var(--m-sage) !important; border:0 !important; border-radius:16px !important; }
-.hub-resume :is(strong,p) { color:var(--m-ink) !important; }
-.hub-primary { background:var(--m-green) !important; border-color:var(--m-green) !important; border-radius:12px !important; }
-.hub-path { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:16px !important; box-shadow:var(--m-shadow); color:var(--m-ink) !important; font-weight:600; }
-.hub-path span:first-child { color:var(--m-green) !important; }
-.hub-tester textarea { border-color:#CFC7B6 !important; }
-
-/* ---------- conversation history list ---------- */
-#chatHistory .chat-item { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:14px !important; color:var(--m-ink) !important; font-weight:600; padding:10px 12px !important; }
-#chatHistory .chat-item small { color:var(--m-sub) !important; font-weight:400; }
-#chatHistory .new-chat { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; border-radius:12px !important; }
-
-/* ---------- 36-skills page (skills-business.html) ---------- */
-body:has(#assessment) { background:var(--m-cream) !important; font-family:'Heebo',system-ui,sans-serif; color:var(--m-ink); }
-body:has(#assessment) > header { background:var(--m-cream) !important; color:var(--m-ink) !important; padding:14px 16px 6px !important; }
-body:has(#assessment) > header :is(a, h1, p, button) { color:var(--m-ink) !important; }
-body:has(#assessment) > header a { font-weight:700; color:var(--m-green) !important; text-decoration:none; }
-body:has(#assessment) > header button { border-radius:999px; border:1px solid #BFCBB8; background:#fff; }
-body:has(#assessment) > header h1 { font-size:22px !important; font-weight:800; }
-body:has(#assessment) .box { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:18px !important; box-shadow:var(--m-shadow) !important; }
-body:has(#assessment) :is(button, .button) { border-radius:12px !important; border-color:#BFCBB8 !important; color:var(--m-green) !important; }
-body:has(#assessment) :is(button.primary, .ratings .selected) { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
-body:has(#assessment) .fill { background:var(--m-green) !important; }
-body:has(#assessment) :is(.muted, small) { color:var(--m-sub) !important; }
-body:has(#assessment) main { max-width:640px; padding:8px 12px 30px; }
-
-/* removed from view (replaced by the new design; DOM kept for links and tests) */
-#plusLegacy, #welcome, .chat-guidance, .chat-heading { display:none !important; }
-/* reply actions as small icons */
-.plus-turn-tools { gap:6px; margin-top:6px; }
-.plus-ticon { width:34px; height:34px; border-radius:50%; border:1px solid #C9D4C2; background:rgba(255,255,255,.75); color:var(--m-green); display:inline-flex; align-items:center; justify-content:center; padding:0; cursor:pointer; }
-.plus-ticon .plus-ico { width:18px; height:18px; }
-.plus-ticon:disabled { opacity:.8; cursor:default; }
-.composer #input:focus, .composer #input:focus-visible { outline:none !important; border-color:#24513D !important; box-shadow:0 0 0 3px rgba(36,81,61,.15) !important; }
-
 /* =====================================================================
-   DEEPER PALETTE (owner feedback 26 Nov: background too pale, text hard to read)
-   Sand background, white cards, near-black text.
+   MOMENTUM THEME — one semantic palette for every screen
+   (Companion, My Journey, Skills). Loaded last on each page.
+
+   Built from the reference mockup's colours, organised by role (design-token practice:
+   components use roles, never raw colours) and the 60-30-10 rule:
+     60%  --bg        warm cream page background
+     30%  --surface   white cards + --sage / --beige tinted cards
+     10%  --accent    deep green for primary actions and active states
+   Contrast (WCAG 2.2): --text ≥13:1, --text-2 ≥8:1, --text-3 ≥5.5:1 on every surface;
+   white on --accent 9.7:1.
    ===================================================================== */
-:root { --m-cream:#E6DCCA; --m-ink:#0E1511; --m-sub:#2C332D; --ink:#0E1511; --ink-2:#232A24; --dust:#3E453F; --sub:#2C332D; --stone:#E6DCCA; --paper-2:#E6DCCA; --m-line:#CDBFA6; }
-body { color:#0E1511 !important; }
-/* backgrounds */
-body:has(#chat:not([hidden])), body:has(#plusPage:not([hidden])), body:has(#view-overview), body:has(#assessment) { background:#E6DCCA !important; }
+:root {
+  --bg:#F3ECE0; --surface:#FFFFFF; --sage:#DFE7D3; --beige:#EFE7D6;
+  --warn-bg:#FBF0D3; --warn-border:#E8D196; --warn-text:#4A3405;
+  --danger-bg:#FBE9E5; --danger-border:#E3B5AA; --danger-text:#7E2A1C;
+  --text:#17201B; --text-2:#3A433D; --text-3:#525B54;
+  --accent:#2E4A40; --accent-2:#3E5F51; --on-accent:#FFFFFF;
+  --border:#DDD3C0; --border-strong:#B9AD95;
+  --shadow:0 1px 2px rgba(40,32,15,.06), 0 4px 14px rgba(40,32,15,.08);
+  /* older variable names mapped onto the roles */
+  --m-green:var(--accent); --m-green-2:var(--accent-2); --m-ink:var(--text); --m-sub:var(--text-2);
+  --m-cream:var(--bg); --m-card:var(--surface); --m-sage:var(--sage); --m-beige:var(--beige);
+  --m-line:var(--border); --m-shadow:var(--shadow);
+  --ink:var(--text); --ink-2:var(--text-2); --dust:var(--text-3); --line:var(--border);
+  --paper:var(--surface); --paper-2:var(--bg); --stone:var(--bg); --olive:var(--accent); --olive-soft:var(--sage);
+  --sub:var(--text-2); --pale:var(--bg); --teal:var(--accent); --navy:var(--accent);
+  color-scheme:light;
+}
+
+/* ---------- base ---------- */
+html, body { background:var(--bg) !important; color:var(--text) !important; }
+body { font-family:'Heebo',system-ui,-apple-system,"Segoe UI",Arial,sans-serif !important; -webkit-font-smoothing:antialiased; }
+h1, h2, h3, strong, b { color:var(--text); }
+a { color:var(--accent); }
 body:has(#companionHomeHub:not([hidden])) {
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.55' stop-color='%23fff' stop-opacity='.9'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='400' height='300' fill='url(%23f)'/%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M0 150 C60 120 110 132 170 118 S290 92 400 112 V300 H0Z' fill='%239C8A66' fill-opacity='.45'/%3E%3Cpath d='M0 175 C80 150 150 162 230 146 S340 134 400 148 V300 H0Z' fill='%236F6B4E' fill-opacity='.32'/%3E%3C/g%3E%3C/svg%3E") top center / 100% 320px no-repeat,
-    linear-gradient(180deg,#C9B693 0px,#D6C7A9 140px,#E0D5C0 260px,#E6DCCA 380px) !important;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='.55' stop-color='%23fff' stop-opacity='.85'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect width='400' height='300' fill='url(%23f)'/%3E%3C/mask%3E%3C/defs%3E%3Cg mask='url(%23m)'%3E%3Cpath d='M0 150 C60 120 110 132 170 118 S290 92 400 112 V300 H0Z' fill='%23A89878' fill-opacity='.35'/%3E%3Cpath d='M0 175 C80 150 150 162 230 146 S340 134 400 148 V300 H0Z' fill='%237C7A5E' fill-opacity='.25'/%3E%3C/g%3E%3C/svg%3E") top center / 100% 300px no-repeat,
+    linear-gradient(180deg,#DCCDB2 0px,#E6DCC8 130px,#EEE6D7 230px,var(--bg) 340px) !important;
 }
-.plus-head, .jp-head, body:has(#chat:not([hidden])) header.bar, body:has(#chat:not([hidden])) .composer { background:#E6DCCA !important; }
-body:has(#chat:not([hidden])) header.bar { border-bottom:1px solid #D2C5AC !important; }
-/* text */
-.plus-hello, .plus-head-title, .jp-head h1, .plus-quick h2, .jp-sec-head h2, .plus-home-btn strong, .plus-sum-title, .plus-sum-amount, .plus-row-text strong { color:#0E1511 !important; }
-.plus-hello-sub, .plus-muted, .plus-mood-label, .plus-row-text small, .plus-sum-text small, .plus-row-text small em, .plus-online, .plus-source, .plus-cheer, .plus-privacy-line, .muted, .jp-all, .jp-link-text small, .jp-week-detail, #storageNotice { color:#2C332D !important; }
-.plus-hello-sub { font-size:15.5px !important; font-weight:600 !important; }
-.plus-mood-label { font-weight:600; font-size:12.5px !important; }
-.plus-chat-head strong { color:#0E1511; }
-/* cards pop on sand */
-.plus-home-btn, .plus-mood-card, .plus-sum-card, .plus-page .plus-card, .plus-card, .jp-steps, .jp-card, .jp-wday:not(.jp-wday-on), .jp-link, .plus-qanswer, .plus-qchip, .plus-qr, .card, .stat, .record, .box { background:#FFFFFF !important; border:1px solid #D9CDB6 !important; box-shadow:0 2px 10px rgba(40,30,10,.10) !important; }
-.plus-sage { background:#CFDEC5 !important; } .plus-beige { background:#F3ECDD !important; border:1px solid #D9CDB6 !important; }
-.plus-soft, .plus-pill { background:#D9E6D1 !important; border-color:#B6CBAA !important; color:#0E1511 !important; }
-.plus-disclaimer { background:#FBEFD2 !important; border-color:#E3C98E !important; color:#4A3306 !important; }
-.plus-warning, .plus-know { background:#FBEBC8 !important; border-color:#E3C98E !important; color:#3D2A05 !important; }
-.plus-know p { color:#3D2A05 !important; }
-.turn.them { background:#D3E0CA !important; }
-.turn.them .body { color:#0E1511 !important; }
-.turn.me .body { border-color:#D9CDB6 !important; }
-.plus-save-pill { background:#D3E0CA !important; border-color:#A9BF9C !important; color:#0E1511 !important; }
-.plus-qr { color:#0E1511 !important; border-color:#C9BFA8 !important; font-weight:600 !important; }
-.plus-qchip { color:#1B221D !important; font-weight:600 !important; }
-.jp-chip { background:#E3EBDC !important; color:#0E1511 !important; border:1px solid #C7D4BC; font-weight:600; }
-.plus-tile { background:#fff !important; border:1px solid #D9CDB6 !important; color:#0E1511 !important; }
-.plus-tile small { color:#2C332D !important; }
-.plus-details { background:#F7F2E8 !important; border-color:#D9CDB6 !important; }
-.plus-table th, .plus-table td { border-color:#E3D9C6 !important; color:#0E1511; }
-.plus-search input, #plusToday input, .plus-field select, .plus-calc input, .plus-onboarding fieldset, .plus-onboarding input[type=month] { background:#fff !important; border-color:#B9AC93 !important; color:#0E1511 !important; }
-.plus-onboarding fieldset { border:1px solid #D9CDB6 !important; }
-.plus-link, .plus-btn:not(.primary) { color:#1D4634 !important; }
-.plus-chat-entry, .plus-chat-entry * { color:#fff !important; }
-.plus-btn { border-color:#9DB291 !important; }
 
-/* ---------- My Journey "All details" in the new style ---------- */
+/* ---------- text roles ---------- */
+.plus-hello, .plus-head-title, .jp-head h1, .plus-quick h2, .jp-sec-head h2, .plus-home-btn strong,
+.plus-sum-title, .plus-sum-amount, .plus-row-text strong, .plus-chat-head strong, .plus-card h2, .plus-card h3,
+.record h3, .card h2, .card h3, .dhead h2, dialog h2 { color:var(--text) !important; }
+.plus-hello-sub, .plus-muted, .plus-row-text small, .plus-tile small, .plus-home-why, .muted, .mini,
+.plus-cheer, .plus-privacy-line, .jp-week-detail, #storageNotice, .stat span, .record p, .plus-card p, .plus-list li { color:var(--text-2) !important; }
+.plus-mood-label, .plus-online, .plus-source, .plus-sum-text small, .plus-row-text small em, .jp-link-text small, .jp-all, .hub-note { color:var(--text-3) !important; }
+.plus-hello-sub { font-size:15.5px !important; font-weight:500 !important; }
+.plus-mood-label { font-size:12.5px !important; font-weight:600 !important; }
+
+/* ---------- surfaces (30%) ---------- */
+.plus-home-btn, .plus-mood-card, .plus-sum-card, .plus-card, .plus-page .plus-card, .plus-tile, .plus-qanswer,
+.jp-steps, .jp-card, .jp-link, .jp-wday:not(.jp-wday-on), .card, .stat, .record, .box, #benefitsUpdates {
+  background:var(--surface) !important; border:1px solid var(--border) !important; box-shadow:var(--shadow) !important; color:var(--text);
+}
+.plus-sage, .plus-soft, .plus-pill, .plus-sum-ico, .turn.them, .plus-save-pill, .jp-chip, .tag, .hub-resume { background:var(--sage) !important; }
+.plus-soft, .plus-pill { border:1px solid #C7D4BB !important; color:var(--text) !important; }
+.plus-beige, .plus-details, .privacy-note, .empty, .turn.sys .body { background:var(--beige) !important; }
+.plus-beige { border:1px solid var(--border) !important; }
+.plus-details, .privacy-note, .empty { border-color:var(--border) !important; color:var(--text-2) !important; }
+.plus-sum-ico, .plus-home-icon, .plus-row-ico, .plus-head-ico, .jp-head-ico, .jp-sec-ico, .plus-qr-ico, .jp-link-ext { color:var(--accent) !important; }
+.plus-beige .plus-row-ico { color:#9A6B12 !important; }
+
+/* ---------- accent (10%) ---------- */
+.plus-chat-entry, .jp-goal, .plus-btn.primary, button.primary, .button.primary, .hub-primary, .jp-wday-on,
+#chatHistory .new-chat, #btnSend.send, .plus-avatar, dialog #ai-approve, dialog button.primary, dialog #shareApprove, dialog #passwordSubmit, dialog #saveRecord,
+#tabs button[aria-selected=true], .jp-step input:checked {
+  background-color:var(--accent) !important; border-color:var(--accent) !important; color:var(--on-accent) !important;
+}
+.jp-goal { background:linear-gradient(135deg,var(--accent-2),var(--accent)) !important; }
+.plus-chat-entry *, .jp-goal *, .jp-wday-on * { color:var(--on-accent) !important; }
+.jp-wday-on .jp-wdot { background:var(--on-accent) !important; }
+.plus-chat-entry:hover, .plus-btn.primary:hover, button.primary:hover { background-color:var(--accent-2) !important; }
+.turn.them::after { background-color:var(--accent) !important; }
+.plus-btn:not(.primary), .plus-link, .plus-know-more, .jp-all, .plus-qr-skip { color:var(--accent) !important; }
+.plus-btn:not(.primary) { background:var(--surface) !important; border-color:var(--border-strong) !important; }
+
+/* ---------- warnings / danger ---------- */
+.plus-disclaimer, .plus-warning, .plus-know, .benefits-warning { background:var(--warn-bg) !important; border:1px solid var(--warn-border) !important; color:var(--warn-text) !important; }
+.plus-know p, .plus-know strong, .plus-know-more { color:var(--warn-text) !important; }
+.plus-distress { background:var(--danger-bg) !important; border:1px solid var(--danger-border) !important; color:var(--danger-text) !important; }
+button.danger { color:var(--danger-text) !important; border-color:var(--danger-border) !important; }
+
+/* ---------- inputs ---------- */
+.plus-search input, #plusToday input, .plus-field select, .plus-calc input, .plus-onboarding input[type=month], .plus-small-input,
+.field input, .field textarea, .field select, .dbody input, .dbody select, .dbody textarea, #chatHistory .chat-search,
+.composer #input, #jpManualSkills input, #jpManualSkills textarea {
+  background:var(--surface) !important; border:1px solid var(--border-strong) !important; color:var(--text) !important;
+}
+::placeholder { color:var(--text-3) !important; opacity:1; }
+.composer #input:focus, .composer #input:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline:none !important; border-color:var(--accent) !important; box-shadow:0 0 0 3px rgba(46,74,64,.18) !important;
+}
+:focus-visible { outline:3px solid #B5761B; outline-offset:2px; }
+
+/* ---------- chips & pills ---------- */
+.plus-qchip, .plus-qr, .jp-lang { background:var(--surface) !important; border:1px solid var(--border-strong) !important; color:var(--text) !important; font-weight:600 !important; }
+.plus-qchip[aria-expanded="true"] { border-color:var(--accent) !important; color:var(--accent) !important; }
+.plus-quick-chips { flex-wrap:wrap; overflow:visible; }
+.plus-qchip { white-space:normal; max-width:100%; text-align:start; }
+.jp-chip { border:1px solid #C7D4BB !important; color:var(--text) !important; font-weight:600; }
+.tag { color:var(--accent) !important; }
+.plus-save-pill { border:1px solid #B9C8AD !important; color:var(--text) !important; }
+
+/* ---------- chat ---------- */
+body:has(#chat:not([hidden])) header.bar, body:has(#chat:not([hidden])) .composer, .plus-head, .jp-head { background:var(--bg) !important; }
+body:has(#chat:not([hidden])) header.bar { border-bottom:1px solid var(--border) !important; }
+.turn.them { border:0 !important; }
+.turn.them .body { color:var(--text) !important; font-size:15.5px !important; }
+.turn.me .body { background:var(--surface) !important; border:1px solid var(--border) !important; color:var(--text) !important; }
+.turn.sys .body { color:var(--text-2) !important; }
+.plus-chat-hbtn, .plus-page .plus-back, .jp-back { color:var(--text) !important; }
+.plus-turn-tools { gap:6px; margin-top:6px; }
+.plus-ticon { width:34px; height:34px; border-radius:50%; border:1px solid #B9C8AD; background:rgba(255,255,255,.8); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; padding:0; cursor:pointer; }
+.plus-ticon .plus-ico { width:18px; height:18px; }
+
+/* ---------- bottom navigation ---------- */
+.plus-nav, .jp-nav { background:var(--surface) !important; border-top:1px solid var(--border) !important; }
+.plus-nav button, .jp-nav a { color:var(--text-3) !important; font-weight:600; font-size:12px !important; }
+.plus-nav button[aria-current="page"], .jp-nav a[aria-current="page"] { color:var(--accent) !important; font-weight:800; }
+.plus-nav button[aria-current="page"]::before, .jp-nav a[aria-current="page"]::before { background:var(--sage) !important; }
+
+/* ---------- tables ---------- */
+.plus-table th, .plus-table td { border-color:var(--border) !important; color:var(--text) !important; }
+.plus-table .plus-mine { background:var(--sage) !important; }
+
+/* ---------- gear menu ---------- */
+.companion-more-items { background:var(--surface) !important; border:1px solid var(--border) !important; border-radius:16px !important; box-shadow:0 12px 32px rgba(40,32,15,.18) !important; padding:8px !important; gap:4px !important; min-width:220px !important; }
+.companion-more-items .chip, .companion-more-items button { display:flex !important; align-items:center; width:100%; min-height:46px; padding:10px 14px !important; border:0 !important; border-radius:12px !important; background:var(--surface) !important; color:var(--text) !important; font:inherit; font-size:15px !important; font-weight:600; text-align:start; }
+.companion-more-items button:hover, .companion-more-items button:focus-visible { background:var(--sage) !important; }
+
+/* ---------- side drawers ---------- */
+.drawer { background:var(--bg) !important; color:var(--text); box-shadow:0 0 40px rgba(40,32,15,.25) !important; }
+@media (max-width:700px) { .drawer { width:100% !important; max-width:100% !important; } }
+.dhead { background:var(--bg) !important; border-bottom:0 !important; padding:14px 14px 8px !important; }
+.dhead h2 { font-family:inherit !important; font-size:19px !important; font-weight:800 !important; }
+.dhead .chip, #btnClose { min-width:40px; height:40px; min-height:40px; padding:0 12px !important; border-radius:999px !important; border:1px solid var(--border-strong) !important; background:var(--surface) !important; color:var(--text) !important; font-size:15px !important; }
+.dbody { padding:6px 14px 24px !important; font-size:15px; line-height:1.6; color:var(--text); }
+.dbody > * + * { margin-top:10px; }
+.dbody p, .dbody li { color:var(--text-2); }
+.dbody a { color:var(--accent); font-weight:700; }
+.dbody button, .dbody .chip { min-height:44px; padding:8px 16px; border-radius:12px; border:1px solid var(--border-strong); background:var(--surface); color:var(--accent); font:inherit; font-weight:700; }
+.dbody input[type=range] { accent-color:var(--accent); border:0 !important; padding:0; background:none !important; }
+.veil { background:rgba(23,32,27,.45) !important; }
+
+/* ---------- dialogs ---------- */
+dialog { border:0 !important; border-radius:20px !important; padding:22px !important; background:var(--surface) !important; color:var(--text) !important; box-shadow:0 20px 60px rgba(23,32,27,.30) !important; font-family:inherit; }
+dialog::backdrop { background:rgba(23,32,27,.5); }
+dialog h2 { font-size:19px; font-weight:800; margin:0 0 10px; }
+dialog p, dialog li, dialog label { color:var(--text-2) !important; line-height:1.6; }
+dialog button { min-height:46px !important; padding:10px 18px !important; border-radius:12px !important; border:1px solid var(--border-strong) !important; background:var(--surface) !important; color:var(--accent) !important; font:inherit !important; font-weight:700 !important; cursor:pointer; }
+
+/* ---------- updated-benefits panel ---------- */
+#benefitsUpdates { border-radius:18px !important; padding:18px !important; }
+#benefitsUpdates h2 { font-size:1.25rem !important; font-weight:800; }
+#benefitsUpdates .benefits-small { color:var(--text-3) !important; }
+#benefitsUpdates button, #benefitsUpdates a.button { border-radius:999px !important; border:1px solid var(--border-strong) !important; color:var(--accent) !important; background:var(--surface) !important; font-weight:700 !important; }
+#benefitsUpdates button[aria-pressed="true"] { background:var(--accent) !important; color:var(--on-accent) !important; border-color:var(--accent) !important; }
+
+/* ---------- conversation history ---------- */
+#chatHistory .chat-item { background:var(--surface) !important; border:1px solid var(--border) !important; border-radius:14px !important; color:var(--text) !important; font-weight:600; padding:10px 12px !important; }
+#chatHistory .chat-item small { color:var(--text-3) !important; font-weight:400; }
+
+/* ---------- My Journey "All details" ---------- */
 #tabs { gap:8px; padding:6px 0 12px; }
-#tabs button { border-radius:999px !important; min-height:40px; background:#fff !important; border:1px solid #C9BFA8 !important; color:#1D4634 !important; font-weight:700; }
-#tabs button[aria-selected=true] { background:#24513D !important; border-color:#24513D !important; color:#fff !important; }
-.stat strong { color:#24513D !important; }
-.stat span, .record p, .mini { color:#2C332D !important; }
-.record h3, .card h2, .card h3 { color:#0E1511 !important; }
-.tag { background:#E3EBDC !important; color:#1D4634 !important; }
-.tag.done { background:#CFE5D3 !important; color:#174A2C !important; }
-.empty { border-color:#C9BFA8 !important; color:#2C332D !important; background:#F7F2E8; }
-.privacy-note { background:#F3ECDD !important; border-color:#D9CDB6 !important; color:#2C332D !important; }
-.field input, .field textarea, .field select { border-color:#B9AC93 !important; }
-body:has(#view-overview) main button:not(.jp-step):not(.jp-wday):not(.jp-goal-edit):not(.jp-all):not(.jp-lang):not(.jp-link):not(.quiet), body:has(#view-overview) main .button { border-radius:12px; border-color:#9DB291; color:#1D4634; font-weight:700; }
-body:has(#view-overview) main button.primary, body:has(#view-overview) main .button.primary { background:#24513D !important; border-color:#24513D !important; color:#fff !important; }
-body:has(#view-overview) main button.danger { color:#8E2A22 !important; border-color:#D4A9A2 !important; }
-.jp-cal .jp-day { background:#fff; border-color:#D9CDB6; color:#0E1511; }
-.jp-has { background:#D9E6D1 !important; }
+#tabs button { border-radius:999px !important; min-height:40px; background:var(--surface) !important; border:1px solid var(--border-strong) !important; color:var(--accent) !important; font-weight:700; }
+.stat strong { color:var(--accent) !important; }
+.tag.done { background:#CFE3D2 !important; color:#174A2C !important; }
+body:has(#view-overview) main button:not(.jp-step):not(.jp-wday):not(.jp-goal-edit):not(.jp-all):not(.jp-lang):not(.jp-link):not(.quiet):not(.primary):not(.danger),
+body:has(#view-overview) main .button:not(.primary) { border-radius:12px; border-color:var(--border-strong); color:var(--accent); background:var(--surface); font-weight:700; }
+.jp-step { border-color:var(--border) !important; color:var(--text) !important; }
+.jp-step input { border-color:var(--border-strong) !important; }
+.jp-step-done .jp-step-title { color:var(--text-3) !important; }
+.jp-cal .jp-day { background:var(--surface); border-color:var(--border); color:var(--text); }
+.jp-has { background:var(--sage) !important; }
+.jp-progress { background:var(--surface) !important; }
+.jp-big { color:var(--accent) !important; } .jp-fill { background:var(--accent) !important; }
+
+/* ---------- 36-skills page ---------- */
+body:has(#assessment) > header { background:var(--bg) !important; color:var(--text) !important; padding:14px 16px 6px !important; }
+body:has(#assessment) > header :is(h1, p, button) { color:var(--text) !important; }
+body:has(#assessment) > header a { font-weight:700; color:var(--accent) !important; text-decoration:none; }
+body:has(#assessment) > header button { border-radius:999px; border:1px solid var(--border-strong); background:var(--surface); }
+body:has(#assessment) > header h1 { font-size:22px !important; font-weight:800; }
+body:has(#assessment) .box { border-radius:18px !important; }
+body:has(#assessment) :is(button, .button):not(.primary):not(.selected) { border-radius:12px !important; border-color:var(--border-strong) !important; color:var(--accent) !important; background:var(--surface) !important; }
+body:has(#assessment) :is(button.primary, .ratings .selected) { background:var(--accent) !important; color:var(--on-accent) !important; border-color:var(--accent) !important; }
+body:has(#assessment) .fill { background:var(--accent) !important; }
+body:has(#assessment) :is(.muted, small) { color:var(--text-2) !important; }
+body:has(#assessment) main { max-width:640px; padding:8px 12px 30px; }
+
+/* ---------- replaced legacy views (DOM kept for links/tests) ---------- */
+#plusLegacy, #welcome, .chat-guidance, .chat-heading { display:none !important; }
+
+/* ---------- dark mode: same roles, recalculated values (only when chosen in "Me") ---------- */
+html[data-theme="dark"] {
+  --bg:#131915; --surface:#1D2520; --sage:#25342B; --beige:#2A2620;
+  --warn-bg:#3A2E14; --warn-border:#6B5427; --warn-text:#F6E2B4;
+  --danger-bg:#3A201B; --danger-border:#6E3A30; --danger-text:#FFD5CC;
+  --text:#EEF2EF; --text-2:#C9D1CB; --text-3:#A7B1AA;
+  --accent:#8CCBAE; --accent-2:#A6D8C0; --on-accent:#0E1511;
+  --border:#33403A; --border-strong:#4C5A53; --shadow:0 2px 12px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+html[data-theme="dark"] body:has(#companionHomeHub:not([hidden])) { background:linear-gradient(180deg,#2A2820 0px,var(--bg) 300px) !important; }
+html[data-theme="dark"] .plus-soft, html[data-theme="dark"] .plus-pill, html[data-theme="dark"] .jp-chip { border-color:#3F5446 !important; }
+html[data-theme="dark"] .plus-ticon { background:var(--surface); border-color:var(--border-strong); }
+html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }

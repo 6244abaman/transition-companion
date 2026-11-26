@@ -14,7 +14,7 @@
   /* display preferences shared with the Companion */
   try {
     const P = JSON.parse(localStorage.getItem('momentum-companion-plus-v1') || '{}');
-    const dark = P.theme === 'dark' || ((!P.theme || P.theme === 'auto') && matchMedia('(prefers-color-scheme: dark)').matches);
+    const dark = P.theme === 'dark';
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     document.documentElement.dataset.text = P.textSize || 'normal';
     document.documentElement.dataset.motion = P.reduceMotion ? 'reduce' : 'full';

@@ -17,7 +17,7 @@
 
   /* ---------------- preferences (local only) ---------------- */
   const DEFAULTS = {v: 1, onboarded: false, dischargeMonth: '', notDischarged: false, service: '', lone: false,
-    reservist: false, monthsServed: '', pressing: '', hidden: [], theme: 'auto', textSize: 'normal', reduceMotion: false,
+    reservist: false, monthsServed: '', pressing: '', hidden: [], theme: 'light', textSize: 'normal', reduceMotion: false,
     infoOnly: false, moods: [], days: [], backupRemindedAt: '', seenVersion: '', todayStep: null, chatMode: ''};
   function load() {
     try { const v = JSON.parse(localStorage.getItem(PKEY) || 'null'); return v && typeof v === 'object' ? {...DEFAULTS, ...v} : {...DEFAULTS}; }
@@ -54,7 +54,8 @@
   /* ---------------- display preferences ---------------- */
   function applyDisplay() {
     const root = document.documentElement;
-    const dark = P.theme === 'dark' || (P.theme === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    // Light unless the soldier explicitly picks dark (following the phone's night mode mixed the palettes).
+    const dark = P.theme === 'dark';
     root.dataset.theme = dark ? 'dark' : 'light';
     root.dataset.text = P.textSize;
     root.dataset.motion = P.reduceMotion ? 'reduce' : 'full';
@@ -809,7 +810,7 @@
     // Display
     const sel = (id, value, opts, onchange) => { const s = h('select', {id, onchange}); opts.forEach(([v, l]) => s.append(h('option', {value: v, selected: v === value || undefined}, l))); return s; };
     put(wrap, section(tr('Display', 'תצוגה'),
-      h('label', {class: 'plus-field'}, h('span', {}, tr('Theme', 'מצב תצוגה')), sel('plusTheme', P.theme, [['auto', tr('Like my device', 'לפי המכשיר')], ['light', tr('Light', 'בהיר')], ['dark', tr('Dark', 'כהה')]], e => { P.theme = e.target.value; store(); applyDisplay(); })),
+      h('label', {class: 'plus-field'}, h('span', {}, tr('Theme', 'מצב תצוגה')), sel('plusTheme', P.theme === 'dark' ? 'dark' : 'light', [['light', tr('Light', 'בהיר')], ['dark', tr('Dark', 'כהה')]], e => { P.theme = e.target.value; store(); applyDisplay(); })),
       h('label', {class: 'plus-field'}, h('span', {}, tr('Text size', 'גודל טקסט')), sel('plusText', P.textSize, [['normal', tr('Normal', 'רגיל')], ['large', tr('Large', 'גדול')], ['xl', tr('Extra large', 'גדול מאוד')]], e => { P.textSize = e.target.value; store(); applyDisplay(); })),
       h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', checked: P.reduceMotion || undefined, onchange: e => { P.reduceMotion = e.target.checked; store(); applyDisplay(); }}), h('span', {}, tr('Reduce animations', 'הפחתת אנימציות'))),
       h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', checked: P.infoOnly || undefined, onchange: e => { P.infoOnly = e.target.checked; store(); applyDisplay(); paintNav(); showPage('help', false); }}), h('span', {}, tr('Information only (no chat)', 'מצב "מידע בלבד" (בלי שיחה)'))),
