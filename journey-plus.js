@@ -48,6 +48,81 @@
   const manual = h('div', {id: 'jpManualSkills'});
   $('view-skills').append(manual);
   const printArea = h('section', {id: 'jpPrint', 'aria-hidden': 'true'});
+
+  /* ---------- reference layout: header, goal, next steps, skills, week, links, bottom nav ---------- */
+  const ICO = {
+    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 6-6 6 6 6"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 16.8h.01M12 16.8h.01"/></svg>',
+    target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="13" r="7.5"/><circle cx="11" cy="13" r="4"/><circle cx="11" cy="13" r=".8" fill="currentColor"/><path d="m11 13 8.5-8.5M16.5 4.5h3v3"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5l4 4L8 20H4v-4L15.5 4.5Z"/></svg>',
+    leaf: '<svg viewBox="0 0 24 24" fill="#2F5A46"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15l-1-1Z"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="#F2C14E" stroke="#C99A2E" stroke-width="1.2" stroke-linejoin="round"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+    ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.3 3.6a1 1 0 0 1 1.4 0l8 7.3c.6.6.2 1.6-.6 1.6H19V19a1.5 1.5 0 0 1-1.5 1.5H15v-5h-6v5H6.5A1.5 1.5 0 0 1 5 19v-6.5H3.9c-.8 0-1.2-1-.6-1.6l8-7.3Z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.1-2.9-.4L4.5 20l1.3-3.6C4.4 15 3.5 13.1 3.5 11c0-3.9 3.8-7 8.5-7Z"/><circle cx="8.5" cy="11" r=".9" fill="currentColor"/><circle cx="12" cy="11" r=".9" fill="currentColor"/><circle cx="15.5" cy="11" r=".9" fill="currentColor"/></svg>',
+    person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/></svg>'
+  };
+  const ico = (name, cls) => { const s = h('span', {class: 'jp-ico ' + (cls || ''), 'aria-hidden': 'true'}); s.innerHTML = ICO[name]; return s; };
+  const companionBase = () => he() ? './indexH.html' : './index.html';
+  const top = h('section', {id: 'jpTop', class: 'jp-top'});
+  const mainEl = document.querySelector('main');
+  mainEl.insertBefore(top, mainEl.firstChild);
+  const bottomNav = h('nav', {class: 'jp-nav', id: 'jpNav'});
+  document.body.append(bottomNav);
+  const clickTab = tab => { const b = document.querySelector('[data-tab="' + tab + '"]'); if (b) { b.click(); b.scrollIntoView({behavior: 'smooth', block: 'start'}); } };
+  const todayKey = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  let selectedDay = todayKey();
+
+  function paintTop(p) {
+    const goal = p.goals.find(g => g.status === 'active') || p.goals.find(g => g.status !== 'achieved');
+    const goalCard = h('div', {class: 'jp-goal'},
+      ico('target', 'jp-goal-ico'),
+      h('div', {class: 'jp-goal-text'}, h('strong', {}, tr('My goal', 'המטרה שלי')), h('span', {}, goal ? goal.title : tr('Set a goal — anything that matters to you', 'הגדירו מטרה — כל דבר שחשוב לכם'))),
+      h('button', {type: 'button', class: 'jp-goal-edit', 'aria-label': goal ? tr('Edit goals', 'עריכת המטרות') : tr('Add a goal', 'הוספת מטרה'), onclick: () => { if (goal) clickTab('goals'); else { const add = document.querySelector('[data-add="goals"]'); if (add) add.click(); } }}, ico('pencil')));
+    const open = p.actions.filter(a => a.status !== 'done');
+    const steps = [...open, ...p.actions.filter(a => a.status === 'done')].slice(0, 3);
+    const stepsBox = h('div', {class: 'jp-steps'}, steps.length ? steps.map(a => h('label', {class: 'jp-step' + (a.status === 'done' ? ' jp-step-done' : '')},
+      h('span', {class: 'jp-step-title'}, a.title),
+      h('input', {type: 'checkbox', checked: a.status === 'done' || undefined, onchange: e => { attempt(() => Store.upsert('actions', {...a, status: e.target.checked ? 'done' : 'todo'})); say(e.target.checked ? tr('Well done ✓', 'כל הכבוד ✓') : tr('Updated', 'עודכן')); paintAll(); }}))) :
+      [h('button', {type: 'button', class: 'jp-step jp-step-add', onclick: () => { const add = document.querySelector('[data-add="actions"]'); if (add) add.click(); }}, tr('+ Add a first small step', '+ הוספת צעד ראשון קטן'))]);
+    const skillNames = [...p.skills.filter(x => x.confirmed && x.evidence).map(x => he() ? (x.he || x.en) : (x.en || x.he)),
+      ...(p.lifeSkills || []).map(x => he() ? (x.he || x.en) : (x.en || x.he)), ...(p.manualSkills || []).map(x => x.name)].filter(Boolean);
+    const skillsBox = h('div', {class: 'jp-chips'}, skillNames.length ? skillNames.slice(0, 8).map(n => h('span', {class: 'jp-chip'}, n)) :
+      [h('a', {class: 'jp-chip jp-chip-add', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('+ Discover your skills', '+ גילוי הכישורים שלי'))]);
+    // week strip: 5 days starting today (reference shows 5 day cards, today selected)
+    const days = h('div', {class: 'jp-week'});
+    const names = he() ? ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const detail = h('div', {class: 'jp-week-detail', 'aria-live': 'polite'});
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(); d.setDate(d.getDate() + i - 2); const k = todayKey(d); // today in the middle, like the reference
+      const items = p.actions.filter(a => a.dueDate === k);
+      const b = h('button', {type: 'button', class: 'jp-wday' + (k === selectedDay ? ' jp-wday-on' : ''), 'aria-pressed': String(k === selectedDay), onclick: () => { selectedDay = k; paintAll(); }},
+        h('span', {}, names[d.getDay()] + "'"), h('strong', {}, String(d.getDate())), h('i', {class: items.length ? 'jp-wdot' : 'jp-wdot jp-wdot-empty'}));
+      days.append(b);
+      if (k === selectedDay) detail.append(...(items.length ? items.map(a => h('p', {}, (a.status === 'done' ? '✓ ' : '• ') + a.title)) : [h('p', {class: 'muted mini'}, tr('Nothing planned for this day.', 'אין צעדים מתוכננים ליום הזה.'))]));
+    }
+    // order days so the first (today) is at the start side; reference shows today highlighted in the middle area
+    const link = (p.links || [])[0];
+    const linksCard = h('div', {class: 'jp-linkcard'}, link ? h('a', {href: link.url, target: '_blank', rel: 'noopener noreferrer', class: 'jp-link'}, h('span', {class: 'jp-link-text'}, h('strong', {}, link.title), h('small', {dir: 'ltr'}, link.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))), ico('ext', 'jp-link-ext')) :
+      h('button', {type: 'button', class: 'jp-link', onclick: () => { const el = $('jpLinks'); if (el) el.scrollIntoView({behavior: 'smooth'}); }}, h('span', {class: 'jp-link-text'}, h('strong', {}, tr('Save a useful link', 'שמירת קישור שימושי')), h('small', {}, tr('Official forms, job sites…', 'טפסים רשמיים, אתרי משרות…'))), ico('ext', 'jp-link-ext')));
+    const sec = (title, iconName, extra, body) => h('section', {class: 'jp-sec'}, h('div', {class: 'jp-sec-head'}, h('h2', {}, ico(iconName, 'jp-sec-ico'), title), extra || null), body);
+    top.replaceChildren(
+      h('div', {class: 'jp-head'}, ico('calendar', 'jp-head-ico'), h('h1', {}, tr('My Journey', 'המסע שלי')), h('a', {class: 'jp-back', href: companionBase() + '#home', 'aria-label': tr('Back to Companion', 'חזרה למלווה')}, ico('back'))),
+      goalCard,
+      sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('Show all →', 'הצג הכל ←')), stepsBox),
+      sec(tr('My skills', 'הכישורים שלי'), 'star', null, h('div', {class: 'jp-card'}, skillsBox)),
+      sec(tr('Schedule planning', 'תכנון לוח זמנים'), 'calendar', null, h('div', {}, days, detail)),
+      sec(tr('Saved links', 'קישורים שמורים'), 'link', null, linksCard),
+      h('div', {class: 'jp-more-head'}, h('span', {}, tr('All details', 'כל הפרטים')), h('button', {type: 'button', class: 'jp-lang', onclick: () => $('language') && $('language').click()}, he() ? 'English' : 'עברית'))
+    );
+    bottomNav.setAttribute('aria-label', tr('Main navigation', 'ניווט ראשי'));
+    bottomNav.replaceChildren(
+      h('a', {href: companionBase() + '#home'}, ico('home'), h('span', {}, tr('Home', 'בית'))),
+      h('a', {href: companionBase() + '?view=chat'}, ico('chat'), h('span', {}, tr('Chat', "צ'אט"))),
+      h('a', {href: '#', 'aria-current': 'page', onclick: e => { e.preventDefault(); window.scrollTo({top: 0, behavior: 'smooth'}); }}, ico('calendar'), h('span', {}, tr('My Journey', 'המסע שלי'))),
+      h('a', {href: companionBase() + '?page=help'}, ico('person'), h('span', {}, tr('Me', 'אישי'))));
+  }
   document.body.append(printArea);
 
   const ENCOURAGE_HE = ['כל צעד קטן נחשב.', 'זה בסדר לא לדעת עדיין.', 'כל הכבוד שחזרת לכאן.', 'אין קצב אחד נכון.'];
@@ -159,7 +234,7 @@
 
   function paintAll() {
     const p = read(); if (!p) return;
-    paintProgress(p); paintCalendar(p); paintLinks(p); paintTools(p); paintManualSkills(p);
+    paintTop(p); paintProgress(p); paintCalendar(p); paintLinks(p); paintTools(p); paintManualSkills(p);
   }
   // my-journey.js re-renders its own sections; repaint ours after it (and after language changes).
   let queued = false;

@@ -152,6 +152,16 @@
     return h('div', {class: 'plus-card plus-soft'}, h('h2', {}, tr('Grant vs. deposit — the difference', 'מה ההבדל בין המענק לפיקדון?')), h('p', {}, t));
   }
 
+  const PAGE_HEAD = {
+    rights: {icon: 'wallet', title: ['What am I entitled to', 'מה מגיע לי']},
+    practical: {icon: 'briefcase', title: ['Work / studies / money', 'עבודה / לימודים / כסף']},
+    money: {icon: 'coins', title: ['Money', 'כסף']}, work: {icon: 'briefcase', title: ['Work & CV', 'עבודה וקורות חיים']},
+    studies: {icon: 'compass', title: ['Studies', 'לימודים']}, travel: {icon: 'compass', title: ['Travel', 'טיולים ונסיעות']},
+    family: {icon: 'talk', title: ['Relationships & family', 'מערכות יחסים ומשפחה']}, feel: {icon: 'talk', title: ['How I feel', 'איך אני מרגיש']},
+    distress: {icon: 'heart', title: ['Human help', 'עזרה אנושית']}, help: {icon: 'person', title: ['Me', 'אישי']},
+    onboarding: {icon: 'person', title: ['My details', 'הפרטים שלי']}, interview: {icon: 'briefcase', title: ['Job interview', 'ראיון עבודה']}
+  };
+
   /* ================================================================
      PAGE SYSTEM — one screen for every module, with a consistent back button
      ================================================================ */
@@ -170,8 +180,12 @@
     if (push) pageStack.push(id);
     hideScreens();
     page.replaceChildren();
-    const back = btn(he() ? '→ חזרה' : '← Back', goBack, 'plus-back');
-    page.append(h('div', {class: 'plus-inner'}, back, render(), privacyLine()));
+    const meta = PAGE_HEAD[id] || {};
+    const head = h('div', {class: 'plus-head'},
+      icon(meta.icon || 'compass', 'plus-head-ico'),
+      h('h1', {class: 'plus-head-title'}, meta.title ? tr(meta.title[0], meta.title[1]) : ''),
+      h('button', {type: 'button', class: 'plus-back', 'aria-label': tr('Back', 'חזרה'), onclick: goBack}, icon('back')));
+    page.append(head, h('div', {class: 'plus-inner'}, render(), privacyLine()));
     page.hidden = false;
     page.dir = he() ? 'rtl' : 'ltr';
     page.scrollTop = 0; try { document.scrollingElement.scrollTop = 0; } catch (_) {}
@@ -230,6 +244,19 @@
     calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 16.8h.01M12 16.8h.01"/></svg>',
     person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/></svg>',
     help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.7"/><path d="M12 17h.01"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="#E0565B"><path d="M12 20.5s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.9c0 5.6-7.5 10-7.5 10Z"/></svg>',
+    bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6.5 4h11v16l-5.5-4-5.5 4V4Z"/></svg>',
+    send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 3.5 10 14"/><path d="m20.5 3.5-6.5 17-4-6.5-6.5-4 17-6.5Z"/></svg>',
+    clip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 3.5a3 3 0 0 1 3 3v8a3 3 0 0 1-6 0V7"/><path d="M6.5 11v3.5a5.5 5.5 0 0 0 11 0V11M12 20v1.5"/></svg>',
+    history: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/><path d="M12 8v4.5l3 2"/></svg>',
+    collapse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 9v9H9"/></svg>',
+    back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 6-6 6 6 6"/></svg>',
+    gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18v3.5H3zM12 9v11"/><path d="M12 9c-2.5 0-4.5-1-4.5-2.7S10 4 12 9Zm0 0c2.5 0 4.5-1 4.5-2.7S14 4 12 9Z"/></svg>',
+    coins: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="6.5" rx="7" ry="2.8"/><path d="M5 6.5v4c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-4M5 10.5v4c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-4M5 14.5v3c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-3"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="#6FA58A" stroke="#2F5A46" stroke-width="1.4" stroke-linejoin="round"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="#E0A020" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4 21 19.5H3L12 4Z" fill="#FCE9B8"/><path d="M12 10v4.5M12 17h.01" stroke-linecap="round"/></svg>',
     info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8h.01"/></svg>'
   };
   const icon = (name, cls) => { const s = h('span', {class: 'plus-ico' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true'}); s.innerHTML = SVG[name] || ''; return s; };
@@ -237,6 +264,20 @@
   // Header on Home: mountain logo + gear (the existing "More" menu). AI consent settings move into that menu.
   const bar = document.querySelector('header.bar');
   if (bar && !bar.querySelector('.plus-logo')) bar.append(icon('logo', 'plus-logo'));
+  // Chat header (reference): collapse-to-home at the start, avatar + name + Online in the middle, history at the end.
+  if (bar && !$('plusChatHead')) {
+    const av = h('span', {class: 'plus-avatar', 'aria-hidden': 'true'}); av.innerHTML = SVG.logo;
+    bar.append(
+      h('button', {type: 'button', id: 'plusChatHome', class: 'plus-chat-hbtn', 'aria-label': tr('Back to Home', 'חזרה לבית'), onclick: () => goHome()}, icon('collapse')),
+      h('div', {id: 'plusChatHead', class: 'plus-chat-head'}, av, h('strong', {id: 'plusChatName'}), h('span', {class: 'plus-online'}, h('i'), h('span', {id: 'plusOnlineText'}))),
+      h('button', {type: 'button', id: 'plusHistoryBtn', class: 'plus-chat-hbtn', onclick: () => { const p = $('chatHistory'); if (p) p.open = !p.open; }}, icon('history')));
+  }
+  function paintChatHead() {
+    if ($('plusChatName')) $('plusChatName').textContent = tr('Your Companion', 'המלווה שלך');
+    if ($('plusOnlineText')) $('plusOnlineText').textContent = navigator.onLine === false ? tr('Offline', 'לא מחובר') : 'Online';
+    if ($('plusHistoryBtn')) $('plusHistoryBtn').setAttribute('aria-label', tr('Previous conversations', 'שיחות קודמות'));
+    const input = $('input'); if (input) input.placeholder = tr('Type a message...', 'הקלד הודעה...');
+  }
   function moveConsent() {
     const cs = $('btnAIConsentSettings'), items = document.querySelector('.companion-more-items');
     if (cs && items && cs.parentElement !== items) { cs.classList.add('chip'); items.append(cs); cs.addEventListener('click', () => { const m = $('companionMore'); if (m) m.open = false; }); }
@@ -567,7 +608,7 @@
     /* ----- Rights & benefits ----- */
     rights() {
       const wrap = h('div');
-      put(wrap, h('h1', {class: 'plus-title'}, tr('What am I entitled to?', 'מה מגיע לי?')), hebrewNote(), personalBanner(), disclaimer(), warningsBox(), grantVsDeposit());
+      put(wrap, h('h1', {class: 'plus-title plus-sr'}, tr('What am I entitled to?', 'מה מגיע לי?')), rightsSummary(), hebrewNote(), personalBanner(), disclaimer(), warningsBox(), grantVsDeposit());
       const input = h('input', {type: 'search', id: 'plusRightsSearch', placeholder: tr('Search: grant, deposit, studies…', 'חיפוש: מענק, פיקדון, לימודים…'), 'aria-label': tr('Search rights and benefits', 'חיפוש בזכויות והטבות')});
       const results = h('div', {id: 'plusRightsResults', 'aria-live': 'polite'});
       const draw = () => {
@@ -657,6 +698,28 @@
     help() { return helpPage(); }
   };
 
+  /* Summary cards (reference layout): amount + "last updated" for the four main money rights */
+  function rightsSummary() {
+    if (!KB || !KB.data) return null;
+    const r = KB.data.rights_and_benefits, e = KB.estimate(P.service || 'combat', P.monthsServed) || {};
+    const asOf = tr('Last updated: ', 'עודכן לאחרונה: ') + asOfLabel(KB.data.metadata.amounts_as_of || KB.data.metadata.last_updated);
+    const perMonth = tr(' / month served', ' לחודש שירות');
+    const items = [
+      {icon: 'gift', title: r.discharge_grant.name_he, amount: e.grant ? money(e.grant) : money(e.grantRate) + perMonth, target: 'discharge_grant'},
+      {icon: 'coins', title: r.personal_deposit.name_he, amount: e.deposit ? money(e.deposit) : money(e.depositRate) + perMonth, target: 'personal_deposit'},
+      {icon: 'star', title: tr('Tax credit points', 'נקודות זיכוי'), amount: e.taxMonthly ? money(e.taxMonthly[1]) + tr(' / month', ' לחודש') : tr('up to ', 'עד ') + money(2 * (r.tax_credit_points.point_value_2026_monthly || 0)) + tr(' / month', ' לחודש'), target: 'tax_credit_points'},
+      {icon: 'briefcase', title: tr('Preferred work', 'עבודה מועדפת'), amount: money(r.preferred_work_grant.amount_2026_number || 0), target: 'preferred_work_grant'}
+    ];
+    const box = h('div', {class: 'plus-sum'});
+    items.forEach(it => box.append(h('button', {type: 'button', class: 'plus-sum-card', onclick: () => { const el = document.querySelector('[data-right="' + it.target + '"]'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); }},
+      h('span', {class: 'plus-sum-ico'}, icon(it.icon)),
+      h('span', {class: 'plus-sum-text'}, h('strong', {class: 'plus-sum-title'}, it.title), h('span', {class: 'plus-sum-amount'}, it.amount), h('small', {}, asOf, icon('refresh', 'plus-sum-ref'))))));
+    const w = (KB.data.important_warnings || [])[0];
+    if (w) box.append(h('div', {class: 'plus-know', role: 'note'}, h('div', {class: 'plus-know-head'}, h('strong', {}, tr('Good to know!', 'חשוב לדעת!')), icon('warn', 'plus-know-ico')),
+      h('p', {}, w), btn(tr('More information →', 'למידע נוסף ←'), () => { const el = document.querySelector('.plus-disclaimer'); if (el) el.scrollIntoView({behavior: 'smooth'}); }, 'plus-know-more')));
+    if (!P.service) box.append(h('p', {class: 'plus-muted'}, tr('Amounts shown for combat service. Set your service type in "Me" for your own estimate.', 'הסכומים מוצגים לשירות קרבי. אפשר להגדיר סוג שירות ב"אישי" כדי לקבל הערכה משלך.')));
+    return box;
+  }
   function calculator() {
     const out = h('div', {'aria-live': 'polite'});
     const svc = h('select', {id: 'plusCalcService', 'aria-label': tr('Service type', 'סוג שירות')},
@@ -789,13 +852,13 @@
     ['home', 'home', () => goHome()],
     ['chat', 'chat', () => P.infoOnly ? showPage('rights') : goChat()],
     ['journey', 'calendar', () => { location.href = journeyUrl('overview'); }],
-    ['help', 'help', () => showPage('help')]
+    ['help', 'person', () => showPage('help')]
   ];
   function paintNav() {
     nav.setAttribute('aria-label', tr('Main navigation', 'ניווט ראשי'));
     const iconFn = window.MomentumPlusIcon;
     nav.replaceChildren(...NAV.map(([id, icon, fn]) => {
-      const label = {home: tr('Home', 'בית'), chat: P.infoOnly ? tr('Info', 'מידע') : tr('Chat', 'שיחה'), journey: tr('My Journey', 'המסע שלי'), help: tr('Help', 'עזרה')}[id];
+      const label = {home: tr('Home', 'בית'), chat: P.infoOnly ? tr('Info', 'מידע') : tr('Chat', "צ'אט"), journey: tr('My Journey', 'המסע שלי'), help: tr('Me', 'אישי')}[id];
       return h('button', {type: 'button', 'data-nav': id, onclick: fn}, iconFn(id === 'chat' && P.infoOnly ? 'info' : icon, 'plus-nav-ico'), h('span', {}, label));
     }));
     setNav(currentNav);
@@ -812,6 +875,7 @@
   const tools = h('div', {id: 'plusChatTools', class: 'plus-chat-tools'});
   if ($('composer')) $('composer').before(tools);
   function paintTools() {
+    tools.hidden = !hasUserMessages();
     tools.replaceChildren(
       btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-chip plus-chip-soft'),
       btn(tr('Summary & next step', 'סיכום וצעד הבא'), summarize, 'plus-chip'),
@@ -830,15 +894,34 @@
     sendUser(tr("I'd rather skip that question for now.", 'אני מעדיף לדלג על השאלה הזאת כרגע.'));
   }
   function hasUserMessages() { return (S.messages || []).some(m => m.role === 'user'); }
+  const pill = (iconName, text, fn, cls) => h('button', {type: 'button', class: 'plus-qr' + (cls ? ' ' + cls : ''), onclick: fn}, icon(iconName, 'plus-qr-ico'), h('span', {}, text));
   function maybeOfferModes() {
     const old = $('plusModes'); if (old) old.remove();
+    paintSavePill();
     if (hasUserMessages() || S.activeTopic || P.infoOnly) return;
-    const bar = h('div', {id: 'plusModes', class: 'plus-modes', role: 'group', 'aria-label': tr('How would you like to start?', 'איך תרצה להתחיל?')},
-      h('span', {}, tr('How would you like to start?', 'איך תרצה להתחיל?')),
-      btn(tr('I just want to talk', 'אני רק רוצה לדבר'), () => startMode('talk'), 'plus-chip'),
-      btn(tr('I want to do something practical', 'אני רוצה לעשות משהו מעשי'), () => startMode('practical'), 'plus-chip'),
-      btn(tr('Skip', 'דילוג'), () => bar.remove(), 'plus-chip plus-chip-soft'));
-    tools.after(bar);
+    const bar = h('div', {id: 'plusModes', class: 'plus-qrs', role: 'group', 'aria-label': tr('How would you like to start?', 'איך תרצה להתחיל?')},
+      pill('talk', tr('I just want to talk', 'אני רק רוצה לדבר'), () => startMode('talk')),
+      pill('check', tr('I want to do something practical', 'אני רוצה לעשות משהו מעשי'), () => startMode('practical')),
+      pill('heart', tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress')),
+      btn(tr('Skip', 'דילוג'), () => bar.remove(), 'plus-qr-skip'));
+    const thread = $('thread'); if (thread) thread.after(bar); else tools.after(bar);
+  }
+  // "Save to My Journey" for the latest reply (reference pill above the composer)
+  function paintSavePill() {
+    let p = $('plusSavePill');
+    const last = [...(S.messages || [])].reverse().find(m => m.role === 'assistant' && m.text && m.text.length > 20);
+    if (!last || P.infoOnly) { if (p) p.remove(); return; }
+    if (!p) {
+      p = h('button', {type: 'button', id: 'plusSavePill', class: 'plus-save-pill'}, h('span', {}), icon('bookmark', 'plus-qr-ico'));
+      tools.before(p);
+    }
+    p.firstChild.textContent = tr('Save to "My Journey"', 'שמור ל"המסע שלי"');
+    p.disabled = false;
+    p.onclick = () => {
+      const text = String(last.text);
+      const first = text.split(/[.!?:\n]/).map(x => x.trim()).find(x => x.length > 8) || text;
+      if (saveAction(first.slice(0, 150), text)) { p.firstChild.textContent = tr('Saved ✓', 'נשמר ✓'); p.disabled = true; }
+    };
   }
   function startMode(mode) {
     P.chatMode = mode; store();
@@ -889,7 +972,7 @@
       speechSynthesis.speak(u);
     } catch (_) { toast(tr('Read-aloud is not available in this browser.', 'הקראה אינה זמינה בדפדפן הזה.')); }
   }
-  if ($('thread')) new MutationObserver(decorateTurns).observe($('thread'), {childList: true});
+  if ($('thread')) new MutationObserver(() => { decorateTurns(); paintSavePill(); paintTools(); if (hasUserMessages() && $('plusModes')) $('plusModes').remove(); }).observe($('thread'), {childList: true});
 
   // Clear recording indicator for the existing microphone button.
   const mic = $('btnMic');
@@ -937,11 +1020,11 @@
   /* ================================================================
      START-UP
      ================================================================ */
-  function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); if (!hub.hidden) renderHome(); }
+  function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); paintChatHead(); if (!hub.hidden) renderHome(); }
   window.MomentumPlus = {promptContext, showPage, goHome, goChat, prefs: () => ({...P}), renderHome};
   new MutationObserver(paintAll).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
   new MutationObserver(() => { if (!hub.hidden) { hidePage(); renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});
-  if ($('chat')) new MutationObserver(() => { if (!$('chat').hidden) { setNav('chat'); decorateTurns(); } }).observe($('chat'), {attributes: true, attributeFilter: ['hidden']});
+  if ($('chat')) new MutationObserver(() => { if (!$('chat').hidden) { setNav('chat'); decorateTurns(); paintChatHead(); paintSavePill(); paintTools(); } }).observe($('chat'), {attributes: true, attributeFilter: ['hidden']});
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyDisplay);
 
   recordVisit();
@@ -952,7 +1035,8 @@
   try { draft = sessionStorage.getItem('momentum-plus-draft') || ''; sessionStorage.removeItem('momentum-plus-draft'); } catch (_) {}
   if (draft) { openTopic('cv', draft); return; }
   const wantsChat = location.hash === '#chatHistory' || params.get('section') === 'updates' || params.get('view') === 'chat';
-  if (params.get('page') && PAGES[params.get('page')]) showPage(params.get('page'));
+  if (params.get('view') === 'chat' && !P.infoOnly) goChat();
+  else if (params.get('page') && PAGES[params.get('page')]) showPage(params.get('page'));
   else if (!P.onboarded && !S.started && !wantsChat) { if (window.CompanionHome) window.CompanionHome.show(); showPage('onboarding'); }
   else if (!wantsChat && window.CompanionHome && !(typeof sendingUserMessage !== 'undefined' && sendingUserMessage)) { window.CompanionHome.show(); renderHome(); }
 })();
