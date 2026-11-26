@@ -1702,9 +1702,9 @@ async function sendUser(text){
 
   let out;
   try {
-    // Always try the live AI first; Practice Mode is only a per-message fallback.
+    // Practice Mode lasts only for this page session (reset on load) or until "Try the real AI again".
+    if (S.practice) throw new Error("practice");
     out = await askModel(crypto.randomUUID());
-    if (S.practice) { S.practice = false; save(); }
   } catch (err) {
     if (err.canceled) { hideThinking(); if(err.sent){pushMsg("system",S.lang==="he"?"השיתוף העתידי הופסק. ביטול ההסכמה אינו מבטל מידע שכבר נשלח.":"Future sharing stopped. Withdrawal does not undo information already sent.");return;} pushMsg("system",S.lang==="he"?"השיתוף בוטל. השאלה נשארה במכשיר ולא נשלחה.":"Sharing canceled. Your question stayed on this device and was not sent."); return; }
     if (!CONFIG.ALLOW_PRACTICE_FALLBACK) { hideThinking(); pushMsg("system", L().sendFail); return; }

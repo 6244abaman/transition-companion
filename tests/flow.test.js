@@ -40,11 +40,12 @@ function lastTurnText(){
   const tags4 = [...doc.querySelectorAll('.turn:last-child .tag')].map(t=>t.textContent);
   check('Second candidate surfacing pass (step 3)', tags4.length > 0, tags4.join(', '));
 
-  // 5: this long answer should get CONFIRMED with real evidence text (practiceStep 4)
+  // 5: Practice Mode cannot understand text, so it must NEVER confirm a skill on the soldier's behalf
+  // (brief bug 2: it used to save any answer over 25 characters as confirmed skill #26).
   await send("כשהקשר קרס לקחתי החלטה לבד על המסלול תחת אש ושמרתי על הצוות בחיים בלי לחכות לפקודה.");
   const profileJson = peek('JSON.stringify(S.profile)');
   const profile = JSON.parse(profileJson);
-  check('Confirmed strength recorded with real evidence (not empty)', profile.strengths.length > 0 && profile.strengths[0].evidence.length > 5, JSON.stringify(profile.strengths));
+  check('Practice Mode does not invent a confirmed strength', profile.strengths.length === 0, JSON.stringify(profile.strengths));
   check('Profile badge count reflects confirmed strengths', doc.getElementById('btnProfile').dataset.count === String(profile.strengths.length));
 
   // 6: direction/proposals phase should now be live (practiceStep >= 5)
