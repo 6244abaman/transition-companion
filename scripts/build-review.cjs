@@ -31,7 +31,7 @@ function buildReview(root = path.resolve(__dirname, '..')) {
     const dir = path.join(output, directory);
     const workerPath = path.join(dir, 'service-worker.js');
     const worker = fs.readFileSync(workerPath, 'utf8')
-      .replace('tc-v18-home-followthrough', prefix + version)
+      .replace(/const CACHE = "[^"]+";/, 'const CACHE = "' + prefix + version + '";') // any cache name, so bumping it never breaks the build
       .replace('k.startsWith("tc-")', directory === 'app'
         ? '(k.startsWith("tc-review-app-") || /^tc-v[0-9]/.test(k))'
         : 'k.startsWith("tc-companion-v2-")');
