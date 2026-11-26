@@ -33,36 +33,56 @@
         "civilian_split": 228.79
       },
       "examples": {
-        "combat_32_months": "about 22,000 ₪",
-        "combat_support_32_months": "about 18,300 ₪",
+        "combat_32_months": "about 21,500 ₪",
+        "combat_support_32_months": "about 18,100 ₪",
         "other_24_months": "about 11,000 ₪"
       },
-      "timing": "Within 60 days of discharge. Lone soldiers – an advance within 14 days.",
-      "notes": "Training months are sometimes classified as combat support or other. The amount appears in your personal area.",
-      "official_url": "https://www.hachvana.mod.gov.il/"
+      "timing": "Within 60 days of discharge, to the bank account that received your service salary (keep it open). Lone soldiers – an advance within 14 days; if it did not arrive – IDF hotline 1111 ext. 2.",
+      "notes": "Training months count at a lower rate: combat soldiers' 4 training months as combat support, combat support's 2 training months as 'other'. Months count up to 32 for men and 24 for women. The exact amount is in your personal area.",
+      "official_url": "https://www.hachvana.mod.gov.il/GrantAndDeposit/Pages/Grant.aspx",
+      "max_months": {
+        "men": 32,
+        "women": 24
+      },
+      "training_months": {
+        "combat": 4,
+        "combat_support": 2
+      },
+      "appeal": "If 60 days passed without payment, or the amount does not match your service – appeal via 'Sha'ar LaAtid' (WhatsApp 03-7374789)."
     },
     "personal_deposit": {
       "name_he": "Personal deposit",
       "description": "Savings built up during your service. Can be used for approved purposes for 5 years.",
       "approved_uses": [
-        "Academic or vocational studies (including psychometric prep)",
-        "Professional training and courses",
+        "Academic studies and the psychometric exam",
+        "Courses and professional training",
+        "Opening an independent business",
         "Driving lessons",
-        "Opening or expanding a business",
-        "Buying an apartment, house or land",
-        "Renting an apartment (under certain conditions)",
-        "Marriage"
+        "Marriage",
+        "Buying an apartment, house or land to build on"
       ],
-      "after_5_years": "The balance becomes free to use for any purpose",
+      "after_5_years": "The balance is transferred automatically to the bank account in your personal area, free for any purpose.",
       "how_to_claim": "Through the personal area on the Department and Fund website",
-      "timing": "Available from the 14th day after discharge",
+      "timing": "Usable from day 14 after discharge. Your data appears in the personal area about a week after discharge.",
       "amounts_per_month_2026_oct": {
         "combat": 994.41,
         "combat_support": 828.67,
-        "other_national_service": 662.94
+        "other_national_service": 662.94,
+        "civilian_intermediate": 497.27,
+        "civilian_split": 331.51
       },
       "scam_warning": "Do not pay any company that offers to \"release your deposit early\" — it is illegal. The deposit is used only through the personal area on the Department's website, free of charge.",
-      "official_url": "https://www.hachvana.mod.gov.il/"
+      "official_url": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/default.aspx",
+      "max_months": {
+        "men": 32,
+        "women": 24
+      },
+      "training_months": {
+        "combat": 4,
+        "combat_support": 2
+      },
+      "notes": "Months count up to 32 for men and 24 for women. Training months count at a lower rate (as with the grant). Usable only inside Israel. If you changed bank account – update it in the personal area.",
+      "appeal": "If the deposit amount does not match your service – IDF public inquiries 1111 ext. 5."
     },
     "tax_credit_points": {
       "name_he": "Income tax credit points",
@@ -306,7 +326,7 @@
     },
     {
       "question": "What can the deposit be used for?",
-      "answer": "In the first 5 years: studies, training, driving lessons, a business, an apartment, marriage. After 5 years – free."
+      "answer": "In the first 5 years: studies and the psychometric exam, courses and training, an independent business, driving lessons, marriage, buying an apartment/house/land. Only inside Israel. After 5 years the balance goes to your bank account."
     },
     {
       "question": "Who is eligible for Mimadim LeLimudim?",
@@ -314,7 +334,7 @@
     },
     {
       "question": "Can the deposit be used for a trip?",
-      "answer": "Usually not in the first years. The grant can."
+      "answer": "No. In the first 5 years the deposit is only for the 6 uses set by law, and only inside Israel. The grant can be spent on a trip."
     },
     {
       "question": "How do I get the tax credit points?",

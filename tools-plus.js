@@ -100,12 +100,12 @@
     }
 
     /* ================= DEPOSIT PLANNER ================= */
-    const USES = [
+    const USES = [ // the 6 uses set by law (hachvana, Oct 2026)
       {id: 'studies', he: ['לימודים', 'תואר, מכינה, פסיכומטרי, לימודי תעודה במוסד מוכר.', 'בדרך כלל הכסף מועבר ישירות למוסד, אחרי אישור רישום.'], en: ['Studies', 'Degree, preparatory programme, psychometric, certificate studies at a recognised institution.', 'Money usually goes straight to the institution after proof of enrolment.']},
       {id: 'training', he: ['הכשרה מקצועית', 'קורסים מקצועיים במוסדות מוכרים (למשל חשמלאות, סייבר, הנהלת חשבונות).', 'לבדוק שהמוסד והקורס מוכרים לפני התשלום.'], en: ['Vocational training', 'Professional courses at recognised institutions (e.g. electrician, cyber, bookkeeping).', 'Check the institution and course are recognised before paying.']},
       {id: 'driving', he: ['רישיון נהיגה', 'שיעורי נהיגה ואגרות, כולל רכב כבד.', 'דרך בית ספר לנהיגה מורשה; את פרטי המסמכים רואים באזור האישי.'], en: ['Driving licence', 'Driving lessons and fees, including heavy vehicles.', 'Through a licensed driving school; the required documents are listed in the personal area.']},
       {id: 'business', he: ['עסק', 'פתיחה או הרחבה של עסק.', 'בדרך כלל דרושה תוכנית עסקית; אפשר לקבל ליווי במרכזי צעירים ובאגף.'], en: ['Business', 'Opening or expanding a business.', 'Usually needs a business plan; youth centres and the Division offer guidance.']},
-      {id: 'housing', he: ['דיור', 'רכישת דירה, בית או קרקע, ובתנאים מסוימים גם שכירות.', 'התנאים לשכירות מוגבלים — לבדוק באזור האישי לפני שמתכננים.'], en: ['Housing', 'Buying an apartment, house or land, and in some conditions renting.', 'Renting has limited conditions — check the personal area before planning on it.']},
+      {id: 'housing', he: ['דירה', 'רכישת דירה, בית או קרקע לבנייה.', 'שכירות אינה אחת המטרות הרשמיות. הפרטים והמסמכים באזור האישי.'], en: ['Home', 'Buying an apartment, house or land to build on.', 'Renting is not one of the official uses. Details and documents are in the personal area.']},
       {id: 'wedding', he: ['נישואין', 'אפשר לממש לצורך נישואין.', 'הפרטים והמסמכים באזור האישי.'], en: ['Marriage', 'Can be used for marriage.', 'Details and documents are in the personal area.']}
     ];
     function depositPlanner() {
@@ -118,11 +118,11 @@
         detail.replaceChildren();
         if (!u) { detail.append(note(tr('Pick a goal to see what to prepare.', 'בחר מטרה כדי לראות מה להכין.'))); return; }
         const [title, what, tip] = he() ? u.he : u.en;
-        const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed) : null;
+        const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
         detail.append(section(title, h('p', {}, what), h('p', {}, tip),
           e && e.deposit ? h('p', {}, h('strong', {}, tr('Your estimated deposit: ', 'הפיקדון המשוער שלך: ') + '≈ ' + money(e.deposit))) : btn(tr('Calculate my deposit', 'לחשב את הפיקדון שלי'), () => showPage('rights'), 'plus-link'),
           h('h3', {}, tr('Steps', 'שלבים')),
-          h('ol', {class: 'plus-list'}, [tr('Log in to the personal area on the Division site.', 'להיכנס לאזור האישי באתר האגף.'), tr('Choose the use and check the required documents.', 'לבחור את המטרה ולבדוק אילו מסמכים נדרשים.'), tr('Upload the documents and submit.', 'להעלות את המסמכים ולהגיש.'), tr('Track the request status in the personal area.', 'לעקוב אחרי הבקשה באזור האישי.')].map(x => h('li', {}, x))),
+          h('ol', {class: 'plus-list'}, [tr('Log in to the personal area on the Division site.', 'להיכנס לאזור האישי באתר האגף.'), tr('Choose the use and check the required documents.', 'לבחור את המטרה ולבדוק אילו מסמכים נדרשים.'), tr('Upload the documents and submit.', 'להעלות את המסמכים ולהגיש.'), tr('Track the request status in the personal area.', 'לעקוב אחרי הבקשה באזור האישי.'), tr('The deposit can be used only inside Israel.', 'אפשר להשתמש בפיקדון רק בתוך ישראל.')].map(x => h('li', {}, x))),
           h('p', {class: 'plus-warn'}, '⚠ ' + ((R().personal_deposit || {}).scam_warning || tr('Never pay a company to "release" your deposit.', 'לא משלמים לאף חברה כדי "לשחרר" את הפיקדון.'))),
           h('div', {class: 'plus-row'}, ext(tr('Personal area', 'לאזור האישי'), HACHVANA),
             btn(tr('Save as a step', 'לשמור כצעד'), () => saveAction(tr('Deposit request: ', 'בקשת פיקדון: ') + title, tip), 'plus-link'))));
@@ -135,7 +135,7 @@
     /* ================= GRANT PLANNER (your own split, no advice) ================= */
     function grantPlanner() {
       const wrap = h('div');
-      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed) : null;
+      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
       P.grantPlan = P.grantPlan || {total: e && e.grant ? Math.round(e.grant) : '', parts: {}};
       const G = P.grantPlan;
       const BUCKETS = [['cushion', tr('Safety cushion', 'כרית ביטחון')], ['trip', tr('Trip', 'טיול')], ['studies', tr('Studies', 'לימודים')], ['home', tr('Rent / home', 'שכירות / בית')], ['car', tr('Licence / car', 'רישיון / רכב')], ['other', tr('Other', 'אחר')]];
@@ -513,7 +513,7 @@
     function total() {
       const wrap = h('div');
       const r = R();
-      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed) : null;
+      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
       if (!e) { wrap.append(section(tr('First, your service details', 'קודם, פרטי השירות'), note(tr('Enter service type and months to calculate.', 'צריך להזין סוג שירות וחודשים כדי לחשב.')), btn(tr('Enter details', 'להזין פרטים'), () => showPage('rights'), 'plus-btn primary'))); return wrap; }
       const taxMax = e.taxMonthly ? e.taxMonthly[1] * ((r.tax_credit_points || {}).duration_months || 36) : 0;
       const pw = (r.preferred_work_grant || {}).amount_2026_number || 0;

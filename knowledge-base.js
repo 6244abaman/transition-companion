@@ -19,8 +19,8 @@
   const DISCLAIMER_EN = 'Amounts and conditions change. Always verify on the official site before deciding.';
 
   const fmtMoney = n => typeof n === 'number' ? n.toLocaleString('he-IL', {maximumFractionDigits: 2}) + ' ₪' : String(n || '');
-  const SERVICE_RATE_KEY = {combat: 'combat', support: 'combat_support', other: 'other_national_service', national: 'other_national_service'};
-  const SERVICE_LABEL_HE = {combat: 'לוחם/ת', support: 'תומך/ת לחימה', other: 'שירות אחר', national: 'שירות לאומי', combat_support: 'תומך/ת לחימה', other_national_service: 'אחר / שירות לאומי', civilian_intermediate: 'שירות אזרחי (ביניים)', civilian_split: 'שירות אזרחי (מפוצל)'};
+  const SERVICE_RATE_KEY = {combat: 'combat', support: 'combat_support', other: 'other_national_service', national: 'other_national_service', civ_mid: 'civilian_intermediate', civ_split: 'civilian_split'};
+  const SERVICE_LABEL_HE = {combat: 'לוחם/ת', support: 'תומך/ת לחימה', other: 'שירות אחר', national: 'שירות לאומי', civ_mid: 'מסלול אזרחי ביניים', civ_split: 'מסלול אזרחי מפוצל', combat_support: 'תומך/ת לחימה', other_national_service: 'אחר / שירות לאומי', civilian_intermediate: 'שירות אזרחי (ביניים)', civilian_split: 'שירות אזרחי (מפוצל)'};
 
   /* ---------- General guides (no amounts, no eligibility claims) ---------- */
   const GUIDES_HE = {
@@ -28,7 +28,7 @@
       'לפני שמוציאים את המענק — לכתוב רשימה של 3 מטרות (למשל: טיול, לימודים, כרית ביטחון).',
       'כדאי להשאיר כרית ביטחון לכמה חודשי מחיה לפני הוצאות גדולות.',
       'חשבון נפרד לחיסכון עוזר לא לגעת בכסף בלי לשים לב.',
-      'לבדוק את הפיקדון לפני שמשלמים מכיס על לימודים, נהיגה או שכירות — ייתכן שאפשר לממן משם.',
+      'לבדוק את הפיקדון לפני שמשלמים מכיס על לימודים, קורס או לימודי נהיגה — ייתכן שאפשר לממן משם.',
       'תקציב חודשי פשוט: הכנסות, הוצאות קבועות, הוצאות משתנות. גם דף אחד מספיק.',
       'לא להתחייב להלוואה או לעסקה גדולה בשבועות הראשונים אחרי השחרור — אפשר לחכות ולחשוב.'
     ],
@@ -108,13 +108,13 @@
     ]
   };
 
-  const SERVICE_LABEL_EN = {combat: 'Combat', support: 'Combat support', other: 'Other service', national: 'National service', combat_support: 'Combat support', other_national_service: 'Other / national service', civilian_intermediate: 'Civilian service (intermediate)', civilian_split: 'Civilian service (split)'};
+  const SERVICE_LABEL_EN = {combat: 'Combat', support: 'Combat support', other: 'Other service', national: 'National service', civ_mid: 'Civilian track (intermediate)', civ_split: 'Civilian track (split)', combat_support: 'Combat support', other_national_service: 'Other / national service', civilian_intermediate: 'Civilian service (intermediate)', civilian_split: 'Civilian service (split)'};
   const GUIDES_EN = {
     savingsTips: [
       'Before spending the grant, write down 3 goals (for example: a trip, studies, a safety cushion).',
       'Keep a safety cushion for a few months of living costs before big expenses.',
       'A separate savings account helps you not touch the money without noticing.',
-      'Check the deposit before paying out of pocket for studies, driving lessons or rent — it may be possible to fund it from there.',
+      'Check the deposit before paying out of pocket for studies, a course or driving lessons — it may be possible to fund it from there.',
       'A simple monthly budget: income, fixed costs, variable costs. One page is enough.',
       'Do not commit to a loan or a big deal in the first weeks after discharge — you can wait and think.'
     ],
@@ -201,11 +201,11 @@
     const add = (id, cat, title, lines, extra) => cards.push({id, cat, title, lines: lines.filter(Boolean), ...(extra || {})});
     if (r.discharge_grant) {
       const g = r.discharge_grant;
-      add('discharge_grant', 'money', g.name_he, [g.description, L('זכאות: ','Eligibility: ') + g.eligibility, L('מתי: ','When: ') + g.timing, g.notes], {
+      add('discharge_grant', 'money', g.name_he, [g.description, L('זכאות: ','Eligibility: ') + g.eligibility, L('מתי: ','When: ') + g.timing, g.notes, g.appeal], {
         rates: Object.entries(g.amounts_per_month_2026_oct || {}).map(([k, v]) => ({key: k, label: (isEn() ? SERVICE_LABEL_EN : SERVICE_LABEL_HE)[k] || k, value: v})),
         examples: Object.values(g.examples || {}), link: 'agaf_keren'});
     }
-    if (r.personal_deposit) { const d = r.personal_deposit; add('personal_deposit', 'money', d.name_he, [d.description, L('מתי: ','When: ') + d.timing, L('אחרי 5 שנים: ','After 5 years: ') + d.after_5_years, L('איך מממשים: ','How to use it: ') + d.how_to_claim], {list: d.approved_uses, listTitle: L('שימושים מאושרים','Approved uses'), link: 'agaf_keren',
+    if (r.personal_deposit) { const d = r.personal_deposit; add('personal_deposit', 'money', d.name_he, [d.description, L('מתי: ','When: ') + d.timing, L('אחרי 5 שנים: ','After 5 years: ') + d.after_5_years, L('איך מממשים: ','How to use it: ') + d.how_to_claim, d.notes, d.appeal], {list: d.approved_uses, listTitle: L('שימושים מאושרים','Approved uses'), link: 'agaf_keren',
       rates: Object.entries(d.amounts_per_month_2026_oct || {}).map(([k, v]) => ({key: k, label: (isEn() ? SERVICE_LABEL_EN : SERVICE_LABEL_HE)[k] || k, value: v})), warning: d.scam_warning}); }
     if (r.tax_credit_points) { const tp = r.tax_credit_points; add('tax_credit_points', 'money', tp.name_he, [L('משך: ','Duration: ') + tp.duration_months + L(' חודשים מהשחרור',' months from discharge'), L('שירות של 23 חודשים ומעלה (גברים) / 22 ומעלה (נשים): ','Service of 23+ months (men) / 22+ (women): ') + tp.points.men_23plus_or_women_22plus + L(' נקודות',' points'), L('שירות של 12 חודשים ועד מתחת לסף הזה: ','Service of 12 months up to that threshold: ') + tp.points['12_to_23_months'] + L(' נקודה',' point'), tp.point_value_2026_monthly ? L('שווי נקודה ב-2026: כ-','Value of one point in 2026: about ') + tp.point_value_2026_monthly + L(' ₪ לחודש',' ₪ a month') : '', L('חיסכון משוער (2 נקודות): ','Estimated saving (2 points): ') + tp.estimated_monthly_saving_2_points + L(' לחודש',' a month'), L('איך: ','How: ') + tp.how_to_claim, tp.not_automatic, tp.refund], {link: 'taxes'}); }
     if (r.bituach_leumi_exemption) { const b = r.bituach_leumi_exemption; add('bituach_leumi_exemption', 'money', b.name_he, [L('משך: ','Duration: ') + b.duration, L('תנאי: ','Condition: ') + b.condition], {link: 'bituach_leumi'}); }
@@ -227,20 +227,34 @@
   }
 
   /* ---------- Estimate: rates × months of service (approximate, never a promise) ---------- */
-  function estimate(service, months) {
+  function estimate(service, months, gender) {
     if (!D()) return null;
     const r = D().rights_and_benefits, key = SERVICE_RATE_KEY[service];
+    const g = r.discharge_grant, d = r.personal_deposit;
     const m = Number(months);
-    const grantRate = key && r.discharge_grant.amounts_per_month_2026_oct[key];
-    const depositRate = key && r.personal_deposit.amounts_per_month_2026_oct && r.personal_deposit.amounts_per_month_2026_oct[key];
+    const grantRates = g.amounts_per_month_2026_oct || {}, depRates = (d && d.amounts_per_month_2026_oct) || {};
+    const grantRate = key && grantRates[key];
+    const depositRate = key && depRates[key];
     const pointValue = r.tax_credit_points.point_value_2026_monthly || 0;
     const valid = Number.isFinite(m) && m > 0 && m <= 60;
-    // 23+ months (men) / 22+ (women) → 2 points; 12+ → 1 point. Gender is not asked, so 22 months shows a range.
-    const points = !valid ? null : m >= 23 ? [2, 2] : m >= 22 ? [1, 2] : m >= 12 ? [1, 1] : [0, 0];
+    // Official rules (hachvana, Oct 2026): months count up to 32 (men) / 24 (women); combat soldiers' first 4
+    // training months are paid at the combat-support rate, combat support's first 2 at the "other" rate.
+    const cap = gender === 'f' ? 24 : 32;
+    const counted = valid ? Math.min(m, cap) : 0;
+    const train = (g.training_months || {})[key] || 0;
+    const lower = key === 'combat' ? 'combat_support' : key === 'combat_support' ? 'other_national_service' : null;
+    const calc = rates => {
+      const top = rates[key]; if (!top) return null;
+      const t = lower && rates[lower] ? Math.min(train, counted) : 0;
+      return Math.round((counted - t) * top + t * (lower ? rates[lower] : 0));
+    };
+    // 23+ months (men) / 22+ (women) → 2 points; 12+ → 1 point.
+    const two = gender === 'f' ? 22 : gender === 'm' ? 23 : null;
+    const points = !valid ? null : two ? (m >= two ? [2, 2] : m >= 12 ? [1, 1] : [0, 0]) : (m >= 23 ? [2, 2] : m >= 22 ? [1, 2] : m >= 12 ? [1, 1] : [0, 0]);
     return {
-      grantRate, depositRate, pointValue,
-      grant: valid && grantRate && m >= 12 ? Math.round(grantRate * m) : null,
-      deposit: valid && depositRate ? Math.round(depositRate * m) : null,
+      grantRate, depositRate, pointValue, countedMonths: counted, capped: valid && m > cap, trainingMonths: lower ? Math.min(train, counted) : 0,
+      grant: valid && grantRate && m >= 12 ? calc(grantRates) : null,
+      deposit: valid && depositRate && m >= 12 ? calc(depRates) : null,
       points, taxMonthly: points ? [points[0] * pointValue, points[1] * pointValue] : null,
       asOf: (D().metadata && (D().metadata.amounts_as_of || D().metadata.last_updated)) || '', source: (D().metadata && D().metadata.source) || ''
     };

@@ -260,3 +260,23 @@ html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }
 .plus-compare { margin:0 0 10px; }
 .plus-tools-grid .plus-tool-ico .plus-ico svg { width:20px;height:20px; }
 .plus-interview-q { font-weight:700;font-size:16.5px;margin:10px 0 4px; }
+.plus-row-card.plus-row-done { background:var(--sage) !important;border-color:var(--accent) !important; }
+.plus-row-card.plus-row-done .plus-row-ico { color:var(--accent); }
+.plus-row-card.plus-row-done strong { text-decoration:line-through;text-decoration-thickness:1.5px; }
+/* ---------- collapsible right cards (27 Nov 2026): short list, details on tap ---------- */
+details.plus-right-fold { padding:0 !important; overflow:hidden; }
+.plus-right-fold > summary.plus-right-sum { list-style:none;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer; }
+.plus-right-fold > summary::-webkit-details-marker { display:none; }
+.plus-right-ico { flex:0 0 auto;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--sage);color:var(--accent); }
+.plus-right-ico svg { width:22px;height:22px; }
+.plus-right-head { flex:1;display:flex;flex-direction:column;gap:2px;min-width:0; }
+.plus-right-head strong { font-size:16px;color:var(--text); }
+.plus-right-head small { font-size:13.5px;color:var(--text-3);line-height:1.4; }
+.plus-right-chev { flex:0 0 auto;color:var(--text-3);transition:transform .2s; }
+.plus-right-chev svg { width:20px;height:20px; }
+[dir="rtl"] .plus-right-chev { transform:rotate(0deg); }
+[dir="ltr"] .plus-right-chev { transform:rotate(180deg); }
+details[open] > summary .plus-right-chev { transform:rotate(-90deg) !important; }
+.plus-right-body { padding:0 16px 14px;border-top:1px solid var(--border); }
+.plus-right-body > p:first-child { margin-top:12px; }
+.plus-group-title { font-size:15px;font-weight:700;color:var(--text-2);margin:18px 2px 8px; }

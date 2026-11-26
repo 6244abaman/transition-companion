@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v24-tools3";
+const CACHE = "tc-v25-tidy";
 const APP_FILES = [
   "./",
   "./index.html",
