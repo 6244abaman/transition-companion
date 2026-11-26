@@ -1,0 +1,100 @@
+/* Momentum theme — one look for every screen (Companion, My Journey, Skills).
+   Loaded last on each page. Darker, higher-contrast palette; legacy components restyled. */
+:root {
+  --m-green:#24513D; --m-green-2:#2F6650; --m-ink:#141C17; --m-sub:#3E453F; --m-cream:#F4EFE5;
+  --m-card:#FFFFFF; --m-sage:#DCE7D4; --m-beige:#EDE5D3; --m-line:#D8D0C0; --m-shadow:0 2px 12px rgba(20,30,22,.10);
+  /* legacy variables used by the original app, made darker */
+  --ink:#141C17; --ink-2:#333A34; --dust:#535A53; --line:#D8D0C0; --paper:#FFFFFF; --paper-2:#F4EFE5;
+  --olive:#24513D; --olive-soft:#DCE7D4; --stone:#F4EFE5; --sub:#3E453F;
+}
+body { color:var(--m-ink); -webkit-font-smoothing:antialiased; }
+p, li, small, label, td, th, summary { color:inherit; }
+.plus-muted, .plus-hello-sub, .plus-row-text small, .plus-mood-label, .plus-online, .plus-source, .muted, .hub-note { color:var(--m-sub) !important; }
+.plus-row-text small em, .plus-sum-text small { color:#454C46 !important; }
+.plus-hello-sub { font-weight:500; }
+.plus-home-why, .plus-tile small { color:#3E453F; }
+
+/* bottom navigation: darker labels, bolder */
+.plus-nav button, .jp-nav a { color:#3E453F !important; font-weight:600; font-size:12px !important; }
+.plus-nav button[aria-current="page"], .jp-nav a[aria-current="page"] { color:var(--m-green) !important; font-weight:800; }
+
+/* cards: a little more definition */
+.plus-home-btn, .plus-mood-card, .plus-sum-card, .plus-page .plus-card, .jp-steps, .jp-card, .jp-wday, .jp-link, .plus-qanswer { box-shadow:var(--m-shadow) !important; border:1px solid #E6DFD1 !important; }
+.plus-chat-entry, .jp-goal { background:var(--m-green) !important; }
+.plus-sage { background:var(--m-sage) !important; } .plus-beige { background:var(--m-beige) !important; }
+.plus-sum-ico { background:var(--m-sage) !important; color:var(--m-green) !important; }
+.turn.them { background:#DFE8D8 !important; }
+.turn.them .body { color:#141C17 !important; font-size:15.5px !important; }
+
+/* quick-question chips wrap instead of being cut at the screen edge */
+.plus-quick-chips { flex-wrap:wrap; overflow:visible; }
+.plus-qchip { white-space:normal; max-width:100%; text-align:start; color:#262D27; border-color:#CFC7B6; font-weight:500; }
+
+/* ---------- gear menu ---------- */
+.companion-more-items { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:16px !important; box-shadow:0 12px 32px rgba(20,30,22,.18) !important; padding:8px !important; gap:4px !important; min-width:220px !important; }
+.companion-more-items .chip, .companion-more-items button { display:flex !important; align-items:center; width:100%; min-height:46px; padding:10px 14px !important; border:0 !important; border-radius:12px !important; background:#fff !important; color:var(--m-ink) !important; font:inherit; font-size:15px !important; font-weight:600; text-align:start; }
+.companion-more-items button:hover, .companion-more-items button:focus-visible { background:var(--m-sage) !important; }
+
+/* ---------- side drawers (AI, voice, profile, support) → full sheet in the new style ---------- */
+.drawer { background:var(--m-cream) !important; color:var(--m-ink); box-shadow:0 0 40px rgba(20,30,22,.25) !important; }
+@media (max-width:700px) { .drawer { width:100% !important; max-width:100% !important; } }
+.dhead { background:var(--m-cream) !important; border-bottom:0 !important; padding:14px 14px 8px !important; }
+.dhead h2 { font-family:'Heebo',system-ui,sans-serif !important; font-size:19px !important; font-weight:800 !important; color:var(--m-ink); }
+.dhead .chip, #btnClose { width:40px; height:40px; min-height:40px; padding:0 !important; border-radius:50% !important; border:1px solid #D8D0C0 !important; background:#fff !important; color:var(--m-ink) !important; font-size:16px !important; }
+.dbody { padding:6px 14px 24px !important; font-size:15px; line-height:1.6; color:var(--m-ink); }
+.dbody > * + * { margin-top:10px; }
+.dbody :is(section, .card, .contact, .item, details) { background:#fff; border:1px solid #E6DFD1; border-radius:16px; padding:12px 14px; box-shadow:var(--m-shadow); }
+.dbody h3 { font-size:16px; font-weight:800; margin:4px 0; }
+.dbody p, .dbody li { color:#262D27; }
+.dbody a { color:var(--m-green); font-weight:700; }
+.dbody button, .dbody .chip { min-height:44px; padding:8px 16px; border-radius:12px; border:1px solid #BFCBB8; background:#fff; color:var(--m-green); font:inherit; font-weight:700; }
+.dbody button.primary, .dbody .go, .dbody button.go { background:var(--m-green); color:#fff; border-color:var(--m-green); }
+.dbody input, .dbody select, .dbody textarea { border:1px solid #CFC7B6; border-radius:10px; background:#fff; color:var(--m-ink); font:inherit; padding:8px 10px; }
+.dbody input[type=range] { accent-color:var(--m-green); padding:0; border:0; }
+.veil { background:rgba(20,30,22,.45) !important; }
+
+/* ---------- dialogs (AI consent, share, password …) ---------- */
+dialog { border:0 !important; border-radius:20px !important; padding:22px !important; background:#fff !important; color:var(--m-ink) !important; box-shadow:0 20px 60px rgba(20,30,22,.30) !important; font-family:'Heebo',system-ui,sans-serif; }
+dialog::backdrop { background:rgba(20,30,22,.5); }
+dialog h2 { font-size:19px; font-weight:800; margin:0 0 10px; color:var(--m-ink); }
+dialog p, dialog li, dialog label { color:#262D27 !important; line-height:1.6; }
+dialog button { min-height:46px !important; padding:10px 18px !important; border-radius:12px !important; border:1px solid #BFCBB8 !important; background:#fff !important; color:var(--m-green) !important; font:inherit !important; font-weight:700 !important; cursor:pointer; }
+dialog #ai-approve, dialog button.primary, dialog #shareApprove, dialog #passwordSubmit, dialog #saveRecord { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
+
+/* ---------- updated benefits panel ---------- */
+#benefitsUpdates { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:18px !important; color:var(--m-ink) !important; box-shadow:var(--m-shadow); padding:18px !important; }
+#benefitsUpdates h2 { font-size:1.25rem !important; font-weight:800; }
+#benefitsUpdates .benefits-small { color:var(--m-sub) !important; }
+#benefitsUpdates button, #benefitsUpdates a.button { border-radius:999px !important; border:1px solid #BFCBB8 !important; color:var(--m-green) !important; background:#fff !important; font-weight:700 !important; }
+#benefitsUpdates button[aria-pressed="true"] { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
+#benefitsUpdates :is(article, .benefits-card, li) { border-color:#E6DFD1 !important; border-radius:14px !important; }
+
+/* ---------- legacy "More options" on Home ---------- */
+.plus-legacy { border-top:1px solid #DCD4C4 !important; }
+.plus-legacy > summary { font-weight:800; color:var(--m-ink); }
+#hubKicker, #hubHeading, #hubLede { display:none; }
+.hub-resume { background:var(--m-sage) !important; border:0 !important; border-radius:16px !important; }
+.hub-resume :is(strong,p) { color:var(--m-ink) !important; }
+.hub-primary { background:var(--m-green) !important; border-color:var(--m-green) !important; border-radius:12px !important; }
+.hub-path { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:16px !important; box-shadow:var(--m-shadow); color:var(--m-ink) !important; font-weight:600; }
+.hub-path span:first-child { color:var(--m-green) !important; }
+.hub-tester textarea { border-color:#CFC7B6 !important; }
+
+/* ---------- conversation history list ---------- */
+#chatHistory .chat-item { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:14px !important; color:var(--m-ink) !important; font-weight:600; padding:10px 12px !important; }
+#chatHistory .chat-item small { color:var(--m-sub) !important; font-weight:400; }
+#chatHistory .new-chat { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; border-radius:12px !important; }
+
+/* ---------- 36-skills page (skills-business.html) ---------- */
+body:has(#assessment) { background:var(--m-cream) !important; font-family:'Heebo',system-ui,sans-serif; color:var(--m-ink); }
+body:has(#assessment) > header { background:var(--m-cream) !important; color:var(--m-ink) !important; padding:14px 16px 6px !important; }
+body:has(#assessment) > header :is(a, h1, p, button) { color:var(--m-ink) !important; }
+body:has(#assessment) > header a { font-weight:700; color:var(--m-green) !important; text-decoration:none; }
+body:has(#assessment) > header button { border-radius:999px; border:1px solid #BFCBB8; background:#fff; }
+body:has(#assessment) > header h1 { font-size:22px !important; font-weight:800; }
+body:has(#assessment) .box { background:#fff !important; border:1px solid #E6DFD1 !important; border-radius:18px !important; box-shadow:var(--m-shadow) !important; }
+body:has(#assessment) :is(button, .button) { border-radius:12px !important; border-color:#BFCBB8 !important; color:var(--m-green) !important; }
+body:has(#assessment) :is(button.primary, .ratings .selected) { background:var(--m-green) !important; color:#fff !important; border-color:var(--m-green) !important; }
+body:has(#assessment) .fill { background:var(--m-green) !important; }
+body:has(#assessment) :is(.muted, small) { color:var(--m-sub) !important; }
+body:has(#assessment) main { max-width:640px; padding:8px 12px 30px; }
