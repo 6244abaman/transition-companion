@@ -98,6 +98,8 @@
     ],
     humanHelp: [
       {name: 'ער"ן — עזרה ראשונה נפשית', contact: '1201', tel: '1201', note: 'קו טלפוני 24/7, אנונימי. אפשר גם בצ\'אט באתר ער"ן.'},
+      {name: 'נט"ל — קו סיוע לטראומה', contact: '1-800-363-363', tel: '1800363363', note: 'קו סיוע חינמי לנפגעי טראומה על רקע לאומי.'},
+      {name: '"נפש אחת" — קו תמיכה ללוחמים ומשוחררים', contact: '*8944', tel: '*8944', note: '24/7, של משרד הביטחון בשיתוף נט"ל.'},
       {name: 'מצב חירום', contact: 'מד"א 101 · משטרה 100', tel: '101', note: 'אם יש סכנה מיידית לך או למישהו אחר.'},
       {name: 'תוכנית עמית', contact: 'אפליקציה', note: 'טיפולים וסדנאות wellness לחיילים משוחררים.'},
       {name: 'אגף השיקום — משרד הביטחון', contact: 'משרד הביטחון', note: 'טיפול נפשי ותמיכה למי שנפגע בשירות.'},
@@ -182,6 +184,8 @@
     ],
     humanHelp: [
       {name: 'ERAN — emotional first aid', contact: '1201', tel: '1201', note: '24/7 phone line, anonymous. There is also a chat on the ERAN website.'},
+      {name: 'NATAL — trauma helpline', contact: '1-800-363-363', tel: '1800363363', note: 'Free helpline for trauma related to national events.'},
+      {name: '"Nefesh Achat" — support line for veterans', contact: '*8944', tel: '*8944', note: '24/7, by the Defense Ministry with NATAL.'},
       {name: 'Emergency', contact: 'MDA 101 · Police 100', tel: '101', note: 'If you or someone else is in immediate danger.'},
       {name: 'Amit program', contact: 'App', note: 'Therapy and wellness workshops for discharged soldiers.'},
       {name: 'Rehabilitation Department — Ministry of Defense', contact: 'Ministry of Defense', note: 'Mental health treatment and support for those injured in service.'},

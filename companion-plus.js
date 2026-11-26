@@ -384,7 +384,7 @@
     plusHome.append(grid);
     if (!P.infoOnly) plusHome.append(h('button', {type: 'button', class: 'plus-chat-entry', onclick: () => goChat()}, h('span', {}, tr('Talk with the Companion', 'דבר עם המלווה')), icon('chat')));
     const est = P.hidden.includes('home:estimate') ? null : estimateRow();
-    put(plusHome, est, todayRow(), quickChips());
+    put(plusHome, est, todayRow(), PAGES.tools ? rowCard('plus-sage plus-tools-row', 'calendar', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
     plusHome.append(btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'));
     const cards = h('div', {class: 'plus-cards'});
     const wn = whatsNewCard(); if (wn) cards.append(wn);
@@ -614,7 +614,7 @@
       put(wrap, h('h1', {class: 'plus-title'}, tr("It's okay not to be okay", 'זה בסדר לא להיות בסדר')),
         h('p', {}, tr("Thank you for checking in. You don't have to handle this alone. Talking to a person can help, even when it feels hard to start.", 'תודה שעצרת לבדוק. אתה לא חייב להתמודד עם זה לבד. שיחה עם אדם יכולה לעזור, גם כשקשה להתחיל.')),
         h('p', {class: 'plus-soft plus-pill'}, tr('If you or someone else is in immediate danger — call 101 (MDA) or 100 (police) now.', 'אם אתה או מישהו אחר בסכנה מיידית — חייג עכשיו 101 (מד"א) או 100 (משטרה).')));
-      put(wrap, humanHelpSection());
+      put(wrap, humanHelpSection(), PAGES.contacts ? h('div', {class: 'plus-row'}, btn(tr('All support numbers — tap to call', 'כל מספרי התמיכה — לחיצה לחיוג'), () => showPage('contacts'), 'plus-btn primary')) : null);
       if (!P.infoOnly) put(wrap, section(tr('Prefer to write first?', 'מעדיף לכתוב קודם?'),
         h('p', {}, tr('You can write to the Companion. It is not a person and does not replace help, but it will listen and help you find the next step.', 'אפשר לכתוב למלווה. הוא לא אדם ולא מחליף עזרה, אבל הוא יקשיב ויעזור למצוא את הצעד הבא.')),
         btn(tr('Write to the Companion', 'לכתוב למלווה'), () => openTopic('support'), 'plus-btn')));
@@ -635,13 +635,14 @@
       };
       input.addEventListener('input', draw);
       put(wrap, h('div', {class: 'plus-search'}, input), checklist(), results, specialGroups(), officialLinks(),
-        h('div', {class: 'plus-row'}, askButton('rights')));
+        h('div', {class: 'plus-row'}, askButton('rights'), PAGES.deadlines ? btn(tr('My dates', 'המועדים שלי'), () => showPage('deadlines'), 'plus-btn') : null, PAGES.deposit ? btn(tr('Deposit planner', 'מתכנן פיקדון'), () => showPage('deposit'), 'plus-btn') : null));
       draw();
       return wrap;
     },
     /* ----- Work / studies / money hub ----- */
     practical() {
       const tiles = [
+        ['tools', '🧰', tr('My tools', 'הכלים שלי'), tr('Dates, planners, numbers', 'מועדים, מתכננים, טלפונים')],
         ['money', '₪', tr('Money', 'כסף'), tr('Grant, deposit, tax points, budget', 'מענק, פיקדון, נקודות זיכוי, תקציב')],
         ['work', '💼', tr('Work & CV', 'עבודה וקורות חיים'), tr('Preferred work, CV, interviews', 'עבודה מועדפת, קורות חיים, ראיונות')],
         ['studies', '🎓', tr('Studies', 'לימודים'), tr('Mimadim, mechina, bagrut, scholarships', 'ממדים, מכינה, בגרויות, מלגות')],
@@ -759,7 +760,12 @@
     wrap.append(form, note, cards);
     const w = (KB.data.important_warnings || [])[0];
     if (w) wrap.append(h('div', {class: 'plus-know', role: 'note'}, h('div', {class: 'plus-know-head'}, h('strong', {}, tr('Good to know!', 'חשוב לדעת!')), icon('warn', 'plus-know-ico')),
-      h('p', {}, w), btn(tr('More information →', 'למידע נוסף ←'), () => { const el = document.querySelector('.plus-disclaimer'); if (el) el.scrollIntoView({behavior: 'smooth'}); }, 'plus-know-more')));
+      h('p', {}, w), (() => {
+        const more = h('ul', {class: 'plus-list', hidden: true}, (KB.data.important_warnings || []).slice(1).map(x => h('li', {}, x)));
+        const b = btn(tr('More information →', 'למידע נוסף ←'), () => { more.hidden = !more.hidden; b.textContent = more.hidden ? tr('More information →', 'למידע נוסף ←') : tr('Show less', 'להסתיר'); b.setAttribute('aria-expanded', String(!more.hidden)); }, 'plus-know-more');
+        b.setAttribute('aria-expanded', 'false');
+        return h('div', {}, more, b);
+      })()));
     return wrap;
   }
   function calculator() {
@@ -1057,6 +1063,7 @@
   function promptContext(lastUserText) {
     const parts = [];
     if (KB) { const k = KB.promptContext(lastUserText, {topic: S.activeTopic || ''}); if (k) parts.push(k); }
+    if (PAGES.tools) parts.push('APP TOOLS the soldier can open from Home > My tools: My dates (personal deadlines from the discharge date, add to phone calendar), Deposit planner, Grant planner, After-discharge checklist, Phone numbers & places (tap to call, Waze), Scholarships, Payslip guide, Glossary. Mention the relevant one by name when it helps.');
     if (P.chatMode === 'talk' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I just want to talk". Listen first, reflect briefly, normalize the feelings, and do not push tasks or lists unless they ask.');
     if (P.chatMode === 'practical' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I want to do something practical". Be concrete and end with one small next step.');
     const j = journey();
@@ -1077,6 +1084,12 @@
      START-UP
      ================================================================ */
   function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); paintChatHead(); if (!hub.hidden) renderHome(); }
+  if (window.MomentumTools) {
+    try {
+      const T = window.MomentumTools({h, btn, tr, he, icon, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton});
+      Object.assign(PAGES, T.pages); Object.assign(PAGE_HEAD, T.heads);
+    } catch (e) { console.warn('tools', e); }
+  }
   window.MomentumPlus = {promptContext, showPage, goHome, goChat, prefs: () => ({...P}), renderHome};
   new MutationObserver(paintAll).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
   new MutationObserver(() => { if (!hub.hidden) { hidePage(); renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});

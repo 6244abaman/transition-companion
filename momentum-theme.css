@@ -209,3 +209,43 @@ html[data-theme="dark"] .plus-ticon { background:var(--surface); border-color:va
 html[data-theme="dark"] .plus-beige .plus-row-ico { color:#E2B65C !important; }
 /* old "Updated information and benefits" panel is not shown in the new chat (owner decision) */
 #benefitsUpdates, #openBenefitsUpdates { display:none !important; }
+
+/* ---------- My tools (26 Nov 2026) — grouped, calm, same tokens ---------- */
+.plus-tools-group { margin:0 0 18px; }
+.plus-tools-group h2 { font-size:15px;font-weight:700;color:var(--text-2);margin:0 2px 8px; }
+.plus-tools-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+.plus-tool { display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;padding:14px;min-height:108px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer; }
+.plus-tool strong { font-size:15.5px; }
+.plus-tool small { color:var(--text-3);line-height:1.4;font-size:13px; }
+.plus-tool-ico { width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:var(--sage);color:var(--accent); }
+.plus-tool-ico svg { width:20px;height:20px; }
+.plus-tool:hover,.plus-tool:focus-visible { border-color:var(--accent); }
+.plus-timeline { list-style:none;margin:12px 0 0;padding:0;border-inline-start:2px solid var(--border-strong); }
+.plus-tl-item { position:relative;margin:0 0 12px;padding:12px 14px;margin-inline-start:14px;background:var(--surface);border:1px solid var(--border);border-radius:16px; }
+.plus-tl-item::before { content:"";position:absolute;inset-inline-start:-22px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent); }
+.plus-tl-item.is-next { border-color:var(--accent);box-shadow:0 0 0 2px var(--sage); }
+.plus-tl-item.is-next::before { background:var(--accent); }
+.plus-tl-item.is-past { opacity:.62; }
+.plus-tl-date { display:block;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:2px; }
+.plus-tl-item p { margin:4px 0 6px;color:var(--text-2); }
+.plus-contacts { list-style:none;margin:0;padding:0;display:grid;gap:10px; }
+.plus-contacts li { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--border); }
+.plus-contacts li:last-child { border-bottom:0; }
+.plus-contacts small { display:block;color:var(--text-3);font-size:13px; }
+.plus-call { white-space:nowrap;direction:ltr; }
+.plus-check-list { list-style:none;margin:10px 0 0;padding:0; }
+.plus-check-list li { display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--border); }
+.plus-check-list label { display:flex;align-items:center;gap:10px;flex:1;cursor:pointer; }
+.plus-check-list input { width:22px;height:22px;accent-color:var(--accent);flex:0 0 auto; }
+.plus-check-list li.is-done span { text-decoration:line-through;color:var(--text-3); }
+.plus-plan-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0; }
+.plus-plan-field { display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--text-2); }
+.plus-plan-field input { width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text);font:inherit; }
+.plus-plan-total { margin-top:8px; }
+.plus-plan-left { font-weight:700;color:var(--accent); }
+.plus-plan-left.is-over { color:var(--danger, #9B2C2C); }
+.plus-glossary { margin:0; }
+.plus-glossary dt { font-weight:700;margin-top:10px; }
+.plus-glossary dd { margin:2px 0 0;color:var(--text-2); }
+.plus-warn { background:var(--beige);border-radius:12px;padding:10px 12px;color:var(--text); }
+#plusDischargeDate { padding:10px 12px;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;max-width:100%; }

@@ -117,7 +117,9 @@
     },
     "arnona": {
       "name_he": "Municipal tax (arnona) discount / exemption",
-      "notes": "Varies between local authorities. Usually for the first months, up to a certain apartment size."
+      "notes": "Full arnona exemption for up to 4 months from discharge from mandatory service, on 70 m² (90 m² with 5+ residents). Only for an apartment you own or rent — not your parents' home. Request it from the local authority.",
+      "duration": "4 months from discharge",
+      "official_url": "https://www.kolzchut.org.il/he/פטור_מארנונה_לחיילים_בשירות_חובה_וחיילים_משוחררים"
     },
     "unemployment": {
       "name_he": "Unemployment benefit",
