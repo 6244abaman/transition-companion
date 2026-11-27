@@ -710,3 +710,5 @@ html[data-motion="reduce"] .sim-ai-dot { animation:none; }
 .plus-sch-tg { display:flex;align-items:center;gap:6px;background:var(--beige);border-radius:99px;padding:6px 12px;font-weight:700;font-size:14px;cursor:pointer; }
 .plus-sch-tg input { width:18px;height:18px;accent-color:#2F5A46; }
 .plus-sch-count { margin:0;font-weight:700;color:#1E5E3E; }
+.plus-pq { width:100%;display:flex;flex-direction:column;gap:6px;margin-top:6px; } .plus-pq small { color:var(--text-3);font-weight:700; }
+.plus-pq-chip { text-align:start;white-space:normal;line-height:1.4;border-color:#9BC2AC !important;background:#F7FBF8 !important; }

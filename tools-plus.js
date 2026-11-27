@@ -206,8 +206,9 @@
     function grantPlanner() {
       const wrap = h('div');
       const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
-      P.grantPlan = P.grantPlan || {total: e && e.grant ? Math.round(e.grant) : '', parts: {}};
+      P.grantPlan = P.grantPlan || {total: '', parts: {}};
       const G = P.grantPlan;
+      if (!G.totalEdited && e && e.grant) G.total = Math.round(e.grant);
       const BUCKETS = [['cushion', tr('Safety cushion', 'כרית ביטחון')], ['trip', tr('Trip', 'טיול')], ['studies', tr('Studies', 'לימודים')], ['home', tr('Rent / home', 'שכירות / בית')], ['car', tr('Licence / car', 'רישיון / רכב')], ['other', tr('Other', 'אחר')]];
       const total = h('input', {type: 'number', min: '0', inputmode: 'numeric', value: G.total, 'aria-label': tr('Grant amount', 'סכום המענק')});
       const left = h('p', {class: 'plus-plan-left', 'aria-live': 'polite'});
@@ -222,7 +223,7 @@
         left.textContent = tr('Planned: ', 'תוכנן: ') + money(used) + ' · ' + (rest >= 0 ? tr('Not yet planned: ', 'עוד לא תוכנן: ') + money(rest) : tr('Over by ', 'חריגה של ') + money(-rest));
         left.classList.toggle('is-over', rest < 0);
       }
-      total.addEventListener('input', () => { G.total = Number(total.value) || ''; store(); calc(); });
+      total.addEventListener('input', () => { G.total = Number(total.value) || ''; G.totalEdited = !!total.value; store(); calc(); });
       put(wrap, section(tr('Plan your grant your way', 'לתכנן את המענק בדרך שלך'),
         note(tr('The grant is free money — you decide. Write how much you want for each thing. This is a planning aid, not financial advice.', 'המענק הוא כסף חופשי — אתה מחליט. כתוב כמה תרצה לכל דבר. זה כלי תכנון, לא ייעוץ פיננסי.')),
         h('label', {class: 'plus-plan-field plus-plan-total'}, h('span', {}, tr('Grant amount (₪)', 'סכום המענק (₪)')), total),
@@ -490,8 +491,12 @@
     function letters() {
       const wrap = h('div');
       wrap.append(note(tr('Replace the [brackets], then copy or share.', 'מחליפים את מה שבסוגריים [ ], ואז מעתיקים או משתפים.')));
+      const fill = t => { let x = t; if (P.name) x = x.replace(/\[השם שלך\]|\[Your name\]|\[your name\]/g, P.name);
+        const cvRole = P.cv && P.cv.milRole; if (cvRole) x = x.replace(/\[תפקיד בשירות\]|\[role in service\]/g, cvRole);
+        const tgt = P.cv && P.cv.headline; if (tgt) x = x.replace(/\[תפקיד\]|\[role\]/g, tgt); return x; };
+      if (P.name || (P.cv && (P.cv.milRole || P.cv.headline))) wrap.append(h('p', {class: 'plus-sch-why'}, tr('Filled in from your details: ', 'מולא מהפרטים שלך: ') + [P.name && tr('name', 'שם'), P.cv && P.cv.milRole && tr('service role (CV)', 'תפקיד בשירות (קו"ח)'), P.cv && P.cv.headline && tr('target role (CV)', 'תפקיד מבוקש (קו"ח)')].filter(Boolean).join(', ')));
       LETTERS().forEach(([title, text]) => {
-        const ta = h('textarea', {class: 'plus-letter', rows: '6', 'aria-label': title}); ta.value = text;
+        const ta = h('textarea', {class: 'plus-letter', rows: '6', 'aria-label': title}); ta.value = fill(text);
         wrap.append(h('details', {class: 'plus-details plus-card'}, h('summary', {}, title), ta,
           h('div', {class: 'plus-row'}, btn(tr('Copy', 'העתקה'), () => copyText(ta.value), 'plus-btn primary'), btn(tr('Share', 'שיתוף'), () => share(title, ta.value), 'plus-btn'),
             P.infoOnly ? null : btn(tr('Improve with the Companion', 'לשפר עם המלווה'), () => openTopic('applications', tr('Help me improve this letter:\n', 'תעזור לי לשפר את המכתב הזה:\n') + ta.value), 'plus-link'))));
@@ -561,8 +566,12 @@
         [tr('Pre-academic mechina', 'מכינה קדם-אקדמית'), tr('Months to a year', 'חודשים עד שנה'), tr('For those without full bagrut', 'למי שאין בגרות מלאה'), tr('Often funded for discharged soldiers', 'לרוב במימון למשוחררים')],
         [tr('Open University', 'האוניברסיטה הפתוחה'), tr('Flexible', 'גמיש'), tr('No entry requirements at the start', 'בלי תנאי קבלה בהתחלה'), tr('Deposit, scholarships', 'פיקדון, מלגות')]
       ];
+      const dirs = window.MomentumProfile ? window.MomentumProfile.studyDirections().join(' ') : '';
+      const fits = n => dirs && ((/הנדסאי|Practical engineer/.test(n) && /הנדסאות|Practical engineering/.test(dirs)) || (/תואר|degree/i.test(n) && /הנדסה|כלכלה|מדעי|משפטים|פסיכולוגיה|מנהל|Engineering|Economics|science|Law|Psychology|Business/.test(dirs)) || (/קורס מקצועי|Vocational/.test(n) && /טכנאות|Technician|הכשרה|Vocational/.test(dirs)));
+      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
       return h('div', {}, section(tr('Compare paths', 'השוואת מסלולים'),
-        ...rows.map(([n, len, req, fund]) => h('div', {class: 'plus-card plus-soft plus-compare'}, h('strong', {}, n),
+        e && e.deposit ? h('p', {class: 'plus-sch-why'}, tr('Your deposit (≈ ' + money(e.deposit) + ') can fund studies, training and psychometric prep.', 'הפיקדון שלך (≈ ' + money(e.deposit) + ') יכול לממן לימודים, הכשרה והכנה לפסיכומטרי.')) : null,
+        ...rows.map(([n, len, req, fund]) => h('div', {class: 'plus-card plus-soft plus-compare' + (fits(n) ? ' plus-sch-match' : '')}, fits(n) ? h('p', {class: 'plus-sch-why'}, tr('Matches your profile', 'מתאים לפרופיל שלך')) : null, h('strong', {}, n),
           h('dl', {class: 'plus-glossary'}, h('dt', {}, tr('Length', 'משך')), h('dd', {}, len), h('dt', {}, tr('Entry', 'קבלה')), h('dd', {}, req), h('dt', {}, tr('Funding', 'מימון')), h('dd', {}, fund)))),
         note(tr('Typical, not exact. Costs change by institution — check before enrolling.', 'טיפוסי, לא מדויק. העלויות משתנות לפי מוסד — לבדוק לפני הרשמה.')),
         h('div', {class: 'plus-row'}, btn(tr('Scholarships', 'מלגות'), () => showPage('scholarships'), 'plus-link'), btn(tr('Studies page', 'עמוד הלימודים'), () => showPage('studies'), 'plus-link'))), verify());

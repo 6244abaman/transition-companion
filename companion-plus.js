@@ -626,11 +626,12 @@
     if (/studies|לימוד|תואר|ממדים|study/i.test(text))
       return card(tr('You mentioned studies', 'ראיתי שדיברת על לימודים'),
         tr('Here are options that may fit — check Mimadim, preparatory programs and scholarships.', 'הנה אפשרויות שאולי מתאימות לך — ממדים ללימודים, מכינות ומלגות.') + (confirmed ? ' ' + tr('The Companion can also match them to your confirmed skills.', 'המלווה יכול גם להתאים אותן לכישורים שאישרת.') : ''),
-        [btn(tr('Study options', 'אפשרויות לימוד'), () => showPage('studies')), confirmed && !P.infoOnly ? btn(tr('Match to my skills', 'התאמה לכישורים שלי'), () => openTopic('study', tr('Suggest study options that fit my confirmed skills.', 'הצע לי אפשרויות לימוד שמתאימות לכישורים שאישרתי.')), 'plus-link') : null]);
+        [window.MomentumProfile && window.MomentumProfile.studyDirections().length ? h('small', {class: 'plus-muted'}, tr('From your profile: ', 'מהפרופיל שלך: ') + window.MomentumProfile.studyDirections().slice(0, 3).join(', ')) : null,
+         btn(tr('Study options', 'אפשרויות לימוד'), () => showPage('studies')), confirmed && !P.infoOnly ? btn(tr('Match to my skills', 'התאמה לכישורים שלי'), () => openTopic('study', tr('Suggest study options that fit my confirmed skills.', 'הצע לי אפשרויות לימוד שמתאימות לכישורים שאישרתי.')), 'plus-link') : null]);
     if (/work|עבודה|משרה|קורות|job|cv/i.test(text) || (confirmed && !(p && p.cvs.length)))
       return card(confirmed ? tr('You have ' + confirmed + ' confirmed skills', 'יש לך ' + confirmed + ' כישורים מאושרים') : tr('Looking for work?', 'מחפש עבודה?'),
         confirmed ? tr('Want a first CV draft built from them?', 'רוצה טיוטת קורות חיים ראשונה שנבנית מהם?') : tr('Start with your skills, a CV and preferred work.', 'אפשר להתחיל מהכישורים, קורות חיים ועבודה מועדפת.'),
-        [!P.infoOnly ? btn(tr('Draft my CV', 'טיוטת קורות חיים'), () => openTopic('cv', tr('Draft a CV from my confirmed skills, without inventing anything.', 'הכן טיוטת קורות חיים מהכישורים שאישרתי, בלי להמציא פרטים.'))) : null, btn(tr('Work page', 'עמוד עבודה'), () => showPage('work'), 'plus-link')]);
+        [!P.infoOnly ? btn(tr('Build my CV from them', 'לבנות קורות חיים מהם'), () => (PAGES.cv ? showPage('cv') : openTopic('cv'))) : null, btn(tr('Work page', 'עמוד עבודה'), () => showPage('work'), 'plus-link')]);
     if (/money|כסף|מענק|פיקדון|grant|deposit/i.test(text))
       return card(tr('Money questions', 'שאלות על כסף'), tr('Grant, deposit, tax points and preferred work — in one page.', 'מענק, פיקדון, נקודות זיכוי ועבודה מועדפת — בעמוד אחד.'), [btn(tr('Money page', 'עמוד כסף'), () => showPage('money'))]);
     if (/feel|רגש|מרגיש|feelings/i.test(text))
@@ -1240,6 +1241,18 @@
       if (saveAction(first.slice(0, 150), text)) { p.firstChild.textContent = tr('Saved ✓', 'נשמר ✓'); p.disabled = true; }
     };
   }
+  // Questions built from the soldier's real details (never generic filler); each shows only when its data exists.
+  function personalQuestions() {
+    const q = [], m = monthsSinceDischarge(), e = P.service && P.monthsServed ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
+    if (m !== null && m < 3) q.push(tr((m ? 'I was discharged ' + m + ' month' + (m > 1 ? 's' : '') + ' ago' : 'I was discharged this month') + ' — what should I take care of first?', 'השתחררתי ' + (m ? 'לפני ' + m + ' חודשים' : 'החודש') + ' — במה כדאי לטפל קודם?'));
+    if (e && e.deposit) q.push(tr('How can I best use my deposit of about ' + money(e.deposit) + '?', 'איך כדאי לי להשתמש בפיקדון של כ-' + money(e.deposit) + '?'));
+    if (P.lone) q.push(tr('Which extra benefits do I get as a lone soldier?', 'אילו הטבות נוספות מגיעות לי כחייל בודד?'));
+    if (P.reservist) q.push(tr('What do I get as a reservist after discharge?', 'מה מגיע לי כמשרת מילואים אחרי השחרור?'));
+    const M = window.MomentumProfile;
+    if (M && M.active()) { const w = M.workDirections()[0]; if (w) q.push(tr('How do I start working in ' + w + '?', 'איך מתחילים לעבוד ב' + w + '?')); }
+    if (P.pressing === 'studies') q.push(tr('Am I eligible for Mimadim, and how do I apply?', 'האם אני זכאי לממדים, ואיך מגישים?'));
+    return q.slice(0, 3);
+  }
   function startMode(mode) {
     P.chatMode = mode; store();
     const bar = $('plusModes'); if (bar) bar.remove();
@@ -1254,6 +1267,8 @@
         'מעולה — בוא נבחר דבר מעשי אחד. זכויות וכסף, עבודה וקורות חיים, או לימודים? או שתכתוב משהו משלך.'), {kind: 'plus-mode'});
       const quick = h('div', {class: 'plus-modes', id: 'plusModes'}, [['rights', tr('Rights & money', 'זכויות וכסף')], ['cv', tr('Work & CV', 'עבודה וקורות חיים')], ['study', tr('Studies', 'לימודים')]]
         .map(([id, l]) => btn(l, () => { quick.remove(); openTopic(id); }, 'plus-chip')));
+      const pq = personalQuestions();
+      if (pq.length) quick.append(h('div', {class: 'plus-pq'}, h('small', {}, tr('Questions for your situation', 'שאלות שמתאימות למצב שלך')), ...pq.map(t => btn(t, () => { quick.remove(); openTopic('', t); }, 'plus-chip plus-pq-chip'))));
       tools.after(quick);
     }
     try { save(); } catch (_) {}
