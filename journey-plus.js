@@ -156,7 +156,7 @@
       h('h2', {}, tr('Your progress', 'ההתקדמות שלך')),
       h('div', {class: 'jp-stats'}, stat(activeGoals, tr('active goals', 'מטרות פעילות')), stat(open, tr('open steps', 'צעדים פתוחים')), stat(doneWeek, tr('done this week', 'הושלמו השבוע'))),
       h('div', {class: 'jp-bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct), 'aria-label': tr('Steps completed', 'צעדים שהושלמו')}, h('div', {class: 'jp-fill', style: 'width:' + pct + '%'})),
-      h('p', {class: 'muted'}, total ? list[(done + total) % list.length] + (pct === 100 ? ' 🎉' : '') : tr('No steps yet — that is completely fine. One small step is enough to start.', 'עדיין אין צעדים — זה בסדר גמור. מספיק צעד קטן אחד כדי להתחיל.')),
+      h('p', {class: 'muted'}, total ? list[(done + total) % list.length] : tr('No steps yet — that is completely fine. One small step is enough to start.', 'עדיין אין צעדים — זה בסדר גמור. מספיק צעד קטן אחד כדי להתחיל.')),
       h('div', {class: 'actions'}, h('a', {class: 'button', href: companionUrl()}, tr('← Companion home', '→ לבית המלווה')))
     );
   }

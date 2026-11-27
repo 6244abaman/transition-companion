@@ -296,7 +296,7 @@
       groups.forEach(([g, title]) => wrap.append(section(title, h('ul', {class: 'plus-contacts'}, CONTACTS.filter(c => c.group === g).map(c => h('li', {},
         h('div', {}, h('strong', {}, c.name), c.note ? h('small', {}, c.note) : null),
         h('div', {class: 'plus-row'},
-          c.tel ? h('a', {class: 'plus-btn primary plus-call', href: 'tel:' + c.tel.replace(/[^\d*#+]/g, '')}, '📞 ' + c.tel) : null,
+          c.tel ? h('a', {class: 'plus-btn primary plus-call', href: 'tel:' + c.tel.replace(/[^\d*#+]/g, '')}, icon('phone', 'plus-inline-ico'), ' ' + c.tel) : null,
           c.url ? ext(c.tel ? tr('Site', 'אתר') : tr('Open chat', 'לפתוח צ\'אט'), c.url) : null)))))));
       wrap.append(h('div', {class: 'plus-row'}, btn(tr('Save all numbers to my contacts', 'לשמור את כל המספרים באנשי הקשר'), () => download('momentum-contacts.vcf', 'text/vcard', vcf()), 'plus-btn')));
       wrap.append(section(tr('Find a place near me', 'למצוא מקום קרוב אליי'), h('ul', {class: 'plus-contacts'}, PLACES.map(([label, q]) => h('li', {}, h('strong', {}, label),
@@ -381,7 +381,7 @@
       const wrap = h('div');
       wrap.append(section(tr('Your first payslip — line by line', 'התלוש הראשון — שורה אחרי שורה'),
         h('dl', {class: 'plus-glossary'}, SLIP.flatMap(([t, d]) => [h('dt', {}, t), h('dd', {}, d)])),
-        h('p', {class: 'plus-warn'}, '⚠ ' + ((R().tax_credit_points || {}).not_automatic || tr('Tax points are not automatic — ask on form 101.', 'נקודות הזיכוי לא אוטומטיות — מבקשים בטופס 101.'))),
+        h('p', {class: 'plus-warn'}, icon('warn', 'plus-inline-ico'), ' ' + ((R().tax_credit_points || {}).not_automatic || tr('Tax points are not automatic — ask on form 101.', 'נקודות הזיכוי לא אוטומטיות — מבקשים בטופס 101.'))),
         h('div', {class: 'plus-row'}, ext(tr('Workers\' rights (Kol Zchut)', 'זכויות עובדים (כל זכות)'), 'https://www.kolzchut.org.il/'), ext(tr('Tax Authority', 'רשות המסים'), (R().tax_credit_points || {}).official_url || 'https://www.gov.il/'))));
       if (!P.infoOnly) wrap.append(h('div', {class: 'plus-row'}, btn(tr('Something looks wrong — ask the Companion', 'משהו נראה לא תקין — לשאול את המלווה'), () => openTopic('money', tr('Help me check my payslip. ', 'תעזור לי לבדוק את התלוש שלי. ')), 'plus-btn')));
       wrap.append(verify());

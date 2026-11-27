@@ -112,8 +112,8 @@
     return h('p', {class: 'plus-source'}, tr('Last updated: ', 'עודכן: ') + asOfLabel(src.asOf) + (src.by ? ' · ' + tr('Source: ', 'מקור: ') + src.by : ''));
   }
   function privacyLine() {
-    return h('p', {class: 'plus-privacy-line'}, '🔒 ' + tr('Everything you write is saved only on this device. A message goes to the AI only after you approve.',
-      'כל מה שאתה כותב נשמר רק במכשיר הזה. הודעה נשלחת ל-AI רק אחרי שאישרת.'));
+    return h('p', {class: 'plus-privacy-line'}, icon('lock', 'plus-inline-ico'), ' ' + tr('Everything you write is saved only on this device. A message goes to the AI only after you approve.',
+      'מה שאתה כותב נשאר אצלך בטלפון. ל-AI יוצא רק מה שאישרת.'));
   }
   const money = n => n === null || n === undefined ? '—' : (KB ? KB.fmtMoney(n) : String(n));
   const SERVICE_OPTIONS = () => [['combat', tr('Combat', 'לוחם/ת')], ['support', tr('Combat support', 'תומך/ת לחימה')], ['other', tr('Other / rear', 'אחר / עורפי')], ['national', tr('National-civilian service', 'שירות לאומי-אזרחי')], ['civ_mid', tr('Civilian track (intermediate)', 'מסלול אזרחי ביניים')], ['civ_split', tr('Civilian track (split)', 'מסלול אזרחי מפוצל')]];
@@ -158,7 +158,7 @@
   }
   function warningsBox() {
     const w = KB && KB.data && KB.data.important_warnings; if (!w || !w.length) return null;
-    return h('div', {class: 'plus-warning', role: 'note'}, h('strong', {}, '⚠ ' + tr('Important', 'חשוב לדעת')), h('ul', {class: 'plus-list'}, w.map(x => h('li', {}, x))));
+    return h('div', {class: 'plus-warning', role: 'note'}, h('strong', {}, icon('warn', 'plus-inline-ico'), ' ' + tr('Important', 'חשוב לדעת')), h('ul', {class: 'plus-list'}, w.map(x => h('li', {}, x))));
   }
   function grantVsDeposit() {
     const t = KB && KB.data && KB.data.grant_vs_deposit; if (!t) return null;
@@ -269,6 +269,7 @@
 
   /* Line icons (static markup, no user data). Stroke uses currentColor. */
   const SVG = {
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>', // Lucide lock (ISC)
     chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>', // Lucide chevron-left (ISC)
     // Duotone "illustrated" icons (27 Nov 2026) — filled shapes in the topic colour, used inside soft circles.
     banknote: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="currentColor" opacity=".28"/><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="6.2" cy="12" r="1" fill="currentColor"/><circle cx="17.8" cy="12" r="1" fill="currentColor"/></svg>',
@@ -466,9 +467,9 @@
   function todayRow() {
     const p = journey(), t = todayStr();
     const step = p && P.todayStep && P.todayStep.date === t && p.actions.find(a => a.id === P.todayStep.id);
-    const value = step ? (step.status === 'done' ? '✓ ' : '') + step.title : tr('Choose one small step', 'לבחור צעד קטן אחד');
+    const value = step ? (step.status === 'done' ? '✓ ' : '') + step.title : tr('Pick something small — 10 minutes is plenty', 'בוחרים משהו קטן — 10 דקות זה מספיק');
     const isDone = step && step.status === 'done';
-    const row = rowCard('plus-beige plus-today-row' + (isDone ? ' plus-row-done' : ''), isDone ? 'check' : 'bulb', isDone ? tr('Done today — well done!', 'בוצע היום — כל הכבוד!') : tr('Small step for today:', 'צעד קטן להיום:'), value, () => { todayOpen = !todayOpen; renderHome(); });
+    const row = rowCard('plus-beige plus-today-row' + (isDone ? ' plus-row-done' : ''), isDone ? 'check' : 'bulb', isDone ? tr('Done for today. Nice one.', 'סגרת את היום. יפה.') : tr('Your step for today', 'הצעד שלך להיום'), value, () => { todayOpen = !todayOpen; renderHome(); });
     row.setAttribute('aria-expanded', String(todayOpen));
     return h('div', {}, row, todayOpen ? todayStepCard() : null);
   }
@@ -589,7 +590,7 @@
     if (/feel|רגש|מרגיש|feelings/i.test(text))
       return card(tr('How are you, really?', 'מה שלומך באמת?'), tr('A short check-in can help.', 'בדיקה קצרה יכולה לעזור.'), [btn(tr('Check in', 'בדיקה קצרה'), () => showPage('feel'))]);
     if (!confirmed)
-      return card(tr('Discover your skills', 'גלה את הכישורים שלך'), tr('Translate what you did in service into civilian strengths.', 'לתרגם את מה שעשית בשירות לחוזקות אזרחיות.'), [h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים'))]);
+      return card(tr('What did the army teach you that employers want?', 'מה למדת בצבא שמעסיקים מחפשים?'), tr('A short questionnaire turns your service into words that work on a CV.', 'שאלון קצר שהופך את השירות שלך למילים שעובדות בקורות חיים.'), [h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים'))]);
     return null;
   }
 
@@ -619,7 +620,7 @@
      PAGES
      ================================================================ */
   const section = (title, ...kids) => h('section', {class: 'plus-card'}, h('h2', {}, title), ...kids);
-  const disclaimer = () => h('p', {class: 'plus-disclaimer', role: 'note'}, '⚠ ' + (KB ? (he() ? KB.DISCLAIMER_HE : KB.DISCLAIMER_EN) : '') +
+  const disclaimer = () => h('p', {class: 'plus-disclaimer', role: 'note'}, icon('info', 'plus-inline-ico'), ' ' + (KB ? (he() ? KB.DISCLAIMER_HE : KB.DISCLAIMER_EN) : '') +
     (KB && KB.data ? ' ' + tr('Knowledge base updated: ', 'מאגר הידע עודכן: ') + KB.data.metadata.last_updated + '.' : ''));
   const hebrewNote = () => null; // the knowledge base now has a full English version
   const askButton = (topic, q) => P.infoOnly ? null : btn(tr('Ask the Companion about this', 'לשאול את המלווה על זה'), () => openTopic(topic, q), 'plus-btn');
@@ -655,7 +656,7 @@
       if (c.examples && c.examples.length) box.append(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
     }
     if (c.list && c.list.length) box.append(h('strong', {}, c.listTitle || ''), list(c.list));
-    if (c.warning) box.append(h('p', {class: 'plus-warning', role: 'note'}, '⚠ ' + c.warning));
+    if (c.warning) box.append(h('p', {class: 'plus-warning', role: 'note'}, icon('warn', 'plus-inline-ico'), ' ' + c.warning));
     const src = sourceLine(c.source); if (src) box.append(src);
     const row = h('div', {class: 'plus-row'});
     const officialUrl = c.url || (c.link ? KB.officialLink(c.link) : '');
@@ -725,7 +726,7 @@
       const t = todayStr(), todays = P.moods.find(m => m.d === t);
       put(wrap, h('h1', {class: 'plus-title'}, tr('How are you feeling today?', 'איך אתה מרגיש היום?')),
         h('p', {class: 'plus-soft plus-pill'}, KB && KB.data ? KB.data.emotional_support.normalization : tr('Many people feel empty, confused or without direction after discharge. That is completely normal.', 'הרבה אנשים מרגישים ריקים, מבולבלים או חסרי כיוון אחרי השחרור. זה נורמלי לגמרי.')));
-      const faces = ['😞', '🙁', '😐', '🙂', '😄'];
+      const faces = MOODS.map(m => face(m));
       const row = h('div', {class: 'plus-mood', role: 'group', 'aria-label': tr('Mood from 1 to 5', 'מצב רוח מ-1 עד 5')});
       faces.forEach((f, i) => row.append(h('button', {type: 'button', class: 'plus-mood-btn', 'aria-pressed': String(todays && todays.v === i + 1), 'aria-label': String(i + 1), onclick: () => {
         P.moods = [...P.moods.filter(m => m.d !== t), {d: t, v: i + 1}].slice(-90); store(); showPage('feel', false);
@@ -777,19 +778,19 @@
     /* ----- Work / studies / money hub ----- */
     practical() {
       const tiles = [
-        ['tools', '🧰', tr('My tools', 'הכלים שלי'), tr('Dates, planners, numbers', 'מועדים, מתכננים, טלפונים')],
-        ['money', '₪', tr('Money', 'כסף'), tr('Grant, deposit, tax points, budget', 'מענק, פיקדון, נקודות זיכוי, תקציב')],
-        ['work', '💼', tr('Work & CV', 'עבודה וקורות חיים'), tr('Preferred work, CV, interviews', 'עבודה מועדפת, קורות חיים, ראיונות')],
-        ['studies', '🎓', tr('Studies', 'לימודים'), tr('Mimadim, mechina, bagrut, scholarships', 'ממדים, מכינה, בגרויות, מלגות')],
-        ['skills', '⭐', tr('My skills', 'הכישורים שלי'), tr('36-skill assessment and translation', 'שאלון 36 כישורים ותרגום לאזרחות')],
-        ['travel', '✈', tr('Travel', 'טיולים ונסיעות'), tr('Budget, insurance, funding', 'תקציב, ביטוח, מימון')],
-        ['family', '🏠', tr('Relationships & family', 'מערכות יחסים ומשפחה'), tr('Coming back home', 'החזרה הביתה')],
-        ['feel', '💬', tr('Emotional support', 'תמיכה רגשית'), tr('Talk or find human help', 'לדבר או למצוא עזרה אנושית')]
+        ['tools', 'checklist', tr('My tools', 'הכלים שלי'), tr('Dates, planners, numbers', 'מועדים, מתכננים, טלפונים')],
+        ['money', 'coins', tr('Money', 'כסף'), tr('Grant, deposit, tax points, budget', 'מענק, פיקדון, נקודות זיכוי, תקציב')],
+        ['work', 'briefcase', tr('Work & CV', 'עבודה וקורות חיים'), tr('Preferred work, CV, interviews', 'עבודה מועדפת, קורות חיים, ראיונות')],
+        ['studies', 'cap', tr('Studies', 'לימודים'), tr('Mimadim, mechina, bagrut, scholarships', 'ממדים, מכינה, בגרויות, מלגות')],
+        ['skills', 'award', tr('My skills', 'הכישורים שלי'), tr('36-skill assessment and translation', 'שאלון 36 כישורים ותרגום לאזרחות')],
+        ['travel', 'map', tr('Travel', 'טיולים ונסיעות'), tr('Budget, insurance, funding', 'תקציב, ביטוח, מימון')],
+        ['family', 'house', tr('Relationships & family', 'מערכות יחסים ומשפחה'), tr('Coming back home', 'החזרה הביתה')],
+        ['feel', 'talk', tr('Emotional support', 'תמיכה רגשית'), tr('Talk or find human help', 'לדבר או למצוא עזרה אנושית')]
       ].filter(t => !P.hidden.includes('tile:' + t[0]));
       const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work / studies / money', 'עבודה / לימודים / כסף')));
       const grid = h('div', {class: 'plus-tiles'});
       tiles.forEach(([id, icon, title, why]) => grid.append(h('button', {type: 'button', class: 'plus-tile', onclick: () => id === 'skills' ? (location.href = './skills-business.html?lang=' + S.lang) : showPage(id)},
-        h('span', {'aria-hidden': 'true'}, icon), h('strong', {}, title), h('small', {}, why))));
+        illu(icon, 40, 'plus-tile-ill'), h('strong', {}, title), h('small', {}, why))));
       put(wrap, grid, decisionTree());
       return wrap;
     },
@@ -889,7 +890,7 @@
         h('span', {class: 'plus-sum-ico'}, icon(it.icon)),
         h('span', {class: 'plus-sum-text'}, h('strong', {class: 'plus-sum-title'}, it.title), h('span', {class: 'plus-sum-amount'}, it.amount), h('small', {}, asOf, icon('refresh', 'plus-sum-ref'))))));
       const en2 = valid ? estimateNote(e) : null; noteExtra.replaceChildren(...(en2 ? [en2] : []));
-      note.textContent = valid ? tr('Estimate for ' + m + ' months of service. You may be entitled to this — check your personal area.', 'הערכה ל-' + m + ' חודשי שירות. ייתכן שזה מגיע לך — בדוק באזור האישי.')
+      note.textContent = valid ? tr('This is an estimate for ' + m + ' months of service. Your exact amount is in your personal area.', 'זו הערכה לפי ' + m + ' חודשי שירות. את הסכום המדויק תראה באזור האישי.')
         : tr('Enter your months of service to see your own amounts.', 'הכנס כמה חודשים שירתת כדי לראות את הסכומים שלך.');
     };
     const save = () => {
@@ -970,7 +971,7 @@
         name.addEventListener('input', () => { D.name = name.value.trim(); greet.textContent = D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : ''; });
         name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); step++; paint(); } });
         const greet = h('p', {class: 'plus-wiz-greet', 'aria-live': 'polite'}, D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : '');
-        return [illu('map', 92, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('Hi! I\'m your Companion 👋', 'היי! אני המלווה שלך 👋')),
+        return [illu('map', 92, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('Hi! I\'m your Companion', 'היי! אני המלווה שלך 👋')),
           h('p', {class: 'plus-wiz-sub'}, tr('A few quick taps and I\'ll show what is relevant to you. Everything stays on this phone.', 'כמה לחיצות קצרות ואראה לך מה רלוונטי בשבילך. הכול נשמר רק בטלפון הזה.')),
           h('label', {class: 'plus-wiz-label', for: 'plusName'}, tr('What should I call you?', 'איך לקרוא לך?')), name, greet, nav(tr('Let\'s start', 'יאללה, מתחילים'))];
       }
@@ -1000,7 +1001,7 @@
         h('div', {class: 'plus-wiz-grid'}, choice('pressing', 'money', tr('Money', 'כסף'), 'piggy'), choice('pressing', 'rights', tr('My rights', 'מה מגיע לי'), 'wallet'),
           choice('pressing', 'work', tr('Work', 'עבודה'), 'briefcase'), choice('pressing', 'studies', tr('Studies', 'לימודים'), 'cap'),
           choice('pressing', 'feelings', tr('How I feel', 'איך אני מרגיש'), 'heart'), choice('pressing', 'unsure', tr('Not sure yet', 'עוד לא יודע'), 'compass')),
-        nav(tr('Done — let\'s go! 🎉', 'סיימתי — יאללה! 🎉'))];
+        nav(tr('Done — let\'s go', 'סיימתי, יאללה'))];
     }
     function paint() {
       wrap.replaceChildren(
@@ -1218,7 +1219,7 @@
     new MutationObserver(() => {
       const live = mic.classList.contains('live');
       rec.hidden = !live;
-      rec.textContent = live ? '🎙 ' + tr('Recording… tap the microphone again to stop.', 'מקליט… לחצו שוב על המיקרופון כדי לעצור.') : '';
+      rec.textContent = live ? tr('Recording… tap the microphone again to stop.', 'מקליט… לחצו שוב על המיקרופון כדי לעצור.') : '';
     }).observe(mic, {attributes: true, attributeFilter: ['class']});
   }
 

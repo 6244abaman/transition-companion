@@ -480,3 +480,6 @@ html[data-motion="reduce"] .plus-mood-act.is-breathing .plus-mood-ill { animatio
 .plus-home-more .plus-quick { padding:10px 0 14px; }
 #plusHome > * + * { margin-top:12px; }
 .plus-distress { opacity:.92; }
+.plus-inline-ico { display:inline-flex;width:16px;height:16px;vertical-align:-3px; }
+.plus-inline-ico svg { width:100%;height:100%; }
+.plus-tile-ill { margin-bottom:4px; }
