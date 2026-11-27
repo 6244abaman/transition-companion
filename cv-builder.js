@@ -48,7 +48,7 @@
     // Israeli CV convention: action nouns, not "I did" (הובלת צוות… rather than הובלתי צוות…); English: start with a verb, no "I".
     const FP_HE = [['הובלתי', 'הובלת'], ['ניהלתי', 'ניהול'], ['הדרכתי', 'הדרכת'], ['עבדתי', 'עבודה'], ['תכננתי', 'תכנון'], ['טיפלתי', 'טיפול'], ['ביצעתי', 'ביצוע'], ['תיאמתי', 'תיאום'],
       ['אחראי על', 'אחריות על'], ['אחראית על', 'אחריות על'], ['הייתי אחראי', 'אחריות'], ['הייתי אחראית', 'אחריות'], ['ארגנתי', 'ארגון'], ['שיפרתי', 'שיפור'], ['בניתי', 'בניית'], ['פיתחתי', 'פיתוח'],
-      ['לימדתי', 'הוראה'], ['ליוויתי', 'ליווי'], ['פיקדתי על', 'הובלת'], ['פיקדתי', 'הובלה'], ['הכשרתי', 'הכשרת'], ['קידמתי', 'קידום'], ['השתתפתי', 'השתתפות'], ['נתתי', 'מתן'], ['כתבתי', 'כתיבת'], ['הכנתי', 'הכנת']];
+      ['לימדתי', 'הוראה'], ['ליוויתי', 'ליווי'], ['פיקדתי על', 'הובלת'], ['פיקדתי', 'הובלה'], ['הכשרתי', 'הכשרת'], ['קידמתי', 'קידום'], ['השתתפתי', 'השתתפות'], ['נתתי', 'מתן'], ['כתבתי', 'כתיבת'], ['הכנתי', 'הכנת'], ['דאגתי', 'הקפדה'], ['סידרתי', 'סידור'], ['אחראי', 'אחריות'], ['אחראית', 'אחריות']];
     const pro = t => { let x = String(t || '').trim(); if (/[֐-׿]/.test(x)) FP_HE.forEach(([a, b]) => { x = x.replace(new RegExp('(^|[\\s,(])' + a + '(?=[\\s,.]|$)', 'g'), '$1' + b); }); else x = x.replace(/^I\s+/i, '').replace(/^./, m => m.toUpperCase()); return x; };
     function localBullets(c) {
       const H = c.lang === 'he', out = [];
@@ -140,7 +140,7 @@
       ].filter(Boolean).join('\n');
       const prompt = ['Target role: ' + (c.headline || 'not given'), 'Military role: ' + (c.milRole || ''), 'Years: ' + [c.milFrom, c.milTo].filter(Boolean).join('-'), 'People led: ' + (c.people || 'not given'),
         'Systems/equipment/processes: ' + (c.systems || 'not given'), 'Results: ' + (c.results || 'not given'), 'Free story: ' + (c.story || ''), 'Current bullets: ' + c.bullets.filter(Boolean).join(' | '),
-        'Civilian jobs: ' + (c.jobs || 'none'), 'Education: ' + (c.education || ''), 'Skills: ' + (c.skills || ''), 'Current summary: ' + (c.summary || ''), c.jobAd ? 'Job ad:\n' + c.jobAd.slice(0, 2500) : ''].join('\n');
+        'Civilian jobs: ' + (c.jobs || 'none'), (window.MomentumProfile && window.MomentumProfile.aiSummary()) || '', 'Education: ' + (c.education || ''), 'Skills: ' + (c.skills || ''), 'Current summary: ' + (c.summary || ''), c.jobAd ? 'Job ad:\n' + c.jobAd.slice(0, 2500) : ''].join('\n');
       statusEl.textContent = tr('Writing with AI (after your approval)…', 'ה-AI כותב (אחרי אישור שלך)…');
       try {
         const raw = await aiText(system, prompt, 1400);
@@ -239,6 +239,9 @@
           btn(tr('Translate to civilian lines', 'תרגם לשורות אזרחיות'), () => { if (c.milRole) c.milRole = civilian(c.milRole); c.bullets = c.bullets.map(b => pro(civilian(b))); const add = localBullets(c).filter(b => !c.bullets.includes(b)); c.bullets.push(...add); if (!add.length) toast(tr('Add a few details first', 'כדאי להוסיף קודם כמה פרטים')); store(); paintBullets(); refreshPreview(); checkJargon(); }, 'plus-btn primary'),
           P.infoOnly ? null : btn(tr('Write it better with AI ✨', 'ה-AI ינסח לי יותר טוב ✨'), () => polish(status, 'service'), 'plus-btn cv-ai-btn')),
         status, suggestionCard(), warn,
+        (() => { const M = window.MomentumProfile; const sug = M ? M.cvBullets().map(b => pro(civilian(b))).filter(b => !c.bullets.includes(b)) : [];
+          return sug.length ? h('div', {class: 'cv-from-profile'}, h('small', {}, tr('From your strengths profile — your highest-rated activities (tap to add):', 'מפרופיל החוזקות — הפעילויות שדירגת הכי גבוה (לחיצה מוסיפה):')),
+            ...sug.map(b => btn('+ ' + b, () => { c.bullets.push(b); store(); paint(); }, 'cv-sug'))) : null; })(),
         h('strong', {class: 'cv-sub'}, tr('Lines in your CV (edit every line)', 'השורות בקורות החיים (אפשר לערוך כל שורה)')), bulletsBox,
         h('p', {class: 'plus-muted'}, tr('Tip: "I led a team of 12" beats "we were a platoon". Never add numbers that are not true.', 'טיפ: "הובלתי צוות של 12" עדיף על "היינו מחלקה". לא מוסיפים מספרים שלא נכונים.'))];
     }
@@ -252,6 +255,9 @@
           if (names.length) { c.skills = names.slice(0, 10).join(', '); store(); }
         } catch (_) {}
       }
+      const M = window.MomentumProfile;
+      const profSkills = M && M.active() ? M.skills().slice(0, 8).map(s => s.name).filter(n => !splitList(c.skills).includes(n)) : [];
+      const aboutTxt = M && M.active() ? M.about() : '';
       const status = h('p', {class: 'plus-muted', 'aria-live': 'polite'});
       return [h('h2', {class: 'cv-step-title'}, tr('Education, skills and summary', 'השכלה, כישורים ותקציר')),
         field('jobs', tr('Civilian jobs (one per line: years | job, place — what you did)', 'עבודות אזרחיות (שורה לכל אחת: שנים | תפקיד, מקום — מה עשית)'), {placeholder: tr('2022–2023 | Sales assistant, Super-Pharm — customer service and cash register', '2022–2023 | מוכר, סופר-פארם — שירות לקוחות וקופה')}, true),
@@ -260,7 +266,10 @@
         field('computer', tr('Computer skills (optional)', 'יישומי מחשב (לא חובה)'), {placeholder: 'Excel, Word, Google Sheets'}),
         field('languages', tr('Languages', 'שפות'), {placeholder: tr('Hebrew — native, English — very good', 'עברית — שפת אם, אנגלית — טובה מאוד')}),
         field('extra', tr('Volunteering / other experience (optional)', 'התנדבות / ניסיון נוסף (לא חובה)'), {}, true),
+        profSkills.length ? h('div', {class: 'cv-from-profile'}, h('small', {}, tr('Skills from your profile (tap to add):', 'כישורים מהפרופיל שלך (לחיצה מוסיפה):')),
+          ...profSkills.map(n => btn('+ ' + n, () => { c.skills = [...splitList(c.skills), n].join(', '); store(); paint(); }, 'cv-sug'))) : null,
         field('summary', tr('Short professional summary (2–3 lines)', 'תקציר מקצועי קצר (2–3 שורות)'), {}, true),
+        aboutTxt && !c.summary ? btn(tr('Start from my "About me"', 'להתחיל מה"עליי" שלי'), () => { c.summary = aboutTxt; store(); paint(); }, 'plus-link') : null,
         h('label', {class: 'switch-row cv-refs-toggle'}, (() => { const x = h('input', {type: 'checkbox'}); x.checked = !!c.refs; x.addEventListener('change', () => { cv().refs = x.checked; store(); refreshPreview(); }); return x; })(), h('span', {}, L(c).refs)),
         h('details', {class: 'cv-ad', open: c.jobAd ? true : undefined}, h('summary', {}, tr('Applying to a specific job? Paste the ad (optional)', 'מגישים למשרה מסוימת? הדביקו את המודעה (לא חובה)')),
           field('jobAd', tr('Job ad text — the AI will match your real experience to it', 'טקסט המודעה — ה-AI יתאים אליה את הניסיון האמיתי שלך'), {rows: '5'}, true)),

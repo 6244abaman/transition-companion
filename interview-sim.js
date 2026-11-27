@@ -145,8 +145,8 @@
     const voicesFor = lang => synth ? (synth.getVoices() || []).filter(v => String(v.lang).toLowerCase().startsWith(lang)) : [];
     function speak(text) {
       if (!synth || P.simVoice === 'off') return;
-      try { synth.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = he() ? 'he-IL' : 'en-US'; u.rate = 0.98;
-        const v = voicesFor(he() ? 'he' : 'en').find(x => x.name === P.simVoice) || voicesFor(he() ? 'he' : 'en')[0]; if (v) u.voice = v; synth.speak(u); } catch (_) {}
+      try { synth.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = (st && st.ilang ? st.ilang === 'he' : he()) ? 'he-IL' : 'en-US'; u.rate = 0.98;
+        const lg = (st && st.ilang) || (he() ? 'he' : 'en'); const v = voicesFor(lg).find(x => x.name === P.simVoice) || voicesFor(lg)[0]; if (v) u.voice = v; synth.speak(u); } catch (_) {}
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     // Lucide "mic" (ISC licence)
@@ -166,17 +166,24 @@
     function candidateContext() {
       const L = ['Job the candidate is preparing for: ' + (st.target || TRACK_NAME(st.track) || 'not specified')];
       if (st.ad) L.push('Job ad (excerpt): ' + clean(st.ad, 1800));
+      const prof = window.MomentumProfile && window.MomentumProfile.aiSummary();
+      if (prof) L.push(prof + '\nUse the profile to (a) ask about real strengths so the candidate can show them, and (b) coach him to present them well. Do not assume anything beyond it.');
       if (st.useCv && P.cv) { const c = P.cv;
         L.push('Candidate-approved background (from their own CV draft — use only to choose relevant questions, never assume more): ' +
           [c.milRole && 'service role: ' + clean(c.milRole, 120), c.headline && 'target title: ' + clean(c.headline, 80), (c.bullets || []).length && 'lines: ' + (c.bullets || []).slice(0, 5).map(b => clean(b, 140)).join(' | '), c.education && 'education: ' + clean(c.education, 200)].filter(Boolean).join('; ')); }
       return L.join('\n');
     }
+    const STYLE = {friendly: 'Interview style: friendly and encouraging — a first interview for a junior role.', standard: 'Interview style: a normal professional interview — polite, focused, some follow-ups.', tough: 'Interview style: a demanding interviewer — short, challenging follow-ups, asks for proof, pushes back politely on vague answers (still respectful).'};
+    const ilang = () => st && st.ilang ? st.ilang : (he() ? 'he' : 'en');
     const SYSTEM = () => [
+      STYLE[st.style] || STYLE.standard,
+      ilang() === 'en' && he() ? 'IMPORTANT: this is an ENGLISH-language interview practice. Ask the questions in English and write the "better" answer in English; write all feedback (verdict, good, fix.why, instead) in Hebrew so the candidate understands.' : '',
+      ilang() === 'he' || !he() ? '' : '',
       he() ? 'You are an experienced Israeli job interviewer and career coach. You are running a realistic practice interview with a recently discharged IDF soldier. Speak natural, warm, direct spoken Hebrew (not formal, no clichés), addressing the candidate in masculine/neutral singular.'
            : 'You are an experienced job interviewer and career coach running a realistic practice interview with a recently discharged Israeli soldier. Use natural, warm, direct English.',
       'Interview plan (' + st.total + ' questions): open with a warm opener, then motivation/fit, at least two behavioural questions that ask for a real example, one about turning their service into civilian value, one honest self-awareness question, and a closing. Adapt every next question to what the candidate actually said — dig into a vague answer, move on after a strong one. One question at a time, short like a real interviewer.',
       'Feedback rules: judge ONLY what the candidate said. Quote their exact words when pointing at a problem. Never invent facts, numbers, units, ranks or achievements — if a number would help, tell them to add one only if true. Turn military jargon into words an HR person understands. Be specific and kind, like a mentor who wants them to get the job. No classified detail.',
-      'Return ONLY valid JSON, no markdown.'].join('\n');
+      'Return ONLY valid JSON, no markdown.'].filter(Boolean).join('\n');
     const history = () => st.answers.filter(a => a && a.a).map((a, k) => 'Q' + (k + 1) + ': ' + a.q + '\nA' + (k + 1) + ': ' + clean(a.a, 1200)).join('\n\n');
     async function aiTurn(withAnswer) {
       const last = withAnswer ? st.answers[st.i] : null, isLast = withAnswer && st.i >= st.total - 1;
@@ -203,7 +210,7 @@
     }
     async function start() {
       const ai = aiOn();
-      st = {ai, target: clean(P.simTarget, 120), ad: clean(P.simAd, 2500), useCv: !!P.simUseCv, track: P.simTrack || 'general', total: 6, qs: [], i: 0, answers: [], phase: 'loading', msg: tr('The interviewer is getting ready…', 'המראיין מתכונן…')};
+      st = {ai, style: P.simStyle || 'standard', ilang: P.simLang || (he() ? 'he' : 'en'), target: clean(P.simTarget, 120), ad: clean(P.simAd, 2500), useCv: !!P.simUseCv, track: P.simTrack || 'general', total: 6, qs: [], i: 0, answers: [], phase: 'loading', msg: tr('The interviewer is getting ready…', 'המראיין מתכונן…')};
       store(); paint();
       if (ai) {
         try { const j = await aiTurn(false); if (!pushNext(j.next)) throw new Error('no question'); }
@@ -283,12 +290,19 @@
           h('p', {}, ai ? tr('The interviewer builds the questions for the job you want, listens to every answer, digs deeper like a real recruiter and tells you exactly what to change.', 'המראיין בונה שאלות לפי המשרה שאתה רוצה, קורא כל תשובה, מעמיק כמו מגייס אמיתי ואומר לך בדיוק מה לשנות.')
             : tr('Practice with ready questions and quick checks.', 'תרגול עם שאלות מוכנות ובדיקות מהירות.'))), illu('talk', 72)),
         (P.simHistory || []).length ? h('p', {class: 'sim-last'}, tr('Last practice: ', 'אימון אחרון: ') + P.simHistory[P.simHistory.length - 1].avg + '%') : null,
+        (() => { const M = window.MomentumProfile; const sk = M && M.active() ? M.skills().slice(0, 4) : [];
+          return sk.length ? h('div', {class: 'sim-strengths'}, h('b', {}, tr('Strengths to bring into your answers', 'חוזקות להכניס לתשובות')), h('div', {class: 'pa-chips'}, sk.map(s => h('span', {class: 'pa-chip on static'}, s.name + (s.strong ? ' ★' : ''))))) : null; })(),
         h('section', {class: 'sim-setup'},
           h('label', {class: 'sim-field'}, h('b', {}, tr('Which job are you preparing for?', 'לאיזו משרה אתה מתכונן?')), target),
           h('div', {class: 'sim-chips'}, TRACKS.map(([id, en, he_]) => h('button', {type: 'button', class: 'sim-chip' + (P.simTrack === id ? ' on' : ''), onclick: () => { P.simTrack = id; if (!target.value || TRACKS.some(t => t[1] === target.value || t[2] === target.value)) { target.value = he() ? he_ : en; P.simTarget = target.value; } store(); paint(); }}, he() ? he_ : en))),
           ai ? h('details', {class: 'sim-ad-wrap', open: P.simAd ? true : undefined}, h('summary', {}, tr('Have a job ad? Paste it (optional)', 'יש מודעת דרושים? להדביק (לא חובה)')), ad) : null,
           ai && hasCv ? h('label', {class: 'sim-usecv'}, (() => { const c = h('input', {type: 'checkbox'}); c.checked = !!P.simUseCv; c.addEventListener('change', () => { P.simUseCv = c.checked; store(); }); return c; })(),
             h('span', {}, tr('Let the interviewer see my CV draft (role and lines) to ask relevant questions', 'לתת למראיין לראות את טיוטת קורות החיים שלי (תפקיד ושורות) כדי לשאול שאלות רלוונטיות'))) : null,
+          ai ? h('div', {class: 'sim-opts'},
+          h('div', {}, h('b', {}, tr('Interviewer style', 'סגנון המראיין')), h('div', {class: 'sim-seg'}, [['friendly', 'Friendly', 'ידידותי'], ['standard', 'Normal', 'רגיל'], ['tough', 'Tough', 'קשוח']].map(([id, en, he_]) =>
+            h('button', {type: 'button', class: (P.simStyle || 'standard') === id ? 'on' : '', 'aria-pressed': String((P.simStyle || 'standard') === id), onclick: () => { P.simStyle = id; store(); paint(); }}, he() ? he_ : en)))),
+          he() ? h('div', {}, h('b', {}, 'שפת הראיון'), h('div', {class: 'sim-seg'}, [['he', 'עברית'], ['en', 'אנגלית (תרגול)']].map(([id, l]) =>
+            h('button', {type: 'button', class: (P.simLang || 'he') === id ? 'on' : '', 'aria-pressed': String((P.simLang || 'he') === id), onclick: () => { P.simLang = id; store(); paint(); }}, l)))) : null) : null,
           btn(tr('Start the interview', 'להתחיל את הראיון'), () => { if (!target.value.trim() && !P.simTrack) { target.focus(); toast(tr('Write the job, or tap one of the options', 'לכתוב משרה, או לבחור אחת האפשרויות')); return; } start(); }, 'plus-btn primary sim-cta')),
         h('div', {class: 'sim-settings'},
           h('label', {}, h('span', {}, tr('Interviewer voice', 'הקול של המראיין')), voiceSel),
@@ -318,7 +332,7 @@
       let rec = null;
       const mic = SR ? btn(tr('Voice', 'בקול'), () => {
         if (rec) { rec.stop(); return; }
-        try { rec = new SR(); rec.lang = he() ? 'he-IL' : 'en-US'; rec.interimResults = true; rec.continuous = true;
+        try { rec = new SR(); rec.lang = (st.ilang ? st.ilang === 'he' : he()) ? 'he-IL' : 'en-US'; rec.interimResults = true; rec.continuous = true;
           const base = ta.value ? ta.value + ' ' : '';
           rec.onresult = e => { let txt = ''; for (let k = 0; k < e.results.length; k++) txt += e.results[k][0].transcript; ta.value = base + txt; count(); };
           rec.onend = () => { rec = null; mic.classList.remove('on'); micLabel(mic, false); };
@@ -331,7 +345,9 @@
         h('div', {class: 'sim-top'}, h('span', {}, tr('Question ' + (st.i + 1) + ' of ' + st.total, 'שאלה ' + (st.i + 1) + ' מתוך ' + st.total)),
           h('div', {class: 'sim-prog', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(st.total), 'aria-valuenow': String(st.i + 1)}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.total * 100) + '%'}))),
         st.notice ? h('p', {class: 'sim-notice'}, st.notice) : null,
-        h('div', {class: 'sim-bubble'}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, q.isFollow ? tr('Interviewer · follow-up', 'המראיין · שאלת המשך') : tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
+        st.answers.filter(a => a && a.a).length ? h('details', {class: 'sim-transcript'}, h('summary', {}, tr('The interview so far', 'הראיון עד עכשיו') + ' (' + st.answers.filter(a => a && a.a).length + ')'),
+          ...st.answers.filter(a => a && a.a).map(a => h('div', {class: 'sim-tr'}, h('p', {class: 'sim-tr-q'}, a.q), h('p', {class: 'sim-tr-a'}, a.a)))) : null,
+        h('div', {class: 'sim-bubble', dir: st.ilang === 'en' ? 'ltr' : undefined}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, q.isFollow ? tr('Interviewer · follow-up', 'המראיין · שאלת המשך') : tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
           synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, icon('speaker')) : null),
         q.look && q.look[0] ? h('p', {class: 'sim-look'}, h('b', {}, st.ai ? tr('Why they ask: ', 'למה שואלים: ') : tr('What they look for: ', 'מה מחפשים: ')), q.look[he() ? 1 : 0]) : null,
         h('div', {class: 'sim-answer-card'}, h('small', {class: 'sim-you'}, tr('Your answer', 'התשובה שלך')), ta, h('div', {class: 'sim-answer-foot'}, live, mic)),

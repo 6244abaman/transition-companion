@@ -452,6 +452,25 @@
     return h('button', {type: 'button', class: 'plus-row-card ' + cls, onclick},
       ILLU_FOR[iconName] ? illu(ILLU_FOR[iconName], 40, 'plus-row-illu', iconName) : icon(iconName, 'plus-row-ico'), h('span', {class: 'plus-row-text'}, h('small', {}, label, note ? h('em', {}, ' · ' + note) : null), h('strong', {}, value)), icon('chevron', 'plus-row-chev'));
   }
+  // Optional strengths profile: a calm invitation, or directions that come from the soldier's own answers.
+  function profileBox(kind) {
+    const M = window.MomentumProfile; if (!M || !PAGES.profile) return null;
+    const pr = M.read(); if (!pr.enabled) return null;
+    const dirs = kind === 'study' ? M.studyDirections() : M.workDirections();
+    if (!dirs.length) return h('button', {type: 'button', class: 'plus-profile-invite', onclick: () => showPage('profile')}, illu('compass', 40),
+      h('span', {}, h('b', {}, kind === 'study' ? tr('Not sure what to study?', 'לא בטוח מה ללמוד?') : tr('Which jobs fit you?', 'איזו עבודה מתאימה לך?')),
+        h('small', {}, tr('A short optional questionnaire tailors these suggestions to you', 'שאלון קצר (לא חובה) יתאים את ההמלצות אליך'))));
+    return h('section', {class: 'plus-card plus-profile-dirs'}, h('div', {class: 'plus-profile-dirs-head'}, illu('compass', 36), h('div', {}, h('b', {}, kind === 'study' ? tr('Directions to check — from your answers', 'כיוונים לבדוק — לפי התשובות שלך') : tr('Directions that fit your profile', 'כיוונים שמתאימים לפרופיל שלך')),
+        h('small', {}, tr('Ideas to explore, not a verdict. Based only on what you told the app.', 'רעיונות לבדיקה, לא קביעה. רק לפי מה שסיפרת לאפליקציה.')))),
+      h('div', {class: 'pa-chips'}, dirs.map(d => h('button', {type: 'button', class: 'pa-chip', onclick: () => askOrSave(d, kind)}, d))),
+      h('div', {class: 'plus-row'}, btn(tr('My profile', 'הפרופיל שלי'), () => showPage('profile'), 'plus-link')));
+  }
+  function askOrSave(d, kind) {
+    const q = kind === 'study' ? tr('Tell me about studying ' + d + ': what it involves, entry requirements in general, and what I should check first.', 'ספר לי על לימודי ' + d + ': מה זה כולל, תנאי קבלה באופן כללי, ומה כדאי לי לבדוק קודם.')
+      : tr('Tell me about working in ' + d + ' as a discharged soldier: what the work is like and how to start.', 'ספר לי על עבודה בתחום ' + d + ' כחייל משוחרר: איך העבודה נראית ואיך מתחילים.');
+    if (!P.infoOnly) goChatWith(q); else saveAction(tr('Explore: ', 'לבדוק: ') + d, '');
+  }
+  function goChatWith(q) { openTopic('', q); }
   function slimRow(ill, title, sub, onclick, cls) { return h('button', {type: 'button', class: 'plus-slim' + (cls ? ' ' + cls : ''), onclick}, illu(ill, 30, 'plus-slim-ill'), h('span', {class: 'plus-slim-t'}, h('b', {}, title), sub ? h('small', {}, sub) : null), icon('chev', 'plus-slim-chev')); }
   let homeFaqOpen = false;
   function estimateRow() {
@@ -515,6 +534,8 @@
       est ? est : null,
       PAGES.afterlist && (P.afterChecks || []).length < 12 ? slim('checklist', tr('After-discharge checklist', 'הרשימה אחרי השחרור'), tr((P.afterChecks || []).length + ' of 12 done — tick as you go', (P.afterChecks || []).length + ' מתוך 12 בוצעו — מסמנים תוך כדי'), () => showPage('afterlist')) : null,
       PAGES.cv ? slim('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided, with a clean PDF', 'מודרך, עם PDF נקי'), () => showPage('cv')) : null,
+      PAGES.profile && window.MomentumProfile ? (window.MomentumProfile.has() ? slim('compass', tr('My strengths profile', 'פרופיל החוזקות שלי'), tr(window.MomentumProfile.completion().done + ' of 5 parts · edit or see what the app knows', window.MomentumProfile.completion().done + ' מתוך 5 חלקים · לערוך או לראות מה האפליקציה יודעת'), () => showPage('profile'))
+        : slim('compass', tr('Discover your strengths', 'לגלות את החוזקות שלך'), tr('Optional · makes your CV and suggestions personal', 'לא חובה · הופך את קורות החיים וההמלצות לאישיים'), () => showPage('profile'))) : null,
       PAGES.interviewsim ? slim('talk', tr('Interview simulator', 'סימולטור ראיון עבודה'), tr('Practice out loud, get feedback right away', 'מתרגלים בקול, מקבלים משוב מיד'), () => showPage('interviewsim')) : null,
       PAGES.tools ? slim('checklist', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, phone numbers, scholarships', 'מועדים, פיקדון, טלפונים, מלגות'), () => showPage('tools')) : null);
     plusHome.append(shortcuts);
@@ -837,7 +858,7 @@
       const kit = (ill, title, sub, id) => PAGES[id] ? h('button', {type: 'button', class: 'plus-kit', onclick: () => showPage(id)}, illu(ill, 46), h('b', {}, title), h('small', {}, sub)) : null;
       const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work & CV', 'עבודה וקורות חיים')),
         h('div', {class: 'plus-kits'}, kit('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי'), 'cv'), kit('talk', tr('Interview simulator', 'סימולטור ראיון'), tr('Practice with feedback', 'תרגול עם משוב'), 'interviewsim')),
-        hebrewNote(), disclaimer());
+        profileBox('work'), hebrewNote(), disclaimer());
       if (pw && !P.hidden.includes('right:' + pw.id)) put(wrap, rightCard(pw));
       put(wrap, section(tr('Preferred work — examples', 'עבודה מועדפת — דוגמאות'), h('p', {}, tr('Approved sectors often include:', 'ענפים שמאושרים לרוב:')), list((KB.data.rights_and_benefits.preferred_work_grant || {}).sectors),
         h('p', {class: 'plus-muted'}, tr('Check the current list of approved employers on the official site before you start.', 'לפני שמתחילים — לבדוק באתר הרשמי את רשימת המעסיקים המאושרים העדכנית.'))));
@@ -861,7 +882,7 @@
     studies() {
       const cards = KB.rightsCards().filter(c => c.cat === 'studies').filter(c => !P.hidden.includes('right:' + c.id));
       const dep = KB.rightsCards().find(c => c.id === 'personal_deposit');
-      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Studies', 'לימודים')), hebrewNote(), disclaimer(), ...cards.map(rightCard),
+      return h('div', {}, h('h1', {class: 'plus-title'}, tr('Studies', 'לימודים')), profileBox('study'), hebrewNote(), disclaimer(), ...cards.map(rightCard),
         dep ? section(tr('Paying with the deposit', 'מימון מהפיקדון'), h('p', {}, tr('The personal deposit can be used for studies, training and psychometric prep.', 'את הפיקדון האישי אפשר לממש ללימודים, הכשרה מקצועית והכנה לפסיכומטרי.')), btn(tr('Deposit details', 'פרטי הפיקדון'), () => showPage('money'), 'plus-link')) : null,
         h('div', {class: 'plus-row'}, askButton('study', tr('Help me compare study options that fit me.', 'תעזור לי להשוות אפשרויות לימוד שמתאימות לי.')),
           h('a', {class: 'plus-btn', href: journeyUrl('education')}, tr('My study plans', 'תוכניות הלימוד שלי'))));
@@ -1281,6 +1302,7 @@
   function promptContext(lastUserText) {
     const parts = [];
     if (KB) { const k = KB.promptContext(lastUserText, {topic: S.activeTopic || ''}); if (k) parts.push(k); }
+    if (window.MomentumProfile) { try { window.MomentumProfile.noteChat(lastUserText); const ps = window.MomentumProfile.aiSummary(); if (ps) parts.push(ps); } catch (_) {} }
     if (PAGES.tools) parts.push('APP TOOLS the soldier can open from Home > My tools: My dates (personal deadlines from the discharge date, add to phone calendar), Deposit planner, Grant planner, After-discharge checklist, Phone numbers & places (tap to call, Waze), Scholarships, Payslip guide, Glossary. Mention the relevant one by name when it helps.');
     if (P.chatMode === 'talk' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I just want to talk". Listen first, reflect briefly, normalize the feelings, and do not push tasks or lists unless they ask.');
     if (P.chatMode === 'practical' && !S.activeTopic) parts.push('CONVERSATION MODE: the soldier chose "I want to do something practical". Be concrete and end with one small next step.');
@@ -1314,7 +1336,7 @@
     return text;
   }
   const TOOL_CTX = {h, btn, tr, he, icon, illu, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton, aiText, Journey, goChat, todayStr};
-  [window.MomentumTools, window.MomentumCV, window.MomentumInterview, window.MomentumGuided].forEach(factory => {
+  [window.MomentumTools, window.MomentumCV, window.MomentumInterview, window.MomentumProfileUI, window.MomentumGuided].forEach(factory => {
     if (typeof factory !== 'function') return;
     try { const T = factory(TOOL_CTX); Object.assign(PAGES, T.pages || {}); Object.assign(PAGE_HEAD, T.heads || {}); }
     catch (e) { console.warn('tools', e); }

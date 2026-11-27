@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://negishot.co.il; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' https: data: blob:; connect-src 'self' https:; media-src 'self' blob: data:; frame-src https:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <style id="mp-boot-style">html{background:#F3ECE0}html[data-theme="dark"]{background:#131915}html.mp-booting body{visibility:hidden}html.mp-booting::after{content:"";position:fixed;left:50%;top:45%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:4px solid #DFE7D3;border-top-color:#2E4A40;animation:mpspin .8s linear infinite}@keyframes mpspin{to{transform:rotate(360deg)}}</style>
-<script id="mp-boot">(function(){var r=document.documentElement;try{var p=JSON.parse(localStorage.getItem("momentum-companion-plus-v1")||"{}");if(p.theme==="dark")r.setAttribute("data-theme","dark");}catch(e){}r.classList.add("mp-booting");setTimeout(function(){r.classList.remove("mp-booting")},4000);})();</script>
+<script id="mp-boot">(function(){var r=document.documentElement;try{var p=JSON.parse(localStorage.getItem("momentum-companion-plus-v1")||"{}");if(p.theme==="dark")r.setAttribute("data-theme","dark");}catch(e){}r.classList.add("mp-booting");var done=function(){r.classList.remove("mp-booting")};window.addEventListener("load",function(){setTimeout(done,1500)});setTimeout(done,15000);})();</script>
 <script src="./safe-dom.js"></script>
 <title>Guided Transition Assistant — V2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2231,6 +2231,7 @@ if(new URLSearchParams(location.search).get("section")==="updates")prepareTopic(
 <script src="./illustrations.js"></script>
 <script src="./tools-plus.js"></script>
 <script src="./pdf-maker.js"></script>
+<script src="./profile-analyzer.js"></script>
 <script src="./cv-builder.js"></script>
 <script src="./interview-sim.js"></script>
 <script src="./companion-plus.js"></script>

@@ -750,6 +750,11 @@
     const illu = (name, size, cls) => { const sp = h('span', {class: 'plus-illu ' + (cls || ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu ? window.MomentumIllu(name, size) : ''; return sp; };
     function tools() {
       const wrap = h('div');
+      const rec = window.MomentumProfile ? window.MomentumProfile.recommendedTools().filter(id => TOOL_ILLU[id] || id === 'cv' || id === 'interviewsim') : [];
+      const allItems = GROUPS().flatMap(g => g[1]);
+      const recItems = rec.map(id => allItems.find(x => x[0] === id)).filter(Boolean).slice(0, 4);
+      if (recItems.length) wrap.append(h('section', {class: 'plus-tools-group plus-tools-rec'}, h('h2', {}, icon('star', 'plus-ico-dot'), tr('Recommended for you', 'מומלץ בשבילך'), h('small', {class: 'plus-rec-why'}, tr(' · from your strengths profile', ' · לפי פרופיל החוזקות שלך'))),
+        h('div', {class: 'plus-tools-grid'}, recItems.map(([id, ic, name, why]) => h('button', {type: 'button', class: 'plus-tool plus-tool-rec', 'data-tool': id, onclick: () => showPage(id)}, illu(TOOL_ILLU[id] || 'star', 44, 'plus-tool-illu'), h('strong', {}, name), h('small', {}, why))))));
       GROUPS().forEach(([title, items], gi) => {
         const topic = ['money', 'tasks', 'study', 'home', 'journey'][gi] || 'tasks';
         const grid = h('div', {class: 'plus-tools-grid'});

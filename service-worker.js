@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v36-boot-home";
+const CACHE = "tc-v37-profile";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -32,7 +32,7 @@ const APP_FILES = [
   "./journey-tools-ui.js",
   "./journey-rights.js",
   "./onboarding.js", "./onboarding.css", "./chat-history.js", "./companion-home.js", "./companion-home.css",
-  "./companion-plus.js", "./tools-plus.js", "./safe-dom.js", "./illustrations.js", "./pdf-maker.js", "./cv-builder.js", "./interview-sim.js", "./momentum-sans-regular.ttf", "./momentum-sans-bold.ttf", "./companion-plus.css", "./knowledge-base.js", "./knowledge-base-data.js", "./knowledge-base-full.json", "./journey-plus.js", "./journey-plus.css", "./momentum-theme.css",
+  "./companion-plus.js", "./tools-plus.js", "./safe-dom.js", "./illustrations.js", "./pdf-maker.js", "./cv-builder.js", "./interview-sim.js", "./profile-analyzer.js", "./momentum-sans-regular.ttf", "./momentum-sans-bold.ttf", "./companion-plus.css", "./knowledge-base.js", "./knowledge-base-data.js", "./knowledge-base-full.json", "./journey-plus.js", "./journey-plus.css", "./momentum-theme.css",
   "./benefits-updates.js",
   "./benefits-updates.css",
   "./benefits-updates.json",

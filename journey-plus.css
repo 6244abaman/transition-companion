@@ -183,3 +183,10 @@ html[data-motion="reduce"] .jp-chevd { transition:none; }
 .jp-phonecal-btns .button { flex:1 1 auto;text-align:center; }
 .jp-tocal { width:36px;height:36px;border-radius:10px;border:1px solid #E6E0D4;background:#F7F3EC;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#2F5A46;flex:0 0 auto;padding:0; }
 .jp-tocal .jp-ico { width:18px;height:18px; }
+.jp-prof { background:#fff;border:1px solid #E6E0D4;border-radius:18px;padding:12px 14px;margin:10px 0;display:flex;flex-direction:column;gap:8px; }
+.jp-prof-head { display:flex;justify-content:space-between;align-items:center; } .jp-prof-edit { color:#2F5A46;font-weight:700;font-size:14px; }
+.jp-prof-about { margin:0;line-height:1.55;color:#3F4A43; }
+.jp-prof-skills { display:flex;flex-wrap:wrap;gap:6px; } .jp-prof-skills span { background:#E4F2EA;color:#1E5E3E;border-radius:99px;padding:4px 10px;font-weight:700;font-size:13px; }
+.jp-prof-next small { display:block;color:#6B7069;font-weight:700;margin-bottom:4px; }
+.jp-prof-step { display:block;width:100%;text-align:start;border:1px dashed #9BC2AC;background:#F7FBF8;border-radius:12px;padding:9px 12px;font:inherit;cursor:pointer;margin-top:6px;color:#1E3B2F; }
+.jp-prof-invite { display:block;margin:10px 0;padding:12px 14px;border-radius:16px;border:1.5px dashed #9BC2AC;background:#F2F8F4;color:#1E3B2F;text-decoration:none; } .jp-prof-invite b { display:block; } .jp-prof-invite small { color:#4F5A53; }

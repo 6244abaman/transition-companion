@@ -154,7 +154,7 @@
       h('div', {class: 'jp-head'}, ico('calendar', 'jp-head-ico'), h('h1', {}, tr('My Journey', 'המסע שלי')),
         h('button', {type: 'button', class: 'jp-lang', onclick: () => $('language') && $('language').click()}, he() ? 'EN' : 'עב'),
         h('a', {class: 'jp-back', href: companionBase() + '#home', 'aria-label': tr('Back to Companion', 'חזרה למלווה')}, ico('back'))),
-      goalCard, stats,
+      goalCard, stats, profileCard(p),
       sec(tr('My week', 'השבוע שלי'), 'calendar', null, h('div', {}, days, detail, monthBox, phoneCalendar(p))),
       sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', open.length > 3 ? h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('All ' + open.length + ' →', 'כל ה-' + open.length + ' ←')) : null, stepsBox),
       sec(tr('My skills', 'הכישורים שלי'), 'star', null, h('div', {class: 'jp-card'}, skillsBox)),
@@ -194,6 +194,28 @@
   }
 
   // One day: its steps (move to another day, mark done) + add a step for this day (brief §1.1, §4.3).
+  /* ---------- "About me" summary + suggested next steps from the optional strengths profile ---------- */
+  function profileCard(p) {
+    const M = window.MomentumProfile; if (!M) return null;
+    const pr = M.read(); if (!pr.enabled) return null;
+    const link = companionBase() + (he() ? '?page=profile' : '?lang=en&page=profile');
+    if (!M.has(pr)) return h('a', {class: 'jp-prof-invite', href: link}, h('b', {}, tr('Discover your strengths (optional)', 'לגלות את החוזקות שלך (לא חובה)')), h('small', {}, tr('A short questionnaire that makes your CV and suggestions personal', 'שאלון קצר שהופך את קורות החיים וההמלצות לאישיים')));
+    const top = M.skills(pr).slice(0, 3), titles = new Set(p.actions.map(a => a.title));
+    const ideas = [];
+    if (!(p.cvs || []).length) ideas.push(tr('Build my CV with my strengths', 'לבנות קורות חיים עם החוזקות שלי'));
+    const w = M.workDirections()[0]; if (w) ideas.push(tr('Explore: ', 'לבדוק את התחום: ') + w);
+    const st = M.studyDirections()[0]; if (st) ideas.push(tr('Look into studying ', 'לבדוק לימודי ') + st);
+    if (M.tags().includes('study')) ideas.push(tr('Check scholarships that fit me', 'לבדוק מלגות שמתאימות לי'));
+    const fresh = ideas.filter(t => !titles.has(t)).slice(0, 2);
+    const about = M.about();
+    return h('section', {class: 'jp-prof'},
+      h('div', {class: 'jp-prof-head'}, h('b', {}, tr('About me', 'עליי')), h('a', {href: link + (he() ? '&' : '&') + 'view=knows', class: 'jp-prof-edit'}, tr('Edit', 'עריכה'))),
+      about ? h('p', {class: 'jp-prof-about'}, about) : null,
+      top.length ? h('div', {class: 'jp-prof-skills'}, top.map(s => h('span', {}, s.name + (s.strong ? ' ★' : '')))) : null,
+      fresh.length ? h('div', {class: 'jp-prof-next'}, h('small', {}, tr('Suggested next steps', 'צעדים מוצעים')), ...fresh.map(t => h('button', {type: 'button', class: 'jp-prof-step', onclick: () => {
+        if (attempt(() => Store.upsert('actions', {title: t, status: 'todo', dueDate: todayKey()})) !== null) { say(tr('Added to your steps ✓', 'נוסף לצעדים שלך ✓')); paintAll(); } }}, '+ ' + t))) : null);
+  }
+
   /* ---------- phone calendar: .ics file (iPhone / Android / Outlook) + Google Calendar link ---------- */
   const icsEsc = t => String(t || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
   const ymd = k => k.replace(/-/g, '');
