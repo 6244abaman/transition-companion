@@ -9,7 +9,7 @@
     const ACCENT = '#1F3A5F', ACCENT2 = '#2E6B8A', GREY = '#55606A';
 
     const blank = () => ({lang: he() ? 'he' : 'en', first: '', last: '', phone: '', email: '', city: '', linkedin: '', headline: '', summary: '',
-      milRole: '', milFrom: '', milTo: '', story: '', people: '', systems: '', results: '', bullets: [], education: '', skills: '', languages: '', extra: ''});
+      milRole: '', milFrom: '', milTo: '', story: '', people: '', systems: '', results: '', bullets: [], jobs: '', education: '', skills: '', computer: '', languages: '', extra: '', refs: true, jobAd: ''});
     const cv = () => { if (!P.cv || typeof P.cv !== 'object') P.cv = blank(); const b = blank(); for (const k in b) if (P.cv[k] === undefined) P.cv[k] = b[k]; if (!Array.isArray(P.cv.bullets)) P.cv.bullets = []; return P.cv; };
     let step = 0;
 
@@ -45,19 +45,25 @@
     const isHe = t => /[\u0590-\u05FF]/.test(String(t || ''));
     const civilian = t => isHe(t) ? JARGON_HE.reduce((s, [re, to]) => s.replace(re, (m, pre, pfx) => pre + (pfx || '') + to), String(t || '')) : JARGON_EN.reduce((s, [re, to]) => s.replace(re, to), String(t || ''));
     const jargonFound = t => { const hits = []; (isHe(t) ? JARGON_HE : JARGON_EN).forEach(([re]) => { const m = new RegExp(re.source, re.flags.replace('g', '')).exec(String(t)); if (m) hits.push((m[3] || m[0]).trim()); }); return [...new Set(hits)]; };
+    // Israeli CV convention: action nouns, not "I did" (הובלת צוות… rather than הובלתי צוות…); English: start with a verb, no "I".
+    const FP_HE = [['הובלתי', 'הובלת'], ['ניהלתי', 'ניהול'], ['הדרכתי', 'הדרכת'], ['עבדתי', 'עבודה'], ['תכננתי', 'תכנון'], ['טיפלתי', 'טיפול'], ['ביצעתי', 'ביצוע'], ['תיאמתי', 'תיאום'],
+      ['אחראי על', 'אחריות על'], ['אחראית על', 'אחריות על'], ['הייתי אחראי', 'אחריות'], ['הייתי אחראית', 'אחריות'], ['ארגנתי', 'ארגון'], ['שיפרתי', 'שיפור'], ['בניתי', 'בניית'], ['פיתחתי', 'פיתוח'],
+      ['לימדתי', 'הוראה'], ['ליוויתי', 'ליווי'], ['פיקדתי על', 'הובלת'], ['פיקדתי', 'הובלה'], ['הכשרתי', 'הכשרת'], ['קידמתי', 'קידום'], ['השתתפתי', 'השתתפות'], ['נתתי', 'מתן'], ['כתבתי', 'כתיבת'], ['הכנתי', 'הכנת']];
+    const pro = t => { let x = String(t || '').trim(); if (/[֐-׿]/.test(x)) FP_HE.forEach(([a, b]) => { x = x.replace(new RegExp('(^|[\\s,(])' + a + '(?=[\\s,.]|$)', 'g'), '$1' + b); }); else x = x.replace(/^I\s+/i, '').replace(/^./, m => m.toUpperCase()); return x; };
     function localBullets(c) {
       const H = c.lang === 'he', out = [];
-      if (c.people) out.push(H ? 'הובלתי צוות של ' + c.people + ' אנשים — תכנון משימות, חלוקת עבודה וליווי אישי.' : 'Led a team of ' + c.people + ' people — planning tasks, dividing work and supporting each person.');
-      if (c.systems) out.push(H ? 'עבדתי באחריות עם ' + civilian(c.systems) + '.' : 'Worked responsibly with ' + civilian(c.systems) + '.');
-      if (c.results) out.push(civilian(c.results));
-      if (c.story) civilian(c.story).split(/[\n.]+/).map(x => x.trim()).filter(x => x.length > 12).slice(0, 4).forEach(x => out.push(x.replace(/^[-•*]\s*/, '') + '.'));
+      if (c.people) out.push(H ? 'הובלת צוות של ' + c.people + ' אנשים — תכנון משימות, חלוקת עבודה וליווי אישי.' : 'Led a team of ' + c.people + ' people — planning tasks, dividing work and supporting each person.');
+      if (c.systems) out.push(H ? 'אחריות על ' + civilian(c.systems) + '.' : 'Responsible for ' + civilian(c.systems) + '.');
+      if (c.results) out.push(pro(civilian(c.results)));
+      if (c.story) civilian(c.story).split(/[\n.]+/).map(x => x.trim()).filter(x => x.length > 12).slice(0, 4).forEach(x => out.push(pro(x.replace(/^[-•*]\s*/, '')) + '.'));
       return [...new Set(out)].slice(0, 6);
     }
 
     /* ---------- preview (same structure as the PDF) ---------- */
     const L = c => c.lang === 'he'
-      ? {summary: 'תקציר', exp: 'ניסיון', mil: 'שירות צבאי', edu: 'השכלה וקורסים', skills: 'כישורים', langs: 'שפות', extra: 'התנדבות וניסיון נוסף'}
-      : {summary: 'Summary', exp: 'Experience', mil: 'Military service', edu: 'Education & courses', skills: 'Skills', langs: 'Languages', extra: 'Volunteering & other experience'};
+      ? {summary: 'תקציר מקצועי', exp: 'שירות צבאי', mil: 'שירות צבאי', jobs: 'ניסיון תעסוקתי', edu: 'השכלה וקורסים', skills: 'כישורים', computer: 'יישומי מחשב', langs: 'שפות', extra: 'התנדבות ופעילות נוספת', refs: 'המלצות יינתנו לפי דרישה'}
+      : {summary: 'Professional summary', exp: 'Military service', mil: 'Military service', jobs: 'Work experience', edu: 'Education & courses', skills: 'Skills', computer: 'Computer skills', langs: 'Languages', extra: 'Volunteering & activities', refs: 'References available on request'};
+    const job = x => { let yrs = '', rest = x; const m = x.match(/^\s*([^|]{2,20}?)\s*\|\s*(.+)$/); if (m && /\d/.test(m[1])) { yrs = m[1].trim(); rest = m[2]; } const [t, ...d] = rest.split(' — '); return {yrs, t: t.trim(), d: d.join(' — ').trim()}; };
     const contactLine = c => [c.phone, c.email, c.city, c.linkedin].filter(Boolean).join(' · ');
     const lines = s => String(s || '').split(/\n+/).map(x => x.trim()).filter(Boolean);
     const splitList = s => String(s || '').split(/[,\n]+/).map(x => x.trim()).filter(Boolean);
@@ -72,10 +78,13 @@
         sec(l.summary, c.summary ? h('p', {}, c.summary) : null),
         sec(l.exp, (c.milRole || c.bullets.length) ? [h('p', {class: 'cv-role'}, h('b', {}, c.milRole || l.mil), (c.milFrom || c.milTo) ? h('span', {}, '  ' + [c.milFrom, c.milTo].filter(Boolean).join('–')) : null),
           h('ul', {}, c.bullets.filter(Boolean).map(b => h('li', {}, b)))] : null),
+        sec(l.jobs, lines(c.jobs).map(x => { const j = job(x); return h('div', {class: 'cv-job'}, h('p', {class: 'cv-role'}, h('b', {}, j.t), j.yrs ? h('span', {}, '  ' + j.yrs) : null), j.d ? h('p', {class: 'cv-jobd'}, j.d) : null); })),
         sec(l.edu, lines(c.education).map(x => h('p', {}, x))),
         sec(l.skills, splitList(c.skills).length ? h('p', {}, splitList(c.skills).join(' · ')) : null),
+        sec(l.computer, splitList(c.computer).length ? h('p', {}, splitList(c.computer).join(' · ')) : null),
         sec(l.langs, splitList(c.languages).length ? h('p', {}, splitList(c.languages).join(' · ')) : null),
-        sec(l.extra, lines(c.extra).map(x => h('p', {}, x))));
+        sec(l.extra, lines(c.extra).map(x => h('p', {}, x))),
+        c.refs ? h('p', {class: 'cv-refs'}, l.refs) : null);
     }
 
     /* ---------- PDF ---------- */
@@ -102,33 +111,87 @@
         d.space(3);
         c.bullets.filter(Boolean).forEach(b => { d.bullet(b, {...body, dotColor: ACCENT2}); d.space(2); });
       }
+      if (lines(c.jobs).length) { head(l.jobs); lines(c.jobs).forEach(x => { const j = job(x); d.keep(30); d.twoSided(j.t, j.yrs, {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (j.d) { d.space(1); d.text(j.d, body); } d.space(4); }); }
       if (lines(c.education).length) { head(l.edu); lines(c.education).forEach(x => { d.text(x, body); d.space(1); }); }
       if (splitList(c.skills).length) { head(l.skills); d.text(splitList(c.skills).join('  ·  '), body); }
+      if (splitList(c.computer).length) { head(l.computer); d.text(splitList(c.computer).join('  ·  '), body); }
       if (splitList(c.languages).length) { head(l.langs); d.text(splitList(c.languages).join('  ·  '), body); }
       if (lines(c.extra).length) { head(l.extra); lines(c.extra).forEach(x => { d.text(x, body); d.space(1); }); }
+      if (c.refs) { d.space(12); d.text(l.refs, {size: 9.5, color: GREY, dir}); }
       const safe = x => String(x || '').trim().replace(/[^\p{L}\p{N}-]+/gu, '_').replace(/^_|_$/g, '');
       const file = [safe(c.first), safe(c.last)].filter(Boolean).join('_') || 'My';
       return {doc: d, file: file + '_CV.pdf'};
     }
 
     /* ---------- AI polish (optional, never invents) ---------- */
-    async function polish(statusEl) {
-      const c = cv();
-      const H = c.lang === 'he';
-      const system = (H ? 'אתה עוזר לכתוב קורות חיים לחיילים משוחררים בישראל. כתוב בעברית.' : 'You help discharged Israeli soldiers write CVs. Write in English.') +
-        ' Rules: never invent experience, numbers, ranks, dates or achievements; use only facts the user gave. Replace military jargon and acronyms with plain civilian language. Use "I" actions, lead with civilian value, one line per bullet, 4-6 bullets. Return ONLY JSON: {"headline":"...","summary":"2-3 lines","bullets":["..."]}.';
-      const prompt = 'Military role: ' + c.milRole + '\nPeople led: ' + (c.people || 'not given') + '\nSystems/equipment: ' + (c.systems || 'not given') + '\nResults: ' + (c.results || 'not given') + '\nStory: ' + c.story + '\nCurrent bullets: ' + c.bullets.join(' | ') + '\nTarget role: ' + (c.headline || 'not given');
-      statusEl.textContent = tr('Asking the AI (after your approval)…', 'שולח ל-AI (אחרי אישור שלך)…');
+    // AI "career writer": rewrites only from the facts given, suggests (never applies silently), and asks for missing real numbers.
+    let suggestion = null;
+    async function polish(statusEl, mode) {
+      const c = cv(), H = c.lang === 'he';
+      const system = [
+        H ? 'You are a senior Israeli career counsellor who writes CVs for discharged IDF soldiers. Write in natural, professional Hebrew.' : 'You are a senior career counsellor who writes CVs for discharged Israeli soldiers. Write in natural, professional English.',
+        'HARD RULES: Never invent experience, numbers, ranks, dates, employers, courses, tools or achievements. Use only facts in the input. If a strong bullet needs a number that was not given, do not add one — instead add a short question to "questions".',
+        'Translate every military term and acronym into plain civilian language an HR recruiter understands. No classified or unit-identifying detail.',
+        H ? 'Hebrew style: action nouns, not first person (הובלת צוות של 12 אנשים, not הובלתי).' : 'English style: start each bullet with a strong past-tense verb, no "I".',
+        'Bullets: one line each, Action + context + result (only real results), 3-6 bullets, most relevant to the target job first.',
+        'Summary: 2-3 lines, who I am + strongest proven strengths + what job I want. No clichés like "hard-working team player" without evidence.',
+        c.jobAd ? 'Tailor wording to the job ad: reuse its keywords only where the facts truly match; list matching skills first.' : '',
+        'Return ONLY valid JSON: {"headline":"civilian job title","role":"civilian name for the military role","summary":"...","bullets":["..."],"skills":["up to 8, only supported by the input"],"tips":["2-4 concrete improvements"],"questions":["0-3 questions asking for real numbers or facts"]}'
+      ].filter(Boolean).join('\n');
+      const prompt = ['Target role: ' + (c.headline || 'not given'), 'Military role: ' + (c.milRole || ''), 'Years: ' + [c.milFrom, c.milTo].filter(Boolean).join('-'), 'People led: ' + (c.people || 'not given'),
+        'Systems/equipment/processes: ' + (c.systems || 'not given'), 'Results: ' + (c.results || 'not given'), 'Free story: ' + (c.story || ''), 'Current bullets: ' + c.bullets.filter(Boolean).join(' | '),
+        'Civilian jobs: ' + (c.jobs || 'none'), 'Education: ' + (c.education || ''), 'Skills: ' + (c.skills || ''), 'Current summary: ' + (c.summary || ''), c.jobAd ? 'Job ad:\n' + c.jobAd.slice(0, 2500) : ''].join('\n');
+      statusEl.textContent = tr('Writing with AI (after your approval)…', 'ה-AI כותב (אחרי אישור שלך)…');
       try {
-        const raw = await aiText(system, prompt, 900);
+        const raw = await aiText(system, prompt, 1400);
         const json = JSON.parse((raw.match(/\{[\s\S]*\}/) || [raw])[0]);
-        if (Array.isArray(json.bullets) && json.bullets.length) c.bullets = json.bullets.map(String).slice(0, 8);
-        if (json.summary && !c.summary) c.summary = String(json.summary);
-        if (json.headline && !c.headline) c.headline = String(json.headline);
-        store(); statusEl.textContent = tr('Done — please read every line and fix anything that is not accurate.', 'מוכן — קרא כל שורה ותקן כל דבר שלא מדויק.'); paint();
+        const arr = v => Array.isArray(v) ? v.map(String).map(x => x.trim()).filter(Boolean) : [];
+        suggestion = {mode, role: String(json.role || '').trim(), headline: String(json.headline || '').trim(), summary: String(json.summary || '').trim(), bullets: arr(json.bullets).slice(0, 7), skills: arr(json.skills).slice(0, 8), tips: arr(json.tips).slice(0, 4), questions: arr(json.questions).slice(0, 3)};
+        statusEl.textContent = ''; paint();
       } catch (e) {
-        statusEl.textContent = e.canceled ? tr('Nothing was sent.', 'לא נשלח כלום.') : tr('Could not get AI wording: ', 'לא הצלחתי לקבל ניסוח מה-AI: ') + e.message + tr(' — you can use the civilian translator instead.', ' — אפשר להשתמש במתרגם האזרחי במקום.');
+        statusEl.textContent = e.canceled ? tr('Nothing was sent.', 'לא נשלח כלום.') : tr('Could not get AI wording: ', 'לא הצלחתי לקבל ניסוח מה-AI: ') + e.message + tr(' — the civilian translator works without AI.', ' — המתרגם האזרחי עובד גם בלי AI.');
       }
+    }
+    function suggestionCard() {
+      if (!suggestion) return null;
+      const c = cv(), sg = suggestion;
+      const apply = what => { if (what.includes('b') && sg.bullets.length) c.bullets = sg.bullets.slice(); if (what.includes('s') && sg.summary) c.summary = sg.summary;
+        if (what.includes('h') && sg.headline && !c.headline) c.headline = sg.headline; if (what.includes('b') && sg.role) c.milRole = sg.role; else if (c.milRole) c.milRole = civilian(c.milRole); if (what.includes('k') && sg.skills.length) c.skills = [...new Set([...splitList(c.skills), ...sg.skills])].join(', ');
+        store(); suggestion = null; paint(); toast(tr('Applied — read every line once more ✓', 'עודכן — כדאי לקרוא כל שורה שוב ✓')); };
+      return h('div', {class: 'cv-ai'},
+        h('div', {class: 'cv-ai-head'}, illu('pen', 30), h('strong', {}, tr('AI suggestion — your call', 'הצעת AI — ההחלטה שלך'))),
+        sg.role ? h('div', {class: 'cv-ai-block'}, h('small', {}, tr('Role, in civilian words', 'התפקיד, במילים אזרחיות')), h('p', {}, h('b', {}, sg.role))) : null,
+        sg.summary ? h('div', {class: 'cv-ai-block'}, h('small', {}, tr('Summary', 'תקציר')), h('p', {}, sg.summary)) : null,
+        sg.bullets.length ? h('div', {class: 'cv-ai-block'}, h('small', {}, tr('Service lines', 'שורות השירות')), h('ul', {}, sg.bullets.map(b => h('li', {}, b)))) : null,
+        sg.skills.length ? h('div', {class: 'cv-ai-block'}, h('small', {}, tr('Skills', 'כישורים')), h('p', {}, sg.skills.join(' · '))) : null,
+        sg.questions.length ? h('div', {class: 'cv-ai-q'}, h('strong', {}, tr('To make it stronger, answer (only if true):', 'כדי לחזק — כדאי לענות (רק אם נכון):')), h('ul', {}, sg.questions.map(q => h('li', {}, q)))) : null,
+        sg.tips.length ? h('div', {class: 'cv-ai-tips'}, h('strong', {}, tr('Tips', 'טיפים')), h('ul', {}, sg.tips.map(q => h('li', {}, q)))) : null,
+        h('div', {class: 'plus-row'}, btn(tr('Use all', 'להשתמש בהכול'), () => apply('bshk'), 'plus-btn primary'),
+          sg.bullets.length ? btn(tr('Only the lines', 'רק השורות'), () => apply('b'), 'plus-btn') : null,
+          sg.summary ? btn(tr('Only the summary', 'רק התקציר'), () => apply('s'), 'plus-btn') : null,
+          btn(tr('Keep mine', 'להשאיר שלי'), () => { suggestion = null; paint(); }, 'plus-link')),
+        h('p', {class: 'plus-muted'}, tr('AI can be wrong. It was told never to invent facts — still, check that every line is true.', 'AI יכול לטעות. הוא הונחה לא להמציא עובדות — ובכל זאת בדוק שכל שורה נכונה.')));
+    }
+
+    /* ---------- quality check (local, instant) ---------- */
+    function quality() {
+      const c = cv(), H = c.lang === 'he', bl = c.bullets.filter(Boolean);
+      const all = [c.milRole, c.results, ...bl].join(' ');
+      const items = [
+        [!!(c.first && c.last && c.phone && c.email), tr('Name, phone and email', 'שם, טלפון ואימייל')],
+        [!!c.headline, tr('A civilian job title at the top', 'שם תפקיד אזרחי בראש העמוד')],
+        [c.summary.length >= 60 && c.summary.length <= 420, tr('Summary of 2–3 lines', 'תקציר של 2–3 שורות')],
+        [bl.length >= 3 && bl.length <= 7, tr('3–6 clear service lines', '3–6 שורות שירות ברורות')],
+        [/\d/.test(all), tr('At least one real number (people, hours, results)', 'לפחות מספר אמיתי אחד (אנשים, שעות, תוצאות)')],
+        [!jargonFound(all).length, tr('No military jargon', 'בלי ז׳רגון צבאי')],
+        [H ? !/(^|\s)(הובלתי|ניהלתי|עבדתי|הדרכתי|טיפלתי)(\s|$)/.test(all) : !/(^|\.\s*)I\s/.test(all), tr('Professional style (no "I did")', 'סגנון מקצועי (בלי "עשיתי")')],
+        [splitList(c.skills).length >= 3, tr('At least 3 skills', 'לפחות 3 כישורים')]
+      ];
+      const ok = items.filter(x => x[0]).length;
+      return h('div', {class: 'cv-quality'},
+        h('div', {class: 'cv-q-top'}, h('strong', {}, tr('CV strength', 'חוזק קורות החיים')), h('span', {class: 'cv-q-score'}, ok + '/' + items.length)),
+        h('div', {class: 'cv-q-bar'}, h('i', {style: 'width:' + Math.round(ok / items.length * 100) + '%'})),
+        h('ul', {}, items.map(([v, t]) => h('li', {class: v ? 'ok' : ''}, h('span', {'aria-hidden': 'true'}, v ? '✓' : '○'), ' ', t))));
     }
 
     /* ---------- UI ---------- */
@@ -173,9 +236,9 @@
         h('div', {class: 'cv-grid'}, field('people', tr('How many people did you lead? (number, optional)', 'כמה אנשים הובלת? (מספר, לא חובה)'), {inputmode: 'numeric'}), field('systems', tr('Equipment / systems / processes', 'ציוד / מערכות / תהליכים'))),
         field('results', tr('A result or improvement (only if true)', 'תוצאה או שיפור (רק אם זה נכון)')),
         h('div', {class: 'plus-row'},
-          btn(tr('Translate to civilian lines', 'תרגם לשורות אזרחיות'), () => { if (c.milRole) c.milRole = civilian(c.milRole); c.bullets = c.bullets.map(civilian); const add = localBullets(c).filter(b => !c.bullets.includes(b)); c.bullets.push(...add); if (!add.length) toast(tr('Add a few details first', 'כדאי להוסיף קודם כמה פרטים')); store(); paintBullets(); refreshPreview(); checkJargon(); }, 'plus-btn primary'),
-          P.infoOnly ? null : btn(tr('Polish with AI ✨', 'שיפור ניסוח עם AI ✨'), () => polish(status), 'plus-btn')),
-        status, warn,
+          btn(tr('Translate to civilian lines', 'תרגם לשורות אזרחיות'), () => { if (c.milRole) c.milRole = civilian(c.milRole); c.bullets = c.bullets.map(b => pro(civilian(b))); const add = localBullets(c).filter(b => !c.bullets.includes(b)); c.bullets.push(...add); if (!add.length) toast(tr('Add a few details first', 'כדאי להוסיף קודם כמה פרטים')); store(); paintBullets(); refreshPreview(); checkJargon(); }, 'plus-btn primary'),
+          P.infoOnly ? null : btn(tr('Write it better with AI ✨', 'ה-AI ינסח לי יותר טוב ✨'), () => polish(status, 'service'), 'plus-btn cv-ai-btn')),
+        status, suggestionCard(), warn,
         h('strong', {class: 'cv-sub'}, tr('Lines in your CV (edit every line)', 'השורות בקורות החיים (אפשר לערוך כל שורה)')), bulletsBox,
         h('p', {class: 'plus-muted'}, tr('Tip: "I led a team of 12" beats "we were a platoon". Never add numbers that are not true.', 'טיפ: "הובלתי צוות של 12" עדיף על "היינו מחלקה". לא מוסיפים מספרים שלא נכונים.'))];
     }
@@ -191,12 +254,20 @@
       }
       const status = h('p', {class: 'plus-muted', 'aria-live': 'polite'});
       return [h('h2', {class: 'cv-step-title'}, tr('Education, skills and summary', 'השכלה, כישורים ותקציר')),
+        field('jobs', tr('Civilian jobs (one per line: years | job, place — what you did)', 'עבודות אזרחיות (שורה לכל אחת: שנים | תפקיד, מקום — מה עשית)'), {placeholder: tr('2022–2023 | Sales assistant, Super-Pharm — customer service and cash register', '2022–2023 | מוכר, סופר-פארם — שירות לקוחות וקופה')}, true),
         field('education', tr('Education & courses (one per line)', 'השכלה וקורסים (שורה לכל אחד)'), {placeholder: tr('Full matriculation — 2022\nFirst-aid course — 2024', 'בגרות מלאה — 2022\nקורס עזרה ראשונה — 2024')}, true),
         field('skills', tr('Skills (comma separated)', 'כישורים (מופרדים בפסיק)'), {placeholder: tr('Teamwork, responsibility, working under pressure', 'עבודת צוות, אחריות, עבודה תחת לחץ')}),
+        field('computer', tr('Computer skills (optional)', 'יישומי מחשב (לא חובה)'), {placeholder: 'Excel, Word, Google Sheets'}),
         field('languages', tr('Languages', 'שפות'), {placeholder: tr('Hebrew — native, English — very good', 'עברית — שפת אם, אנגלית — טובה מאוד')}),
         field('extra', tr('Volunteering / other experience (optional)', 'התנדבות / ניסיון נוסף (לא חובה)'), {}, true),
         field('summary', tr('Short professional summary (2–3 lines)', 'תקציר מקצועי קצר (2–3 שורות)'), {}, true),
-        P.infoOnly ? null : btn(tr('Suggest a summary with AI ✨', 'הצעה לתקציר עם AI ✨'), () => polish(status), 'plus-btn'), status];
+        h('label', {class: 'switch-row cv-refs-toggle'}, (() => { const x = h('input', {type: 'checkbox'}); x.checked = !!c.refs; x.addEventListener('change', () => { cv().refs = x.checked; store(); refreshPreview(); }); return x; })(), h('span', {}, L(c).refs)),
+        h('details', {class: 'cv-ad', open: c.jobAd ? true : undefined}, h('summary', {}, tr('Applying to a specific job? Paste the ad (optional)', 'מגישים למשרה מסוימת? הדביקו את המודעה (לא חובה)')),
+          field('jobAd', tr('Job ad text — the AI will match your real experience to it', 'טקסט המודעה — ה-AI יתאים אליה את הניסיון האמיתי שלך'), {rows: '5'}, true)),
+        P.infoOnly ? null : h('div', {class: 'cv-ai-cta'}, illu('pen', 40), h('div', {}, h('strong', {}, tr('Let AI write a professional CV from your details', 'ה-AI יכתוב לך קורות חיים מקצועיים מהפרטים שלך')),
+          h('p', {}, tr('Summary, service lines and skills — like a career counsellor. Uses only what you wrote; you approve every change.', 'תקציר, שורות שירות וכישורים — כמו יועץ קריירה. רק ממה שכתבת; אתה מאשר כל שינוי.'))),
+          btn(tr('Write my CV with AI ✨', 'כתוב לי עם AI ✨'), () => polish(status, 'full'), 'plus-btn primary')),
+        status, suggestionCard(), quality()];
     }
     function paint() {
       const steps = [stepDetails, stepService, stepMore];
@@ -217,7 +288,7 @@
         h('p', {class: 'plus-muted'}, tr('Nothing leaves your phone unless you press an AI button and approve. The PDF has no logo or watermark.', 'שום דבר לא יוצא מהטלפון אלא אם לחצת על כפתור AI ואישרת. ב-PDF אין לוגו או סימן מים.')));
     }
     async function download() {
-      try { const r = await makePdf(); if (!r) return; r.doc.download(r.file); toast(tr('Your CV is downloading ✓', 'קורות החיים יורדים ✓')); saveJourney(true); }
+      try { const r = await makePdf(); if (!r) return; r.doc.download(r.file); toast(r.doc.pageCount > 1 ? tr('Downloaded ✓ — tip: try to keep it to one page.', 'ירד ✓ — טיפ: עדיף לקצר לעמוד אחד.') : tr('Your CV is downloading ✓', 'קורות החיים יורדים ✓')); saveJourney(true); }
       catch (e) { toast(tr('Could not create the PDF: ', 'לא הצלחתי ליצור PDF: ') + e.message); }
     }
     function saveJourney(quiet) {

@@ -129,3 +129,9 @@ html[data-theme="dark"] .jp-today { background:#1f3530 !important; color:var(--i
 /* Overview tidy-up: the new top section already shows goal, next steps and counts — hide the duplicate legacy blocks */
 #view-overview > .stats, #view-overview > .grid { display:none !important; }
 #view-overview > .card:has(#introHeading) { display:none !important; }
+.jp-parts { display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:8px 0 12px; }
+.jp-part { display:flex;align-items:center;gap:8px; }
+.jp-count { margin-inline-start:auto;min-width:22px;text-align:center;border-radius:99px;background:var(--beige, #F3EEE4);padding:1px 7px;font-weight:700;color:#5E6873; }
+.jp-how { margin-top:10px;background:var(--beige, #F6F2EA);border-radius:12px;padding:8px 12px; }
+.jp-how summary { cursor:pointer;font-weight:700; }
+.jp-how ol { margin:6px 0 2px;padding-inline-start:20px;line-height:1.6; }

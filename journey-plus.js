@@ -241,7 +241,7 @@
       h('button', {type: 'button', class: 'primary', onclick: () => { if (attempt(() => Store.addManualSkill({name: name.value, evidence: ev.value}))) { say(tr('Saved ✓', 'נשמר ✓')); paintAll(); } }}, tr('Add skill', 'הוספת כישור')),
       p36 ? h('div', {class: 'privacy-note'}, h('strong', {}, tr('Ready for a CV?', 'מוכנים לקורות חיים?')), ' ',
         tr('You have ' + p36 + ' skills with your own examples. The Companion can draft a CV from them — without inventing anything.', 'יש לך ' + p36 + ' כישורים עם דוגמאות משלך. המלווה יכול להכין מהם טיוטת קורות חיים — בלי להמציא כלום.'), ' ',
-        h('a', {href: (he() ? './indexH.html' : './index.html') + '?view=chat', class: 'button primary', onclick: () => { try { sessionStorage.setItem('momentum-plus-draft', tr('Draft a CV from my confirmed skills, without inventing anything.', 'הכן טיוטת קורות חיים מהכישורים שאישרתי, בלי להמציא פרטים.')); } catch (_) {} }}, tr('Draft my CV', 'טיוטת קורות חיים'))) : null);
+        h('a', {href: (he() ? './indexH.html?page=cv' : './index.html?lang=en&page=cv'), class: 'button primary'}, tr('Build my CV', 'בנה קורות חיים'))) : null);
   }
 
   function summaryText(p, parts) {
@@ -258,28 +258,89 @@
     return L.join('\n').trim();
   }
 
-  function paintTools(p) {
-    const box = (id, label, checked) => h('label', {class: 'switch-row'}, h('input', {type: 'checkbox', id, checked: checked || undefined}), h('span', {}, label));
-    const parts = () => ({goals: $('jpG').checked, actions: $('jpA').checked, education: $('jpE').checked, skills: $('jpS').checked, notes: $('jpN').checked});
-    tools.replaceChildren(h('h2', {}, tr('Export and share', 'ייצוא ושיתוף')),
-      h('p', {class: 'muted'}, tr('Choose what to include. Nothing is sent automatically.', 'בוחרים מה לכלול. שום דבר לא נשלח אוטומטית.')),
-      box('jpG', tr('Goals', 'מטרות'), true), box('jpA', tr('Steps', 'צעדים'), true), box('jpE', tr('Study plans', 'תוכניות לימוד'), true), box('jpS', tr('Skills', 'כישורים'), true), box('jpN', tr('Personal notes on steps', 'הערות אישיות על צעדים'), false),
-      h('div', {class: 'actions'},
-        h('button', {type: 'button', class: 'primary', onclick: () => printSummary(summaryText(read(), parts()))}, tr('Save as PDF / print', 'שמירה כ-PDF / הדפסה')),
-        h('button', {type: 'button', onclick: () => shareWithCounselor(summaryText(read(), parts()))}, tr('Share with a counselor', 'שיתוף עם יועץ/ת'))),
-      h('p', {class: 'muted mini'}, tr('Printing opens your device\'s print dialog — choose "Save as PDF" there.', 'ההדפסה פותחת את חלון ההדפסה של המכשיר — שם בוחרים "שמירה כ-PDF".')));
-  }
-  function printSummary(text) {
-    printArea.replaceChildren(h('pre', {dir: he() ? 'rtl' : 'ltr'}, text));
-    window.print();
-  }
-  async function shareWithCounselor(text) {
-    if (!confirm(tr('This creates a text summary with the parts you chose. You decide where to send it. Continue?', 'ייווצר סיכום טקסט עם החלקים שבחרת, ואת/ה מחליט/ה למי לשלוח אותו. להמשיך?'))) return;
-    try { if (navigator.share) { await navigator.share({title: tr('My Journey summary', 'סיכום המסע שלי'), text}); return; } } catch (_) { return; }
-    try { await navigator.clipboard.writeText(text); say(tr('Summary copied. Paste it into a message to your counselor.', 'הסיכום הועתק. אפשר להדביק אותו בהודעה ליועץ/ת.')); }
-    catch (_) { printSummary(text); }
-  }
+  const STATUS_L = {exploring: ['Exploring', 'בבדיקה'], active: ['Active', 'פעילה'], paused: ['Paused', 'מושהה'], achieved: ['Achieved', 'הושגה'],
+    todo: ['To do', 'לביצוע'], doing: ['In progress', 'בתהליך'], done: ['Done', 'בוצע'], preparing: ['Preparing', 'בהכנה'], applied: ['Applied', 'נשלחה בקשה'],
+    enrolled: ['Enrolled', 'רשום/ה'], completed: ['Completed', 'הושלם'], draft: ['Draft', 'טיוטה'], ready: ['Ready', 'מוכן']};
+  const stL = v => { const x = STATUS_L[v]; return x ? tr(x[0], x[1]) : (v || ''); };
+  const fmtD = d => { try { return d ? new Date(d + (d.length === 10 ? 'T12:00:00' : '')).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'short', year: 'numeric'}) : ''; } catch (_) { return d || ''; } };
 
+  async function journeyPdf(p, parts) {
+    if (!window.MomentumPDF) throw new Error(tr('PDF engine not loaded', 'מנוע ה-PDF לא נטען'));
+    const rtl = he(), dir = rtl ? 'rtl' : 'ltr', NAVY = '#1F3A5F', TEAL = '#2E6B8A', GREY = '#5E6873', GREEN = '#2F8A5B';
+    const d = window.MomentumPDF.create({dir, lang: rtl ? 'he' : 'en', title: tr('My Journey', 'המסע שלי'), margin: 50});
+    await d.ready();
+    d.rect(0, d.H - 6, d.W, 6, NAVY);
+    d.space(4);
+    d.text(tr('My Journey — summary', 'המסע שלי — סיכום'), {size: 22, bold: true, color: NAVY, dir});
+    d.space(2);
+    d.text(tr('Created on ', 'הופק בתאריך ') + new Date().toLocaleDateString(rtl ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric'}) + tr(' · prepared on my own device', ' · הוכן במכשיר שלי'), {size: 10, color: GREY, dir});
+    const open = p.actions.filter(a => a.status !== 'done').length, done = p.actions.filter(a => a.status === 'done').length;
+    d.space(6);
+    d.text([tr('Goals: ', 'מטרות: ') + p.goals.length, tr('Open steps: ', 'צעדים פתוחים: ') + open, tr('Done: ', 'בוצעו: ') + done].join('   ·   '), {size: 10.5, color: TEAL, bold: true, dir});
+    d.rule({color: NAVY, width: 1.2, gap: 6});
+    const head = t => { d.keep(56); d.space(8); d.heading(t, {size: 13, color: NAVY, dir, marker: TEAL}); d.rule({color: '#D5DEE7', width: 0.6, gap: 4}); };
+    const body = {size: 10.6, dir, color: '#1C232B', lineHeight: 1.5};
+    const meta = {size: 9.6, dir, color: GREY};
+    let any = false;
+    if (parts.goals && p.goals.length) { any = true; head(tr('Goals', 'מטרות'));
+      p.goals.forEach(g => { d.keep(30); d.twoSided(g.title, stL(g.status) + (g.targetDate ? ' · ' + fmtD(g.targetDate) : ''), {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (g.why && parts.notes) d.text(g.why, meta); d.space(3); }); }
+    if (parts.actions && p.actions.length) { any = true;
+      const sorted = [...p.actions].sort((a, b) => (a.status === 'done') - (b.status === 'done') || String(a.dueDate || '9').localeCompare(String(b.dueDate || '9')));
+      head(tr('Steps', 'צעדים'));
+      sorted.forEach(a => { d.keep(24); d.bullet(a.title + (a.dueDate ? '  —  ' + fmtD(a.dueDate) : '') + '  (' + stL(a.status) + ')', {...body, dotColor: a.status === 'done' ? GREEN : TEAL, color: a.status === 'done' ? GREY : '#1C232B'});
+        if (parts.notes && a.notes) d.text(a.notes.replace(/\s+/g, ' ').slice(0, 300), {...meta, indent: 14}); d.space(1.5); }); }
+    if (parts.education && p.education.length) { any = true; head(tr('Study plans', 'תוכניות לימוד'));
+      p.education.forEach(e => { d.keep(24); d.twoSided(e.title + (e.institution ? ' — ' + e.institution : ''), stL(e.status), {size: 10.8, bold: true, dir, color: '#1C232B', color2: GREY}); d.space(2); }); }
+    if (parts.skills) {
+      const sk = p.skills.filter(x => x.confirmed && x.evidence).map(x => ({n: he() ? (x.he || x.en) : (x.en || x.he), e: x.evidence}));
+      (p.manualSkills || []).forEach(x => sk.push({n: x.name, e: x.evidence}));
+      if (sk.length) { any = true; head(tr('Skills with my own examples', 'כישורים עם דוגמאות שלי'));
+        sk.forEach(x => { d.keep(30); d.text(x.n, {...body, bold: true}); if (x.e) d.text(x.e.replace(/\s+/g, ' ').slice(0, 400), meta); d.space(3); }); }
+    }
+    if (parts.cvs && (p.cvs || []).length) { any = true; head(tr('CV drafts', 'טיוטות קורות חיים'));
+      p.cvs.forEach(c => { d.keep(40); d.twoSided(c.title, stL(c.status), {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (c.summary) d.text(c.summary, body); (c.bullets || []).slice(0, 8).forEach(b => d.bullet(b, {...body, dotColor: TEAL})); d.space(4); }); }
+    if (!any) { d.space(10); d.text(tr('Nothing to show yet in the parts you chose. Add a goal or a step and try again.', 'עדיין אין מה להציג בחלקים שבחרת. אפשר להוסיף מטרה או צעד ולנסות שוב.'), body); }
+    d.space(14); d.rule({color: '#D5DEE7', width: 0.6, gap: 4});
+    d.text(tr('Personal document — you choose who sees it. Not an official record.', 'מסמך אישי — את/ה בוחר/ת מי רואה אותו. זה לא מסמך רשמי.'), {size: 9, color: GREY, dir});
+    return d;
+  }
+  const pdfName = () => tr('My_Journey_', 'המסע_שלי_') + new Date().toISOString().slice(0, 10) + '.pdf';
+
+  function paintTools(p) {
+    const box = (id, label, checked, n) => h('label', {class: 'switch-row jp-part'}, h('input', {type: 'checkbox', id, checked: checked || undefined}), h('span', {}, label), n != null ? h('small', {class: 'jp-count'}, String(n)) : null);
+    const parts = () => ({goals: $('jpG').checked, actions: $('jpA').checked, education: $('jpE').checked, skills: $('jpS').checked, cvs: $('jpC').checked, notes: $('jpN').checked});
+    const status = h('p', {class: 'muted mini', 'aria-live': 'polite'});
+    const run = async (mode) => {
+      status.textContent = tr('Preparing your PDF…', 'מכין את ה-PDF…');
+      try {
+        const doc = await journeyPdf(read(), parts());
+        if (mode === 'share') {
+          const file = new File([doc.build()], pdfName(), {type: 'application/pdf'});
+          if (navigator.canShare && navigator.canShare({files: [file]})) {
+            if (!confirm(tr('You will choose the app and the person. Only the parts you ticked are inside. Continue?', 'את/ה בוחר/ת את האפליקציה ואת האדם. בקובץ יש רק את החלקים שסימנת. להמשיך?'))) { status.textContent = ''; return; }
+            await navigator.share({files: [file], title: tr('My Journey', 'המסע שלי')}); status.textContent = tr('Shared ✓', 'שותף ✓'); return;
+          }
+          doc.download(pdfName()); status.textContent = tr('This device cannot share files directly — the PDF was downloaded. Attach it to an email or WhatsApp to your counselor.', 'המכשיר לא משתף קבצים ישירות — ה-PDF ירד. אפשר לצרף אותו למייל או לוואטסאפ ליועץ/ת.'); return;
+        }
+        doc.download(pdfName()); status.textContent = tr('Your PDF is downloading ✓', 'ה-PDF יורד ✓');
+      } catch (e) { if (e && e.name === 'AbortError') { status.textContent = ''; return; } status.textContent = tr('Could not create the PDF — opening print instead.', 'לא הצלחתי ליצור PDF — פותח הדפסה במקום.'); printSummary(summaryText(read(), parts())); }
+    };
+    tools.replaceChildren(h('h2', {}, tr('Download or share my journey', 'הורדה או שיתוף של המסע שלי')),
+      h('p', {class: 'muted'}, tr('Choose what goes into the PDF. It is created on your phone; nothing is sent automatically.', 'בוחרים מה ייכנס ל-PDF. הוא נוצר בטלפון שלך; שום דבר לא נשלח אוטומטית.')),
+      h('div', {class: 'jp-parts'},
+        box('jpG', tr('Goals', 'מטרות'), true, p.goals.length), box('jpA', tr('Steps', 'צעדים'), true, p.actions.length), box('jpE', tr('Study plans', 'תוכניות לימוד'), true, p.education.length),
+        box('jpS', tr('Skills', 'כישורים'), true, p.skills.filter(x => x.confirmed && x.evidence).length + (p.manualSkills || []).length), box('jpC', tr('CV drafts', 'טיוטות קורות חיים'), false, (p.cvs || []).length),
+        box('jpN', tr('Personal notes', 'הערות אישיות'), false)),
+      h('div', {class: 'actions'},
+        h('button', {type: 'button', class: 'primary', onclick: () => run('download')}, tr('Download PDF', 'הורדת PDF')),
+        h('button', {type: 'button', onclick: () => run('share')}, tr('Send to a counselor', 'שליחה ליועץ/ת'))),
+      status,
+      h('details', {class: 'jp-how'}, h('summary', {}, tr('How does sharing with a counselor work?', 'איך עובד שיתוף עם יועץ/ת?')),
+        h('ol', {}, h('li', {}, tr('Tick only what you want them to see (personal notes are off by default).', 'מסמנים רק מה שרוצים שיראו (הערות אישיות כבויות כברירת מחדל).')),
+          h('li', {}, tr('Press "Send to a counselor" and pick WhatsApp, email or another app.', 'לוחצים "שליחה ליועץ/ת" ובוחרים וואטסאפ, מייל או אפליקציה אחרת.')),
+          h('li', {}, tr('The counselor gets a PDF copy — not access to your app. Your data stays on your phone.', 'היועץ/ת מקבל/ת עותק PDF — לא גישה לאפליקציה. המידע נשאר בטלפון שלך.')),
+          h('li', {}, tr('To move everything to a new phone, use "Backup" below — that file is for you, not for sharing.', 'כדי להעביר הכול לטלפון חדש משתמשים ב"גיבוי" למטה — הקובץ הזה בשבילך, לא לשיתוף.')))));
+  }
   function paintAll() {
     const p = read(); if (!p) return;
     paintTop(p); paintProgress(p); paintCalendar(p); paintLinks(p); paintTools(p); paintManualSkills(p);

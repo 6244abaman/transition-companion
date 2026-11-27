@@ -155,13 +155,15 @@
       W, H, margin,
       async ready() { fonts.regular = await loadFont('regular'); fonts.bold = await loadFont('bold'); newPage(); return api; },
       get y() { return y; }, set y(v) { y = v; },
+      get pageCount() { return pages.length; },
       newPage,
       width: (s, size, bold) => width(s, size || 11, bold ? 'bold' : 'regular'),
       // paragraph with wrapping and page breaks; returns height used
       text(str, o) {
         o = o || {}; if (str === null || str === undefined || str === '') return 0;
         const size = o.size || 11, lh = (o.lineHeight || 1.45) * size, kind = o.bold ? 'bold' : 'regular';
-        const left = o.x !== undefined ? o.x : margin, right = o.right !== undefined ? o.right : W - margin;
+        const ind = o.indent || 0, irtl = o.dir ? o.dir === 'rtl' : rtl;
+        const left = (o.x !== undefined ? o.x : margin) + (irtl ? 0 : ind), right = (o.right !== undefined ? o.right : W - margin) - (irtl ? ind : 0);
         const lines = wrap(String(str), size, kind, right - left);
         lines.forEach(line => { ensure(lh); y -= size; drawLine(line, {...o, y, x: left, right}); y -= lh - size; });
         return lines.length * lh;
