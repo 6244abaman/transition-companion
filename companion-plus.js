@@ -533,7 +533,9 @@
       answer ? h('div', {class: 'plus-qanswer', role: 'status'}, h('strong', {}, answer.question), h('p', {}, answer.answer), btn(tr('All rights & questions', 'כל הזכויות והשאלות'), () => showPage('rights'), 'plus-link')) : null);
   }
 
+  let lastHomeRender = 0;
   function renderHome() {
+    lastHomeRender = performance.now();
     const keepY = (document.scrollingElement || document.documentElement).scrollTop;
     requestAnimationFrame(() => { try { (document.scrollingElement || document.documentElement).scrollTop = keepY; } catch (_) {} });
     plusHome.replaceChildren();
@@ -1420,7 +1422,7 @@
   });
   window.MomentumPlus = {promptContext, showPage, goHome, goChat, prefs: () => ({...P}), renderHome};
   new MutationObserver(paintAll).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
-  new MutationObserver(() => { if (!hub.hidden) { hidePage(); renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});
+  new MutationObserver(() => { if (!hub.hidden) { hidePage(); if (performance.now() - lastHomeRender > 120) renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});
   if ($('chat')) new MutationObserver(() => { if (!$('chat').hidden) { setNav('chat'); decorateTurns(); paintChatHead(); paintSavePill(); paintTools(); } }).observe($('chat'), {attributes: true, attributeFilter: ['hidden']});
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyDisplay);
 
