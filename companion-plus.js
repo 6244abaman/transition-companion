@@ -471,7 +471,11 @@
     const isDone = step && step.status === 'done';
     const row = rowCard('plus-beige plus-today-row' + (isDone ? ' plus-row-done' : ''), isDone ? 'check' : 'bulb', isDone ? tr('Done for today. Nice one.', 'סגרת את היום. יפה.') : tr('Your step for today', 'הצעד שלך להיום'), value, () => { todayOpen = !todayOpen; renderHome(); });
     row.setAttribute('aria-expanded', String(todayOpen));
-    return h('div', {}, row, todayOpen ? todayStepCard() : null);
+    // one tap to mark the step done (or undo), right on the row
+    const check = step ? h('button', {type: 'button', class: 'plus-today-check' + (isDone ? ' on' : ''), 'aria-pressed': String(!!isDone), 'aria-label': isDone ? tr('Mark as not done', 'לסמן כלא בוצע') : tr('Mark as done', 'לסמן שבוצע'), onclick: () => {
+      try { Journey().upsert('actions', {...step, status: isDone ? 'todo' : 'done'}); toast(isDone ? tr('Marked as not done', 'סומן כלא בוצע') : tr('Well done! Step completed ✓', 'כל הכבוד! הצעד הושלם ✓')); } catch (e) { toast(e.message); }
+      todayOpen = false; renderHome(); }}, icon('check')) : null;
+    return h('div', {class: 'plus-today-wrap'}, h('div', {class: 'plus-today-line'}, row, check), todayOpen ? todayStepCard() : null);
   }
 
   /* -------- quick answers as chips -------- */
@@ -540,7 +544,7 @@
     } else {
       const input = h('input', {type: 'text', maxlength: '160', id: 'plusTodayInput', placeholder: tr('e.g. check my grant in the personal area', 'למשל: לבדוק את המענק באזור האישי'), 'aria-label': tr('Small step for today', 'צעד קטן להיום')});
       card.append(h('p', {class: 'plus-muted'}, tr('Something you can do in 15 minutes. Skipping is fine too.', 'משהו שאפשר לעשות ב-15 דקות. גם לדלג זה בסדר.')), input,
-        h('div', {class: 'plus-choices'}, stepIdeas().slice(0, 4).map(idea => btn(idea, () => { input.value = idea; input.focus(); }, 'plus-chip'))),
+        h('div', {class: 'plus-choices'}, stepIdeas().slice(0, 4).map(idea => btn('+ ' + idea, () => { const rec = saveAction(idea, tr('Small step for today', 'צעד קטן להיום'), t); if (rec) { P.todayStep = {date: t, id: rec.id}; store(); toast(tr('Your step for today is set ✓', 'הצעד להיום נקבע ✓')); renderHome(); } }, 'plus-chip'))),
         h('div', {class: 'plus-row'}, btn(tr('Save step', 'שמירת הצעד'), () => {
           const v = input.value.trim(); if (!v) { input.focus(); return; }
           const rec = saveAction(v, tr('Small step for today', 'צעד קטן להיום'), t);

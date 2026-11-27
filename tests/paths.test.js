@@ -56,8 +56,10 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
   await wait(200);
   const w2 = dom2.window, d2 = dom2.window.document;
   check('Reload restores conversation', w2.eval('S.messages.length')===savedMsgs, savedMsgs+' messages restored');
-  check('Reload lands straight in chat, not welcome', d2.getElementById('welcome').hidden===true && d2.getElementById('chat').hidden===false);
-  check('Restored thread actually re-rendered', d2.getElementById('thread').children.length===savedMsgs);
+  // Nov 2026: a returning soldier opens on Home — the chat opens only when they tap it.
+  check('Reload does not open the chat automatically', d2.getElementById('chat').hidden===true);
+  w2.eval('enterChat()');
+  check('Restored thread re-renders when the chat is opened', d2.getElementById('thread').children.length===savedMsgs);
 
   // ---------- CONCERN -> SUPPORT ESCALATION ----------
   const dom3 = boot();

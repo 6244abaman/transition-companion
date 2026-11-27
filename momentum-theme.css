@@ -638,3 +638,16 @@ html[data-motion="reduce"] .sim-ai-dot { animation:none; }
 .sim-mine-box > small, .sim-mine-box > summary { color:var(--text-3);font-weight:700;cursor:pointer; }
 .sim-mine-box p { margin:6px 0 0;line-height:1.6; }
 .sim-loading-big { justify-content:center;min-height:180px;font-size:16px; }
+/* closed drawer: off-screen AND out of the tab order / screen readers */
+.drawer:not(.on) { visibility:hidden; transition:transform .25s ease, visibility 0s linear .25s; }
+.drawer.on { visibility:visible; transition:transform .25s ease; }
+.plus-today-line { display:flex;align-items:stretch;gap:8px; }
+.plus-today-line > .plus-row-card { flex:1;min-width:0; }
+.plus-today-check { flex:0 0 auto;width:58px;border-radius:18px;border:2px solid var(--border-strong);background:var(--surface);color:var(--text-3);display:grid;place-items:center;cursor:pointer; }
+.plus-today-check .plus-ico { width:26px;height:26px;display:inline-flex; }
+.plus-today-check.on { background:#2F8A5B;border-color:#2F8A5B;color:#fff; }
+/* EN fixes: amounts read left-to-right; calculator fields never overflow */
+[dir="ltr"] .plus-sum-amount, html[dir="ltr"] .plus-sum-amount { direction:ltr; }
+.plus-sum-fields { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; }
+.plus-sum-fields label { min-width:0; }
+.plus-sum-fields select, .plus-sum-fields input { width:100%;min-width:0;box-sizing:border-box; }

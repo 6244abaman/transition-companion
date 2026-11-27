@@ -501,7 +501,7 @@ html[dir="rtl"] .turn.them{border-radius:22px 22px 5px 22px}
 <!-- ============ DRAWER ============ -->
 <div class="veil" id="veil"></div>
 <aside class="drawer" id="drawer">
-  <div class="dhead"><h2 id="dTitle"></h2><button class="chip" id="btnClose">✕</button></div>
+  <div class="dhead"><h2 id="dTitle"></h2><button class="chip" id="btnClose" aria-label="סגירה">✕</button></div>
   <div class="dbody" id="dBody"></div>
 </aside>
 
@@ -2143,7 +2143,8 @@ function stopSpeaking(){ if (window.speechSynthesis) window.speechSynthesis.canc
 $("btnVoice").classList.toggle("on", !!S.speak);
 document.querySelectorAll(".choice").forEach(b => b.classList.toggle("on", b.dataset.mode === S.mode));
 paintStatic();
-if (S.started){ enterChat(); if(!S.messages.length) openConversation(); }
+// Boot never opens the chat automatically: new users get onboarding, returning users get the home screen (companion-plus.js). The chat opens only from the chat button / "Talk with the Companion".
+if (S.started) renderThread(); // prepare the saved conversation silently; the chat screen stays hidden
 </script>
 <script>
 /* Topics use the existing conversation and never send a request without Send. */
