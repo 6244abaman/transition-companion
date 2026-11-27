@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v45-splash-first";
+const CACHE = "tc-v46-fast-taps";
 const APP_FILES = [
   "./",
   "./index.html",

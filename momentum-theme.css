@@ -771,3 +771,9 @@ html[data-theme="dark"] .plus-wiz .plus-wiz-title { color:#E8EFE9; } html[data-t
 html[data-theme="dark"] .plus-wiz .plus-wiz-choice, html[data-theme="dark"] .plus-wiz .plus-wiz-row, html[data-theme="dark"] .plus-wiz .plus-wiz-chip, html[data-theme="dark"] .plus-wiz input { background:#1A221D;border-color:#2B362F;color:#E8EFE9; }
 html[data-theme="dark"] .plus-wiz .plus-wiz-choice.is-on { background:#1C2E24; } html[data-theme="dark"] .plus-wiz .plus-wiz-nav { background:linear-gradient(transparent,#121814 35%); }
 html[data-theme="dark"] .plus-wiz .plus-wiz-next { background:#9CC7AE !important;border-color:#9CC7AE !important;color:#10201A !important; }
+
+/* Instant tap feedback, no blue flash (27 Nov 2026) */
+html { -webkit-tap-highlight-color:transparent; }
+:focus:not(:focus-visible) { outline:none; }
+button, a, [role="button"] { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+button:active, a.plus-btn:active, .plus-slim:active, .plus-kit:active, .plus-tile:active { transform:scale(.97); transition:transform .06s; }
