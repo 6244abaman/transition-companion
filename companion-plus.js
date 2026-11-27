@@ -16,7 +16,7 @@
   const edition = () => (typeof KEY !== 'undefined' && KEY === 'gtc_H_state') ? 'he' : 'en';
 
   /* ---------------- preferences (local only) ---------------- */
-  const DEFAULTS = {v: 1, onboarded: false, dischargeMonth: '', notDischarged: false, service: '', lone: false,
+  const DEFAULTS = {v: 1, name: '', onboarded: false, dischargeMonth: '', notDischarged: false, service: '', lone: false,
     reservist: false, monthsServed: '', pressing: '', hidden: [], theme: 'light', textSize: 'normal', reduceMotion: false,
     infoOnly: false, moods: [], days: [], backupRemindedAt: '', seenVersion: '', todayStep: null, chatMode: ''};
   function load() {
@@ -146,7 +146,7 @@
   function estimateCard() {
     if (!P.service) return h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('How much might I get?', 'כמה אולי מגיע לי?')),
       h('p', {}, tr('Tell me your service type to see an estimate of the grant and tax points.', 'ספר לי מה סוג השירות שלך כדי לראות הערכה של המענק ונקודות הזיכוי.')),
-      btn(tr('Fill in 3 quick answers', 'למילוי 3 תשובות קצרות'), () => showPage('onboarding'), 'plus-btn'));
+      btn(tr('Tell me a bit about you', 'לספר לי קצת עליך'), () => showPage('onboarding'), 'plus-btn'));
     return h('div', {class: 'plus-card plus-estimate'}, h('h2', {}, tr('Your estimate', 'ההערכה שלך') + ' · ' + (KB.SERVICE_LABEL[P.service] || '')),
       estimateBlock(P.service, P.monthsServed), h('div', {class: 'plus-row'}, btn(tr('Calculator & details', 'מחשבון ופרטים'), () => showPage('money'), 'plus-link')));
   }
@@ -172,7 +172,7 @@
     studies: {icon: 'compass', title: ['Studies', 'לימודים']}, travel: {icon: 'compass', title: ['Travel', 'טיולים ונסיעות']},
     family: {icon: 'talk', title: ['Relationships & family', 'מערכות יחסים ומשפחה']}, feel: {icon: 'talk', title: ['How I feel', 'איך אני מרגיש']},
     distress: {icon: 'heart', title: ['Human help', 'עזרה אנושית']}, help: {icon: 'person', title: ['Me', 'אישי']},
-    onboarding: {icon: 'person', title: ['My details', 'הפרטים שלי']}, interview: {icon: 'briefcase', title: ['Job interview', 'ראיון עבודה']}
+    onboarding: {icon: 'person', title: ['Getting to know you', 'היכרות קצרה']}, interview: {icon: 'briefcase', title: ['Job interview', 'ראיון עבודה']}
   };
 
   /* ================================================================
@@ -434,7 +434,7 @@
     plusHome.dir = he() ? 'rtl' : 'ltr';
     $('plusLegacySummary').textContent = tr('More options', 'אפשרויות נוספות');
     plusHome.append(
-      h('h1', {id: 'plusHomeTitle', class: 'plus-hello'}, tr('Hello', 'שלום') + ' 👋'),
+      h('h1', {id: 'plusHomeTitle', class: 'plus-hello'}, tr('Hello', 'שלום') + (P.name ? ' ' + P.name : '') + ' 👋'),
       h('p', {class: 'plus-hello-sub'}, tr('How are you feeling today?', 'איך אתה מרגיש היום?')),
       moodRow()
     );
@@ -887,43 +887,85 @@
   }
 
   /* ---------------- onboarding (first visit only, all skippable) ---------------- */
+  // Welcome wizard (27 Nov 2026): one friendly question per screen, big illustrated choices, skip anytime.
   function onboardingForm() {
-    const radio = (name, value, label, checked) => h('label', {class: 'plus-choice'}, h('input', {type: 'radio', name, value, checked: checked || undefined}), h('span', {}, label));
-    const box = (id, label, checked) => h('label', {class: 'plus-choice'}, h('input', {type: 'checkbox', id, checked: checked || undefined}), h('span', {}, label));
-    const month = h('input', {type: 'month', id: 'plusDischarge', value: P.dischargeMonth || '', max: todayStr().slice(0, 7), 'aria-label': tr('Discharge month', 'חודש השחרור')});
-    const form = h('form', {class: 'plus-onboarding', onsubmit: e => { e.preventDefault(); finish(); }},
-      h('h1', {class: 'plus-title'}, tr('Three quick questions', 'שלוש שאלות קצרות')),
-      h('p', {class: 'plus-muted'}, tr('So I can show what is relevant to you. Saved only on this device. You can skip anything.', 'כדי שאוכל להראות לך מה רלוונטי. נשמר רק במכשיר הזה. אפשר לדלג על כל שאלה.')),
-      btn(tr('Skip — take me home', 'דילוג — ישר למסך הבית'), skip, 'plus-skip'),
-      h('fieldset', {}, h('legend', {}, tr('1. When were you discharged?', '1. מתי השתחררת?')), month, box('plusNotYet', tr("I haven't been discharged yet", 'עוד לא השתחררתי'), P.notDischarged)),
-      h('fieldset', {}, h('legend', {}, tr('2. Type of service', '2. סוג שירות')),
-        radio('service', 'combat', tr('Combat', 'לוחם/ת'), P.service === 'combat'), radio('service', 'support', tr('Combat support', 'תומך/ת לחימה'), P.service === 'support'),
-        radio('service', 'other', tr('Other', 'אחר'), P.service === 'other'), radio('service', 'national', tr('National service', 'שירות לאומי'), P.service === 'national'), radio('service', 'civ_mid', tr('Civilian track (intermediate)', 'מסלול אזרחי ביניים'), P.service === 'civ_mid'), radio('service', 'civ_split', tr('Civilian track (split)', 'מסלול אזרחי מפוצל'), P.service === 'civ_split'),
-        h('label', {class: 'plus-field'}, h('span', {}, tr('Months of service (optional, for an estimate)', 'כמה חודשים שירתת? (רשות, להערכת המענק)')),
-          h('input', {type: 'number', id: 'plusMonths', min: '1', max: '60', inputmode: 'numeric', value: P.monthsServed || '', class: 'plus-small-input'})),
-        h('div', {class: 'plus-choices'}, radio('gender', 'm', tr('Male soldier', 'חייל'), P.gender === 'm'), radio('gender', 'f', tr('Female soldier', 'חיילת'), P.gender === 'f')),
-        box('plusLone', tr('I am / was a lone soldier', 'אני חייל/ת בודד/ה'), P.lone), box('plusReservist', tr('I serve in the reserves', 'אני משרת/ת במילואים'), P.reservist)),
-      h('fieldset', {}, h('legend', {}, tr('3. What weighs on you most right now?', '3. מה הכי מעיק עליך עכשיו?')),
-        ...[['money', tr('Money', 'כסף')], ['rights', tr('Rights & benefits', 'זכויות והטבות')], ['work', tr('Work', 'עבודה')], ['studies', tr('Studies', 'לימודים')], ['feelings', tr('How I feel', 'איך אני מרגיש')], ['unsure', tr("I don't know", 'לא יודע')]]
-          .map(([v, l]) => radio('pressing', v, l, P.pressing === v))),
-      h('div', {class: 'plus-row'}, h('button', {type: 'submit', class: 'plus-btn primary'}, tr('Done', 'סיום'))), btn(tr('Skip', 'דילוג'), skip, 'plus-skip'));
-    function skip() { if (!P.onboarded && !S.started) P.seenVersion = VERSION; P.onboarded = true; store(); goHome(); }
+    const D = {name: P.name || '', notYet: !!P.notDischarged, month: P.dischargeMonth || '', service: P.service || '', gender: P.gender || '', months: P.monthsServed || '', lone: !!P.lone, reservist: !!P.reservist, pressing: P.pressing || ''};
+    let step = 0;
+    const STEPS = 4;
+    const wrap = h('div', {class: 'plus-onboarding plus-wiz'});
+    const choice = (group, value, label, ill, sub) => {
+      const on = D[group] === value;
+      return h('button', {type: 'button', class: 'plus-wiz-choice' + (on ? ' is-on' : ''), 'aria-pressed': String(on), 'data-value': value, onclick: () => { D[group] = on ? '' : value; paint(); }},
+        ill ? illu(ill, 46, 'plus-wiz-ill') : null, h('strong', {}, label), sub ? h('small', {}, sub) : null);
+    };
+    const chip = (key, label) => h('button', {type: 'button', class: 'plus-wiz-chip' + (D[key] ? ' is-on' : ''), 'aria-pressed': String(!!D[key]), onclick: () => { D[key] = !D[key]; paint(); }}, (D[key] ? '✓ ' : '') + label);
+    const dots = () => h('div', {class: 'plus-wiz-dots', 'aria-label': tr('Step ' + (step + 1) + ' of ' + STEPS, 'שלב ' + (step + 1) + ' מתוך ' + STEPS)}, Array.from({length: STEPS}, (_, k) => h('i', {class: k === step ? 'on' : k < step ? 'done' : ''})));
+    const nav = (nextLabel) => h('div', {class: 'plus-wiz-nav'},
+      step > 0 ? btn(tr('Back', 'חזרה'), () => { step--; paint(); }, 'plus-wiz-back') : h('span'),
+      h('button', {type: 'button', class: 'plus-btn primary plus-wiz-next', onclick: () => { if (step < STEPS - 1) { step++; paint(); } else finish(); }}, nextLabel || tr('Next', 'הבא')));
+    function screen() {
+      if (step === 0) {
+        const name = h('input', {type: 'text', id: 'plusName', maxlength: '30', autocomplete: 'given-name', value: D.name, placeholder: tr('Your first name (optional)', 'השם הפרטי שלך (לא חובה)'), 'aria-label': tr('First name', 'שם פרטי')});
+        name.addEventListener('input', () => { D.name = name.value.trim(); greet.textContent = D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : ''; });
+        name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); step++; paint(); } });
+        const greet = h('p', {class: 'plus-wiz-greet', 'aria-live': 'polite'}, D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : '');
+        return [illu('map', 92, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('Hi! I\'m your Companion 👋', 'היי! אני המלווה שלך 👋')),
+          h('p', {class: 'plus-wiz-sub'}, tr('A few quick taps and I\'ll show what is relevant to you. Everything stays on this phone.', 'כמה לחיצות קצרות ואראה לך מה רלוונטי בשבילך. הכול נשמר רק בטלפון הזה.')),
+          h('label', {class: 'plus-wiz-label', for: 'plusName'}, tr('What should I call you?', 'איך לקרוא לך?')), name, greet, nav(tr('Let\'s start', 'יאללה, מתחילים'))];
+      }
+      if (step === 1) {
+        const month = h('input', {type: 'month', id: 'plusDischarge', value: D.month, max: todayStr().slice(0, 7), 'aria-label': tr('Discharge month', 'חודש השחרור'), disabled: D.notYet || undefined});
+        month.addEventListener('change', () => { D.month = month.value; });
+        return [illu('calendar', 76, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('When were you discharged?', 'מתי השתחררת?')),
+          h('p', {class: 'plus-wiz-sub'}, tr('So I can remind you of the right dates.', 'כדי שאוכל להזכיר לך את המועדים הנכונים.')),
+          month, h('div', {class: 'plus-wiz-chips'}, chip('notYet', tr('Not discharged yet', 'עוד לא השתחררתי'))), nav()];
+      }
+      if (step === 2) {
+        const months = h('input', {type: 'number', id: 'plusMonths', min: '1', max: '60', inputmode: 'numeric', value: D.months, placeholder: '32', 'aria-label': tr('Months of service', 'חודשי שירות')});
+        months.addEventListener('input', () => { D.months = months.value; });
+        const step2 = d => () => { const v = Math.min(60, Math.max(1, (Number(months.value) || 0) + d)); months.value = v; D.months = v; };
+        return [h('h1', {class: 'plus-wiz-title'}, tr('How did you serve?', 'איך שירתת?')),
+          h('div', {class: 'plus-wiz-grid'}, choice('service', 'combat', tr('Combat', 'לוחם/ת'), 'shield'), choice('service', 'support', tr('Combat support', 'תומך/ת לחימה'), 'briefcase'),
+            choice('service', 'other', tr('Other / rear', 'אחר / עורפי'), 'house'), choice('service', 'national', tr('National service', 'שירות לאומי'), 'users')),
+          h('div', {class: 'plus-wiz-chips'}, h('button', {type: 'button', class: 'plus-wiz-chip' + (D.service === 'civ_mid' ? ' is-on' : ''), onclick: () => { D.service = 'civ_mid'; paint(); }}, tr('Civilian track (intermediate)', 'מסלול אזרחי ביניים')),
+            h('button', {type: 'button', class: 'plus-wiz-chip' + (D.service === 'civ_split' ? ' is-on' : ''), onclick: () => { D.service = 'civ_split'; paint(); }}, tr('Civilian track (split)', 'מסלול אזרחי מפוצל'))),
+          h('div', {class: 'plus-wiz-row'}, h('span', {class: 'plus-wiz-label'}, tr('I am a', 'אני')),
+            h('div', {class: 'plus-wiz-seg'}, ['m', 'f'].map(g => h('button', {type: 'button', class: D.gender === g ? 'is-on' : '', 'aria-pressed': String(D.gender === g), onclick: () => { D.gender = g; paint(); }}, g === 'm' ? tr('male soldier', 'חייל') : tr('female soldier', 'חיילת'))))),
+          h('div', {class: 'plus-wiz-row'}, h('span', {class: 'plus-wiz-label'}, tr('Months served', 'כמה חודשים שירתת?')),
+            h('div', {class: 'plus-wiz-stepper'}, btn('−', step2(-1), 'plus-wiz-pm'), months, btn('+', step2(1), 'plus-wiz-pm'))),
+          h('div', {class: 'plus-wiz-chips'}, chip('lone', tr('Lone soldier', 'חייל/ת בודד/ה')), chip('reservist', tr('Reservist', 'משרת/ת מילואים'))), nav()];
+      }
+      return [h('h1', {class: 'plus-wiz-title'}, tr('What would help you most right now?', 'מה הכי יעזור לך עכשיו?')),
+        h('div', {class: 'plus-wiz-grid'}, choice('pressing', 'money', tr('Money', 'כסף'), 'piggy'), choice('pressing', 'rights', tr('My rights', 'מה מגיע לי'), 'wallet'),
+          choice('pressing', 'work', tr('Work', 'עבודה'), 'briefcase'), choice('pressing', 'studies', tr('Studies', 'לימודים'), 'cap'),
+          choice('pressing', 'feelings', tr('How I feel', 'איך אני מרגיש'), 'heart'), choice('pressing', 'unsure', tr('Not sure yet', 'עוד לא יודע'), 'compass')),
+        nav(tr('Done — let\'s go! 🎉', 'סיימתי — יאללה! 🎉'))];
+    }
+    function paint() {
+      wrap.replaceChildren(
+        h('div', {class: 'plus-wiz-top'}, dots(), btn(tr('Skip', 'דילוג'), skip, 'plus-skip')),
+        h('div', {class: 'plus-wiz-body', 'data-step': String(step)}, ...screen()));
+      const first = wrap.querySelector('.plus-wiz-body input:not([disabled]), .plus-wiz-body .plus-wiz-choice');
+      if (first && step > 0 && matchMedia('(pointer: fine)').matches) first.focus({preventScroll: true});
+    }
+    function skip() { if (!P.onboarded && !S.started) P.seenVersion = VERSION; P.onboarded = true; if (D.name) P.name = D.name; store(); goHome(); }
     function finish() {
-      const val = n => (form.querySelector('input[name="' + n + '"]:checked') || {}).value || '';
-      P.notDischarged = $('plusNotYet').checked;
-      P.dischargeMonth = P.notDischarged ? '' : (/^\d{4}-\d{2}$/.test(month.value) ? month.value : '');
-      P.service = val('service'); P.pressing = val('pressing'); P.gender = val('gender') || P.gender || '';
-      P.lone = $('plusLone').checked; P.reservist = $('plusReservist').checked;
-      const ms = Number($('plusMonths').value); P.monthsServed = Number.isInteger(ms) && ms > 0 && ms <= 60 ? ms : '';
-      if (!P.onboarded && !S.started) P.seenVersion = VERSION; // brand-new users do not need "what's new"
+      P.name = (D.name || '').slice(0, 30);
+      P.notDischarged = D.notYet;
+      P.dischargeMonth = D.notYet ? '' : (/^\d{4}-\d{2}$/.test(D.month) ? D.month : '');
+      P.service = D.service; P.pressing = D.pressing; P.gender = D.gender || P.gender || '';
+      P.lone = D.lone; P.reservist = D.reservist;
+      const ms = Number(D.months); P.monthsServed = Number.isInteger(ms) && ms > 0 && ms <= 60 ? ms : '';
+      if (!P.onboarded && !S.started) P.seenVersion = VERSION;
       P.onboarded = true; store();
       try { S.profile.background = {...(S.profile.background || {}), serviceType: P.service, reserve: P.reservist || !!(S.profile.background || {}).reserve}; save(); } catch (_) {}
-      toast(tr('Saved ✓', 'נשמר ✓'));
+      toast(P.name ? tr('Great, ' + P.name + ' ✓', 'מעולה, ' + P.name + ' ✓') : tr('Saved ✓', 'נשמר ✓'));
       if (P.pressing === 'feelings') showPage('feel'); else if (P.pressing === 'money') showPage('money');
       else if (P.pressing === 'rights') showPage('rights'); else if (P.pressing === 'studies') showPage('studies');
       else if (P.pressing === 'work') showPage('work'); else goHome();
     }
-    return form;
+    paint();
+    return wrap;
   }
 
   /* ---------------- help & settings ---------------- */
@@ -941,7 +983,7 @@
       h('p', {}, h('a', {class: 'plus-btn', href: edition() === 'he' ? './index.html#home' : './indexH.html#home'}, edition() === 'he' ? 'English' : 'עברית'),
         ' ', h('small', {class: 'plus-muted'}, tr('Each language keeps its own conversations.', 'לכל שפה יש היסטוריית שיחות משלה.')))));
     // My details
-    put(wrap, section(tr('My details', 'הפרטים שלי'), personalBanner(), btn(tr('Edit my 3 answers', 'עריכת 3 התשובות'), () => showPage('onboarding'), 'plus-btn')));
+    put(wrap, section(tr('My details', 'הפרטים שלי'), personalBanner(), btn(tr('Edit my details', 'עריכת הפרטים שלי'), () => showPage('onboarding'), 'plus-btn')));
     // Privacy (short)
     put(wrap, section(tr('Privacy in short', 'פרטיות בקצרה'), list(he()
       ? ['הכול נשמר רק בדפדפן במכשיר הזה.', 'הודעות נשלחות ל-AI חיצוני רק אחרי שאישרת, ואפשר לבטל בכל רגע.', 'פרטי המסע נשלחים ל-AI רק אם הפעלת זאת בהגדרות המסע.', 'אפשר לייצא, לגבות או למחוק הכול.']
