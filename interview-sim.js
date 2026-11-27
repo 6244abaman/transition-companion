@@ -50,30 +50,94 @@
     const TRACKS = [['general', 'Any job', 'כל עבודה', 'briefcase'], ['operations', 'Operations & logistics', 'תפעול ולוגיסטיקה', 'checklist'], ['service', 'Service & sales', 'שירות ומכירות', 'talk'],
       ['security', 'Security & safety', 'אבטחה ובטיחות', 'shield'], ['tech', 'Technical & IT', 'טכני ומחשבים', 'phonecheck'], ['studies', 'Studies interview', 'ראיון ללימודים', 'cap']];
 
-    /* ---------- local feedback: the common mistakes ---------- */
+    /* ---------- question types: each one has its own structure and checks ---------- */
+    const KIND_BY_TEXT = {
+      'Tell me about yourself.': 'intro', 'What did you do in the army, and what did you learn there?': 'army', 'Tell me about a difficult situation and how you handled it.': 'story',
+      'Why do you want this job?': 'motivation', 'What is a weakness of yours?': 'weakness', 'Where do you see yourself in a year?': 'future', 'Tell me about a time you worked in a team.': 'story',
+      'Do you have any questions for us?': 'ask', 'How do you handle many tasks at the same time?': 'method', 'Tell me about a time something went wrong in a plan. What did you do?': 'story',
+      'How do you make sure work is done accurately?': 'method', 'Tell me about an angry customer or person you had to calm down.': 'story', 'What does good service mean to you?': 'method',
+      'How do you handle a target you are not reaching?': 'method', 'How do you stay alert during long shifts?': 'method', 'Tell me about a time you had to follow a procedure strictly.': 'story',
+      'What would you do if a colleague broke a safety rule?': 'hypo', 'Tell me about a technical problem you solved.': 'story', 'How do you learn a new system or tool?': 'method',
+      'How do you explain a technical issue to someone who is not technical?': 'method', 'Why did you choose this field of study?': 'motivation', 'How will you manage studies alongside work?': 'method',
+      'What did your service give you that will help you study?': 'army'};
+    const kindOf = q => q.kind || KIND_BY_TEXT[q.en] || 'story';
+    const PLAN = {
+      intro: [['Who I am, in a few words (where from, what I do now)', 'מי אני בכמה מילים (מאיפה, מה אני עושה עכשיו)'], ['What I did in service — in civilian words', 'מה עשיתי בשירות — במילים אזרחיות'], ['One example I am proud of', 'דוגמה אחת שאני גאה בה'], ['What I am looking for now, and why here', 'מה אני מחפש עכשיו, ולמה כאן']],
+      army: [['My role, in civilian words', 'התפקיד שלי, במילים אזרחיות'], ['What I was responsible for (a number if true)', 'על מה הייתי אחראי (מספר, אם נכון)'], ['One thing I learned', 'דבר אחד שלמדתי'], ['How it helps in this job', 'איך זה עוזר בעבודה הזו']],
+      story: [['The situation — one sentence', 'המצב — משפט אחד'], ['What I did (I, not we)', 'מה אני עשיתי (אני, לא אנחנו)'], ['What came out of it', 'מה יצא מזה'], ['What I learned', 'מה למדתי']],
+      motivation: [['What attracts me to this role or field', 'מה מושך אותי בתפקיד או בתחום'], ['A strength of mine that fits', 'חוזקה שלי שמתאימה'], ['An example that shows it', 'דוגמה שמראה את זה']],
+      weakness: [['A real weakness (not "perfectionist")', 'חולשה אמיתית (לא "פרפקציוניסט")'], ['A short example', 'דוגמה קצרה'], ['What I do to improve it', 'מה אני עושה כדי להשתפר']],
+      future: [['What I want to learn this year', 'מה אני רוצה ללמוד השנה'], ['How I want to grow here', 'איך אני רוצה להתקדם כאן']],
+      ask: [['A question about the role or training', 'שאלה על התפקיד או ההכשרה'], ['A question about the team or what success looks like', 'שאלה על הצוות או איך נראית הצלחה']],
+      method: [['My method — the steps', 'השיטה שלי — הצעדים'], ['An example from service or life', 'דוגמה מהשירות או מהחיים'], ['The result', 'התוצאה']],
+      hypo: [['What I would do first', 'מה הייתי עושה קודם'], ['How I would talk to the person', 'איך הייתי מדבר עם האדם'], ['Why — the principle', 'למה — העיקרון']]
+    };
+    const LEN = {ask: [8, 70], future: [18, 120], weakness: [25, 150]};
+
+    /* ---------- word lists (Hebrew prefixes ו/ב/ל/ה/מ/ש/כ handled) ---------- */
     const words = t => (String(t).match(/[\p{L}\p{N}"'׳״-]+/gu) || []);
     const esc = w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const has = (t, list) => list.filter(w => new RegExp('(^|[^\\p{L}])' + (/[\u0590-\u05FF]/.test(w) ? '[ובלהמשכ]{0,2}' : '') + esc(w) + '(?![\\p{L}])', 'iu').test(t));
-    const JARGON = ['מ"כ', 'מ"מ', 'מ"פ', 'סמ"ל', 'רס"ר', 'קשר"ג', 'ש"ג', 'תש"ש', 'חפ"ק', 'שמ"פ', 'פלוגה', 'גדוד', 'חטיבה', 'מחלקה', 'מבצעי', 'מבצעית', 'שמירות', 'תרגילים', 'platoon', 'battalion', 'squad', 'company commander'];
-    const WE = ['אנחנו', 'היינו', 'עשינו', 'הלכנו', 'עבדנו', 'ניהלנו', 'שלנו', 'we', 'our', 'us'];
-    const I = ['אני', 'הייתי', 'עשיתי', 'הובלתי', 'ניהלתי', 'החלטתי', 'למדתי', 'הצלחתי', 'שלי', 'I', 'my', 'me'];
+    const rx = (w, g) => new RegExp('(^|[^\\p{L}])(' + (/[֐-׿]/.test(w) ? '[ובלהמשכ]{0,2}' : '') + esc(w) + ')(?![\\p{L}])', 'iu' + (g ? 'g' : ''));
+    const has = (t, list) => list.filter(w => rx(w).test(t));
+    const CIV = {'מ"כ': 'ראש צוות', 'מ"מ': 'מנהל צוות', 'מ"פ': 'מנהל יחידה', 'סמ"ל': 'סגן ראש צוות', 'רס"ר': 'אחראי לוגיסטיקה ומשמעת', 'קשר"ג': 'אחראי תקשורת', 'ש"ג': 'בקרת כניסה',
+      'תש"ש': 'רווחת עובדים', 'חפ"ק': 'צוות ניהול שטח', 'שמ"פ': 'יחידת מילואים', 'פלוגה': 'יחידה', 'גדוד': 'ארגון של מאות אנשים', 'חטיבה': 'ארגון גדול', 'מחלקה': 'צוות', 'מבצעי': 'תפעולי', 'מבצעית': 'תפעולית',
+      'שמירות': 'משמרות אבטחה', 'תרגילים': 'אימונים מעשיים', 'כיתה': 'צוות', platoon: 'team', battalion: 'organisation of several hundred people', squad: 'team', 'company commander': 'unit manager', 'guard duty': 'security shifts', drills: 'hands-on training'};
+    const JARGON = Object.keys(CIV);
+    const WE = ['אנחנו', 'היינו', 'עשינו', 'הלכנו', 'עבדנו', 'ניהלנו', 'החלטנו', 'הצלחנו', 'שלנו', 'we', 'our', 'us'];
+    const I = ['אני', 'הייתי', 'עשיתי', 'הובלתי', 'ניהלתי', 'החלטתי', 'למדתי', 'הצלחתי', 'ארגנתי', 'דאגתי', 'שלי', 'I', 'my', 'me'];
     const RANK = ['סמל', 'סמ"ר', 'רב"ט', 'רס"ל', 'סגן', 'סרן', 'רס"ן', 'sergeant', 'corporal', 'lieutenant', 'captain'];
     const FORMAL = ['הנני', 'הריני', 'לפיכך', 'על כן', 'הנ"ל', 'בברכה', 'hereby', 'therefore', 'aforementioned'];
-    const VAGUE = ['דברים', 'כל מיני', 'וכו', 'וכו\'', 'בערך', 'משהו כזה', 'כאילו', 'stuff', 'things', 'etc', 'kind of', 'sort of'];
-    function analyse(ans) {
-      const t = String(ans || '').trim(), n = words(t).length, out = [];
-      const add = (ok, en, he_, fix_en, fix_he) => out.push({ok, text: tr(en, he_), fix: ok ? '' : tr(fix_en, fix_he)});
-      add(n >= 30 && n <= 170, 'Length', 'אורך', n < 30 ? 'Too short — add one concrete example (aim for 40–120 words).' : 'Too long — keep to about one minute (40–120 words).', n < 30 ? 'קצר מדי — להוסיף דוגמה אחת מוחשית (בערך 40–120 מילים).' : 'ארוך מדי — לשמור על בערך דקה (40–120 מילים).');
-      const j = has(t, JARGON); add(!j.length, 'No military jargon', 'בלי ז׳רגון צבאי', 'Replace: ' + j.join(', ') + ' — say it in civilian words.', 'להחליף: ' + j.join(', ') + ' — במילים אזרחיות.');
-      const we = has(t, WE).length, me = has(t, I).length; add(!(we > 1 && we > me), 'Your part ("I", not only "we")', 'החלק שלך ("אני", לא רק "אנחנו")', 'Say what YOU did: "I organised…", "I decided…".', 'להגיד מה אתה עשית: "אני ארגנתי…", "אני החלטתי…".');
-      add(/\d/.test(t), 'A number or fact', 'מספר או עובדה', 'Add one real number: people, hours, how often, a result (only if true).', 'להוסיף מספר אמיתי אחד: אנשים, שעות, כמה פעמים, תוצאה (רק אם נכון).');
-      const firstWords = t.split(/\s+/).slice(0, 8).join(' '); add(!has(firstWords, RANK).length, 'Start with you, not your rank', 'פותחים בך, לא בדרגה', 'Open with what you did; the rank (if at all) at the end.', 'לפתוח במה שעשית; הדרגה (אם בכלל) בסוף.');
-      add(!has(t, FORMAL).length, 'Natural tone', 'טון טבעי', 'Too formal — talk like you would to a respected person, not a letter.', 'רשמי מדי — לדבר כמו לאדם מכובד, לא כמו במכתב.');
-      const v = has(t, VAGUE); add(!v.length, 'Specific', 'ספציפי', 'Vague words (' + v.join(', ') + ') — replace with what actually happened.', 'מילים כלליות (' + v.join(', ') + ') — להחליף במה שקרה בפועל.');
-      const result = /(בסוף|התוצאה|הצלחנו|הצלחתי|למדתי|השתפר|in the end|result|learned|improved|managed to)/i.test(t);
-      add(result, 'Ends with a result', 'מסתיים בתוצאה', 'Finish with what came out of it or what you learned.', 'לסיים במה שיצא מזה או מה שלמדת.');
-      const score = out.filter(x => x.ok).length;
-      return {n, items: out, score, max: out.length};
+    const VAGUE = ['דברים', 'כל מיני', 'וכו', 'בערך', 'משהו כזה', 'כאילו', 'stuff', 'things', 'etc', 'kind of', 'sort of'];
+    const CLICHE = ['פרפקציוניסט', 'פרפקציוניסטית', 'עובד יותר מדי', 'עובדת יותר מדי', 'אכפתי מדי', 'perfectionist', 'work too hard', 'care too much'];
+    const T = {
+      result: /(בסוף|התוצאה|הצלחנו|הצלחתי|למדתי|השתפר|שיפרתי|הבנתי|in the end|result|learned|improved|managed to|realised|realized)/i,
+      action: /(אני\s|הובלתי|ארגנתי|החלטתי|דאגתי|דיברתי|בדקתי|פתרתי|תכננתי|ישבתי|הסברתי|I\s(led|organi[sz]ed|decided|made sure|talked|checked|solved|planned|explained))/i,
+      goal: /(מחפש|מחפשת|רוצה|מעוניין|מעוניינת|שואף|looking for|want|would like|hope)/i,
+      company: /(התפקיד|החברה|המקום|הצוות|התחום|אצלכם|כאן|the role|this job|your company|the team|here|this field)/i,
+      money: /(כסף|משכורת|שכר|salary|money|pay)/i,
+      improve: /(משתפר|משתפרת|לומד|לומדת|עובד על|עובדת על|עובד עם|עובדת עם|מתרגל|מתרגלת|שיפרתי|מבקש|מבקשת|ביקשתי|עזרה|רשימ|תזכורת|יומן|משוב|מקפיד|מקפידה|היום אני|improv|working on|practis|practic|learning|I now|these days I|ask for)/i,
+      steps: /(קודם|אחר כך|ואז|בהתחלה|רשימה|סדר עדיפויות|שלב|first|then|after that|list|priorit|step)/i,
+      would: /(הייתי|הייתה|I would|I'd)/i,
+      learn: /(ללמוד|להתקדם|להתפתח|לגדול|learn|grow|develop|progress)/i
+    };
+
+    function analyse(ans, q) {
+      const t = String(ans || '').trim(), n = words(t).length, out = [], kind = kindOf(q || {}), [lo, hi] = LEN[kind] || [30, 170];
+      const add = (ok, en, he_, fix_en, fix_he, weight) => out.push({ok, w: weight || 1, text: tr(en, he_), fix: ok ? '' : tr(fix_en, fix_he)});
+      // 1. content that THIS question needs
+      if (kind === 'intro') { add(T.goal.test(t), 'Ends with what you are looking for', 'סוגר במה שאתה מחפש', 'Finish with one sentence: what you want now and why this place.', 'לסיים במשפט אחד: מה אתה מחפש עכשיו ולמה דווקא כאן.', 2); add(/\d|שירת|בצבא|השירות|army|service/i.test(t), 'Mentions your service briefly', 'מזכיר את השירות בקצרה', 'Add one sentence about what you did in service, in civilian words.', 'להוסיף משפט אחד על מה שעשית בשירות, במילים אזרחיות.'); }
+      if (kind === 'army') { add(T.action.test(t), 'Your own actions', 'מה אתה עשית', 'Describe what YOU did, with action words: "I led", "I organised".', 'לתאר מה אתה עשית, עם פעלים: "הובלתי", "ארגנתי".', 2); add(/(למדתי|הבנתי|learned|taught me)/i.test(t), 'What you learned', 'מה למדת', 'Add: "From this I learned…".', 'להוסיף: "מזה למדתי…".', 2); }
+      if (kind === 'story') { add(T.action.test(t), 'What YOU did (the action)', 'מה אתה עשית (הפעולה)', 'The heart of the story is your action: "I talked to…", "I decided…".', 'לב הסיפור הוא הפעולה שלך: "דיברתי עם…", "החלטתי…".', 2); add(T.result.test(t), 'The result', 'התוצאה', 'Finish with what came out of it or what you learned.', 'לסיים במה שיצא מזה או מה שלמדת.', 2); }
+      if (kind === 'motivation') { add(T.company.test(t), 'About this role, not general', 'על התפקיד הזה, לא כללי', 'Say what attracts you to THIS role or field.', 'להגיד מה מושך אותך דווקא בתפקיד או בתחום הזה.', 2); add(!(T.money.test(t) && !T.company.test(t)), 'More than money', 'יותר מכסף', 'Money is fine to want, but lead with interest and fit.', 'מותר לרצות כסף, אבל לפתוח בעניין ובהתאמה.'); }
+      if (kind === 'weakness') { add(!has(t, CLICHE).length, 'A real weakness (no cliché)', 'חולשה אמיתית (בלי קלישאה)', '"Perfectionist" sounds rehearsed — pick something real but not critical for the job.', '"פרפקציוניסט" נשמע משונן — לבחור משהו אמיתי שלא קריטי לתפקיד.', 2); add(T.improve.test(t), 'What you do about it', 'מה אתה עושה עם זה', 'Add how you are improving it — a habit, a tool, asking for feedback.', 'להוסיף איך אתה משתפר — הרגל, כלי, בקשת משוב.', 2); }
+      if (kind === 'future') add(T.learn.test(t), 'Growth, not a vague wish', 'התפתחות, לא משאלה כללית', 'Say what you want to learn or how you want to grow in the role.', 'להגיד מה אתה רוצה ללמוד או איך להתקדם בתפקיד.', 2);
+      if (kind === 'ask') add(/\?/.test(t), 'An actual question', 'שאלה אמיתית', 'Ask at least one real question (with a "?"): training, a typical day, success.', 'לשאול לפחות שאלה אחת (עם "?"): הכשרה, יום טיפוסי, הצלחה.', 3);
+      if (kind === 'method') { add(T.steps.test(t), 'A clear method (steps)', 'שיטה ברורה (צעדים)', 'Describe your steps: "first… then…".', 'לתאר צעדים: "קודם… ואז…".', 2); add(/(למשל|לדוגמה|פעם|בשירות|for example|once|in the army|when I)/i.test(t), 'An example', 'דוגמה', 'Back the method with one short example.', 'לגבות את השיטה בדוגמה קצרה אחת.', 2); }
+      if (kind === 'hypo') { add(T.would.test(t), 'What you would do', 'מה היית עושה', 'Answer directly: "I would first…".', 'לענות ישירות: "קודם הייתי…".', 2); add(/(בטיחות|כבוד|safety|respect|rule|נוהל)/i.test(t), 'The principle behind it', 'העיקרון מאחורי זה', 'Add why: safety first, but with respect.', 'להוסיף למה: בטיחות קודם, אבל בכבוד.'); }
+      // 2. general interview habits
+      add(n >= lo && n <= hi, 'Length', 'אורך', n < lo ? 'A bit short — add one concrete detail.' : 'Too long — aim for about one minute.', n < lo ? 'קצר מעט — להוסיף פרט מוחשי אחד.' : 'ארוך מדי — לכוון לבערך דקה.');
+      const j = has(t, JARGON); add(!j.length, 'No military jargon', 'בלי ז׳רגון צבאי', 'Replace the marked words above.', 'להחליף את המילים המסומנות למעלה.', 2);
+      if (kind !== 'ask' && kind !== 'future') { const we = has(t, WE).length, me = has(t, I).length; add(!(we > 0 && we >= me), '"I", not only "we"', '"אני", לא רק "אנחנו"', 'Interviewers hire you, not the unit — say what YOU did.', 'מראיינים מקבלים אותך, לא את היחידה — להגיד מה אתה עשית.', 2); }
+      if (['story', 'army', 'method', 'intro'].includes(kind)) add(/\d/.test(t), 'A real number', 'מספר אמיתי', 'Add one number if true: people, hours, how often, a result.', 'להוסיף מספר אחד אם נכון: אנשים, שעות, כמה פעמים, תוצאה.');
+      add(!has(t.split(/\s+/).slice(0, 8).join(' '), RANK).length, 'Starts with you, not rank', 'פותח בך, לא בדרגה', 'Open with what you did; the rank later, if at all.', 'לפתוח במה שעשית; הדרגה אחר כך, אם בכלל.');
+      add(!has(t, FORMAL).length, 'Natural tone', 'טון טבעי', 'Too formal — talk, do not write a letter.', 'רשמי מדי — לדבר, לא לכתוב מכתב.');
+      add(!has(t, VAGUE).length, 'Specific words', 'מילים ספציפיות', 'Replace the marked vague words with what actually happened.', 'להחליף את המילים הכלליות המסומנות במה שקרה בפועל.');
+      const max = out.reduce((s, x) => s + x.w, 0), got = out.filter(x => x.ok).reduce((s, x) => s + x.w, 0);
+      return {n, kind, items: out, score: out.filter(x => x.ok).length, max: out.length, pct: Math.round(got / max * 100)};
+    }
+    // The answer itself, with the problem words marked and a civilian alternative where there is one.
+    function marked(t) {
+      const marks = [];
+      const scan = (list, cls) => list.forEach(w => { const r = rx(w, true); let m; while ((m = r.exec(t))) { const start = m.index + m[1].length; marks.push({start, end: start + m[2].length, cls, w}); } });
+      scan(JARGON, 'jar'); scan(WE, 'we'); scan(VAGUE, 'vag'); scan(FORMAL, 'for'); scan(CLICHE, 'cli');
+      marks.sort((a, b) => a.start - b.start);
+      const out = []; let i = 0;
+      marks.forEach(m => { if (m.start < i) return; if (m.start > i) out.push(document.createTextNode(t.slice(i, m.start)));
+        const civ = CIV[m.w] || CIV[m.w.toLowerCase()];
+        out.push(h('mark', {class: 'sim-m sim-m-' + m.cls, title: civ ? tr('Say: ', 'במקום: ') + civ : ''}, t.slice(m.start, m.end)), civ ? h('span', {class: 'sim-civ'}, ' → ' + civ) : null);
+        i = m.end; });
+      if (i < t.length) out.push(document.createTextNode(t.slice(i)));
+      return {nodes: out.filter(Boolean), count: marks.length};
     }
 
     /* ---------- voice: interviewer speaks, you can answer by voice ---------- */
@@ -115,7 +179,7 @@
           j.better ? h('div', {class: 'sim-better'}, h('b', {}, tr('A stronger version (your facts only):', 'גרסה חזקה יותר (רק העובדות שלך):')), h('p', {}, String(j.better)),
             btn(tr('Use this version', 'להשתמש בגרסה הזו'), () => { const ta = root.querySelector('.sim-answer'); if (ta) { ta.value = String(j.better); ta.dispatchEvent(new Event('input')); } toast(tr('Updated — read it once and make sure it is true', 'עודכן — לקרוא פעם אחת ולוודא שזה נכון')); }, 'plus-btn')) : null,
           j.followup ? h('div', {class: 'sim-follow'}, h('b', {}, tr('Follow-up question:', 'שאלת המשך:')), h('p', {}, String(j.followup)),
-            btn(tr('Practice it', 'לתרגל אותה'), () => { st.qs.splice(st.i + 1, 0, {en: String(j.followup), he: String(j.followup), look: ['Answer briefly and concretely.', 'לענות קצר ומוחשי.']}); next(); }, 'plus-link')) : null);
+            btn(tr('Practice it', 'לתרגל אותה'), () => { st.qs.splice(st.i + 1, 0, {kind: 'story', en: String(j.followup), he: String(j.followup), look: ['Answer briefly and concretely.', 'לענות קצר ומוחשי.']}); next(); }, 'plus-link')) : null);
       } catch (e) {
         box.replaceChildren(h('p', {class: 'plus-muted'}, e.canceled ? tr('Nothing was sent.', 'לא נשלח כלום.') : tr('AI feedback is not available right now — the checklist above still works.', 'משוב AI לא זמין כרגע — הבדיקה למעלה עדיין עובדת.')));
       }
@@ -160,8 +224,19 @@
       const ta = h('textarea', {class: 'sim-answer', rows: '6', placeholder: tr('Type your answer — or press the microphone and talk', 'כתוב את התשובה — או לחץ על המיקרופון ודבר'), 'aria-label': tr('Your answer', 'התשובה שלך')});
       ta.value = cur.a || '';
       const live = h('p', {class: 'sim-live', 'aria-live': 'polite'});
-      const count = () => { const n = words(ta.value).length; live.textContent = n ? tr(n + ' words', n + ' מילים') + (n < 30 ? tr(' · add a little more', ' · אפשר להוסיף עוד קצת') : n > 170 ? tr(' · try to shorten', ' · כדאי לקצר') : tr(' · good length', ' · אורך טוב')) : ''; };
-      ta.addEventListener('input', count); count();
+      const [lo, hi] = LEN[kindOf(q)] || [30, 170];
+      let t0 = 0, timer = null;
+      const fmt = sec => Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+      const count = () => { const n = words(ta.value).length, sec = t0 ? Math.round((Date.now() - t0) / 1000) : 0;
+        live.textContent = n ? tr(n + ' words', n + ' מילים') + (sec ? ' · ' + fmt(sec) : '') + (n < lo ? tr(' · add a little more', ' · אפשר להוסיף עוד קצת') : n > hi ? tr(' · try to shorten', ' · כדאי לקצר') : tr(' · good length', ' · אורך טוב')) : ''; };
+      const startClock = () => { if (!t0) { t0 = Date.now(); timer = setInterval(() => { if (!ta.isConnected) { clearInterval(timer); return; } count(); }, 1000); } };
+      ta.addEventListener('input', () => { startClock(); count(); }); count();
+      const plan = PLAN[kindOf(q)] || PLAN.story;
+      const fields = plan.map(([en, he_]) => h('input', {type: 'text', class: 'sim-plan-in', placeholder: tr(en, he_), 'aria-label': tr(en, he_)}));
+      const builder = h('details', {class: 'sim-plan'}, h('summary', {}, tr('Build it step by step (' + plan.length + ' short parts)', 'לבנות שלב אחרי שלב (' + plan.length + ' חלקים קצרים)')),
+        h('ol', {class: 'sim-plan-list'}, fields.map((f, k) => h('li', {}, h('small', {}, tr(plan[k][0], plan[k][1])), f))),
+        btn(tr('Put it together', 'לחבר לתשובה'), () => { const parts = fields.map(f => f.value.trim()).filter(Boolean).map(x => /[.!?]$/.test(x) ? x : x + '.');
+          if (!parts.length) { fields[0].focus(); return; } ta.value = parts.join(' '); startClock(); count(); ta.focus(); toast(tr('Your answer is ready — read it out loud once', 'התשובה מוכנה — כדאי לקרוא אותה בקול פעם אחת')); }, 'plus-btn'));
       let rec = null;
       const mic = SR ? btn(tr('Voice', 'בקול'), () => {
         if (rec) { rec.stop(); return; }
@@ -170,7 +245,7 @@
           rec.onresult = e => { let txt = ''; for (let k = 0; k < e.results.length; k++) txt += e.results[k][0].transcript; ta.value = base + txt; count(); };
           rec.onend = () => { rec = null; mic.classList.remove('on'); micLabel(mic, false); };
           rec.onerror = () => toast(tr('The microphone is not available.', 'המיקרופון לא זמין.'));
-          rec.start(); mic.classList.add('on'); micLabel(mic, true);
+          rec.start(); startClock(); mic.classList.add('on'); micLabel(mic, true);
         } catch (_) { toast(tr('Voice is not supported in this browser.', 'הדפדפן לא תומך בדיבור.')); }
       }, 'sim-mic') : null;
       if (mic) micLabel(mic, false);
@@ -181,36 +256,39 @@
           synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, icon('speaker')) : null),
         h('p', {class: 'sim-look'}, h('b', {}, tr('What they look for: ', 'מה מחפשים: ')), q.look[he() ? 1 : 0]),
         h('div', {class: 'sim-answer-card'}, h('small', {class: 'sim-you'}, tr('Your answer', 'התשובה שלך')), ta, h('div', {class: 'sim-answer-foot'}, live, mic)),
+        builder,
         h('div', {class: 'sim-actions'},
           btn(tr('Check my answer', 'לבדוק את התשובה'), () => { if (words(ta.value).length < 3) { ta.focus(); toast(tr('Write or say an answer first', 'קודם לכתוב או להגיד תשובה')); return; }
-            if (rec) rec.stop(); st.answers[st.i] = {q: qtext(), a: ta.value.trim(), res: analyse(ta.value)}; st.phase = 'review'; paint(); }, 'plus-btn primary sim-cta')),
+            if (rec) rec.stop(); if (timer) clearInterval(timer); st.answers[st.i] = {q: qtext(), a: ta.value.trim(), sec: t0 ? Math.round((Date.now() - t0) / 1000) : 0, res: analyse(ta.value, st.qs[st.i])}; st.phase = 'review'; paint(); }, 'plus-btn primary sim-cta')),
         h('button', {type: 'button', class: 'plus-link sim-skip', onclick: () => { st.answers[st.i] = {q: qtext(), a: '', res: null}; next(); }}, tr('Skip this question', 'לדלג על השאלה'))];
     }
     function reviewScreen() {
-      const cur = st.answers[st.i], r = cur.res, pct = Math.round(r.score / r.max * 100);
+      const cur = st.answers[st.i], r = cur.res, pct = r.pct;
+      const mk = marked(cur.a);
       const aiBox = h('div', {class: 'sim-ai', 'aria-live': 'polite'});
       return [
         h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback · question ' + (st.i + 1), 'משוב · שאלה ' + (st.i + 1))), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.qs.length * 100) + '%'}))),
-        h('div', {class: 'sim-score'}, h('div', {class: 'sim-ring', style: '--p:' + pct}, h('b', {}, r.score + '/' + r.max)),
+        h('div', {class: 'sim-score'}, h('div', {class: 'sim-ring', style: '--p:' + pct}, h('b', {}, pct + '%')),
           h('div', {}, h('strong', {}, pct >= 85 ? tr('Strong answer!', 'תשובה חזקה!') : pct >= 60 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים קטנים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד')),
-            h('small', {}, tr(r.n + ' words', r.n + ' מילים')))),
+            h('small', {}, tr(r.n + ' words', r.n + ' מילים') + (cur.sec ? ' · ' + Math.floor(cur.sec / 60) + ':' + String(cur.sec % 60).padStart(2, '0') : '') + ' · ' + tr(r.score + ' of ' + r.max + ' checks', r.score + ' מתוך ' + r.max + ' בדיקות')))),
+        h('div', {class: 'sim-marked'}, h('small', {}, mk.count ? tr('Your answer — marked words to change', 'התשובה שלך — מסומן מה כדאי לשנות') : tr('Your answer', 'התשובה שלך')), h('p', {}, ...mk.nodes),
+          mk.count ? h('div', {class: 'sim-legend'}, h('span', {class: 'sim-m sim-m-jar'}, tr('military jargon', 'ז׳רגון')), h('span', {class: 'sim-m sim-m-we'}, tr('"we"', '"אנחנו"')), h('span', {class: 'sim-m sim-m-vag'}, tr('vague', 'כללי'))) : null),
         r.items.some(x => !x.ok) ? h('h3', {class: 'sim-h3'}, tr('What to fix', 'מה לתקן')) : null,
         h('ul', {class: 'sim-checks'}, r.items.filter(x => !x.ok).map(x => h('li', {class: 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, '!'), h('div', {}, h('b', {}, x.text), h('small', {}, x.fix))))),
         r.items.some(x => x.ok) ? h('div', {class: 'sim-passed'}, h('small', {}, tr('Already good:', 'כבר טוב:')), ...r.items.filter(x => x.ok).map(x => h('span', {class: 'sim-pass'}, '✓ ' + x.text))) : null,
-        h('details', {class: 'sim-mine'}, h('summary', {}, tr('My answer', 'התשובה שלי')), h('p', {}, cur.a)),
         P.infoOnly ? null : btn(tr('Detailed AI feedback + a stronger version', 'משוב AI מפורט + גרסה חזקה יותר'), () => aiFeedback(aiBox, cur.a), 'plus-btn sim-ai-btn'), aiBox,
         h('div', {class: 'plus-row'},
           btn(tr('Try this question again', 'לנסות שוב את השאלה'), () => { st.phase = 'ask'; paint(); }, 'plus-btn'),
           btn(st.i < st.qs.length - 1 ? tr('Next question', 'לשאלה הבאה') : tr('Finish', 'לסיום'), next, 'plus-btn primary')),
-        pct >= 70 ? btn(tr('Save this answer to my CV draft', 'לשמור את התשובה לטיוטת קורות החיים'), () => saveToCv(cur.a), 'plus-link') : null];
+        pct >= 75 ? btn(tr('Save this answer to my CV draft', 'לשמור את התשובה לטיוטת קורות החיים'), () => saveToCv(cur.a), 'plus-link') : null];
     }
     function doneScreen() {
       const done = st.answers.filter(a => a && a.res);
-      const avg = done.length ? Math.round(done.reduce((s, a) => s + a.res.score / a.res.max, 0) / done.length * 100) : 0;
+      const avg = done.length ? Math.round(done.reduce((s, a) => s + a.res.pct, 0) / done.length) : 0;
       const missCount = {};
       done.forEach(a => a.res.items.forEach(x => { if (!x.ok) missCount[x.text] = (missCount[x.text] || 0) + 1; }));
       const focus = Object.entries(missCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(x => x[0]);
-      const best = done.slice().sort((a, b) => b.res.score - a.res.score)[0];
+      const best = done.slice().sort((a, b) => b.res.pct - a.res.pct)[0];
       P.simHistory = [...(P.simHistory || []), {d: new Date().toISOString().slice(0, 10), track: st.track, avg, n: done.length}].slice(-20); store();
       return [
         h('div', {class: 'sim-hero'}, illu('award', 64), h('div', {}, h('h1', {}, tr('Interview finished', 'הראיון הסתיים')), h('p', {}, tr(done.length + ' answers · average ' + avg + '%', done.length + ' תשובות · ממוצע ' + avg + '%')))),

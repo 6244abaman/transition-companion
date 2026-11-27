@@ -581,3 +581,15 @@ html[data-motion="reduce"] .sim-mic.on { animation:none; }
 .lh-t { flex:1;min-width:0; } .lh-t b { display:block;font-size:15.5px; } .lh-t small { color:var(--text-3);font-size:13px; }
 .lh-go { color:#2E6B8A;font-weight:800;font-size:14px;direction:ltr; }
 .lh-row:active { background:var(--beige); }
+.sim-marked { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px; }
+.sim-marked > small { color:var(--text-3);font-weight:700; }
+.sim-marked p { margin:6px 0 0;line-height:2;font-size:15.5px; }
+mark.sim-m, .sim-legend .sim-m { border-radius:6px;padding:1px 5px; }
+.sim-m-jar { background:#FDE3D6 !important;color:#8A3410 !important; } .sim-m-we { background:#E6E1FB !important;color:#4A3BA8 !important; } .sim-m-vag, .sim-m-cli { background:#FBEFC9 !important;color:#7A5A00 !important; } .sim-m-for { background:#E3EEF7 !important;color:#1C5A85 !important; }
+.sim-civ { color:#2F8A5B;font-weight:700;font-size:14px; }
+.sim-legend { display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;font-weight:700; }
+.sim-plan { background:var(--surface);border:1px dashed var(--border-strong);border-radius:16px;padding:10px 12px; }
+.sim-plan > summary { cursor:pointer;font-weight:700;color:#2E6B8A; }
+.sim-plan-list { margin:10px 0;padding-inline-start:20px;display:grid;gap:8px; }
+.sim-plan-list small { display:block;color:var(--text-2);font-weight:700;margin-bottom:3px; }
+.sim-plan-in { width:100%;box-sizing:border-box;padding:10px;border:1.5px solid var(--border-strong);border-radius:10px;font:inherit;font-size:15px;background:#fff;color:var(--text); }
