@@ -73,6 +73,9 @@
       const names = [...(J.skills || []).filter(x => x.confirmed).map(x => [x.he, x.en].filter(Boolean).join(' ')), ...(J.manualSkills || []).map(x => x.name)];
       return [...new Set(names.flatMap(detect))]; } catch (_) { return []; }
   }
+  /* The 36-skills questionnaire (skills-business.html) → profile skill ids. A rating of 5+ counts. */
+  const ASSESS_MAP = {1: 'responsibility', 2: 'pressure', 3: 'planning', 4: 'planning', 5: 'problem', 6: 'technical', 7: 'planning', 8: 'problem', 9: 'planning', 10: 'responsibility', 11: 'leadership', 12: 'teamwork', 13: 'leadership', 14: 'teaching', 15: 'teamwork', 16: 'service', 17: 'planning', 18: 'precision', 19: 'pressure', 20: 'pressure', 21: 'learning', 22: 'pressure', 23: 'problem', 24: 'problem', 25: 'creative', 26: 'creative', 27: 'data', 28: 'learning', 29: 'creative', 30: 'learning', 31: 'responsibility', 32: 'responsibility', 33: 'responsibility', 34: 'precision', 35: 'service', 36: 'creative'};
+  function assessment() { try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); return a && a.answers && typeof a.answers === 'object' ? a.answers : {}; } catch (_) { return {}; } }
   /* Ranked skills with their sources. Same skill in the questionnaire AND in chat (or My Journey) = stronger. */
   function skills(p) {
     p = p || read(); const map = {};
@@ -83,12 +86,13 @@
     p.feedback.forEach(f => detect(f.text).forEach(id => add(id, 1.5, 'feedback')));
     Object.entries(p.chat).forEach(([id, n]) => add(id, Math.min(3, Number(n) || 0), 'chat'));
     journeySkills().forEach(id => add(id, 2, 'journey'));
+    Object.entries(assessment()).forEach(([k, a]) => { const id = ASSESS_MAP[k], r = a && Number(a.rating); if (!id || !(r >= 5)) return; add(id, (r - 4) * 0.8, 'assessment'); if (a.evidence && map[id]) map[id].evidence.push(clip(a.evidence, 160)); });
     return Object.values(map).map(m => { const strong = m.src.size > 1; return {id: m.id, name: skillName(m.id), tag: SK(m.id)[3], score: Math.round((m.score * (strong ? 1.4 : 1)) * 10) / 10, sources: [...m.src], strong, evidence: [...new Set(m.evidence)].slice(0, 2)}; })
       .sort((a, b) => b.score - a.score);
   }
   function tags(p) { p = p || read(); const t = {}; skills(p).slice(0, 6).forEach(s => { t[s.tag] = (t[s.tag] || 0) + s.score; }); if (p.school.liked.length) t.study = (t.study || 0) + p.school.liked.length;
     const QT = {people: 'people', tech: 'tech', data: 'tech', care: 'care', field: 'field'}; if (p.quiz && Array.isArray(p.quiz.tags)) p.quiz.tags.forEach((q, i) => { const k = QT[q]; if (k) t[k] = (t[k] || 0) + (i === 0 ? 4 : 2); }); return Object.entries(t).sort((a, b) => b[1] - a[1]).map(x => x[0]); }
-  const has = p => { p = p || read(); return !!((p.quiz && p.quiz.tags && p.quiz.tags.length) || p.military.roles || p.military.activities.length || p.school.liked.length || p.school.stoodOut || p.feedback.length || p.self.strengths.length || p.deep.values.length || Object.keys(p.chat).length); };
+  const has = p => { p = p || read(); return !!(Object.keys(assessment()).length || (p.quiz && p.quiz.tags && p.quiz.tags.length) || p.military.roles || p.military.activities.length || p.school.liked.length || p.school.stoodOut || p.feedback.length || p.self.strengths.length || p.deep.values.length || Object.keys(p.chat).length); };
   const active = () => { const p = read(); return p.enabled && has(p); };
   function completion(p) { p = p || read(); const parts = [!!(p.military.roles || p.military.activities.length), !!(p.school.liked.length || p.school.stoodOut), p.feedback.length > 0, !!(p.self.strengths.length || p.self.workStyle), !!(p.deep.values.length || p.deep.pace)]; return {done: parts.filter(Boolean).length, of: parts.length, parts}; }
   const QL = {people: ['People & leadership', 'אנשים והובלה'], tech: ['Technical & hands-on', 'טכני ומעשי'], data: ['Analysis & systems', 'ניתוח ומערכות'], care: ['Care & education', 'טיפול וחינוך'], field: ['Field & action', 'שטח ואקשן']};
@@ -137,7 +141,7 @@
   const studyDirections = () => { const p = read(); if (!p.enabled) return []; const out = []; p.school.liked.forEach(s => { const x = STUDY_FOR[s]; if (x) [[x[0], x[1]], [x[2], x[3]]].forEach(w => { if (!out.some(o => o[0] === w[0])) out.push(w); }); });
     if (tags(p).includes('tech') && !out.some(o => o[0].startsWith('Practical'))) out.push(['Practical engineering (handasai)', 'הנדסאות']); return out.slice(0, 6).map(w => T(w[0], w[1])); };
   const recommendedTools = () => { if (!active()) return []; return [...new Set(tags().slice(0, 2).flatMap(t => TAG_TOOLS[t] || []))]; };
-  const cvBullets = () => { const p = read(); if (!p.enabled) return []; return p.military.activities.filter(a => a.what && (Number(a.rating) || 0) >= 5).sort((a, b) => b.rating - a.rating).map(a => clip(a.what, 200)).slice(0, 4); };
+  const cvBullets = () => { const p = read(); if (!p.enabled) return []; const fromQ = p.military.activities.filter(a => a.what && (Number(a.rating) || 0) >= 5).sort((a, b) => b.rating - a.rating).map(a => clip(a.what, 200)); const fromA = Object.values(assessment()).filter(a => a && a.confirmed && a.evidence && Number(a.rating) >= 5).sort((a, b) => b.rating - a.rating).map(a => clip(a.evidence, 200)); return [...new Set([...fromQ, ...fromA])].slice(0, 6); };
 
   window.MomentumProfile = {basis, read, write, blank, skills, tags, has, active, completion, about, aboutDraft, aiSummary, noteChat, workDirections, studyDirections, recommendedTools, cvBullets, skillName, SKILLS, SUBJECTS, VALUES, WORKSTYLE, LEARN, ENV,
     clear() { try { localStorage.removeItem(KEY); } catch (_) {} try { window.dispatchEvent(new CustomEvent('momentum-profile-changed')); } catch (_) {} }};
@@ -212,7 +216,7 @@
     /* "What the app knows about me" — see, edit, delete, switch off. */
     function knows() {
       const p = MP.read(), sk = MP.skills(p);
-      const srcL = {questionnaire: tr('questionnaire', 'שאלון'), chat: tr('chat', 'צ\'אט'), journey: tr('My Journey', 'המסע שלי'), feedback: tr('others', 'אחרים')};
+      const srcL = {questionnaire: tr('questionnaire', 'שאלון'), chat: tr('chat', 'צ\'אט'), journey: tr('My Journey', 'המסע שלי'), feedback: tr('others', 'אחרים'), assessment: tr('strengths check', 'שאלון החוזקות')};
       const row = (title, sub, onDel) => h('div', {class: 'pa-know'}, h('div', {}, h('b', {}, title), sub ? h('small', {}, sub) : null), onDel ? btn(tr('Delete', 'מחיקה'), onDel, 'pa-x') : null);
       const toggle = (labelTxt, key) => { const c = h('input', {type: 'checkbox'}); c.checked = !!p[key]; c.addEventListener('change', () => { const q = MP.read(); q[key] = c.checked; MP.write(q); paint(); }); return h('label', {class: 'pa-toggle'}, c, h('span', {}, labelTxt)); };
       return [h('div', {class: 'pa-card'}, toggle(tr('Use my profile to personalise the app', 'להשתמש בפרופיל כדי להתאים את האפליקציה'), 'enabled'),

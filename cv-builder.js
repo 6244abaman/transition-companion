@@ -240,6 +240,9 @@
           P.infoOnly ? null : btn(tr('Write it better with AI ✨', 'ה-AI ינסח לי יותר טוב ✨'), () => polish(status, 'service'), 'plus-btn cv-ai-btn')),
         status, suggestionCard(), warn,
         (() => { const M = window.MomentumProfile; const sug = M ? M.cvBullets().map(b => pro(civilian(b))).filter(b => !c.bullets.includes(b)) : [];
+          let rated = 0; try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); rated = a && a.answers ? Object.keys(a.answers).length : 0; } catch (_) {}
+          const link = rated ? null : h('a', {class: 'cv-from-profile cv-skills-link', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, h('b', {}, tr('Not sure what to write?', 'לא בטוח מה לכתוב?')), h('small', {}, tr('The 5-minute strengths check turns your service into ready CV lines →', 'שאלון החוזקות (5 דקות) הופך את השירות לשורות מוכנות לקורות חיים ←')));
+          if (!sug.length) return link;
           return sug.length ? h('div', {class: 'cv-from-profile'}, h('small', {}, tr('From your strengths profile — your highest-rated activities (tap to add):', 'מפרופיל החוזקות — הפעילויות שדירגת הכי גבוה (לחיצה מוסיפה):')),
             ...sug.map(b => btn('+ ' + b, () => { c.bullets.push(b); store(); paint(); }, 'cv-sug'))) : null; })(),
         h('strong', {class: 'cv-sub'}, tr('Lines in your CV (edit every line)', 'השורות בקורות החיים (אפשר לערוך כל שורה)')), bulletsBox,

@@ -483,6 +483,29 @@
     return slimRow('piggy', tr('My estimate: ', 'ההערכה שלי: ') + value, tr('Grant and deposit · updated ', 'מענק ופיקדון · עודכן ') + asOfLabel(e.asOf), () => showPage('rights'), 'plus-est-row');
   }
   let todayOpen = false;
+  /* One smart, dismissible nudge on Home, built only from what the user already gave the app. */
+  function smartNudge() {
+    let A = {}; try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); A = a && a.answers ? a.answers : {}; } catch (_) {}
+    const ratedN = Object.values(A).filter(x => x && typeof x.rating === 'number').length;
+    const readyLines = Object.values(A).filter(x => x && x.confirmed && x.evidence && Number(x.rating) >= 5).map(x => x.evidence);
+    const M = window.MomentumProfile; const profLines = M ? M.cvBullets() : [];
+    const cvB = (P.cv && Array.isArray(P.cv.bullets)) ? P.cv.bullets.length : 0;
+    const lines = [...new Set([...readyLines, ...profLines])].filter(l => !(P.cv && (P.cv.bullets || []).includes(l)));
+    const D = P.nudgeOff || {};
+    const card = (key, ill, title, sub, label, go) => D[key] ? null : h('div', {class: 'plus-nudge', role: 'status'}, illu(ill, 40, 'plus-nudge-ill'),
+      h('div', {class: 'plus-nudge-t'}, h('b', {}, title), h('small', {}, sub), h('div', {class: 'plus-nudge-row'}, btn(label, go, 'plus-btn primary plus-nudge-go'),
+        h('button', {type: 'button', class: 'plus-nudge-x', onclick: e => { P.nudgeOff = {...(P.nudgeOff || {}), [key]: Date.now()}; store(); e.currentTarget.closest('.plus-nudge').remove(); }}, tr('Not now', 'לא עכשיו')))));
+    if (PAGES.cv && lines.length >= 2 && cvB < 3) return card('cv', 'pen', tr('You already have enough for a CV', 'יש לך כבר מספיק בשביל קורות חיים'),
+      tr(lines.length + ' strong lines from your answers are ready — it takes a few minutes to finish.', lines.length + ' שורות חזקות מהתשובות שלך כבר מוכנות — נשארו כמה דקות כדי לסיים.'), tr('Write my CV', 'לכתוב קורות חיים'), () => {
+        P.cv = P.cv && typeof P.cv === 'object' ? P.cv : {lang: S.lang}; P.cv.bullets = [...(P.cv.bullets || []), ...lines.slice(0, 6)]; store(); showPage('cv'); });
+    if (PAGES.interviewsim && cvB >= 3 && !(P.simHistory || []).length) return card('sim', 'talk', tr('Your CV is ready — time to practise', 'קורות החיים מוכנים — זה הזמן לתרגל'),
+      tr('The interviewer will ask about what you wrote. One practice round makes a real difference.', 'המראיין ישאל על מה שכתבת. סבב תרגול אחד עושה הבדל אמיתי.'), tr('Practise an interview', 'לתרגל ראיון'), () => showPage('interviewsim'));
+    if (!ratedN && (S.messages || []).length >= 6) return card('skills', 'award', tr('Turn what you told me into CV lines', 'להפוך את מה שסיפרת לשורות בקורות חיים'),
+      tr('A 5-minute strengths check for your type of service — the results go straight into your CV and interview practice.', 'שאלון חוזקות של 5 דקות לפי סוג השירות שלך — התוצאות נכנסות ישר לקורות החיים ולתרגול הראיון.'), tr('Start the check', 'להתחיל את השאלון'), () => { location.href = './skills-business.html?lang=' + S.lang; });
+    if (ratedN && !readyLines.length && cvB < 3) return card('notes', 'award', tr('One line away from a strong CV', 'שורה אחת מקורות חיים חזקים'),
+      tr('You rated ' + ratedN + ' skills. Add what you actually did to your top ones and they become CV lines.', 'דירגת ' + ratedN + ' כישורים. מוסיפים מה עשית בפועל לחזקים ביותר — והם הופכים לשורות בקורות חיים.'), tr('Add my examples', 'להוסיף דוגמאות'), () => { location.href = './skills-business.html?lang=' + S.lang; });
+    return null;
+  }
   function todayRow() {
     const p = journey(), t = todayStr();
     const step = p && P.todayStep && P.todayStep.date === t && p.actions.find(a => a.id === P.todayStep.id);
@@ -528,11 +551,14 @@
     if (!P.infoOnly) plusHome.append(h('button', {type: 'button', class: 'plus-chat-entry', onclick: () => goChat()}, h('span', {}, tr('Talk with the Companion', 'דבר עם המלווה')), icon('chat')));
     // Calm home (progressive disclosure): one "today" item, one short shortcut list, everything else folded.
     put(plusHome, todayRow());
+    { const nd = smartNudge(); if (nd) plusHome.append(nd); }
     const est = P.hidden.includes('home:estimate') ? null : estimateRow();
     const slim = slimRow;
     const shortcuts = h('div', {class: 'plus-slim-list', role: 'list'},
       est ? est : null,
       PAGES.afterlist && (P.afterChecks || []).length < 12 ? slim('checklist', tr('After-discharge checklist', 'הרשימה אחרי השחרור'), tr((P.afterChecks || []).length + ' of 12 done — tick as you go', (P.afterChecks || []).length + ' מתוך 12 בוצעו — מסמנים תוך כדי'), () => showPage('afterlist')) : null,
+      (() => { let n = 0; try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); n = a && a.answers ? Object.values(a.answers).filter(x => x && typeof x.rating === 'number').length : 0; } catch (_) {}
+        return slim('award', n ? tr('My strengths from service', 'החוזקות שלי מהשירות') : tr('What did the army teach you?', 'מה הצבא לימד אותך?'), n ? tr(n + ' skills rated · see results and CV lines', n + ' כישורים דורגו · תוצאות ושורות לקורות חיים') : tr('5-minute skills check · turns service into CV lines', 'שאלון כישורים של 5 דקות · הופך את השירות לשורות בקורות חיים'), () => { location.href = './skills-business.html?lang=' + S.lang; }, 'plus-skills-row'); })(),
       PAGES.cv ? slim('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided, with a clean PDF', 'מודרך, עם PDF נקי'), () => showPage('cv')) : null,
       PAGES.profile && window.MomentumProfile ? (window.MomentumProfile.has() ? slim('compass', tr('My strengths profile', 'פרופיל החוזקות שלי'), tr(window.MomentumProfile.completion().done + ' of 5 parts · edit or see what the app knows', window.MomentumProfile.completion().done + ' מתוך 5 חלקים · לערוך או לראות מה האפליקציה יודעת'), () => showPage('profile'))
         : slim('compass', tr('Discover your strengths', 'לגלות את החוזקות שלך'), tr('Optional · makes your CV and suggestions personal', 'לא חובה · הופך את קורות החיים וההמלצות לאישיים'), () => showPage('profile'))) : null,
@@ -886,7 +912,8 @@
       const pw = KB.rightsCards().find(c => c.id === 'preferred_work_grant');
       const kit = (ill, title, sub, id) => PAGES[id] ? h('button', {type: 'button', class: 'plus-kit', onclick: () => showPage(id)}, illu(ill, 46), h('b', {}, title), h('small', {}, sub)) : null;
       const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work & CV', 'עבודה וקורות חיים')),
-        h('div', {class: 'plus-kits'}, kit('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי'), 'cv'), kit('talk', tr('Interview simulator', 'סימולטור ראיון'), tr('Practice with feedback', 'תרגול עם משוב'), 'interviewsim')),
+        h('div', {class: 'plus-kits'}, kit('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי'), 'cv'), kit('talk', tr('Interview simulator', 'סימולטור ראיון'), tr('Practice with feedback', 'תרגול עם משוב'), 'interviewsim'),
+          h('a', {class: 'plus-kit plus-kit-wide', href: './skills-business.html?lang=' + S.lang}, illu('award', 46), h('b', {}, tr('Strengths from your service', 'החוזקות מהשירות')), h('small', {}, tr('Rate 12 skills · get CV lines and interview strengths', 'מדרגים 12 כישורים · מקבלים שורות לקו"ח וחוזקות לראיון')))),
         profileBox('work'), hebrewNote(), disclaimer());
       if (pw && !P.hidden.includes('right:' + pw.id)) put(wrap, rightCard(pw));
       put(wrap, section(tr('Preferred work — examples', 'עבודה מועדפת — דוגמאות'), h('p', {}, tr('Approved sectors often include:', 'ענפים שמאושרים לרוב:')), list((KB.data.rights_and_benefits.preferred_work_grant || {}).sectors),
