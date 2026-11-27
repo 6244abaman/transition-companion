@@ -777,3 +777,8 @@ html { -webkit-tap-highlight-color:transparent; }
 :focus:not(:focus-visible) { outline:none; }
 button, a, [role="button"] { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 button:active, a.plus-btn:active, .plus-slim:active, .plus-kit:active, .plus-tile:active { transform:scale(.97); transition:transform .06s; }
+
+/* Smooth in-app page change (opacity only, so fixed bars never jump) */
+.plus-page-in { animation:plusPageIn .2s ease both; }
+@keyframes plusPageIn { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion: reduce) { .plus-page-in { animation:none; } }

@@ -196,6 +196,7 @@
     hideScreens();
     document.documentElement.classList.toggle('mp-onb', id === 'onboarding');
     page.replaceChildren();
+    if (!sameRefresh) { page.classList.remove('plus-page-in'); void page.offsetWidth; page.classList.add('plus-page-in'); }
     const meta = PAGE_HEAD[id] || {};
     const head = h('div', {class: 'plus-head'},
       icon(meta.icon || 'compass', 'plus-head-ico'),
@@ -238,6 +239,7 @@
     hidePage();
     if (window.CompanionHome) window.CompanionHome.show();
     renderHome(); setNav('home');
+    if (hub && !hub.hidden) { hub.classList.remove('plus-page-in'); void hub.offsetWidth; hub.classList.add('plus-page-in'); }
   }
   function goChat(mode) {
     if (P.infoOnly) { showPage('rights'); return; }

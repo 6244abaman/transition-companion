@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v46-fast-taps";
+const CACHE = "tc-v47-smooth";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -89,21 +89,23 @@ self.addEventListener("fetch", event => {
   // Cache only named public assets, never same-origin API responses or private data.
   if (!APP_PATHS.has(url.pathname)) return;
 
-  // The app's own files: internet first, saved copy if offline.
-  event.respondWith(
-    fetch(req, {cache: "no-cache"})
-      .then(res => {
-        if (res.ok) {
-          const copy = res.clone();   // copy now, before the page reads it
-          caches.open(CACHE).then(cache => cache.put(req, copy));
-        }
-        return res;
-      })
-      .catch(() =>
-        caches.match(req, { ignoreSearch: true })
-          .then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : undefined))
-      )
-  );
+  // The app's own files: internet first, but never hang. If the network is slow (over 2.5 s)
+  // and a saved copy exists, show the saved copy at once; the fresh copy still updates the cache.
+  const network = fetch(req, {cache: "no-cache"}).then(res => {
+    if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(cache => cache.put(req, copy)); }
+    return res;
+  });
+  const saved = () => caches.match(req, { ignoreSearch: true }).then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : undefined));
+  event.respondWith(new Promise(resolve => {
+    let done = false;
+    const finish = r => { if (!done && r) { done = true; resolve(r); } };
+    const hasTimer = typeof setTimeout === 'function';
+    const timer = hasTimer ? setTimeout(() => saved().then(finish), 2500) : 0;
+    const stop = () => { if (hasTimer) clearTimeout(timer); };
+    network.then(r => { stop(); finish(r); })
+      .catch(() => { stop(); saved().then(r => { if (r) finish(r); else if (!done) { done = true; resolve(typeof Response === 'function' ? Response.error() : undefined); } }); });
+  }));
+  if (event.waitUntil) event.waitUntil(network.catch(() => {}));
 });
 
 // Generic notification click opens the private local action list.
