@@ -194,6 +194,7 @@
     const keepY = sameRefresh ? (document.scrollingElement || document.documentElement).scrollTop : 0;
     if (push && pageStack[pageStack.length - 1] !== id) pageStack.push(id);
     hideScreens();
+    document.documentElement.classList.toggle('mp-onb', id === 'onboarding');
     page.replaceChildren();
     const meta = PAGE_HEAD[id] || {};
     const head = h('div', {class: 'plus-head'},
@@ -226,7 +227,7 @@
       d.append(sum, bodyBox); sec.replaceWith(d);
     });
   }
-  function hidePage() { page.hidden = true; pageStack = []; }
+  function hidePage() { page.hidden = true; pageStack = []; document.documentElement.classList.remove('mp-onb'); }
   function goBack() {
     pageStack.pop();
     let prev = pageStack.pop();
@@ -1070,7 +1071,7 @@
         ill ? illu(ill, 46, 'plus-wiz-ill') : null, h('strong', {}, label), sub ? h('small', {}, sub) : null);
     };
     const chip = (key, label) => h('button', {type: 'button', class: 'plus-wiz-chip' + (D[key] ? ' is-on' : ''), 'aria-pressed': String(!!D[key]), onclick: () => { D[key] = !D[key]; paint(); }}, (D[key] ? '✓ ' : '') + label);
-    const dots = () => h('div', {class: 'plus-wiz-dots', 'aria-label': tr('Step ' + (step + 1) + ' of ' + STEPS, 'שלב ' + (step + 1) + ' מתוך ' + STEPS)}, Array.from({length: STEPS}, (_, k) => h('i', {class: k === step ? 'on' : k < step ? 'done' : ''})));
+    const dots = () => h('div', {class: 'plus-wiz-prog'}, h('b', {}, String(step + 1).padStart(2, '0') + ' / ' + String(STEPS).padStart(2, '0')), h('div', {class: 'plus-wiz-dots', 'aria-label': tr('Step ' + (step + 1) + ' of ' + STEPS, 'שלב ' + (step + 1) + ' מתוך ' + STEPS)}, Array.from({length: STEPS}, (_, k) => h('i', {class: k === step ? 'on' : k < step ? 'done' : ''}))));
     const nav = (nextLabel) => h('div', {class: 'plus-wiz-nav'},
       step > 0 ? btn(tr('Back', 'חזרה'), () => { step--; paint(); }, 'plus-wiz-back') : h('span'),
       h('button', {type: 'button', class: 'plus-btn primary plus-wiz-next', onclick: () => { if (step < STEPS - 1) { step++; paint(); } else finish(); }}, nextLabel || tr('Next', 'הבא')));
@@ -1080,14 +1081,18 @@
         name.addEventListener('input', () => { D.name = name.value.trim(); greet.textContent = D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : ''; });
         name.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); step++; paint(); } });
         const greet = h('p', {class: 'plus-wiz-greet', 'aria-live': 'polite'}, D.name ? tr('Nice to meet you, ' + D.name + '!', 'נעים להכיר, ' + D.name + '!') : '');
-        return [illu('map', 92, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('Hi! I\'m your Companion', 'היי! אני המלווה שלך 👋')),
-          h('p', {class: 'plus-wiz-sub'}, tr('A few quick taps and I\'ll show what is relevant to you. Everything stays on this phone.', 'כמה לחיצות קצרות ואראה לך מה רלוונטי בשבילך. הכול נשמר רק בטלפון הזה.')),
-          h('label', {class: 'plus-wiz-label', for: 'plusName'}, tr('What should I call you?', 'איך לקרוא לך?')), name, greet, nav(tr('Let\'s start', 'יאללה, מתחילים'))];
+        const sun = h('div', {class: 'plus-wiz-sun', 'aria-hidden': 'true'}); sun.innerHTML = '<svg viewBox="0 0 320 150" preserveAspectRatio="xMidYMax meet"><defs><linearGradient id="wzS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC36B"/><stop offset="1" stop-color="#FF7A4D"/></linearGradient><radialGradient id="wzG"><stop offset="0" stop-color="#FFC36B" stop-opacity=".55"/><stop offset="1" stop-color="#FFC36B" stop-opacity="0"/></radialGradient><clipPath id="wzC"><rect width="320" height="118"/></clipPath></defs><circle class="wz-glow" cx="222" cy="52" r="70" fill="url(#wzG)"/><g clip-path="url(#wzC)"><circle class="wz-sun" cx="222" cy="50" r="22" fill="url(#wzS)"/></g><path d="M0 118 72 64l30 26 38-46 52 52 26-22 102 44Z" fill="#2F5A46"/><path d="M140 44l-14 18 8-4 6 6 6-6 8 3" fill="none" stroke="#F5F1E9" stroke-width="2.2" stroke-linejoin="round"/><path d="M0 118h320" stroke="#1B3529" stroke-width="3"/></svg>';
+        return [sun, h('span', {class: 'plus-wiz-eyebrow'}, tr('Momentum · after the army', 'מומנטום · אחרי הצבא')),
+          h('h1', {class: 'plus-wiz-title plus-wiz-display'}, tr('Discharge is a beginning. Let\'s make it a good one.', 'השחרור הוא התחלה. בוא נעשה אותה טובה.')),
+          h('p', {class: 'plus-wiz-sub'}, tr('Four quick questions, and I\'ll show what you are entitled to, which dates matter and what to do next.', 'ארבע שאלות קצרות — ואראה לך מה מגיע לך, אילו תאריכים חשובים ומה כדאי לעשות עכשיו.')),
+          h('label', {class: 'plus-wiz-label', for: 'plusName'}, tr('What should I call you?', 'איך לקרוא לך?')), name, greet,
+          h('ul', {class: 'plus-wiz-trust'}, h('li', {}, tr('Stays on your phone', 'נשמר רק אצלך בטלפון')), h('li', {}, tr('About a minute', 'בערך דקה')), h('li', {}, tr('Skip anything', 'אפשר לדלג על הכל'))),
+          nav(tr('Let\'s start', 'יאללה, מתחילים'))];
       }
       if (step === 1) {
         const month = h('input', {type: 'month', id: 'plusDischarge', value: D.month, max: todayStr().slice(0, 7), 'aria-label': tr('Discharge month', 'חודש השחרור'), disabled: D.notYet || undefined});
         month.addEventListener('change', () => { D.month = month.value; });
-        return [illu('calendar', 76, 'plus-wiz-hero'), h('h1', {class: 'plus-wiz-title'}, tr('When were you discharged?', 'מתי השתחררת?')),
+        return [h('h1', {class: 'plus-wiz-title'}, tr('When were you discharged?', 'מתי השתחררת?')),
           h('p', {class: 'plus-wiz-sub'}, tr('So I can remind you of the right dates.', 'כדי שאוכל להזכיר לך את המועדים הנכונים.')),
           month, h('div', {class: 'plus-wiz-chips'}, chip('notYet', tr('Not discharged yet', 'עוד לא השתחררתי'))), nav()];
       }
