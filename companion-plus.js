@@ -509,6 +509,7 @@
     const slim = slimRow;
     const shortcuts = h('div', {class: 'plus-slim-list', role: 'list'},
       est ? est : null,
+      PAGES.afterlist && (P.afterChecks || []).length < 12 ? slim('checklist', tr('After-discharge checklist', 'הרשימה אחרי השחרור'), tr((P.afterChecks || []).length + ' of 12 done — tick as you go', (P.afterChecks || []).length + ' מתוך 12 בוצעו — מסמנים תוך כדי'), () => showPage('afterlist')) : null,
       PAGES.cv ? slim('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided, with a clean PDF', 'מודרך, עם PDF נקי'), () => showPage('cv')) : null,
       PAGES.interviewsim ? slim('talk', tr('Interview simulator', 'סימולטור ראיון עבודה'), tr('Practice out loud, get feedback right away', 'מתרגלים בקול, מקבלים משוב מיד'), () => showPage('interviewsim')) : null,
       PAGES.tools ? slim('checklist', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, phone numbers, scholarships', 'מועדים, פיקדון, טלפונים, מלגות'), () => showPage('tools')) : null);
@@ -662,6 +663,14 @@
       amountKids.push(h('table', {class: 'plus-table'}, h('caption', {}, tr('Per month of service, by service type', 'לכל חודש שירות, לפי סוג שירות')),
         h('tbody', {}, c.rates.map(r => h('tr', {class: r.key === mine ? 'plus-mine' : ''}, h('th', {scope: 'row'}, r.label + (r.key === mine ? tr(' (you)', ' (אתה)') : '')), h('td', {}, KB.fmtMoney(r.value)))))));
       if (c.examples && c.examples.length) amountKids.push(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
+    }
+    if (c.id === 'tax_credit_points') {
+      const tp = KB.data.rights_and_benefits.tax_credit_points || {}, v = tp.point_value_2026_monthly || 0, dur = tp.duration_months || 36;
+      const rows = [[tr('Men 23+ months · women 22+ months', 'גברים 23+ חודשים · נשים 22+ חודשים'), 2], [tr('12 months and up to the above', 'מ-12 חודשים ועד הנ"ל'), 1], [tr('Under 12 months', 'פחות מ-12 חודשים'), 0]];
+      amountKids.push(h('table', {class: 'plus-table'}, h('caption', {}, tr('Tax credit points after service (for ' + dur + ' months)', 'נקודות זיכוי אחרי השירות (למשך ' + dur + ' חודשים)')),
+        h('thead', {}, h('tr', {}, h('th', {}, tr('Months of service', 'חודשי שירות')), h('th', {}, tr('Points', 'נקודות')), h('th', {}, tr('≈ per month', '≈ בחודש')))),
+        h('tbody', {}, rows.map(([l, n]) => h('tr', {}, h('th', {scope: 'row'}, l), h('td', {}, String(n)), h('td', {}, n ? KB.fmtMoney(n * v) : '—'))))),
+        h('p', {class: 'plus-muted'}, tr('Point value ', 'שווי נקודה ') + KB.fmtMoney(v) + tr(' a month (2026). You save it only if you pay income tax.', ' לחודש (2026). החיסכון רק אם משלמים מס הכנסה.')));
     }
     const src = sourceLine(c.source);
     if (amountKids.length || src) box.append(part(tr('Amount, date and source', 'סכום, תאריך ומקור'), ...amountKids, src));

@@ -144,6 +144,8 @@
     const cvCount = (p.cvs || []).length, eduCount = (p.education || []).length, linkCount = (p.links || []).length;
     const more = h('div', {class: 'jp-rows'},
       go(tr('My CV', 'קורות החיים שלי'), cvCount ? tr(cvCount + ' saved', cvCount + ' שמורים') : tr('Build one in a few minutes', 'בונים תוך כמה דקות'), null, companionBase() + (he() ? '?page=cv' : '?lang=en&page=cv')),
+      (() => { let n = 0; try { n = ((JSON.parse(localStorage.getItem('momentum-companion-plus-v1') || '{}').afterChecks) || []).length; } catch (_) {}
+        return go(tr('After-discharge checklist', 'הרשימה אחרי השחרור'), tr(n + ' of 12 done', n + ' מתוך 12 בוצעו'), null, companionBase() + (he() ? '?page=afterlist' : '?lang=en&page=afterlist')); })(),
       go(tr('Goals and study plans', 'מטרות ותוכניות לימוד'), tr(p.goals.length + ' goals · ' + eduCount + ' study plans', p.goals.length + ' מטרות · ' + eduCount + ' תוכניות לימוד'), () => clickTab('goals')),
       fold('jpFoldShare', tr('Download PDF or send to a counselor', 'הורדת PDF או שליחה ליועץ/ת'), tr('You choose what goes in', 'אתה בוחר מה נכנס'), tools),
       fold('jpFoldLinks', tr('Saved links', 'קישורים שמורים'), linkCount ? tr(linkCount + ' saved', linkCount + ' שמורים') : tr('Forms and pages to come back to', 'טפסים ועמודים לחזור אליהם'), links),

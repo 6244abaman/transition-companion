@@ -572,3 +572,12 @@ html[data-motion="reduce"] .sim-mic.on { animation:none; }
 .sim-passed { display:flex;flex-wrap:wrap;gap:6px;align-items:center; }
 .sim-passed small { color:var(--text-3);font-weight:700; }
 .sim-pass { background:#DDF3E6;color:#2F8A5B;border-radius:99px;padding:4px 10px;font-size:13px;font-weight:700; }
+/* official links hub */
+.lh { display:flex;flex-direction:column;gap:14px; }
+.lh-group h2 { margin:0 0 6px;font-size:16px;color:var(--text-2); }
+.lh-list { background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
+.lh-row { display:flex;align-items:center;gap:12px;padding:12px 14px;color:var(--text);text-decoration:none;min-height:60px; }
+.lh-row + .lh-row { border-top:1px solid var(--border); }
+.lh-t { flex:1;min-width:0; } .lh-t b { display:block;font-size:15.5px; } .lh-t small { color:var(--text-3);font-size:13px; }
+.lh-go { color:#2E6B8A;font-weight:800;font-size:14px;direction:ltr; }
+.lh-row:active { background:var(--beige); }

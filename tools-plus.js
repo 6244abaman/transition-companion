@@ -689,6 +689,32 @@
       download('my-steps.ics', 'text/calendar', ics(acts.map((a, k) => { const [y, m, d] = a.dueDate.slice(0, 10).split('-').map(Number); return {id: 'step' + k, date: new Date(y, m - 1, d), title: a.title, text: a.notes || ''}; })));
     }
 
+    /* ================= OFFICIAL LINKS HUB ================= */
+    function linksHub() {
+      const OL = (KB && KB.data && KB.data.official_links) || {};
+      const row = (ill, title, sub, href, tel) => h('a', {class: 'lh-row', href: tel ? 'tel:' + tel : href, target: tel ? undefined : '_blank', rel: tel ? undefined : 'noopener noreferrer'},
+        illu(ill, 36), h('span', {class: 'lh-t'}, h('b', {}, title), h('small', {}, sub)), h('span', {class: 'lh-go', 'aria-hidden': 'true'}, tel ? tel : '↗'));
+      const group = (title, ...rows) => h('section', {class: 'lh-group'}, h('h2', {}, title), h('div', {class: 'lh-list'}, ...rows.filter(Boolean)));
+      return h('div', {class: 'lh'},
+        note(tr('Only official sites and verified numbers. Bookmark this page — it is the shortest way to the right place.', 'רק אתרים רשמיים ומספרים שנבדקו. כדאי לשמור את הדף — זו הדרך הקצרה למקום הנכון.')),
+        group(tr('Rights and money', 'זכויות וכסף'),
+          row('wallet', tr('Personal area — Division for Discharged Soldiers', 'האזור האישי — האגף לחיילים משוחררים'), tr('Grant, deposit, requests', 'מענק, פיקדון, בקשות'), OL.personal_area || HACHVANA),
+          row('shield', tr('National Insurance (Bituach Leumi)', 'ביטוח לאומי'), tr('Exemption, unemployment, preferred work', 'פטור, אבטלה, עבודה מועדפת'), OL.bituach_leumi),
+          row('briefcase', tr('Preferred work grant — official page', 'מענק עבודה מועדפת — העמוד הרשמי'), tr('Conditions and list of jobs', 'תנאים ורשימת עבודות'), OL.preferred_work),
+          row('percent', tr('Israel Tax Authority', 'רשות המסים'), tr('Tax points and refunds', 'נקודות זיכוי והחזרי מס'), OL.taxes),
+          row('bus', tr('Free public transport', 'נסיעות חינם בתחבורה ציבורית'), tr('How to update Rav-Kav', 'איך מעדכנים רב-קו'), OL.transport)),
+        group(tr('Studies and work', 'לימודים ועבודה'),
+          row('cap', tr('Mimadim — study funding', 'ממדים ללימודים'), tr('Eligibility and registration', 'זכאות והרשמה'), OL.mimadim),
+          row('pencil', tr('Psychometric test — NITE', 'מבחן פסיכומטרי — מאל"ו'), tr('Dates and registration', 'מועדים והרשמה'), 'https://www.nite.org.il/'),
+          row('compass', tr('Career assessment and guidance', 'אבחון תעסוקתי והכוונה'), tr('Through the Division (subsidised)', 'דרך האגף (בהשתתפות)'), OL.agaf_keren || HACHVANA),
+          row('users', tr('Youth centres — map and list', 'מרכזי צעירים — מפה ורשימה'), tr('Free guidance near you (Kol Zchut)', 'ליווי חינם ליד הבית (כל זכות)'), 'https://www.kolzchut.org.il/he/%D7%9E%D7%A8%D7%9B%D7%96%D7%99_%D7%A6%D7%A2%D7%99%D7%A8%D7%99%D7%9D_%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C')),
+        group(tr('Someone to talk to', 'מישהו לדבר איתו'),
+          row('phone', tr('ERAN — emotional first aid', 'ער"ן — עזרה ראשונה נפשית'), tr('Free, anonymous, 24/7', 'חינם, אנונימי, 24/7'), null, '1201'),
+          row('heart', tr('NATAL — trauma helpline', 'נט"ל — קו סיוע לטראומה'), tr('For soldiers and their families', 'לחיילים ולבני המשפחה'), null, '1-800-363-363'),
+          row('users', tr('"Amit" programme — Ministry of Defence', 'תכנית "עמית" — משרד הביטחון'), tr('Support for those who served in the war — via the Division', 'תמיכה למי ששירת במלחמה — דרך האגף'), OL.agaf_keren || HACHVANA)),
+        verify());
+    }
+
     /* ================= TOOLS HUB ================= */
     const GROUPS = () => [
       [tr('Money and dates', 'כסף ומועדים'), [
@@ -701,7 +727,8 @@
         ['afterlist', 'check', tr('After-discharge list', 'רשימה אחרי השחרור'), tr('12 things, tick as you go', '12 דברים, מסמנים תוך כדי')],
         ['contacts', 'person', tr('Phone numbers & places', 'טלפונים ומקומות'), tr('Call, save, navigate', 'חיוג, שמירה, ניווט')],
         ['explain', 'help', tr('Explain a letter', 'להסביר מכתב רשמי'), tr('Paste it, get plain words', 'מדביקים ומקבלים הסבר פשוט')],
-        ['glossary', 'info', tr('Glossary & questions', 'מילון ושאלות'), tr('Bureaucracy in plain words', 'בירוקרטיה במילים פשוטות')]]],
+        ['glossary', 'info', tr('Glossary & questions', 'מילון ושאלות'), tr('Bureaucracy in plain words', 'בירוקרטיה במילים פשוטות')],
+        ['links', 'linkic', tr('Official links', 'קישורים רשמיים'), tr('Every official site in one place', 'כל האתרים הרשמיים במקום אחד')]]],
       [tr('Work and studies', 'עבודה ולימודים'), [
         ['cv', 'file', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי')],
         ['letters', 'send', tr('Ready letters', 'מכתבים מוכנים'), tr('Cover note, 106, thanks', 'מכתב מקדים, 106, תודה')],
@@ -719,7 +746,7 @@
         ['install', 'logo', tr('App on my phone', 'אפליקציה בטלפון'), tr('Home-screen icon', 'אייקון במסך הבית')]]]
     ];
     const TOOL_ICON = {interviewsim: 'talk', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'file', total: 'calc', afterlist: 'listcheck', contacts: 'phone', explain: 'file', glossary: 'book', letters: 'file', fieldquiz: 'compass', studypaths: 'cap', scholarships: 'award', psychometric: 'book', interviewprep: 'talk', apartment: 'building', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phone', budget: 'calc', links: 'linkic', start: 'map', prefcheck: 'briefcase', missing: 'listcheck', weekly: 'calendar', cv: 'file', coach: 'talk', action: 'flag'};
-    const TOOL_ILLU = {interviewsim: 'talk', cv: 'pen', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'letter', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
+    const TOOL_ILLU = {links: 'link', interviewsim: 'talk', cv: 'pen', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'letter', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
     const illu = (name, size, cls) => { const sp = h('span', {class: 'plus-illu ' + (cls || ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu ? window.MomentumIllu(name, size) : ''; return sp; };
     function tools() {
       const wrap = h('div');
@@ -734,14 +761,14 @@
 
     return {
       pages: {tools, deadlines, deposit: depositPlanner, grantplan: grantPlanner, afterlist: checklistPage, contacts, scholarships, payslip, glossary,
-        total, psychometric, interviewprep: interview, apartment, insurance, letters, explain: explainLetter, fieldquiz: fieldQuiz, studypaths: studyPaths, lost: lostDirection, summary, install},
+        total, psychometric, interviewprep: interview, links: linksHub, apartment, insurance, letters, explain: explainLetter, fieldquiz: fieldQuiz, studypaths: studyPaths, lost: lostDirection, summary, install},
       heads: {
         tools: {icon: 'bulb', title: ['My tools', 'הכלים שלי']}, deadlines: {icon: 'calendar', title: ['My dates', 'המועדים שלי']},
         deposit: {icon: 'coins', title: ['Deposit planner', 'מתכנן פיקדון']}, grantplan: {icon: 'gift', title: ['Grant planner', 'מתכנן מענק']},
         afterlist: {icon: 'check', title: ['After discharge', 'אחרי השחרור']}, contacts: {icon: 'person', title: ['Numbers & places', 'טלפונים ומקומות']},
         scholarships: {icon: 'compass', title: ['Scholarships', 'מלגות']}, payslip: {icon: 'wallet', title: ['My payslip', 'התלוש שלי']},
         glossary: {icon: 'info', title: ['Glossary', 'מילון']},
-        total: {icon: 'bag', title: ['Everything I may get', 'כל מה שאולי מגיע לי']}, psychometric: {icon: 'calendar', title: ['Psychometric planner', 'מתכנן פסיכומטרי']}, interviewprep: {icon: 'talk', title: ['Interview practice', 'תרגול ראיון']},
+        total: {icon: 'bag', title: ['Everything I may get', 'כל מה שאולי מגיע לי']}, psychometric: {icon: 'calendar', title: ['Psychometric planner', 'מתכנן פסיכומטרי']}, interviewprep: {icon: 'talk', title: ['Interview practice', 'תרגול ראיון']}, links: {icon: 'linkic', title: ['Official links', 'קישורים רשמיים']},
         apartment: {icon: 'home', title: ['First apartment', 'דירה ראשונה']}, insurance: {icon: 'bookmark', title: ['Insurance', 'ביטוחים']},
         letters: {icon: 'send', title: ['Ready letters', 'מכתבים מוכנים']}, explain: {icon: 'help', title: ['Explain a letter', 'להסביר מכתב']},
         fieldquiz: {icon: 'compass', title: ['Which field fits me?', 'איזה תחום מתאים לי?']}, studypaths: {icon: 'bulb', title: ['Study paths', 'מסלולי לימוד']},
