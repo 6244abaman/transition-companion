@@ -196,7 +196,7 @@
         const lbl = root.querySelector('.sim-score strong'); if (lbl) lbl.textContent = score >= 8 ? tr('Strong answer!', 'תשובה חזקה!') : score >= 6 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד'); }
       const fixes = Array.isArray(j.fix) ? j.fix.slice(0, 3) : [];
       box.replaceChildren(h('div', {class: 'sim-ai-card'},
-        h('div', {class: 'sim-ai-head'}, illu('talk', 38), h('div', {}, h('small', {}, tr('The interviewer thinks', 'המראיין חושב')), h('p', {class: 'sim-verdict'}, String(j.verdict || ''))), score ? null),
+        h('div', {class: 'sim-ai-head'}, illu('talk', 38), h('div', {}, h('small', {}, tr('The interviewer thinks', 'המראיין חושב')), h('p', {class: 'sim-verdict'}, String(j.verdict || '')))),
         Array.isArray(j.good) && j.good.length ? h('div', {class: 'sim-ai-good'}, h('b', {}, tr('What works', 'מה עובד')), h('ul', {}, j.good.slice(0, 2).map(x => h('li', {}, String(x))))) : null,
         fixes.length ? h('div', {class: 'sim-ai-fixes'}, h('b', {}, tr('What to change', 'מה לשנות')), ...fixes.map(f => h('div', {class: 'sim-ai-fix'},
           f.quote ? h('p', {class: 'sim-q'}, '"' + String(f.quote) + '"') : null, h('p', {}, String(f.why || '')), f.instead ? h('p', {class: 'sim-instead'}, h('b', {}, tr('Instead: ', 'במקום: ')), String(f.instead)) : null))) : null,
