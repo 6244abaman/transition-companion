@@ -118,7 +118,7 @@
       ],
       "deadline": "Within 42 months of discharge",
       "amount_2026_number": 11461,
-      "work_period": "6 full months of work or 150 working days",
+      "work_period": "6 full months (and 150 work days), full-time as usual in the sector — generally 8 hours a day. For lower hours, check eligibility at *6050.",
       "official_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
       "extra_links": [
         {
@@ -126,7 +126,12 @@
           "url": "https://www.btl.gov.il/LandingPages/HayalMesocrar/Pages/default.aspx"
         }
       ],
-      "description": "A one-time grant for those who worked 6 full months (or 150 working days) full-time in defined sectors."
+      "description": "A one-time grant for those who worked 6 full months (or 150 working days) full-time in defined sectors.",
+      "amount_as_of": "2026-01-01",
+      "partial_agriculture_number": 7641,
+      "rates_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/%D7%A9%D7%99%D7%A2%D7%95%D7%A8%D7%99%20%D7%94%D7%A7%D7%A6%D7%91%D7%94.aspx",
+      "checked": "2026-11-27",
+      "partial_note": "Those who worked 4 months (100 work days) in agriculture or packing houses get a partial grant of 7,641 ₪ (from 1 Jan 2026). Anyone who received unemployment benefit in the 11 months before the work gets a reduced grant."
     },
     "public_transport_free": {
       "name_he": "Free public transport",

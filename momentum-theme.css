@@ -280,3 +280,37 @@ details[open] > summary .plus-right-chev { transform:rotate(-90deg) !important; 
 .plus-right-body { padding:0 16px 14px;border-top:1px solid var(--border); }
 .plus-right-body > p:first-child { margin-top:12px; }
 .plus-group-title { font-size:15px;font-weight:700;color:var(--text-2);margin:18px 2px 8px; }
+/* scholarships (27 Nov 2026) */
+.plus-sch { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin:0 0 10px; }
+.plus-sch-top { display:flex;align-items:flex-start;justify-content:space-between;gap:8px; }
+.plus-sch-top strong { font-size:16px; }
+.plus-sch p { margin:6px 0; }
+.plus-sch-meta { font-size:14px;color:var(--text-2); }
+.plus-badge-ok, .plus-badge-check { flex:0 0 auto;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap; }
+.plus-badge-ok { background:#DCEBDD;color:#1E5631; }
+.plus-badge-check { background:#FBEFD5;color:#7A4B00; }
+.plus-group-title { display:flex;align-items:center;gap:8px; }
+/* ---------- Topic colours for icons (brief §6.1/§25.1): soft circle + deeper glyph, calm not rainbow ---------- */
+.topic-money   { background:#DCEFE2 !important; color:#1F6B3A !important; }
+.topic-study   { background:#DDE8F6 !important; color:#1F4E8C !important; }
+.topic-work    { background:#FBE6D4 !important; color:#9A4A0E !important; }
+.topic-transport { background:#FDE7CF !important; color:#A14F00 !important; }
+.topic-health  { background:#F8E1E5 !important; color:#9B2C42 !important; }
+.topic-tasks   { background:#E9E4F6 !important; color:#4E3E8F !important; }
+.topic-journey { background:#FBEFD2 !important; color:#8A5A00 !important; }
+.topic-home    { background:#DDEFF0 !important; color:#1E6268 !important; }
+.topic-warn    { background:#FBEFD2 !important; color:#8A5A00 !important; }
+.plus-home-icon.plus-ico { width:46px;height:46px;border-radius:50%;display:inline-grid;place-items:center; }
+.plus-home-icon.plus-ico svg { width:26px;height:26px; }
+.plus-right-ico svg, .plus-tool-ico svg { width:22px !important;height:22px !important; }
+.plus-ico-dot { width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;flex:0 0 auto; }
+.plus-ico-dot svg { width:18px;height:18px; }
+.plus-tools-group h2 { display:flex;align-items:center;gap:8px; }
+html[data-theme="dark"] [class*="topic-"] { filter:saturate(.8) brightness(.9); }
+.plus-illu { display:inline-block;line-height:0;flex:0 0 auto; }
+.plus-illu svg { display:block; }
+.plus-tool .plus-tool-illu { margin-bottom:2px; }
+.plus-home-btn .plus-home-illu { margin-bottom:4px; }
+.plus-right-sum .plus-right-illu, .plus-row-card .plus-row-illu { flex:0 0 auto; }
+.plus-distress { display:inline-flex !important;align-items:center;justify-content:center;gap:10px; }
+.plus-distress-illu svg { width:30px;height:30px; }

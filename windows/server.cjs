@@ -12,7 +12,7 @@ const STATE = path.join(ROOT, '.local', 'runtime.json');
 const publicFiles = new Set([
   'index.html', 'indexH.html', 'my-journey.html', 'skills-business.html',
   'onboarding.css', 'onboarding.js', 'chat-history.js', 'companion-home.js', 'companion-home.css',
-  'companion-plus.js', 'tools-plus.js', 'companion-plus.css', 'knowledge-base.js', 'knowledge-base-data.js', 'knowledge-base-full.json', 'journey-plus.js', 'journey-plus.css',
+  'companion-plus.js', 'tools-plus.js', 'safe-dom.js', 'illustrations.js', 'pdf-maker.js', 'momentum-sans-regular.ttf', 'momentum-sans-bold.ttf', 'momentum-sans-OFL.txt', 'companion-plus.css', 'knowledge-base.js', 'knowledge-base-data.js', 'knowledge-base-full.json', 'journey-plus.js', 'journey-plus.css',
   'momentum-theme.css', 'benefits-updates.js', 'benefits-updates.css', 'benefits-updates.json',
   'ai-consent.js', 'response-schema.js', 'skills-source.js', 'companion-safety.js',
   'journey-store.js', 'journey-backup.js', 'journey-reminders.js', 'journey-rights.js',
@@ -20,7 +20,7 @@ const publicFiles = new Set([
   'manifest.json', 'service-worker.js', 'apple-touch-icon.png', 'icon-192.png',
   'icon-512.png', 'companion-mentor.jpeg'
 ]);
-const mime = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.json':'application/json', '.txt':'text/plain', '.png':'image/png', '.jpeg':'image/jpeg', '.webmanifest':'application/manifest+json'};
+const mime = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.json':'application/json', '.txt':'text/plain', '.png':'image/png', '.jpeg':'image/jpeg', '.webmanifest':'application/manifest+json', '.ttf':'font/ttf'};
 const server = http.createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');

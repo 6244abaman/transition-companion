@@ -199,7 +199,7 @@
       h('h1', {class: 'plus-head-title'}, meta.title ? tr(meta.title[0], meta.title[1]) : ''),
       h('button', {type: 'button', class: 'plus-back', 'aria-label': tr('Back', 'חזרה'), onclick: goBack}, icon('back')));
     const body = render();
-    if (FOLD_PAGES.includes(id)) foldSections(body);
+    if (FOLD_PAGES.includes(id)) foldSections(body, FOLD_TOPIC[id], id);
     page.append(head, h('div', {class: 'plus-inner'}, body, privacyLine()));
     page.hidden = false;
     page.dir = he() ? 'rtl' : 'ltr';
@@ -209,14 +209,16 @@
   }
   // Long information pages: every titled card becomes a tidy fold (icon + title, opens on tap).
   const FOLD_PAGES = ['work', 'studies', 'travel', 'family', 'interview'];
-  const FOLD_ICONS = ['briefcase', 'star', 'bulb', 'compass', 'talk', 'person', 'bookmark', 'info'];
-  function foldSections(root) {
+  const FOLD_ICONS = ['briefcase', 'award', 'file', 'listcheck', 'talk', 'users', 'book', 'info'];
+  const FOLD_TOPIC = {work: 'work', studies: 'study', travel: 'transport', family: 'health', interview: 'work'};
+  const FOLD_ILLU = {work: ['briefcase', 'checklist', 'signpost', 'pen', 'receipt', 'talk', 'users', 'compass'], studies: ['cap', 'book', 'pencil', 'signpost', 'award', 'calc', 'checklist'], travel: ['map', 'piggy', 'shield', 'checklist', 'phone', 'compass'], family: ['users', 'heart', 'talk', 'house', 'checklist'], interview: ['talk', 'pen', 'checklist', 'award', 'users']};
+  function foldSections(root, topic, pageId) {
     const disc = root.querySelector(':scope > .plus-disclaimer'); if (disc) root.append(disc);
     [...root.querySelectorAll(':scope > section.plus-card, :scope > .plus-card')].forEach((sec, i) => {
       const t = sec.querySelector(':scope > h2, :scope > h3'); if (!t || sec.tagName === 'DETAILS') return;
       const d = h('details', {class: 'plus-card plus-right-fold'});
       for (const a of sec.attributes) if (a.name !== 'class') d.setAttribute(a.name, a.value);
-      const sum = h('summary', {class: 'plus-right-sum'}, icon(FOLD_ICONS[i % FOLD_ICONS.length], 'plus-right-ico'), h('span', {class: 'plus-right-head'}, h('strong', {}, t.textContent)), icon('chevron', 'plus-right-chev'));
+      const sum = h('summary', {class: 'plus-right-sum'}, (FOLD_ILLU[pageId] ? illu(FOLD_ILLU[pageId][i % FOLD_ILLU[pageId].length], 44, 'plus-right-illu') : icon(FOLD_ICONS[i % FOLD_ICONS.length], 'plus-right-ico topic-' + (topic || 'tasks'))), h('span', {class: 'plus-right-head'}, h('strong', {}, t.textContent)), icon('chevron', 'plus-right-chev'));
       t.remove();
       const bodyBox = h('div', {class: 'plus-right-body'}); while (sec.firstChild) bodyBox.append(sec.firstChild);
       d.append(sum, bodyBox); sec.replaceWith(d);
@@ -264,6 +266,26 @@
 
   /* Line icons (static markup, no user data). Stroke uses currentColor. */
   const SVG = {
+    // Duotone "illustrated" icons (27 Nov 2026) — filled shapes in the topic colour, used inside soft circles.
+    banknote: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="currentColor" opacity=".28"/><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="6.2" cy="12" r="1" fill="currentColor"/><circle cx="17.8" cy="12" r="1" fill="currentColor"/></svg>',
+    piggy: '<svg viewBox="0 0 24 24"><path d="M5 11.5C5 8 8.2 6 12 6c1.5 0 2.9.3 4 .9l2.4-1.4-.5 2.9c1 .9 1.6 2 1.8 3.1H21v3h-1.6c-.5 1.1-1.3 2-2.4 2.6V20h-2.6l-.6-1.4c-.6.1-1.2.2-1.8.2s-1.3-.1-1.9-.2L9.6 20H7v-2.6C5.8 16.3 5 14.4 5 11.5Z" fill="currentColor" opacity=".3"/><path d="M5 11.5C5 8 8.2 6 12 6c1.5 0 2.9.3 4 .9l2.4-1.4-.5 2.9c1 .9 1.6 2 1.8 3.1H21v3h-1.6c-.5 1.1-1.3 2-2.4 2.6V20h-2.6l-.6-1.4c-.6.1-1.2.2-1.8.2s-1.3-.1-1.9-.2L9.6 20H7v-2.6C5.8 16.3 5 14.4 5 11.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="10.5" r="1" fill="currentColor"/><path d="M10 7.8h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 11.5H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    percent: '<svg viewBox="0 0 24 24"><path d="M12 2.8l2.2 1.6 2.7-.1.8 2.6 2.2 1.6-.9 2.5.9 2.5-2.2 1.6-.8 2.6-2.7-.1L12 21.2l-2.2-1.6-2.7.1-.8-2.6-2.2-1.6.9-2.5-.9-2.5 2.2-1.6.8-2.6 2.7.1L12 2.8Z" fill="currentColor" opacity=".3"/><path d="M12 2.8l2.2 1.6 2.7-.1.8 2.6 2.2 1.6-.9 2.5.9 2.5-2.2 1.6-.8 2.6-2.7-.1L12 21.2l-2.2-1.6-2.7.1-.8-2.6-2.2-1.6.9-2.5-.9-2.5 2.2-1.6.8-2.6 2.7.1L12 2.8Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 15l6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9.3" cy="9.3" r="1.3" fill="currentColor"/><circle cx="14.7" cy="14.7" r="1.3" fill="currentColor"/></svg>',
+    bus: '<svg viewBox="0 0 24 24"><rect x="4.5" y="3.5" width="15" height="15" rx="3" fill="currentColor" opacity=".3"/><rect x="4.5" y="3.5" width="15" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4.5 11h15" stroke="currentColor" stroke-width="1.5"/><rect x="7" y="6" width="10" height="3" rx="1" fill="currentColor"/><circle cx="8" cy="15" r="1.2" fill="currentColor"/><circle cx="16" cy="15" r="1.2" fill="currentColor"/><path d="M7 18.5V20.5M17 18.5V20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    shield: '<svg viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3Z" fill="currentColor" opacity=".3"/><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    cap: '<svg viewBox="0 0 24 24"><path d="M2.5 9L12 4.5 21.5 9 12 13.5 2.5 9Z" fill="currentColor" opacity=".35"/><path d="M2.5 9L12 4.5 21.5 9 12 13.5 2.5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6.5 11v4.2c0 1.7 2.5 3.3 5.5 3.3s5.5-1.6 5.5-3.3V11" fill="currentColor" opacity=".2"/><path d="M6.5 11v4.2c0 1.7 2.5 3.3 5.5 3.3s5.5-1.6 5.5-3.3V11M21 9.3v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    users: '<svg viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.3" fill="currentColor" opacity=".35"/><circle cx="9" cy="8.5" r="3.3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 19.5c.6-3.4 3-5.3 6-5.3s5.4 1.9 6 5.3" fill="currentColor" opacity=".25"/><path d="M3 19.5c.6-3.4 3-5.3 6-5.3s5.4 1.9 6 5.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="16.5" cy="9.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M17 14.4c2.3.3 3.7 1.9 4 4.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    building: '<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="1.5" fill="currentColor" opacity=".3"/><rect x="5" y="3.5" width="14" height="17" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 7.5h2M13.5 7.5h2M8.5 11h2M13.5 11h2M8.5 14.5h2M13.5 14.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10.5 20.5v-3h3v3" fill="currentColor"/></svg>',
+    flag: '<svg viewBox="0 0 24 24"><path d="M6 4h10.5l-2 4 2 4H6V4Z" fill="currentColor" opacity=".35"/><path d="M6 21V4h10.5l-2 4 2 4H6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    listcheck: '<svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3" fill="currentColor" opacity=".25"/><rect x="3.5" y="3.5" width="17" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9l1.5 1.5L11 8M7 14.5l1.5 1.5L11 13.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 9.5h3.5M13.5 15h3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    phone: '<svg viewBox="0 0 24 24"><path d="M7.3 3.5l2.4 3.7-1.6 2.2c.9 2.2 2.4 3.7 4.6 4.6l2.2-1.6 3.7 2.4-1 3.2c-.3.9-1.2 1.5-2.2 1.4C9.3 18.8 5.2 14.7 4.6 8.6c-.1-1 .5-1.9 1.4-2.2l1.3-2.9Z" fill="currentColor" opacity=".35"/><path d="M7.3 3.5l2.4 3.7-1.6 2.2c.9 2.2 2.4 3.7 4.6 4.6l2.2-1.6 3.7 2.4-1 3.2c-.3.9-1.2 1.5-2.2 1.4C9.3 18.8 5.2 14.7 4.6 8.6c-.1-1 .5-1.9 1.4-2.2l1.3-2.9Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    file: '<svg viewBox="0 0 24 24"><path d="M6.5 3h7.5l4.5 4.5V21h-12V3Z" fill="currentColor" opacity=".28"/><path d="M6.5 3h7.5l4.5 4.5V21h-12V3Z M14 3v4.5h4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12h6M9 15h6M9 18h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    book: '<svg viewBox="0 0 24 24"><path d="M3.5 5.5c3-1 5.8-.7 8.5 1v13c-2.7-1.7-5.5-2-8.5-1v-13Z" fill="currentColor" opacity=".35"/><path d="M20.5 5.5c-3-1-5.8-.7-8.5 1v13c2.7-1.7 5.5-2 8.5-1v-13Z" fill="currentColor" opacity=".18"/><path d="M3.5 5.5c3-1 5.8-.7 8.5 1 2.7-1.7 5.5-2 8.5-1v13c-3-1-5.8-.7-8.5 1-2.7-1.7-5.5-2-8.5-1v-13ZM12 6.5v13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    calc: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5" fill="currentColor" opacity=".28"/><rect x="5" y="3" width="14" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="7.5" y="5.5" width="9" height="3.5" rx="1" fill="currentColor"/><circle cx="9" cy="12.5" r="1" fill="currentColor"/><circle cx="12" cy="12.5" r="1" fill="currentColor"/><circle cx="15" cy="12.5" r="1" fill="currentColor"/><circle cx="9" cy="16" r="1" fill="currentColor"/><circle cx="12" cy="16" r="1" fill="currentColor"/><circle cx="15" cy="16" r="1" fill="currentColor"/></svg>',
+    award: '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5" fill="currentColor" opacity=".3"/><circle cx="12" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8.7 13.4L7.5 21l4.5-2.4 4.5 2.4-1.2-7.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 6.5l.8 1.6 1.7.2-1.3 1.2.3 1.7-1.5-.8-1.5.8.3-1.7-1.3-1.2 1.7-.2.8-1.6Z" fill="currentColor"/></svg>',
+    lifebuoy: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="currentColor" opacity=".25"/><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 6l3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    map: '<svg viewBox="0 0 24 24"><path d="M3.5 6l5.5-2 6 2 5.5-2v14l-5.5 2-6-2-5.5 2V6Z" fill="currentColor" opacity=".28"/><path d="M3.5 6l5.5-2 6 2 5.5-2v14l-5.5 2-6-2-5.5 2V6ZM9 4v14M15 6v14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    linkic: '<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+    handcoins: '<svg viewBox="0 0 24 24"><circle cx="15.5" cy="7" r="3.5" fill="currentColor" opacity=".35"/><circle cx="15.5" cy="7" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 14.5h3l3.5-1.5h4c.9 0 1.5.6 1.5 1.4 0 .8-.6 1.4-1.5 1.4H11l5.5-.3 3-2c.7-.4 1.5-.2 1.8.5.2.5 0 1-.4 1.4L15.5 20H6l-3-.5v-5Z" fill="currentColor" opacity=".25"/><path d="M3 14.5h3l3.5-1.5h4c.9 0 1.5.6 1.5 1.4 0 .8-.6 1.4-1.5 1.4H11l5.5-.3 3-2c.7-.4 1.5-.2 1.8.5.2.5 0 1-.4 1.4L15.5 20H6l-3-.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
     wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h14.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18V7.5Z"/><path d="M4 7.5 15.5 4.2a1 1 0 0 1 1.3 1V7.5"/><path d="M20 11.5h-3.5a1.5 1.5 0 0 0 0 3H20"/></svg>',
     briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="17" height="12" rx="2"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M3.5 12.5h17"/><path d="M11 12.5v1.5h2v-1.5"/></svg>',
     talk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><circle cx="8.5" cy="11" r=".9" fill="currentColor"/><circle cx="12" cy="11" r=".9" fill="currentColor"/><circle cx="15.5" cy="11" r=".9" fill="currentColor"/></svg>',
@@ -294,6 +316,12 @@
     info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8h.01"/></svg>'
   };
   const icon = (name, cls) => { const s = h('span', {class: 'plus-ico' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true'}); s.innerHTML = SVG[name] || ''; return s; };
+  // Illustrated icons (illustrations.js). Falls back to the line icon when the illustration set is missing.
+  const ILLU_FOR = {bag: 'piggy', bulb: 'footsteps', listcheck: 'checklist', check: 'checklist', calendar: 'calendar', heart: 'heart'};
+  const illu = (name, size, cls, fallback) => {
+    if (!window.MomentumIllu || !window.MomentumIllu(name)) return icon(fallback || name, cls);
+    const sp = h('span', {class: 'plus-illu' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu(name, size || 44); return sp;
+  };
   window.MomentumPlusIcon = icon;
   // Header on Home: mountain logo + gear (the existing "More" menu). AI consent settings move into that menu.
   const bar = document.querySelector('header.bar');
@@ -328,10 +356,10 @@
 
   // Order matches the reference: (RTL) top-right, top-left, bottom-right, bottom-left.
   const HOME_BUTTONS = [
-    {id: 'rights', icon: 'wallet', he: ['מה מגיע לי', '(מענק, פיקדון, נקודות זיכוי)', 'מענק, פיקדון, נקודות זיכוי ועוד — בשפה פשוטה.'], en: ['What I am entitled to', '(grant, deposit, tax points)', 'Grant, deposit, tax points and more — in plain words.']},
-    {id: 'practical', icon: 'briefcase', he: ['עבודה / לימודים / כסף', '', 'קורות חיים, לימודים, תקציב, טיול ומשפחה.'], en: ['Work / studies / money', '', 'CV, studies, budget, travel and family.']},
-    {id: 'feel', icon: 'talk', he: ['איך אני מרגיש עכשיו', '', 'לדבר, לפרוק, או לבדוק מה שלומך — בלי שיפוט.'], en: ['How I feel right now', '', 'Talk, vent or check in with yourself — no judgment.']},
-    {id: 'journey', icon: 'compass', he: ['המסע שלי', '', 'המטרות, הכישורים והצעדים שלך במקום אחד.'], en: ['My Journey', '', 'Your goals, skills and steps in one place.']}
+    {id: 'rights', icon: 'wallet', illu: 'wallet', topic: 'money', he: ['מה מגיע לי', '(מענק, פיקדון, נקודות זיכוי)', 'מענק, פיקדון, נקודות זיכוי ועוד — בשפה פשוטה.'], en: ['What I am entitled to', '(grant, deposit, tax points)', 'Grant, deposit, tax points and more — in plain words.']},
+    {id: 'practical', icon: 'briefcase', illu: 'briefcase', topic: 'study', he: ['עבודה / לימודים / כסף', '', 'קורות חיים, לימודים, תקציב, טיול ומשפחה.'], en: ['Work / studies / money', '', 'CV, studies, budget, travel and family.']},
+    {id: 'feel', icon: 'heart', illu: 'heart', topic: 'health', he: ['איך אני מרגיש עכשיו', '', 'לדבר, לפרוק, או לבדוק מה שלומך — בלי שיפוט.'], en: ['How I feel right now', '', 'Talk, vent or check in with yourself — no judgment.']},
+    {id: 'journey', icon: 'map', illu: 'map', topic: 'journey', he: ['המסע שלי', '', 'המטרות, הכישורים והצעדים שלך במקום אחד.'], en: ['My Journey', '', 'Your goals, skills and steps in one place.']}
   ];
   function homeAction(id) {
     if (id === 'journey') { location.href = journeyUrl('overview'); return; }
@@ -362,9 +390,14 @@
   }
 
   /* -------- compact rows: estimate + small step -------- */
+  function distressBtn() {
+    const b = btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress');
+    b.prepend(illu('lifebuoy', 30, 'plus-distress-illu', 'heart'));
+    return b;
+  }
   function rowCard(cls, iconName, label, value, onclick, note) {
     return h('button', {type: 'button', class: 'plus-row-card ' + cls, onclick},
-      icon(iconName, 'plus-row-ico'), h('span', {class: 'plus-row-text'}, h('small', {}, label, note ? h('em', {}, ' · ' + note) : null), h('strong', {}, value)), icon('chevron', 'plus-row-chev'));
+      ILLU_FOR[iconName] ? illu(ILLU_FOR[iconName], 40, 'plus-row-illu', iconName) : icon(iconName, 'plus-row-ico'), h('span', {class: 'plus-row-text'}, h('small', {}, label, note ? h('em', {}, ' · ' + note) : null), h('strong', {}, value)), icon('chevron', 'plus-row-chev'));
   }
   function estimateRow() {
     if (!KB) return null;
@@ -409,13 +442,13 @@
     HOME_BUTTONS.forEach(b => {
       const [title, detail, why] = he() ? b.he : b.en;
       grid.append(h('button', {type: 'button', class: 'plus-home-btn', 'data-home': b.id, title: why, onclick: () => homeAction(b.id)},
-        icon(b.icon, 'plus-home-icon'), h('strong', {}, title, detail ? h('span', {class: 'plus-home-detail'}, detail) : null), h('span', {class: 'plus-sr'}, why)));
+        illu(b.illu, 52, 'plus-home-illu', b.icon), h('strong', {}, title, detail ? h('span', {class: 'plus-home-detail'}, detail) : null), h('span', {class: 'plus-sr'}, why)));
     });
     plusHome.append(grid);
     if (!P.infoOnly) plusHome.append(h('button', {type: 'button', class: 'plus-chat-entry', onclick: () => goChat()}, h('span', {}, tr('Talk with the Companion', 'דבר עם המלווה')), icon('chat')));
     const est = P.hidden.includes('home:estimate') ? null : estimateRow();
-    put(plusHome, est, todayRow(), PAGES.tools ? rowCard('plus-sage plus-tools-row', 'calendar', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
-    plusHome.append(btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'));
+    put(plusHome, est, todayRow(), PAGES.tools ? rowCard('plus-sage plus-tools-row', 'listcheck', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
+    plusHome.append(distressBtn());
     const cards = h('div', {class: 'plus-cards'});
     const wn = whatsNewCard(); if (wn) cards.append(wn);
     const rec = recommendationCard(); if (rec) cards.append(rec);
@@ -541,13 +574,14 @@
   }
 
   function rightCard(c) {
-    const RIGHT_ICON = {discharge_grant: 'gift', personal_deposit: 'coins', tax_credit_points: 'star', preferred_work_grant: 'briefcase', public_transport_free: 'compass', arnona: 'home', bituach_leumi_exemption: 'wallet', unemployment: 'wallet', mimadim_lelimudim: 'bulb', lone_soldiers_extra: 'person'};
+    const RIGHT_ILLU = {discharge_grant: 'banknote', personal_deposit: 'piggy', tax_credit_points: 'percent', preferred_work_grant: 'briefcase', public_transport_free: 'bus', arnona: 'house', bituach_leumi_exemption: 'shield', unemployment: 'coins', income_support: 'coins', mimadim_lelimudim: 'cap', lone_soldiers_extra: 'users'};
+    const RIGHT_ICON = {discharge_grant: ['banknote', 'money'], personal_deposit: ['piggy', 'money'], tax_credit_points: ['percent', 'money'], preferred_work_grant: ['briefcase', 'work'], public_transport_free: ['bus', 'transport'], arnona: ['building', 'home'], bituach_leumi_exemption: ['shield', 'health'], unemployment: ['handcoins', 'money'], income_support: ['handcoins', 'money'], mimadim_lelimudim: ['cap', 'study'], lone_soldiers_extra: ['users', 'journey']};
     const e = P.service && P.monthsServed ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
     const key = c.id === 'discharge_grant' && e && e.grant ? '≈ ' + money(e.grant) : c.id === 'personal_deposit' && e && e.deposit ? '≈ ' + money(e.deposit)
       : c.id === 'preferred_work_grant' && KB.data.rights_and_benefits.preferred_work_grant.amount_2026_number ? money(KB.data.rights_and_benefits.preferred_work_grant.amount_2026_number) : '';
     const first = c.lines[0] || '';
     const details = h('details', {class: 'plus-card plus-right plus-right-fold', 'data-right': c.id},
-      h('summary', {class: 'plus-right-sum'}, icon(RIGHT_ICON[c.id] || 'info', 'plus-right-ico'),
+      h('summary', {class: 'plus-right-sum'}, (RIGHT_ILLU[c.id] ? illu(RIGHT_ILLU[c.id], 44, 'plus-right-illu') : icon((RIGHT_ICON[c.id] || ['info'])[0], 'plus-right-ico topic-' + ((RIGHT_ICON[c.id] || [, 'tasks'])[1]))),
         h('span', {class: 'plus-right-head'}, h('strong', {}, c.title), h('small', {}, key || (first.length > 70 ? first.slice(0, 68) + '…' : first))),
         icon('chevron', 'plus-right-chev')));
     const box = h('div', {class: 'plus-right-body'});
@@ -645,7 +679,7 @@
       const sentences = KB && KB.data && KB.data.emotional_support.normalization_sentences;
       if (sentences) put(wrap, section(tr('Good to know', 'כדאי לדעת'), list(sentences)));
       put(wrap, section(tr('Common after discharge', 'דברים שמוכרים לרבים אחרי השחרור'), list(KB && KB.data ? KB.data.emotional_support.common_challenges : [])),
-        btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'),
+        distressBtn(),
         h('div', {class: 'plus-row'}, btn(tr('Relationships & family', 'מערכות יחסים ומשפחה'), () => showPage('family'), 'plus-link')));
       return wrap;
     },
@@ -703,7 +737,7 @@
       const cards = KB.rightsCards().filter(c => c.cat === 'money' || c.id === 'preferred_work_grant').filter(c => !P.hidden.includes('right:' + c.id));
       return h('div', {}, h('h1', {class: 'plus-title plus-sr'}, tr('Money', 'כסף')), rightsSummary(), grantVsDeposit(),
         h('h2', {class: 'plus-group-title'}, tr('Details — tap to open', 'הפרטים — לוחצים כדי לפתוח')), ...cards.map(rightCard),
-        h('details', {class: 'plus-card plus-right-fold'}, h('summary', {class: 'plus-right-sum'}, icon('bulb', 'plus-right-ico'), h('span', {class: 'plus-right-head'}, h('strong', {}, tr('Saving and budget tips', 'טיפים לחיסכון ותקציב')), h('small', {}, tr('General tips, not financial advice.', 'טיפים כלליים, לא ייעוץ פיננסי.'))), icon('chevron', 'plus-right-chev')),
+        h('details', {class: 'plus-card plus-right-fold'}, h('summary', {class: 'plus-right-sum'}, illu('coins', 44, 'plus-right-illu'), h('span', {class: 'plus-right-head'}, h('strong', {}, tr('Saving and budget tips', 'טיפים לחיסכון ותקציב')), h('small', {}, tr('General tips, not financial advice.', 'טיפים כלליים, לא ייעוץ פיננסי.'))), icon('chevron', 'plus-right-chev')),
           h('div', {class: 'plus-right-body'}, list(KB.GUIDES.savingsTips))),
         h('div', {class: 'plus-row'}, PAGES.tools ? btn(tr('Grant planner', 'מתכנן מענק'), () => showPage('grantplan'), 'plus-btn') : null, PAGES.tools ? btn(tr('Deposit planner', 'מתכנן פיקדון'), () => showPage('deposit'), 'plus-btn') : null,
           askButton('money', tr('Help me plan a simple budget for my grant.', 'תעזור לי לתכנן תקציב פשוט למענק שלי.'))), disclaimer());
@@ -895,7 +929,7 @@
   /* ---------------- help & settings ---------------- */
   function helpPage() {
     const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Help', 'עזרה')));
-    put(wrap, btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress'), humanHelpSection());
+    put(wrap, distressBtn(), humanHelpSection());
     if ($('btnHelp')) put(wrap, btn(tr('More support options in the app', 'אפשרויות תמיכה נוספות באפליקציה'), () => { hidePage(); goChat(); $('btnHelp').click(); }, 'plus-link'));
     // Display
     const sel = (id, value, opts, onchange) => { const s = h('select', {id, onchange}); opts.forEach(([v, l]) => s.append(h('option', {value: v, selected: v === value || undefined}, l))); return s; };
@@ -1133,7 +1167,7 @@
   function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); paintChatHead(); if (!hub.hidden) renderHome(); }
   if (window.MomentumTools) {
     try {
-      const T = window.MomentumTools({h, btn, tr, he, icon, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton});
+      const T = window.MomentumTools({h, btn, tr, he, icon, illu, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton});
       Object.assign(PAGES, T.pages); Object.assign(PAGE_HEAD, T.heads);
     } catch (e) { console.warn('tools', e); }
   }

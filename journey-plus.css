@@ -104,3 +104,28 @@ button.primary,.button.primary { background:#2F5A46;border-color:#2F5A46; }
 .jp-nav a[aria-current="page"]::before { content:"";position:absolute;inset:6px 10%;background:#E3EBDD;border-radius:14px;z-index:-1; }
 @media (min-width:900px) { .jp-nav { inset-inline:auto;left:50%;transform:translateX(-50%);width:min(560px,96vw);border-radius:18px 18px 0 0; } }
 @media print { .jp-nav,#jpTop { display:none !important; } }
+/* 27 Nov 2026 — calendar day sheet, today, progress stats, empty state */
+.jp-today { border:2px solid var(--accent, #2E4A40) !important; background:#DFE7D3 !important; color:#17201B; }
+.jp-sel { outline:3px solid #C9A227; outline-offset:1px; }
+.jp-dot { position:absolute; inset-inline-end:4px; bottom:4px; min-width:8px; height:8px; border-radius:999px; background:#2E4A40; color:#fff; font-size:9px; line-height:8px; padding:0 2px; }
+.jp-dot:not(:empty) { height:14px; line-height:14px; min-width:14px; font-size:10px; }
+.jp-daysheet { margin-top:12px; padding:12px 14px; border:1px solid #DDD3C0; border-radius:16px; background:#FFF; }
+.jp-daysheet-title { display:block; margin-bottom:6px; color:#2E4A40; }
+.jp-daylist { list-style:none; margin:0 0 8px; padding:0; }
+.jp-daylist li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid #EDE6D8; }
+.jp-daylist li label { display:flex; align-items:center; gap:8px; flex:1; }
+.jp-daylist li.is-done span { text-decoration:line-through; color:#525B54; }
+.jp-daylist input[type=date] { max-width:150px; padding:6px 8px; border:1px solid #B9AD95; border-radius:10px; font:inherit; font-size:13px; }
+.jp-dayadd { display:flex; gap:8px; margin-top:6px; }
+.jp-dayadd input { flex:1; min-width:0; padding:10px 12px; border:1px solid #B9AD95; border-radius:12px; font:inherit; }
+.jp-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
+.jp-stat { background:#DFE7D3; border-radius:14px; padding:10px 6px; text-align:center; }
+.jp-stat strong { display:block; font-size:22px; color:#2E4A40; }
+.jp-stat span { font-size:12.5px; color:#3A433D; }
+.jp-quickadd { display:grid; gap:8px; }
+.jp-empty-msg { margin:0; color:#3A433D; }
+html[data-theme="dark"] :is(.jp-daysheet,.jp-stat) { background:#1b2124; color:var(--ink); border-color:#374146; }
+html[data-theme="dark"] .jp-today { background:#1f3530 !important; color:var(--ink); }
+/* Overview tidy-up: the new top section already shows goal, next steps and counts — hide the duplicate legacy blocks */
+#view-overview > .stats, #view-overview > .grid { display:none !important; }
+#view-overview > .card:has(#introHeading) { display:none !important; }

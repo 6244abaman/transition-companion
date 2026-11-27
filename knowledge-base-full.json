@@ -116,7 +116,7 @@
       ],
       "deadline": "תוך 42 חודשים מהשחרור",
       "amount_2026_number": 11461,
-      "work_period": "6 חודשי עבודה מלאים או 150 ימי עבודה",
+      "work_period": "6 חודשים מלאים (ו-150 ימי עבודה), במשרה מלאה כנהוג בענף — ככלל 8 שעות ביום. בהיקף נמוך יותר אפשר לברר זכאות במוקד ‎*6050.",
       "official_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
       "extra_links": [
         {
@@ -124,7 +124,12 @@
           "url": "https://www.btl.gov.il/LandingPages/HayalMesocrar/Pages/default.aspx"
         }
       ],
-      "description": "מענק חד-פעמי למי שעבד 6 חודשים מלאים (או 150 ימי עבודה) במשרה מלאה בענפים מוגדרים."
+      "description": "מענק חד-פעמי למי שעבד 6 חודשים מלאים (או 150 ימי עבודה) במשרה מלאה בענפים מוגדרים.",
+      "amount_as_of": "2026-01-01",
+      "partial_agriculture_number": 7641,
+      "rates_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/%D7%A9%D7%99%D7%A2%D7%95%D7%A8%D7%99%20%D7%94%D7%A7%D7%A6%D7%91%D7%94.aspx",
+      "checked": "2026-11-27",
+      "partial_note": "מי שעבד 4 חודשים (100 ימי עבודה) בחקלאות או בבתי אריזה מקבל מענק חלקי של 7,641 ₪ (מ-1.1.2026). מי שקיבל דמי אבטלה ב-11 החודשים שלפני העבודה מקבל מענק מופחת."
     },
     "public_transport_free": {
       "name_he": "נסיעות חינם בתחבורה ציבורית",

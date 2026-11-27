@@ -74,6 +74,21 @@
   const todayKey = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   let selectedDay = todayKey();
 
+  // Empty state: add the first step right here, with clear feedback (brief §1.5, §4).
+  function quickAdd() {
+    const input = h('input', {type: 'text', maxlength: '160', placeholder: tr('e.g. Check my grant arrived', 'למשל: לבדוק שהמענק הגיע'), 'aria-label': tr('First small step', 'צעד ראשון קטן')});
+    const ideas = [tr('Check my grant arrived', 'לבדוק שהמענק הגיע'), tr('Give form 101 at work', 'למסור טופס 101 בעבודה'), tr('Update my Rav-Kav profile', 'לעדכן פרופיל ברב-קו')];
+    const add = t => {
+      t = (t || input.value).trim(); if (!t) { input.focus(); return; }
+      if (attempt(() => Store.upsert('actions', {title: t, status: 'todo', dueDate: todayKey()})) !== null) { say(tr('Your first step is saved ✓', 'הצעד הראשון שלך נשמר ✓')); paintAll(); }
+    };
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+    return h('div', {class: 'jp-quickadd'},
+      h('p', {class: 'jp-empty-msg'}, tr('No steps here yet. Want to add a small step for today?', 'עדיין אין כאן צעדים. רוצה להוסיף צעד קטן להיום?')),
+      h('div', {class: 'jp-dayadd'}, input, h('button', {type: 'button', class: 'button primary', onclick: () => add()}, tr('Add', 'הוספה'))),
+      h('div', {class: 'jp-chips'}, ideas.map(t => h('button', {type: 'button', class: 'jp-chip jp-chip-add', onclick: () => add(t)}, '+ ' + t))));
+  }
+
   function paintTop(p) {
     const goal = p.goals.find(g => g.status === 'active') || p.goals.find(g => g.status !== 'achieved');
     const goalCard = h('div', {class: 'jp-goal'},
@@ -85,7 +100,7 @@
     const stepsBox = h('div', {class: 'jp-steps'}, steps.length ? steps.map(a => h('label', {class: 'jp-step' + (a.status === 'done' ? ' jp-step-done' : '')},
       h('span', {class: 'jp-step-title'}, a.title),
       h('input', {type: 'checkbox', checked: a.status === 'done' || undefined, onchange: e => { attempt(() => Store.upsert('actions', {...a, status: e.target.checked ? 'done' : 'todo'})); say(e.target.checked ? tr('Well done ✓', 'כל הכבוד ✓') : tr('Updated', 'עודכן')); paintAll(); }}))) :
-      [h('button', {type: 'button', class: 'jp-step jp-step-add', onclick: () => { const add = document.querySelector('[data-add="actions"]'); if (add) add.click(); }}, tr('+ Add a first small step', '+ הוספת צעד ראשון קטן'))]);
+      [quickAdd()]);
     const skillNames = [...p.skills.filter(x => x.confirmed && x.evidence).map(x => he() ? (x.he || x.en) : (x.en || x.he)),
       ...(p.lifeSkills || []).map(x => he() ? (x.he || x.en) : (x.en || x.he)), ...(p.manualSkills || []).map(x => x.name)].filter(Boolean);
     const skillsBox = h('div', {class: 'jp-chips'}, skillNames.length ? skillNames.slice(0, 8).map(n => h('span', {class: 'jp-chip'}, n)) :
@@ -100,7 +115,7 @@
       const b = h('button', {type: 'button', class: 'jp-wday' + (k === selectedDay ? ' jp-wday-on' : ''), 'aria-pressed': String(k === selectedDay), onclick: () => { selectedDay = k; paintAll(); }},
         h('span', {}, names[d.getDay()] + "'"), h('strong', {}, String(d.getDate())), h('i', {class: items.length ? 'jp-wdot' : 'jp-wdot jp-wdot-empty'}));
       days.append(b);
-      if (k === selectedDay) detail.append(...(items.length ? items.map(a => h('p', {}, (a.status === 'done' ? '✓ ' : '• ') + a.title)) : [h('p', {class: 'muted mini'}, tr('Nothing planned for this day.', 'אין צעדים מתוכננים ליום הזה.'))]));
+      if (k === selectedDay) detail.append(daySheet(p, k));
     }
     // order days so the first (today) is at the start side; reference shows today highlighted in the middle area
     const link = (p.links || [])[0];
@@ -132,16 +147,44 @@
     const total = p.actions.length, done = p.actions.filter(a => a.status === 'done').length;
     const pct = total ? Math.round(done / total * 100) : 0;
     const list = he() ? ENCOURAGE_HE : ENCOURAGE_EN;
+    const weekAgo = Date.now() - 7 * 864e5;
+    const doneWeek = p.actions.filter(a => a.status === 'done' && Date.parse(a.updatedAt || a.createdAt || 0) >= weekAgo).length;
+    const activeGoals = p.goals.filter(g => g.status !== 'achieved').length;
+    const open = total - done;
+    const stat = (n, label) => h('div', {class: 'jp-stat'}, h('strong', {}, String(n)), h('span', {}, label));
     progress.replaceChildren(
       h('h2', {}, tr('Your progress', 'ההתקדמות שלך')),
-      total ? h('p', {class: 'jp-big'}, tr(done + ' of ' + total + ' steps', done + ' מתוך ' + total + ' צעדים')) : h('p', {class: 'muted'}, tr('Add a first small step — it can be tiny.', 'אפשר להוסיף צעד ראשון קטן — אפילו קטן מאוד.')),
+      h('div', {class: 'jp-stats'}, stat(activeGoals, tr('active goals', 'מטרות פעילות')), stat(open, tr('open steps', 'צעדים פתוחים')), stat(doneWeek, tr('done this week', 'הושלמו השבוע'))),
       h('div', {class: 'jp-bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct), 'aria-label': tr('Steps completed', 'צעדים שהושלמו')}, h('div', {class: 'jp-fill', style: 'width:' + pct + '%'})),
-      h('p', {class: 'muted'}, list[(done + total) % list.length] + (pct === 100 && total ? ' 🎉' : '')),
+      h('p', {class: 'muted'}, total ? list[(done + total) % list.length] + (pct === 100 ? ' 🎉' : '') : tr('No steps yet — that is completely fine. One small step is enough to start.', 'עדיין אין צעדים — זה בסדר גמור. מספיק צעד קטן אחד כדי להתחיל.')),
       h('div', {class: 'actions'}, h('a', {class: 'button', href: companionUrl()}, tr('← Companion home', '→ לבית המלווה')))
     );
   }
 
+  // One day: its steps (move to another day, mark done) + add a step for this day (brief §1.1, §4.3).
+  function daySheet(p, k) {
+    const items = p.actions.filter(a => a.dueDate === k);
+    const nice = (() => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {weekday: 'long', day: 'numeric', month: 'long'}); })();
+    const input = h('input', {type: 'text', maxlength: '160', placeholder: tr('A small step for this day…', 'צעד קטן ליום הזה…'), 'aria-label': tr('New step', 'צעד חדש')});
+    const add = () => {
+      const t = input.value.trim(); if (!t) { input.focus(); return; }
+      if (attempt(() => Store.upsert('actions', {title: t, status: 'todo', dueDate: k})) !== null) { say(tr('Step added to ' + nice + ' ✓', 'הצעד נוסף ל' + nice + ' ✓')); selectedDay = k; paintAll(); }
+    };
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+    return h('div', {class: 'jp-daysheet'},
+      h('strong', {class: 'jp-daysheet-title'}, nice),
+      items.length ? h('ul', {class: 'jp-daylist'}, items.map(a => {
+        const move = h('input', {type: 'date', value: a.dueDate || '', 'aria-label': tr('Move to another day', 'להעביר ליום אחר')});
+        move.addEventListener('change', () => { if (!move.value) return; attempt(() => Store.upsert('actions', {...a, dueDate: move.value})); say(tr('Step moved ✓', 'הצעד הועבר ✓')); paintAll(); });
+        const cb = h('input', {type: 'checkbox', checked: a.status === 'done' || undefined, 'aria-label': tr('Done', 'בוצע')});
+        cb.addEventListener('change', () => { attempt(() => Store.upsert('actions', {...a, status: cb.checked ? 'done' : 'todo'})); say(cb.checked ? tr('Well done ✓', 'כל הכבוד ✓') : tr('Updated', 'עודכן')); paintAll(); });
+        return h('li', {class: a.status === 'done' ? 'is-done' : ''}, h('label', {}, cb, h('span', {}, safeDisplay(a.title))), move);
+      })) : h('p', {class: 'muted mini'}, tr('Nothing planned for this day yet.', 'עוד אין צעדים ליום הזה.')),
+      h('div', {class: 'jp-dayadd'}, input, h('button', {type: 'button', class: 'button', onclick: add}, tr('Add', 'הוספה'))));
+  }
+
   let monthOffset = 0;
+  let calSelected = todayKey();
   function paintCalendar(p) {
     const base = new Date(); base.setDate(1); base.setMonth(base.getMonth() + monthOffset);
     const y = base.getFullYear(), m = base.getMonth();
@@ -157,11 +200,16 @@
     for (let d = 1; d <= days; d++) {
       const items = byDay[key(d)] || [];
       const cell = h('button', {type: 'button', class: 'jp-day' + (key(d) === todayKey ? ' jp-today' : '') + (items.length ? ' jp-has' : ''), role: 'gridcell',
-        'aria-label': d + (items.length ? ' — ' + items.length + tr(' steps', ' צעדים') : ''), onclick: () => {
-          detail.replaceChildren(...(items.length ? items.map(a => h('p', {}, (a.status === 'done' ? '✓ ' : '• ') + a.title)) : [h('p', {class: 'muted'}, tr('Nothing planned for this day.', 'אין צעדים מתוכננים ליום הזה.'))]));
-        }}, String(d), items.length ? h('span', {class: 'jp-dot', 'aria-hidden': 'true'}) : null);
+        'aria-label': d + (key(d) === todayKey ? tr(' (today)', ' (היום)') : '') + (items.length ? ' — ' + items.length + tr(' steps', ' צעדים') : ''), 'aria-current': key(d) === todayKey ? 'date' : null, onclick: () => {
+          calSelected = key(d);
+          grid.querySelectorAll('.jp-sel').forEach(x => x.classList.remove('jp-sel')); cell.classList.add('jp-sel');
+          detail.replaceChildren(daySheet(p, calSelected));
+        }}, String(d), items.length ? h('span', {class: 'jp-dot', 'aria-hidden': 'true'}, items.length > 1 ? String(items.length) : '') : null);
+      if (key(d) === calSelected) cell.classList.add('jp-sel');
       grid.append(cell);
     }
+    if (calSelected.startsWith(key(1).slice(0, 7))) detail.replaceChildren(daySheet(p, calSelected));
+    else detail.replaceChildren(h('p', {class: 'muted mini'}, tr('Tap a day to see or add steps.', 'לוחצים על יום כדי לראות או להוסיף צעדים.')));
     const title = base.toLocaleDateString(he() ? 'he-IL' : 'en-GB', {month: 'long', year: 'numeric'});
     const undated = p.actions.filter(a => !a.dueDate && a.status !== 'done').length;
     calendar.replaceChildren(h('div', {class: 'topline'}, h('h2', {}, tr('Calendar of planned steps', 'לוח שנה של צעדים מתוכננים')),

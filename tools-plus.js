@@ -238,31 +238,61 @@
       return wrap;
     }
 
-    /* ================= SCHOLARSHIPS ================= */
-    const SCHOLARSHIPS = [
-      {name: 'ממדים ללימודים', en: 'Mimadim (Uniform to Studies)', url: 'https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx', note: tr('Up to full tuition for eligible soldiers (combat, lone soldiers and more).', 'עד מימון מלא של שכר הלימוד לזכאים (לוחמים, בודדים ועוד).')},
-      {name: 'מלגות פריפריה ("גרים בפריפריה")', en: 'Periphery scholarships'},
-      {name: 'ייעוד', en: 'Yiud'}, {name: 'IMPACT!', en: 'IMPACT!'}, {name: 'מיל-GO', en: 'Mil-GO (reservists)'},
-      {name: 'קרן הישג', en: 'Heseg Foundation (lone soldiers)'}, {name: 'קרן גרוס', en: 'Gross Foundation'}, {name: 'מלגות אלי כהן', en: 'Eli Cohen scholarships'},
-      {name: 'מפעל הפיס', en: 'Mifal HaPais'}, {name: 'רוטשילד', en: 'Rothschild'}, {name: 'עתידים', en: 'Atidim'}, {name: 'הזנק לעתיד', en: 'Hazanek LeAtid'},
-      {name: 'אייסף', en: 'ISEF'}, {name: 'מלגות של המוסד ושל העירייה', en: 'Your institution and municipality'}
+    /* ================= SCHOLARSHIPS (checked 27 Nov 2026) =================
+       Only an official page counts as a link. Anything not yet confirmed is shown as "To check" — never a Google search. */
+    const CHECKED = '2026-11-27';
+    const SCH = () => [
+      {group: 'gov', name: tr('Mimadim (Uniform to Studies)', 'ממדים ללימודים'), url: 'https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx', src: tr('Division for Discharged Soldiers', 'האגף לחיילים משוחררים'),
+        desc: tr('Full tuition for the degree for eligible soldiers. Since May 2026 it can be combined with Mil-GO.', 'מימון שכר לימוד מלא לתואר לזכאים. ממאי 2026 אפשר לשלב עם מיל-GO.'), who: tr('Combat; lone soldiers, new immigrants, minorities, families receiving family payments', 'לוחמים; חיילים בודדים, עולים, בני מיעוטים, מקבלי תשלומי משפחה'), when: tr('Changes each year — see the official page', 'מועד משתנה — לפי העמוד הרשמי')},
+      {group: 'gov', name: tr('Mil-GO (Council for Higher Education)', 'מיל-GO (המל"ג)'), url: '', src: tr('CHE / Ministry of Education', 'המל"ג / משרד החינוך'),
+        desc: tr('Need-based study grant in several tiers, for degree, mechina or practical-engineer studies.', 'מלגה לפי מצב סוציו-אקונומי, בכמה מדרגות, לתואר, מכינה או הנדסאים.'), who: tr('Students at recognised institutions', 'סטודנטים במוסדות מוכרים'), when: tr('The next round will be announced by the CHE', 'מועד ההרשמה הבא יפורסם על ידי המל"ג')},
+      {group: 'periphery', name: tr('Yiud 44 — studying in the periphery', 'ייעוד 44 — לומדים בפריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%91%D7%90%D7%96%D7%95%D7%A8%D7%99_%D7%A1%D7%99%D7%95%D7%A2_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
+        desc: tr('First-year tuition for a bachelor\'s degree at an institution in a support area. No volunteering.', 'מימון שנה א\' לתואר ראשון במוסד שנמצא באזור סיוע. בלי התנדבות.'), who: tr('Discharged soldiers who completed service; reservists and lone soldiers up to 10 years', 'משוחררים שהשלימו שירות; מילואים ובודדים עד 10 שנים'), when: tr('Through the personal area after the institution reports', 'דרך האזור האישי, אחרי שהמוסד מדווח')},
+      {group: 'periphery', name: tr('Yiud 45 — periphery residents', 'ייעוד 45 — תושבי פריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%95%D7%A1%D7%99%D7%95%D7%A2_%D7%91%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99_%D7%94%D7%9E%D7%AA%D7%92%D7%95%D7%A8%D7%A8%D7%99%D7%9D_%D7%91%D7%A4%D7%A8%D7%99%D7%A4%D7%A8%D7%99%D7%94', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
+        desc: tr('Help funding the first year of a degree for those who live in a support area.', 'סיוע במימון שנה א\' לתואר למי שגר באזור סיוע.'), who: tr('Discharged soldiers and national-service graduates living in the periphery', 'משוחררים ומסיימי שירות לאומי שגרים בפריפריה'), when: tr('Registration dates are published each year by the Division', 'מועדי ההרשמה מתפרסמים כל שנה באתר האגף')},
+      {group: 'periphery', name: tr('Yiud 46 — mechina graduates from the periphery', 'ייעוד 46 — בוגרי מכינה מהפריפריה'), url: '', src: tr('Division for Discharged Soldiers', 'האגף לחיילים משוחררים'),
+        desc: tr('For periphery residents who completed a Division-funded pre-academic mechina.', 'לתושבי פריפריה שסיימו מכינה במימון האגף.'), who: tr('Periphery', 'פריפריה'), when: tr('Changes', 'מועד משתנה')},
+      {group: 'funds', name: 'IMPACT! (FIDF)', url: 'https://www.fidf.org/impact', src: 'FIDF',
+        desc: tr('A scholarship for each study year plus mentoring, with about 130 volunteer hours a year.', 'מלגה לכל שנת לימוד ועוד ליווי, עם כ-130 שעות התנדבות בשנה.'), who: tr('Combat and combat support, by socio-economic need', 'לוחמים ותומכי לחימה, לפי מצב סוציו-אקונומי'), when: tr('Usually 1 March – 31 May', 'בדרך כלל 1 במרץ – 31 במאי')},
+      {group: 'funds', name: tr('HESEG Foundation', 'קרן הישג'), url: 'https://www.heseg.com', src: tr('HESEG', 'קרן הישג'),
+        desc: tr('Tuition and living support for the whole degree.', 'מלגת שכר לימוד וקיום לאורך התואר.'), who: tr('Lone soldiers (not children of emissaries), usually within 2 years of discharge', 'חיילים בודדים (לא בני שליחים), בדרך כלל עד שנתיים מהשחרור'), when: tr('Usually 1 March – end of June', 'בדרך כלל 1 במרץ – סוף יוני')},
+      {group: 'funds', name: tr('Gruss Foundation', 'קרן גרוס'), url: '', src: tr('Gruss Foundation', 'קרן גרוס'),
+        desc: tr('Help for studies; requires having used part of the deposit and no other funding.', 'סיוע ללימודים; צריך לנצל חלק מהפיקדון ולא לקבל מימון אחר.'), who: tr('Lone soldiers, periphery, Ethiopian-Israelis, Haredim, minorities — within 5 years of discharge', 'בודדים, פריפריה, יוצאי אתיופיה, חרדים, בני מיעוטים — עד 5 שנים מהשחרור'), when: tr('For 2026-27: 15 Sep – 15 Dec 2026 (per a scholarship listing)', 'לתשפ"ז: 15.9.26 – 15.12.26 (לפי לוח מלגות)')},
+      {group: 'funds', name: tr('Mifal HaPais scholarships', 'מלגות מפעל הפיס'), url: 'https://www.pais.co.il', src: tr('Mifal HaPais', 'מפעל הפיס'),
+        desc: tr('Matching scholarships run through partner organisations and municipalities, usually with volunteering.', 'מלגות בשיתוף ארגונים ורשויות, בדרך כלל עם התנדבות.'), who: tr('Students at recognised institutions', 'סטודנטים במוסדות מוכרים'), when: tr('Changes', 'מועד משתנה')},
+      {group: 'funds', name: tr('Eli Cohen scholarships', 'מלגות אלי כהן'), url: '', src: '', desc: tr('Not confirmed yet.', 'עוד לא אומת.'), who: '', when: ''},
+      {group: 'funds', name: tr('Rothschild', 'רוטשילד'), url: '', src: '', desc: tr('Not confirmed yet.', 'עוד לא אומת.'), who: '', when: ''},
+      {group: 'funds', name: tr('Atidim', 'עתידים'), url: '', src: '', desc: tr('Not confirmed yet.', 'עוד לא אומת.'), who: '', when: ''},
+      {group: 'funds', name: tr('Hazanek LeAtid', 'הזנק לעתיד'), url: '', src: '', desc: tr('Not confirmed yet.', 'עוד לא אומת.'), who: '', when: ''},
+      {group: 'funds', name: tr('ISEF', 'אייסף'), url: '', src: '', desc: tr('For first-generation students from the social and geographic periphery — not confirmed yet.', 'לדור ראשון להשכלה גבוהה מהפריפריה — עוד לא אומת.'), who: '', when: ''},
+      {group: 'institution', name: tr('Your institution', 'המוסד שבו תלמד'), url: '', src: '', desc: tr('Every university and college has scholarships for discharged and combat soldiers. Ask the Dean of Students.', 'בכל אוניברסיטה ומכללה יש מלגות למשוחררים וללוחמים. שואלים בדקנט הסטודנטים.'), who: tr('Everyone', 'כולם'), when: tr('Each institution sets its own dates', 'כל מוסד קובע מועדים')},
+      {group: 'city', name: tr('Your municipality / youth centre', 'העירייה / מרכז הצעירים'), url: '', src: '', desc: tr('Many local authorities give scholarships to young residents. The youth centre can help you apply.', 'הרבה רשויות נותנות מלגות לצעירים תושבי המקום. מרכז הצעירים עוזר להגיש.'), who: tr('Residents', 'תושבים'), when: tr('Each authority sets its own dates', 'כל רשות קובעת מועדים')}
     ];
+    const SCH_GROUPS = () => [['gov', tr('Mimadim and government', 'ממדים וממשלה'), 'gift'], ['periphery', tr('Periphery', 'פריפריה'), 'home'], ['funds', tr('Foundations', 'קרנות'), 'star'], ['institution', tr('Your institution', 'מוסד הלימודים'), 'bulb'], ['city', tr('Municipality', 'עירייה'), 'person']];
     function scholarships() {
       const wrap = h('div');
       const q = h('input', {type: 'search', placeholder: tr('Search a scholarship…', 'חיפוש מלגה…'), 'aria-label': tr('Search scholarships', 'חיפוש מלגות')});
-      const ul = h('ul', {class: 'plus-contacts'});
+      const list = h('div');
+      const fmt = d => new Date(d).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'numeric', year: 'numeric'});
+      const card = s => h('article', {class: 'plus-sch'},
+        h('div', {class: 'plus-sch-top'}, h('strong', {}, s.name), s.url ? h('span', {class: 'plus-badge-ok'}, tr('Official link', 'קישור רשמי')) : h('span', {class: 'plus-badge-check'}, tr('To check', 'לבדיקה'))),
+        h('p', {}, s.desc),
+        s.who ? h('p', {class: 'plus-sch-meta'}, h('b', {}, tr('Who: ', 'למי: ')), s.who) : null,
+        s.when ? h('p', {class: 'plus-sch-meta'}, h('b', {}, tr('When: ', 'מתי: ')), s.when) : null,
+        h('p', {class: 'plus-sch-meta plus-muted'}, tr('Checked: ', 'נבדק: ') + fmt(CHECKED) + (s.src ? ' · ' + tr('Source: ', 'מקור: ') + s.src : '')),
+        h('div', {class: 'plus-row'}, s.url ? ext(tr('To the official page', 'לעמוד הרשמי'), s.url) : null,
+          btn(tr('Save in My Journey', 'שמור במסע שלי'), () => saveAction(tr('Check scholarship: ', 'לבדוק מלגה: ') + s.name, [s.desc, s.when, s.url].filter(Boolean).join('\n')), 'plus-btn')));
       const paint = () => {
         const t = q.value.trim().toLowerCase();
-        ul.replaceChildren(...SCHOLARSHIPS.filter(s => !t || (s.name + ' ' + s.en).toLowerCase().includes(t)).map(s => h('li', {},
-          h('div', {}, h('strong', {}, he() ? s.name : s.en), s.note ? h('small', {}, s.note) : null),
-          h('div', {class: 'plus-row'},
-            s.url ? ext(tr('Official site', 'אתר רשמי'), s.url) : ext(tr('Search online', 'חיפוש ברשת'), 'https://www.google.com/search?q=' + encodeURIComponent(s.name + ' מלגה חיילים משוחררים')),
-            btn(tr('Remind me', 'להזכיר לי'), () => saveAction(tr('Check scholarship: ', 'לבדוק מלגה: ') + (he() ? s.name : s.en), tr('Check eligibility, dates and documents.', 'לבדוק זכאות, מועדים ומסמכים.')), 'plus-link')))));
+        list.replaceChildren(...SCH_GROUPS().map(([g, title, ic]) => {
+          const items = SCH().filter(s => s.group === g && (!t || (s.name + ' ' + s.desc + ' ' + s.who).toLowerCase().includes(t)));
+          return items.length ? h('section', {class: 'plus-sch-group'}, h('h2', {class: 'plus-group-title'}, icon(ic, 'plus-ico-dot topic-study'), title), ...items.map(card)) : null;
+        }));
       };
       q.addEventListener('input', paint);
       put(wrap, section(tr('Scholarships for discharged soldiers', 'מלגות לחיילים משוחררים'),
-        note(tr('Dates and amounts change every year — check each one before applying. Combining government scholarships is usually limited.', 'מועדים וסכומים משתנים כל שנה — לבדוק כל מלגה לפני הגשה. שילוב של כמה מלגות ממשלתיות בדרך כלל מוגבל.')), q, ul),
-        h('div', {class: 'plus-row'}, ctx.askButton ? ctx.askButton('study', tr('Which scholarships might fit me?', 'אילו מלגות אולי מתאימות לי?')) : null));
+        note(tr('Dates and amounts change every year. "To check" means we have not confirmed an official page yet — ask the institution or a youth centre.', 'מועדים וסכומים משתנים כל שנה. "לבדיקה" אומר שעוד לא אימתנו עמוד רשמי — אפשר לשאול במוסד או במרכז הצעירים.')), q),
+        list, h('div', {class: 'plus-row'}, ctx.askButton ? ctx.askButton('study', tr('Which scholarships might fit me?', 'אילו מלגות אולי מתאימות לי?')) : null));
       paint();
       return wrap;
     }
@@ -619,12 +649,16 @@
         ['lost', 'heart', tr('Lost direction', 'איבדתי כיוון'), tr('Small steps, not a life plan', 'צעדים קטנים, לא תוכנית חיים')],
         ['install', 'logo', tr('App on my phone', 'אפליקציה בטלפון'), tr('Home-screen icon', 'אייקון במסך הבית')]]]
     ];
+    const TOOL_ICON = {deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'file', total: 'calc', afterlist: 'listcheck', contacts: 'phone', explain: 'file', glossary: 'book', letters: 'file', fieldquiz: 'compass', studypaths: 'cap', scholarships: 'award', psychometric: 'book', interviewprep: 'talk', apartment: 'building', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phone', budget: 'calc', links: 'linkic', start: 'map', prefcheck: 'briefcase', missing: 'listcheck', weekly: 'calendar', cv: 'file', coach: 'talk', action: 'flag'};
+    const TOOL_ILLU = {deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'pen', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
+    const illu = (name, size, cls) => { const sp = h('span', {class: 'plus-illu ' + (cls || ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu ? window.MomentumIllu(name, size) : ''; return sp; };
     function tools() {
       const wrap = h('div');
-      GROUPS().forEach(([title, items]) => {
+      GROUPS().forEach(([title, items], gi) => {
+        const topic = ['money', 'tasks', 'study', 'home', 'journey'][gi] || 'tasks';
         const grid = h('div', {class: 'plus-tools-grid'});
-        items.forEach(([id, ic, name, why]) => grid.append(h('button', {type: 'button', class: 'plus-tool', 'data-tool': id, onclick: () => showPage(id)}, icon(ic, 'plus-tool-ico'), h('strong', {}, name), h('small', {}, why))));
-        wrap.append(h('section', {class: 'plus-tools-group'}, h('h2', {}, title), grid));
+        items.forEach(([id, ic, name, why]) => grid.append(h('button', {type: 'button', class: 'plus-tool', 'data-tool': id, onclick: () => showPage(id)}, (window.MomentumIllu && TOOL_ILLU[id] ? illu(TOOL_ILLU[id], 44, 'plus-tool-illu') : icon(TOOL_ICON[id] || ic, 'plus-tool-ico topic-' + topic)), h('strong', {}, name), h('small', {}, why))));
+        wrap.append(h('section', {class: 'plus-tools-group'}, h('h2', {}, icon(['calc', 'listcheck', 'cap', 'building', 'flag'][gi] || 'info', 'plus-ico-dot topic-' + topic), title), grid));
       });
       return wrap;
     }
