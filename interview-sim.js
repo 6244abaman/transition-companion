@@ -105,7 +105,7 @@
       const t = String(ans || '').trim(), n = words(t).length, out = [], kind = kindOf(q || {}), [lo, hi] = LEN[kind] || [30, 170];
       const add = (ok, en, he_, fix_en, fix_he, weight) => out.push({ok, w: weight || 1, text: tr(en, he_), fix: ok ? '' : tr(fix_en, fix_he)});
       // 1. content that THIS question needs
-      if (kind === 'intro') { add(T.goal.test(t), 'Ends with what you are looking for', 'סוגר במה שאתה מחפש', 'Finish with one sentence: what you want now and why this place.', 'לסיים במשפט אחד: מה אתה מחפש עכשיו ולמה דווקא כאן.', 2); add(/\d|שירת|בצבא|השירות|army|service/i.test(t), 'Mentions your service briefly', 'מזכיר את השירות בקצרה', 'Add one sentence about what you did in service, in civilian words.', 'להוסיף משפט אחד על מה שעשית בשירות, במילים אזרחיות.'); }
+      if (kind === 'intro') { add(T.goal.test(t), 'Ends with what you are looking for', 'סוגר במה שאתה מחפש', 'Finish with one sentence: what you want now and why this place.', 'לסיים במשפט אחד: מה אתה מחפש עכשיו ולמה דווקא כאן.', 2); add(/\d|שירת|בצבא|בשירות|השירות|army|service|served/i.test(t) || has(t, JARGON).length > 0, 'Mentions your service briefly', 'מזכיר את השירות בקצרה', 'Add one sentence about what you did in service, in civilian words.', 'להוסיף משפט אחד על מה שעשית בשירות, במילים אזרחיות.'); }
       if (kind === 'army') { add(T.action.test(t), 'Your own actions', 'מה אתה עשית', 'Describe what YOU did, with action words: "I led", "I organised".', 'לתאר מה אתה עשית, עם פעלים: "הובלתי", "ארגנתי".', 2); add(/(למדתי|הבנתי|learned|taught me)/i.test(t), 'What you learned', 'מה למדת', 'Add: "From this I learned…".', 'להוסיף: "מזה למדתי…".', 2); }
       if (kind === 'story') { add(T.action.test(t), 'What YOU did (the action)', 'מה אתה עשית (הפעולה)', 'The heart of the story is your action: "I talked to…", "I decided…".', 'לב הסיפור הוא הפעולה שלך: "דיברתי עם…", "החלטתי…".', 2); add(T.result.test(t), 'The result', 'התוצאה', 'Finish with what came out of it or what you learned.', 'לסיים במה שיצא מזה או מה שלמדת.', 2); }
       if (kind === 'motivation') { add(T.company.test(t), 'About this role, not general', 'על התפקיד הזה, לא כללי', 'Say what attracts you to THIS role or field.', 'להגיד מה מושך אותך דווקא בתפקיד או בתחום הזה.', 2); add(!(T.money.test(t) && !T.company.test(t)), 'More than money', 'יותר מכסף', 'Money is fine to want, but lead with interest and fit.', 'מותר לרצות כסף, אבל לפתוח בעניין ובהתאמה.'); }
@@ -163,30 +163,72 @@
     };
     const qtext = () => { const q = st.qs[st.i]; return he() ? q.he : q.en; };
 
-    async function aiFeedback(box, answer) {
-      const q = qtext();
-      box.replaceChildren(h('p', {class: 'plus-muted'}, tr('Asking the AI (after your approval)…', 'שולח ל-AI (אחרי אישור שלך)…')));
+    /* ---------- the AI interviewer (the site's own AI, through the consent gate) ---------- */
+    const aiOn = () => !P.infoOnly && P.simAI !== false && typeof aiText === 'function';
+    const TRACK_NAME = id => { const t = TRACKS.find(x => x[0] === id); return t ? t[1] : 'Any job'; };
+    const parseJSON = raw => JSON.parse((String(raw).match(/\{[\s\S]*\}/) || [raw])[0]);
+    const coachSystem = () => [
+      he() ? 'You are a senior Israeli recruiter and interview coach. You are interviewing a discharged IDF soldier for a "' + TRACK_NAME(st.track) + '" job. Write natural, warm, direct Hebrew (spoken style, not formal).'
+           : 'You are a senior recruiter and interview coach interviewing a discharged Israeli soldier for a "' + TRACK_NAME(st.track) + '" job. Write natural, warm, direct English.',
+      'Rules: judge ONLY what the candidate actually said. Never invent facts, numbers, units or achievements. Quote their exact words when pointing at a problem. Be concrete like a real mentor — no generic advice.',
+      'Military terms must become civilian words an HR person understands. No classified detail.',
+      'Return ONLY valid JSON.'].join('\n');
+    async function aiFeedback(box, cur) {
+      const q = st.qs[st.i];
+      box.replaceChildren(h('div', {class: 'sim-ai-loading'}, h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {}, tr('The interviewer is reading your answer…', 'המראיין קורא את התשובה שלך…'))));
       try {
-        const system = [he() ? 'You are a warm, experienced Israeli job interviewer and coach for discharged soldiers. Reply in natural Hebrew.' : 'You are a warm, experienced job interviewer and coach for discharged Israeli soldiers. Reply in English.',
-          'Judge only the answer given. Never invent facts about the candidate. Be specific and kind, like a good mentor. Return ONLY JSON:',
-          '{"good":"one thing that works","improve":["2-3 concrete fixes"],"better":"a rewritten version of the SAME answer using only facts the candidate said, 60-110 words","followup":"one natural follow-up question an interviewer would ask next"}'].join('\n');
-        const raw = await aiText(system, 'Interview question: ' + q + '\nCandidate answer: ' + answer, 900);
-        const j = JSON.parse((raw.match(/\{[\s\S]*\}/) || [raw])[0]);
-        const cur = st.answers[st.i]; if (cur) cur.ai = j;
-        box.replaceChildren(
-          j.good ? h('p', {class: 'sim-good'}, h('b', {}, tr('Works well: ', 'עובד טוב: ')), String(j.good)) : null,
-          Array.isArray(j.improve) && j.improve.length ? h('div', {}, h('b', {}, tr('To improve:', 'לשפר:')), h('ul', {}, j.improve.slice(0, 3).map(x => h('li', {}, String(x))))) : null,
-          j.better ? h('div', {class: 'sim-better'}, h('b', {}, tr('A stronger version (your facts only):', 'גרסה חזקה יותר (רק העובדות שלך):')), h('p', {}, String(j.better)),
-            btn(tr('Use this version', 'להשתמש בגרסה הזו'), () => { const ta = root.querySelector('.sim-answer'); if (ta) { ta.value = String(j.better); ta.dispatchEvent(new Event('input')); } toast(tr('Updated — read it once and make sure it is true', 'עודכן — לקרוא פעם אחת ולוודא שזה נכון')); }, 'plus-btn')) : null,
-          j.followup ? h('div', {class: 'sim-follow'}, h('b', {}, tr('Follow-up question:', 'שאלת המשך:')), h('p', {}, String(j.followup)),
-            btn(tr('Practice it', 'לתרגל אותה'), () => { st.qs.splice(st.i + 1, 0, {kind: 'story', en: String(j.followup), he: String(j.followup), look: ['Answer briefly and concretely.', 'לענות קצר ומוחשי.']}); next(); }, 'plus-link')) : null);
+        const misses = cur.res.items.filter(x => !x.ok).map(x => x.text).join('; ');
+        const prompt = ['Question: ' + (he() ? q.he : q.en), 'What a good answer contains: ' + q.look[he() ? 1 : 0], 'Candidate answer: """' + cur.a + '"""',
+          'Automatic checks that failed: ' + (misses || 'none'), cur.sec ? 'Answer took ' + cur.sec + ' seconds.' : '',
+          'Return JSON: {"score":1-10,"verdict":"one honest sentence, like an interviewer thinking out loud","good":["1-2 specific strengths, quoting them"],"fix":[{"quote":"exact words from the answer or empty","why":"what an interviewer hears","instead":"what to say instead, using only their facts"}],"better":"the SAME answer rewritten to be strong, 60-110 words, only their facts, first person, natural speech","followup":"the next question a real interviewer would ask based on THIS answer"}'].filter(Boolean).join('\n');
+        const j = parseJSON(await aiText(coachSystem(), prompt, 1200));
+        cur.ai = j; renderAI(box, j, cur);
       } catch (e) {
-        box.replaceChildren(h('p', {class: 'plus-muted'}, e.canceled ? tr('Nothing was sent.', 'לא נשלח כלום.') : tr('AI feedback is not available right now — the checklist above still works.', 'משוב AI לא זמין כרגע — הבדיקה למעלה עדיין עובדת.')));
+        box.replaceChildren(h('div', {class: 'sim-ai-off'}, h('p', {}, e.canceled ? tr('You chose not to send — the local checks above still apply.', 'בחרת לא לשלוח — הבדיקות למעלה עדיין תקפות.') : tr('The AI interviewer is not available right now. The checks above still work.', 'המראיין ה-AI לא זמין כרגע. הבדיקות למעלה עדיין עובדות.')),
+          btn(tr('Try again', 'לנסות שוב'), () => aiFeedback(box, cur), 'plus-link')));
       }
     }
+    function renderAI(box, j, cur) {
+      const score = Math.max(1, Math.min(10, Number(j.score) || 0));
+      // one score on screen: once the interviewer answers, the ring shows the interviewer's score
+      const ring = root && root.querySelector('.sim-score .sim-ring');
+      if (ring && score) { ring.style.setProperty('--p', score * 10); ring.querySelector('b').textContent = score + '/10';
+        const lbl = root.querySelector('.sim-score strong'); if (lbl) lbl.textContent = score >= 8 ? tr('Strong answer!', 'תשובה חזקה!') : score >= 6 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד'); }
+      const fixes = Array.isArray(j.fix) ? j.fix.slice(0, 3) : [];
+      box.replaceChildren(h('div', {class: 'sim-ai-card'},
+        h('div', {class: 'sim-ai-head'}, illu('talk', 38), h('div', {}, h('small', {}, tr('The interviewer thinks', 'המראיין חושב')), h('p', {class: 'sim-verdict'}, String(j.verdict || ''))), score ? null),
+        Array.isArray(j.good) && j.good.length ? h('div', {class: 'sim-ai-good'}, h('b', {}, tr('What works', 'מה עובד')), h('ul', {}, j.good.slice(0, 2).map(x => h('li', {}, String(x))))) : null,
+        fixes.length ? h('div', {class: 'sim-ai-fixes'}, h('b', {}, tr('What to change', 'מה לשנות')), ...fixes.map(f => h('div', {class: 'sim-ai-fix'},
+          f.quote ? h('p', {class: 'sim-q'}, '"' + String(f.quote) + '"') : null, h('p', {}, String(f.why || '')), f.instead ? h('p', {class: 'sim-instead'}, h('b', {}, tr('Instead: ', 'במקום: ')), String(f.instead)) : null))) : null,
+        j.better ? h('div', {class: 'sim-better'}, h('b', {}, tr('Your answer, stronger (your facts only)', 'התשובה שלך, חזקה יותר (רק העובדות שלך)')), h('p', {}, String(j.better)),
+          h('div', {class: 'plus-row'}, btn(tr('Practise this version', 'לתרגל את הגרסה הזו'), () => { st.phase = 'ask'; st.prefill = String(j.better); paint(); }, 'plus-btn'),
+            btn(tr('Save to my CV draft', 'לשמור לקורות החיים'), () => saveToCv(String(j.better)), 'plus-link'))) : null,
+        j.followup ? h('p', {class: 'sim-next-hint'}, tr('The interviewer will follow up on this.', 'המראיין ימשיך עם שאלת המשך על זה.')) : null));
+    }
+    // After an answer: a real interviewer often digs deeper once, then moves on.
     function next() {
+      const cur = st.answers[st.i], q = st.qs[st.i];
+      if (aiOn() && cur && cur.ai && cur.ai.followup && !q.isFollow && !cur.followed) {
+        cur.followed = true;
+        st.qs.splice(st.i + 1, 0, {kind: 'story', isFollow: true, en: String(cur.ai.followup), he: String(cur.ai.followup), look: ['The interviewer is digging into your last answer — be specific.', 'המראיין מעמיק בתשובה הקודמת — כדאי להיות ספציפי.']});
+      }
       if (st.i < st.qs.length - 1) { st.i++; st.phase = 'ask'; paint(); setTimeout(() => speak(qtext()), 250); }
       else { st.phase = 'done'; paint(); }
+    }
+    async function aiReport(box) {
+      const done = st.answers.filter(a => a && a.a);
+      if (!done.length) return;
+      box.replaceChildren(h('div', {class: 'sim-ai-loading'}, h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {}, tr('The interviewer is writing a summary…', 'המראיין כותב סיכום…'))));
+      try {
+        const prompt = done.map((a, k) => (k + 1) + '. Q: ' + a.q + '\nA: ' + a.a).join('\n\n') +
+          '\n\nReturn JSON: {"ready":1-10,"headline":"one honest sentence about how this candidate comes across","strengths":["3 strengths seen in the answers, with evidence"],"work_on":["3 specific things to practise before a real interview"],"tip":"one concrete thing to do the day before the interview"}';
+        const j = parseJSON(await aiText(coachSystem(), prompt, 1200));
+        box.replaceChildren(h('div', {class: 'sim-ai-card sim-report'},
+          h('div', {class: 'sim-ai-head'}, illu('award', 40), h('div', {}, h('small', {}, tr('Interviewer summary', 'סיכום המראיין')), h('p', {class: 'sim-verdict'}, String(j.headline || ''))), j.ready ? h('b', {class: 'sim-ai-score'}, Math.max(1, Math.min(10, Number(j.ready))) + '/10') : null),
+          Array.isArray(j.strengths) ? h('div', {class: 'sim-ai-good'}, h('b', {}, tr('Your strengths', 'החוזקות שלך')), h('ul', {}, j.strengths.slice(0, 3).map(x => h('li', {}, String(x))))) : null,
+          Array.isArray(j.work_on) ? h('div', {class: 'sim-ai-fixes'}, h('b', {}, tr('Practise before the real one', 'לתרגל לפני הראיון האמיתי')), h('ul', {}, j.work_on.slice(0, 3).map(x => h('li', {}, String(x))))) : null,
+          j.tip ? h('p', {class: 'sim-instead'}, h('b', {}, tr('The day before: ', 'יום לפני: ')), String(j.tip)) : null));
+      } catch (e) { box.replaceChildren(h('p', {class: 'plus-muted'}, tr('The AI summary is not available right now.', 'סיכום ה-AI לא זמין כרגע.'))); }
     }
     function saveToCv(text) {
       if (!P.cv || typeof P.cv !== 'object') P.cv = {lang: he() ? 'he' : 'en', bullets: []};
@@ -211,6 +253,8 @@
         (P.simHistory || []).length ? h('p', {class: 'sim-last'}, tr('Last practice: ', 'אימון אחרון: ') + P.simHistory[P.simHistory.length - 1].avg + '%' + tr(' — try to beat it', ' — נסה לשבור את השיא')) : null,
         h('h2', {class: 'sim-h2'}, tr('What kind of job?', 'לאיזה סוג עבודה?')),
         h('div', {class: 'sim-tracks'}, TRACKS.map(([id, en, he_, ill]) => h('button', {type: 'button', class: 'sim-track' + (P.simTrack === id ? ' on' : ''), onclick: () => start(id)}, illu(ill, 42), h('span', {}, h('b', {}, he() ? he_ : en), h('small', {}, tr('Start →', 'להתחיל ←')))))),
+        P.infoOnly ? null : h('label', {class: 'sim-aimode'}, (() => { const c = h('input', {type: 'checkbox'}); c.checked = P.simAI !== false; c.addEventListener('change', () => { P.simAI = c.checked; store(); }); return c; })(),
+          h('span', {}, h('b', {}, tr('AI interviewer (recommended)', 'מראיין AI (מומלץ)')), h('small', {}, tr('Reads every answer, quotes what to change, asks real follow-up questions and sums up. Uses the app\'s AI after your approval.', 'קורא כל תשובה, מצטט מה לשנות, שואל שאלות המשך אמיתיות ומסכם. משתמש ב-AI של האפליקציה אחרי אישור שלך.')))),
         h('div', {class: 'sim-settings'},
           h('label', {}, h('span', {}, tr('Interviewer voice', 'הקול של המראיין')), voiceSel),
           !vs.length && synth ? h('small', {class: 'plus-muted'}, tr('No voice for this language on this device — the questions will be shown as text.', 'אין במכשיר קול לשפה הזו — השאלות יוצגו כטקסט.')) : null),
@@ -222,7 +266,7 @@
     function askScreen() {
       const q = st.qs[st.i], cur = st.answers[st.i] || {a: ''};
       const ta = h('textarea', {class: 'sim-answer', rows: '6', placeholder: tr('Type your answer — or press the microphone and talk', 'כתוב את התשובה — או לחץ על המיקרופון ודבר'), 'aria-label': tr('Your answer', 'התשובה שלך')});
-      ta.value = cur.a || '';
+      ta.value = st.prefill || cur.a || ''; st.prefill = '';
       const live = h('p', {class: 'sim-live', 'aria-live': 'polite'});
       const [lo, hi] = LEN[kindOf(q)] || [30, 170];
       let t0 = 0, timer = null;
@@ -252,7 +296,7 @@
       return [
         h('div', {class: 'sim-top'}, h('span', {}, tr('Question ' + (st.i + 1) + ' of ' + st.qs.length, 'שאלה ' + (st.i + 1) + ' מתוך ' + st.qs.length)),
           h('div', {class: 'sim-prog', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(st.qs.length), 'aria-valuenow': String(st.i + 1)}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.qs.length * 100) + '%'}))),
-        h('div', {class: 'sim-bubble'}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
+        h('div', {class: 'sim-bubble'}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, q.isFollow ? tr('Interviewer · follow-up', 'המראיין · שאלת המשך') : tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
           synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, icon('speaker')) : null),
         h('p', {class: 'sim-look'}, h('b', {}, tr('What they look for: ', 'מה מחפשים: ')), q.look[he() ? 1 : 0]),
         h('div', {class: 'sim-answer-card'}, h('small', {class: 'sim-you'}, tr('Your answer', 'התשובה שלך')), ta, h('div', {class: 'sim-answer-foot'}, live, mic)),
@@ -265,6 +309,8 @@
     function reviewScreen() {
       const cur = st.answers[st.i], r = cur.res, pct = r.pct;
       const mk = marked(cur.a);
+      if (aiOn()) { if (cur.ai) setTimeout(() => renderAI(aiBox, cur.ai, cur)); else setTimeout(() => aiFeedback(aiBox, cur)); }
+      else if (!P.infoOnly) setTimeout(() => aiBox.replaceChildren(btn(tr('Get the AI interviewer\'s feedback', 'לקבל משוב מהמראיין ה-AI'), () => aiFeedback(aiBox, cur), 'plus-btn sim-ai-btn')));
       const aiBox = h('div', {class: 'sim-ai', 'aria-live': 'polite'});
       return [
         h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback · question ' + (st.i + 1), 'משוב · שאלה ' + (st.i + 1))), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.qs.length * 100) + '%'}))),
@@ -273,13 +319,15 @@
             h('small', {}, tr(r.n + ' words', r.n + ' מילים') + (cur.sec ? ' · ' + Math.floor(cur.sec / 60) + ':' + String(cur.sec % 60).padStart(2, '0') : '') + ' · ' + tr(r.score + ' of ' + r.max + ' checks', r.score + ' מתוך ' + r.max + ' בדיקות')))),
         h('div', {class: 'sim-marked'}, h('small', {}, mk.count ? tr('Your answer — marked words to change', 'התשובה שלך — מסומן מה כדאי לשנות') : tr('Your answer', 'התשובה שלך')), h('p', {}, ...mk.nodes),
           mk.count ? h('div', {class: 'sim-legend'}, h('span', {class: 'sim-m sim-m-jar'}, tr('military jargon', 'ז׳רגון')), h('span', {class: 'sim-m sim-m-we'}, tr('"we"', '"אנחנו"')), h('span', {class: 'sim-m sim-m-vag'}, tr('vague', 'כללי'))) : null),
-        r.items.some(x => !x.ok) ? h('h3', {class: 'sim-h3'}, tr('What to fix', 'מה לתקן')) : null,
-        h('ul', {class: 'sim-checks'}, r.items.filter(x => !x.ok).map(x => h('li', {class: 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, '!'), h('div', {}, h('b', {}, x.text), h('small', {}, x.fix))))),
-        r.items.some(x => x.ok) ? h('div', {class: 'sim-passed'}, h('small', {}, tr('Already good:', 'כבר טוב:')), ...r.items.filter(x => x.ok).map(x => h('span', {class: 'sim-pass'}, '✓ ' + x.text))) : null,
-        P.infoOnly ? null : btn(tr('Detailed AI feedback + a stronger version', 'משוב AI מפורט + גרסה חזקה יותר'), () => aiFeedback(aiBox, cur.a), 'plus-btn sim-ai-btn'), aiBox,
+        aiBox,
+        (() => { const misses = r.items.filter(x => !x.ok), kids = [
+            misses.length ? h('ul', {class: 'sim-checks'}, misses.map(x => h('li', {class: 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, '!'), h('div', {}, h('b', {}, x.text), h('small', {}, x.fix))))) : null,
+            r.items.some(x => x.ok) ? h('div', {class: 'sim-passed'}, h('small', {}, tr('Already good:', 'כבר טוב:')), ...r.items.filter(x => x.ok).map(x => h('span', {class: 'sim-pass'}, '✓ ' + x.text))) : null];
+          const title = misses.length ? tr('Quick checks — ' + misses.length + ' to fix', 'בדיקות מהירות — ' + misses.length + ' לתקן') : tr('Quick checks — all good', 'בדיקות מהירות — הכול טוב');
+          return aiOn() ? h('details', {class: 'sim-quick'}, h('summary', {}, title), ...kids) : h('div', {class: 'sim-quick-open'}, h('h3', {class: 'sim-h3'}, title), ...kids); })(),
         h('div', {class: 'plus-row'},
           btn(tr('Try this question again', 'לנסות שוב את השאלה'), () => { st.phase = 'ask'; paint(); }, 'plus-btn'),
-          btn(st.i < st.qs.length - 1 ? tr('Next question', 'לשאלה הבאה') : tr('Finish', 'לסיום'), next, 'plus-btn primary')),
+          btn(st.i < st.qs.length - 1 || (aiOn() && cur.ai && cur.ai.followup && !st.qs[st.i].isFollow) ? tr('Next question', 'לשאלה הבאה') : tr('Finish', 'לסיום'), next, 'plus-btn primary')),
         pct >= 75 ? btn(tr('Save this answer to my CV draft', 'לשמור את התשובה לטיוטת קורות החיים'), () => saveToCv(cur.a), 'plus-link') : null];
     }
     function doneScreen() {
@@ -289,9 +337,11 @@
       done.forEach(a => a.res.items.forEach(x => { if (!x.ok) missCount[x.text] = (missCount[x.text] || 0) + 1; }));
       const focus = Object.entries(missCount).sort((a, b) => b[1] - a[1]).slice(0, 2).map(x => x[0]);
       const best = done.slice().sort((a, b) => b.res.pct - a.res.pct)[0];
+      const rep = h('div', {'aria-live': 'polite'}); if (aiOn()) setTimeout(() => aiReport(rep));
       P.simHistory = [...(P.simHistory || []), {d: new Date().toISOString().slice(0, 10), track: st.track, avg, n: done.length}].slice(-20); store();
       return [
         h('div', {class: 'sim-hero'}, illu('award', 64), h('div', {}, h('h1', {}, tr('Interview finished', 'הראיון הסתיים')), h('p', {}, tr(done.length + ' answers · average ' + avg + '%', done.length + ' תשובות · ממוצע ' + avg + '%')))),
+        rep,
         focus.length ? h('div', {class: 'plus-card'}, h('strong', {}, tr('Your focus for next time', 'על מה לעבוד בפעם הבאה')), h('ul', {class: 'plus-list'}, focus.map(f => h('li', {}, f)))) : h('div', {class: 'plus-card'}, h('strong', {}, tr('Excellent — no repeating mistakes.', 'מצוין — אין טעויות שחוזרות על עצמן.'))),
         best && best.a ? h('div', {class: 'plus-card'}, h('strong', {}, tr('Your strongest answer', 'התשובה הכי חזקה שלך')), h('p', {class: 'plus-muted'}, best.q), h('p', {}, best.a),
           btn(tr('Save to my CV draft', 'לשמור לטיוטת קורות החיים'), () => saveToCv(best.a), 'plus-link')) : null,
