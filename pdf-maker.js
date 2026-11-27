@@ -177,6 +177,25 @@
         const bx = dirRtl ? W - margin - indent / 2 - 1.6 : margin + indent / 2 - 1.6;
         cur.push(rgb(o.dotColor || o.color) + ' rg ' + bx.toFixed(2) + ' ' + by.toFixed(2) + ' 3.2 3.2 re f');
       },
+      keep(h) { ensure(h); },
+      heading(str, o) {
+        o = o || {}; const size = o.size || 12.5;
+        ensure(size * 2.2); y -= size;
+        const dirRtl = o.dir ? o.dir === 'rtl' : rtl;
+        const sq = 6.5, gapX = 7;
+        const right = W - margin, left = margin;
+        if (o.marker) cur.push(rgb(o.marker) + ' rg ' + (dirRtl ? right - sq : left).toFixed(2) + ' ' + (y + 1).toFixed(2) + ' ' + sq + ' ' + sq + ' re f');
+        drawLine(str, {...o, bold: true, y, x: dirRtl ? left : left + sq + gapX, right: dirRtl ? right - sq - gapX : right});
+        y -= size * 0.45;
+      },
+      twoSided(a, b, o) {
+        o = o || {}; const size = o.size || 11;
+        ensure(size * 1.6); y -= size;
+        const dirRtl = o.dir ? o.dir === 'rtl' : rtl;
+        drawLine(a, {...o, y, align: dirRtl ? 'right' : 'left'});
+        if (b) drawLine(b, {...o, bold: false, color: o.color2 || o.color, y, size: size - 1, align: dirRtl ? 'left' : 'right'});
+        y -= size * 0.5;
+      },
       rule(o) { o = o || {}; ensure(10); y -= (o.gap || 6); cur.push(rgb(o.color || '#CCCCCC') + ' RG ' + (o.width || 0.8) + ' w ' + margin + ' ' + y.toFixed(2) + ' m ' + (W - margin) + ' ' + y.toFixed(2) + ' l S'); y -= (o.gap || 6); },
       space(h) { y -= h; if (y < margin) newPage(); },
       rect(x, yy, w, h, color) { cur.push(rgb(color) + ' rg ' + x + ' ' + yy + ' ' + w + ' ' + h + ' re f'); },

@@ -317,7 +317,7 @@
   };
   const icon = (name, cls) => { const s = h('span', {class: 'plus-ico' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true'}); s.innerHTML = SVG[name] || ''; return s; };
   // Illustrated icons (illustrations.js). Falls back to the line icon when the illustration set is missing.
-  const ILLU_FOR = {bag: 'piggy', bulb: 'footsteps', listcheck: 'checklist', check: 'checklist', calendar: 'calendar', heart: 'heart'};
+  const ILLU_FOR = {cvpen: 'pen', bag: 'piggy', bulb: 'footsteps', listcheck: 'checklist', check: 'checklist', calendar: 'calendar', heart: 'heart'};
   const illu = (name, size, cls, fallback) => {
     if (!window.MomentumIllu || !window.MomentumIllu(name)) return icon(fallback || name, cls);
     const sp = h('span', {class: 'plus-illu' + (cls ? ' ' + cls : ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu(name, size || 44); return sp;
@@ -447,7 +447,7 @@
     plusHome.append(grid);
     if (!P.infoOnly) plusHome.append(h('button', {type: 'button', class: 'plus-chat-entry', onclick: () => goChat()}, h('span', {}, tr('Talk with the Companion', 'דבר עם המלווה')), icon('chat')));
     const est = P.hidden.includes('home:estimate') ? null : estimateRow();
-    put(plusHome, est, todayRow(), PAGES.tools ? rowCard('plus-sage plus-tools-row', 'listcheck', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
+    put(plusHome, est, todayRow(), PAGES.cv ? rowCard('plus-beige plus-cv-row', 'cvpen', tr('New · private', 'חדש · פרטי'), tr('Build my CV →', 'בנה קורות חיים ←'), () => showPage('cv')) : null, PAGES.tools ? rowCard('plus-sage plus-tools-row', 'listcheck', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
     plusHome.append(distressBtn());
     const cards = h('div', {class: 'plus-cards'});
     const wn = whatsNewCard(); if (wn) cards.append(wn);
@@ -759,6 +759,7 @@
       put(wrap, interviewSection());
       put(wrap, section(tr('Free counseling', 'ייעוץ חינם'), h('p', {}, W ? W.counseling : '')));
       put(wrap, h('div', {class: 'plus-row'}, askButton('cv', tr('Help me build my CV from my real experience.', 'תעזור לי לבנות קורות חיים מהניסיון האמיתי שלי.')),
+        PAGES.cv ? btn(tr('Build my CV', 'בנה קורות חיים'), () => showPage('cv'), 'plus-btn primary') : null,
         h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים')),
         h('a', {class: 'plus-btn', href: journeyUrl('cvs')}, tr('My CV drafts', 'טיוטות קורות החיים שלי'))));
       return wrap;
@@ -1207,12 +1208,23 @@
      START-UP
      ================================================================ */
   function paintAll() { applyDisplay(); paintNav(); paintTools(); paintOffline(); paintChatHead(); if (!hub.hidden) renderHome(); }
-  if (window.MomentumTools) {
-    try {
-      const T = window.MomentumTools({h, btn, tr, he, icon, illu, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton});
-      Object.assign(PAGES, T.pages); Object.assign(PAGE_HEAD, T.heads);
-    } catch (e) { console.warn('tools', e); }
+  // One-shot AI text (CV wording, interview feedback). Uses the same consent gate as the chat; nothing is sent without approval.
+  async function aiText(system, prompt, maxTokens) {
+    if (P.infoOnly) throw new Error(tr('Information-only mode is on.', 'מצב "מידע בלבד" פעיל.'));
+    if (!window.MomentumAIConsent || typeof CONFIG === 'undefined') throw new Error(tr('AI is not available here.', 'ה-AI לא זמין כאן.'));
+    const res = await window.MomentumAIConsent.request({model: CONFIG.MODEL, max_tokens: maxTokens || 900, system, messages: [{role: 'user', content: prompt}]}, CONFIG.API_URL, S.lang, {interactive: true});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    if (!text) throw new Error(tr('No reply', 'לא התקבלה תשובה'));
+    return text;
   }
+  const TOOL_CTX = {h, btn, tr, he, icon, illu, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton, aiText, Journey, goChat, todayStr};
+  [window.MomentumTools, window.MomentumCV, window.MomentumGuided].forEach(factory => {
+    if (typeof factory !== 'function') return;
+    try { const T = factory(TOOL_CTX); Object.assign(PAGES, T.pages || {}); Object.assign(PAGE_HEAD, T.heads || {}); }
+    catch (e) { console.warn('tools', e); }
+  });
   window.MomentumPlus = {promptContext, showPage, goHome, goChat, prefs: () => ({...P}), renderHome};
   new MutationObserver(paintAll).observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
   new MutationObserver(() => { if (!hub.hidden) { hidePage(); renderHome(); setNav('home'); } }).observe(hub, {attributes: true, attributeFilter: ['hidden']});

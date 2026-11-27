@@ -635,6 +635,7 @@
         ['explain', 'help', tr('Explain a letter', 'להסביר מכתב רשמי'), tr('Paste it, get plain words', 'מדביקים ומקבלים הסבר פשוט')],
         ['glossary', 'info', tr('Glossary & questions', 'מילון ושאלות'), tr('Bureaucracy in plain words', 'בירוקרטיה במילים פשוטות')]]],
       [tr('Work and studies', 'עבודה ולימודים'), [
+        ['cv', 'file', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי')],
         ['letters', 'send', tr('Ready letters', 'מכתבים מוכנים'), tr('Cover note, 106, thanks', 'מכתב מקדים, 106, תודה')],
         ['fieldquiz', 'compass', tr('Which field fits me?', 'איזה תחום מתאים לי?'), tr('3 quick questions', '3 שאלות קצרות')],
         ['studypaths', 'bulb', tr('Compare study paths', 'השוואת מסלולי לימוד'), tr('Degree, handasai, course', 'תואר, הנדסאי, קורס')],
@@ -650,7 +651,7 @@
         ['install', 'logo', tr('App on my phone', 'אפליקציה בטלפון'), tr('Home-screen icon', 'אייקון במסך הבית')]]]
     ];
     const TOOL_ICON = {deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'file', total: 'calc', afterlist: 'listcheck', contacts: 'phone', explain: 'file', glossary: 'book', letters: 'file', fieldquiz: 'compass', studypaths: 'cap', scholarships: 'award', psychometric: 'book', interviewprep: 'talk', apartment: 'building', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phone', budget: 'calc', links: 'linkic', start: 'map', prefcheck: 'briefcase', missing: 'listcheck', weekly: 'calendar', cv: 'file', coach: 'talk', action: 'flag'};
-    const TOOL_ILLU = {deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'pen', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
+    const TOOL_ILLU = {cv: 'pen', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'letter', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
     const illu = (name, size, cls) => { const sp = h('span', {class: 'plus-illu ' + (cls || ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu ? window.MomentumIllu(name, size) : ''; return sp; };
     function tools() {
       const wrap = h('div');
