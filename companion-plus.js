@@ -1390,7 +1390,7 @@
   if ($('chat')) new MutationObserver(() => { if (!$('chat').hidden) { setNav('chat'); decorateTurns(); paintChatHead(); paintSavePill(); paintTools(); } }).observe($('chat'), {attributes: true, attributeFilter: ['hidden']});
   if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyDisplay);
 
-  const reveal = () => requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('mp-booting')));
+  const reveal = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (window.__mpReveal) window.__mpReveal(); else document.documentElement.classList.remove('mp-booting'); }));
   reveal();
   recordVisit();
   paintAll();
