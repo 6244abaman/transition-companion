@@ -195,7 +195,7 @@
         fold(tr('Deposit or grant — what is the difference?', 'פיקדון או מענק — מה ההבדל?'), h('p', {}, tr('The discharge grant is paid to your bank and is yours for anything. The deposit is only for the 6 uses for 5 years; after that the balance goes to your bank.', 'מענק השחרור מועבר לבנק ומותר לכל דבר. הפיקדון רק ל-6 המטרות במשך 5 שנים; אחרי זה היתרה עוברת לבנק.'))),
         fold(tr('The amount looks wrong', 'הסכום נראה לא נכון'), h('p', {}, pd.appeal || tr('IDF public inquiries 1111, extension 5.', 'פניות הציבור של צה"ל 1111 שלוחה 5.')), h('a', {class: 'plus-link', href: 'tel:1111'}, tr('Call 1111', 'חיוג ל-1111'))),
         fold(tr('Changed bank account?', 'החלפת חשבון בנק?'), h('p', {}, tr('Update it in the personal area, so the balance after 5 years reaches the right account.', 'לעדכן באזור האישי, כדי שהיתרה אחרי 5 שנים תגיע לחשבון הנכון.'))),
-        fold(tr('Who can help me plan?', 'מי יכול לעזור לתכנן?'), h('p', {}, tr('The Division for Discharged Soldiers (*5266, also WhatsApp) and the youth centres (מרכזי צעירים) offer free guidance.', 'האגף לחיילים משוחררים (*5266, יש גם וואטסאפ) ומרכזי הצעירים נותנים ליווי חינם.')))), verify());
+        fold(tr('Who can help me plan?', 'מי יכול לעזור לתכנן?'), h('p', {}, tr('The Division for Discharged Soldiers (*5266, also WhatsApp) and the local youth centres offer free guidance.', 'האגף לחיילים משוחררים (*5266, יש גם וואטסאפ) ומרכזי הצעירים נותנים ליווי חינם.')))), verify());
       paintPlan(); paintCards();
       return wrap;
     }
