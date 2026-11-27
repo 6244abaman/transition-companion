@@ -414,3 +414,69 @@ html[data-motion="reduce"] .plus-wiz-body { animation:none; }
 .cv-refs { color:#55606A;font-size:11px;margin-top:10px !important; }
 .cv-jobd { color:#3B444D; }
 html[data-motion="reduce"] .cv-q-bar i { transition:none; }
+/* ---------- mood check-in response (inline, practical) ---------- */
+.plus-mood-wrap { display:flex;flex-direction:column;gap:8px; }
+.plus-mood-again { align-self:center;background:none;border:0;color:var(--text-2);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 8px; }
+.plus-mood-resp { background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 10px rgba(21,19,63,.05); }
+.plus-mood-resp-top { display:flex;align-items:flex-start;gap:8px; }
+.plus-mood-resp-top p { margin:0;flex:1;font-weight:700;line-height:1.45; }
+.plus-mood-close { width:32px;height:32px;border-radius:10px;border:1px solid var(--border);background:var(--beige);cursor:pointer;flex:0 0 auto; }
+.plus-mood-acts { display:grid;gap:8px; }
+.plus-mood-act { display:flex;align-items:center;gap:10px;text-align:start;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:var(--bg, #FAF7F1);color:var(--text);font:inherit;text-decoration:none;cursor:pointer;min-height:56px; }
+.plus-mood-act b { display:block;font-size:15.5px; }
+.plus-mood-act small { display:block;color:var(--text-3);font-size:13px;margin-top:1px; }
+.plus-mood-act:active { transform:scale(.99); }
+.plus-mood-act.is-breathing .plus-mood-ill { animation:plusBreath var(--bdur,4s) ease-in-out infinite alternate; }
+@keyframes plusBreath { from { transform:scale(.85); } to { transform:scale(1.15); } }
+html[data-motion="reduce"] .plus-mood-act.is-breathing .plus-mood-ill { animation:none; }
+.plus-mood-note { width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid var(--border-strong);border-radius:12px;font:inherit;font-size:15px;background:#fff;color:var(--text); }
+.plus-mood-week { display:flex;gap:6px;justify-content:center; }
+.plus-mood-week i { width:12px;height:12px;border-radius:50%;background:#ccc; }
+.plus-mood-week i.mv1 { background:#E07A6B; } .plus-mood-week i.mv2 { background:#F2A65A; } .plus-mood-week i.mv3 { background:#E8C95A; } .plus-mood-week i.mv4 { background:#8CC77E; } .plus-mood-week i.mv5 { background:#3FB37F; }
+/* ---------- deposit planner v2 ---------- */
+.dp { display:flex;flex-direction:column;gap:12px; }
+.dp-alert { background:#FFF4E5;border:1.5px solid #F2C27B;border-radius:16px;padding:12px 14px; }
+.dp-alert strong { color:#8A4B00; }
+.dp-alert p { margin:4px 0 0;line-height:1.5; }
+.dp-mine { display:flex;flex-direction:column;gap:10px; }
+.dp-mine-head { display:flex;align-items:center;gap:12px; }
+.dp-mine-head small { display:block;color:var(--text-3); }
+.dp-amount { display:block;font-size:28px;line-height:1.15;color:var(--text);letter-spacing:-.01em; }
+.dp-window { background:var(--bg, #FAF7F1);border-radius:14px;padding:10px 12px; }
+.dp-window-top { display:flex;justify-content:space-between;gap:8px;font-size:14px; }
+.dp-bar { height:10px;border-radius:99px;background:#E7EEF0;margin:8px 0 4px;overflow:hidden; }
+.dp-bar i { display:block;height:100%;background:#2BB3A6;border-radius:99px; }
+.dp-window-ends { display:flex;justify-content:space-between;color:var(--text-3); }
+.dp-facts { margin:0;padding-inline-start:18px;line-height:1.6;color:var(--text-2);font-size:14.5px; }
+.dp-uses { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+.dp-use { display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px;border:1.5px solid var(--border);border-radius:16px;background:var(--surface);cursor:pointer;text-align:start; }
+.dp-use b { font-size:15.5px; }
+.dp-use small { color:var(--text-3);font-size:12.5px;line-height:1.35;flex:1; }
+.dp-use.on { border-color:#2BB3A6;box-shadow:0 0 0 3px #D5F1EE; }
+.dp-use:focus-visible { outline:3px solid #2BB3A6;outline-offset:2px; }
+.dp-amt { width:100%;box-sizing:border-box;margin-top:4px;padding:8px 10px;border:1.5px solid var(--border-strong);border-radius:10px;font:inherit;font-size:15px;background:#fff;color:var(--text); }
+.dp-split { display:flex;height:14px;border-radius:99px;overflow:hidden;background:#EEE;margin-top:10px;gap:2px; }
+.dp-seg { display:block;min-width:4px; }
+.dp-studies { background:#23AAE0; } .dp-training { background:#8C7CF0; } .dp-driving { background:#F2B33D; } .dp-business { background:#FF7A4D; } .dp-housing { background:#3FB37F; } .dp-wedding { background:#F2879A; } .dp-left { background:#E3E0D8; }
+.dp-split-legend { display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-top:6px; }
+.dp-over { color:#B3261E; }
+.dp-detail-head { display:flex;align-items:center;gap:10px; }
+.dp-detail-head h3 { margin:0; }
+/* ---------- calm home (Nov 2026) ---------- */
+.plus-slim-list { background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden; }
+.plus-slim { display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;background:none;font:inherit;color:var(--text);text-align:start;cursor:pointer;min-height:60px; }
+.plus-slim + .plus-slim { border-top:1px solid var(--border); }
+.plus-slim-t { flex:1;min-width:0; }
+.plus-slim-t b { display:block;font-size:16px;font-weight:700; }
+.plus-slim-t small { display:block;color:var(--text-3);font-size:13px;margin-top:1px; }
+.plus-slim-chev { width:18px;height:18px;color:var(--text-3);flex:0 0 auto;display:inline-flex; }
+.plus-slim-chev svg { width:100%;height:100%; }
+[dir="ltr"] .plus-slim-chev { transform:scaleX(-1); }
+.plus-slim:active { background:var(--beige); }
+.plus-home-more { background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:0 14px; }
+.plus-home-more > summary { list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-weight:700;cursor:pointer; }
+.plus-home-more > summary::-webkit-details-marker { display:none; }
+.plus-home-more[open] > summary { border-bottom:1px solid var(--border); }
+.plus-home-more .plus-quick { padding:10px 0 14px; }
+#plusHome > * + * { margin-top:12px; }
+.plus-distress { opacity:.92; }

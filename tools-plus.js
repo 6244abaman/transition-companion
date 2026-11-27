@@ -108,27 +108,95 @@
       {id: 'housing', he: ['דירה', 'רכישת דירה, בית או קרקע לבנייה.', 'שכירות אינה אחת המטרות הרשמיות. הפרטים והמסמכים באזור האישי.'], en: ['Home', 'Buying an apartment, house or land to build on.', 'Renting is not one of the official uses. Details and documents are in the personal area.']},
       {id: 'wedding', he: ['נישואין', 'אפשר לממש לצורך נישואין.', 'הפרטים והמסמכים באזור האישי.'], en: ['Marriage', 'Can be used for marriage.', 'Details and documents are in the personal area.']}
     ];
+    const USE_ILLU = {studies: 'cap', training: 'award', driving: 'bus', business: 'briefcase', housing: 'house', wedding: 'heart'};
     function depositPlanner() {
-      const wrap = h('div');
-      const pick = h('div', {class: 'plus-choices', role: 'group'});
+      const wrap = h('div', {class: 'dp'});
+      const pd = R().personal_deposit || {};
+      const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
+      const total = e && e.deposit ? Math.round(e.deposit) : 0;
+      if (!P.depositPlan || typeof P.depositPlan !== 'object') P.depositPlan = {};
+      const plan = P.depositPlan;
+
+      // 1. scam warning first
+      put(wrap, h('div', {class: 'dp-alert', role: 'note'}, h('strong', {}, tr('Important before anything else', 'חשוב לפני הכול')),
+        h('p', {}, pd.scam_warning || tr('Never pay a company to "release" your deposit early. Using it is free, only through the personal area.', 'לא משלמים לאף חברה כדי "לשחרר" את הפיקדון. המימוש חינם, רק דרך האזור האישי.'))));
+
+      // 2. my deposit + 5-year window
+      const D = /^\d{4}-\d{2}$/.test(P.dischargeMonth || '') ? new Date(P.dischargeMonth + '-01T12:00:00') : null;
+      let windowBox = null;
+      if (D) {
+        const end = new Date(D); end.setFullYear(end.getFullYear() + 5);
+        const now = new Date(), used = Math.min(1, Math.max(0, (now - D) / (end - D)));
+        const monthsLeft = Math.max(0, (end.getFullYear() - now.getFullYear()) * 12 + end.getMonth() - now.getMonth());
+        windowBox = h('div', {class: 'dp-window'},
+          h('div', {class: 'dp-window-top'}, h('span', {}, tr('Time left to use it for approved goals', 'זמן שנשאר לשימוש למטרות מאושרות')), h('b', {}, monthsLeft >= 12 ? tr(Math.floor(monthsLeft / 12) + ' yrs ' + (monthsLeft % 12) + ' mo', Math.floor(monthsLeft / 12) + ' שנים ו-' + (monthsLeft % 12) + ' חודשים') : tr(monthsLeft + ' months', monthsLeft + ' חודשים'))),
+          h('div', {class: 'dp-bar', role: 'img', 'aria-label': Math.round(used * 100) + '%'}, h('i', {style: 'width:' + Math.round(used * 100) + '%'})),
+          h('div', {class: 'dp-window-ends'}, h('small', {}, tr('Discharge', 'שחרור')), h('small', {}, tr('5 years: balance goes to your bank', '5 שנים: היתרה עוברת לבנק'))));
+      }
+      put(wrap, h('section', {class: 'plus-card dp-mine'},
+        h('div', {class: 'dp-mine-head'}, illu('piggy', 52), h('div', {},
+          h('small', {}, tr('My estimated deposit', 'הפיקדון המשוער שלי')),
+          total ? h('strong', {class: 'dp-amount'}, '≈ ' + money(total)) : btn(tr('Calculate it (1 minute) →', 'לחשב (דקה אחת) ←'), () => showPage('rights'), 'plus-link'),
+          total ? h('small', {class: 'plus-muted'}, tr('Estimate by the October 2026 rates. The exact sum is in your personal area.', 'הערכה לפי תעריפי אוקטובר 2026. הסכום המדויק באזור האישי.')) : null)),
+        windowBox || btn(tr('Add my discharge month to see the 5-year window', 'להוסיף חודש שחרור כדי לראות את חלון 5 השנים'), () => showPage('deadlines'), 'plus-link'),
+        h('ul', {class: 'dp-facts'},
+          h('li', {}, pd.timing || tr('Usable from about day 14 after discharge.', 'אפשר לממש בערך מהיום ה-14 אחרי השחרור.')),
+          h('li', {}, tr('Only inside Israel, only for the 6 uses below.', 'רק בתוך ישראל, ורק ל-6 המטרות למטה.')),
+          h('li', {}, pd.after_5_years || tr('After 5 years the balance moves to your bank account.', 'אחרי 5 שנים היתרה עוברת לחשבון הבנק.')))));
+
+      // 3. the 6 uses as mini-cards + a personal split plan
+      const sumPlan = () => USES.reduce((a, u) => a + (Number(plan[u.id]) || 0), 0);
+      const planBox = h('div', {'aria-live': 'polite'});
       const detail = h('div', {'aria-live': 'polite'});
-      const paint = () => {
-        pick.replaceChildren(...USES.map(u => h('button', {type: 'button', class: 'plus-chip', 'aria-pressed': String(P.depositGoal === u.id), onclick: () => { P.depositGoal = u.id; store(); paint(); }}, (he() ? u.he : u.en)[0])));
+      const paintPlan = () => {
+        const used = sumPlan(), left = total - used;
+        const segs = USES.filter(u => Number(plan[u.id]) > 0);
+        planBox.replaceChildren(
+          total ? h('div', {class: 'dp-split', role: 'img', 'aria-label': tr('Planned split', 'חלוקה מתוכננת')},
+            segs.map(u => h('i', {class: 'dp-seg dp-' + u.id, style: 'flex:' + Number(plan[u.id]), title: (he() ? u.he : u.en)[0]})),
+            left > 0 ? h('i', {class: 'dp-seg dp-left', style: 'flex:' + left}) : null) : null,
+          h('div', {class: 'dp-split-legend'},
+            h('span', {}, tr('Planned: ', 'מתוכנן: ') + money(used)),
+            total ? h('span', {class: left < 0 ? 'dp-over' : ''}, left < 0 ? tr('Over by ', 'חריגה של ') + money(-left) : tr('Left: ', 'נשאר: ') + money(left)) : null));
+      };
+      const cards = h('div', {class: 'dp-uses'}, USES.map(u => {
+        const [title, what] = he() ? u.he : u.en;
+        const amt = h('input', {type: 'number', inputmode: 'numeric', min: '0', step: '100', class: 'dp-amt', placeholder: '₪', 'aria-label': tr('Amount for ', 'סכום ל') + title});
+        amt.value = plan[u.id] || '';
+        amt.addEventListener('input', () => { const v = Math.max(0, Math.round(Number(amt.value) || 0)); if (v) plan[u.id] = v; else delete plan[u.id]; store(); paintPlan(); });
+        amt.addEventListener('click', ev => ev.stopPropagation());
+        return h('div', {class: 'dp-use' + (P.depositGoal === u.id ? ' on' : ''), role: 'button', tabindex: '0', onclick: () => { P.depositGoal = P.depositGoal === u.id ? '' : u.id; store(); paintCards(); },
+          onkeydown: ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.currentTarget.click(); } }},
+          illu(USE_ILLU[u.id], 40), h('b', {}, title), h('small', {}, what), amt);
+      }));
+      const paintCards = () => {
+        [...cards.children].forEach((c, i) => c.classList.toggle('on', P.depositGoal === USES[i].id));
         const u = USES.find(x => x.id === P.depositGoal);
         detail.replaceChildren();
-        if (!u) { detail.append(note(tr('Pick a goal to see what to prepare.', 'בחר מטרה כדי לראות מה להכין.'))); return; }
+        if (!u) return;
         const [title, what, tip] = he() ? u.he : u.en;
-        const e = P.service && P.monthsServed && KB ? KB.estimate(P.service, P.monthsServed, P.gender) : null;
-        detail.append(section(title, h('p', {}, what), h('p', {}, tip),
-          e && e.deposit ? h('p', {}, h('strong', {}, tr('Your estimated deposit: ', 'הפיקדון המשוער שלך: ') + '≈ ' + money(e.deposit))) : btn(tr('Calculate my deposit', 'לחשב את הפיקדון שלי'), () => showPage('rights'), 'plus-link'),
-          h('h3', {}, tr('Steps', 'שלבים')),
-          h('ol', {class: 'plus-list'}, [tr('Log in to the personal area on the Division site.', 'להיכנס לאזור האישי באתר האגף.'), tr('Choose the use and check the required documents.', 'לבחור את המטרה ולבדוק אילו מסמכים נדרשים.'), tr('Upload the documents and submit.', 'להעלות את המסמכים ולהגיש.'), tr('Track the request status in the personal area.', 'לעקוב אחרי הבקשה באזור האישי.'), tr('The deposit can be used only inside Israel.', 'אפשר להשתמש בפיקדון רק בתוך ישראל.')].map(x => h('li', {}, x))),
-          h('p', {class: 'plus-warn'}, '⚠ ' + ((R().personal_deposit || {}).scam_warning || tr('Never pay a company to "release" your deposit.', 'לא משלמים לאף חברה כדי "לשחרר" את הפיקדון.'))),
-          h('div', {class: 'plus-row'}, ext(tr('Personal area', 'לאזור האישי'), HACHVANA),
-            btn(tr('Save as a step', 'לשמור כצעד'), () => saveAction(tr('Deposit request: ', 'בקשת פיקדון: ') + title, tip), 'plus-link'))));
+        detail.append(h('section', {class: 'plus-card dp-detail'},
+          h('div', {class: 'dp-detail-head'}, illu(USE_ILLU[u.id], 44), h('h3', {}, title)),
+          h('p', {}, what), h('p', {class: 'plus-soft'}, tip),
+          h('h4', {}, tr('How to request', 'איך מגישים')),
+          h('ol', {class: 'plus-list'}, [tr('Log in to the personal area on the Division site.', 'נכנסים לאזור האישי באתר האגף.'), tr('Choose this use and see which documents are required.', 'בוחרים את המטרה ורואים אילו מסמכים נדרשים.'), tr('Upload the documents and submit.', 'מעלים את המסמכים ומגישים.'), tr('Track the status in the personal area.', 'עוקבים אחרי הסטטוס באזור האישי.')].map(x => h('li', {}, x))),
+          h('div', {class: 'plus-row'}, ext(tr('Personal area', 'לאזור האישי'), pd.official_url || HACHVANA),
+            btn(tr('Save as a step in My Journey', 'שמור כצעד במסע שלי'), () => saveAction(tr('Deposit request: ', 'בקשת פיקדון: ') + title + (plan[u.id] ? ' (' + money(plan[u.id]) + ')' : ''), tip), 'plus-btn'))));
+        detail.scrollIntoView({behavior: document.documentElement.dataset.motion === 'reduce' ? 'auto' : 'smooth', block: 'nearest'});
       };
-      put(wrap, section(tr('What do you want to use the deposit for?', 'למה תרצה להשתמש בפיקדון?'), pick), detail, verify());
-      paint();
+      put(wrap, section(tr('The 6 approved uses — tap one, and plan amounts', '6 המטרות המאושרות — לוחצים על מטרה, ומתכננים סכומים'),
+        note(tr('Type how much you plan for each goal. It is only a plan on your phone — it does not submit anything.', 'כותבים כמה מתכננים לכל מטרה. זה רק תכנון בטלפון — לא מגיש כלום.')),
+        cards, planBox), detail);
+
+      // 4. good to know (sorted, expandable)
+      const fold = (title, ...kids) => h('details', {class: 'plus-card plus-right-fold dp-fold'}, h('summary', {class: 'plus-right-sum'}, h('span', {class: 'plus-right-title'}, title), h('span', {class: 'plus-right-chev', 'aria-hidden': 'true'})), h('div', {class: 'plus-right-body'}, ...kids));
+      put(wrap, section(tr('Good to know', 'כדאי לדעת'),
+        fold(tr('What is NOT allowed', 'מה אי אפשר'), h('ul', {class: 'plus-list'}, [tr('Rent is not one of the approved uses.', 'שכירות דירה היא לא אחת המטרות המאושרות.'), tr('A trip abroad is not an approved use.', 'טיול לחו"ל הוא לא מטרה מאושרת.'), tr('Use outside Israel is not possible.', 'אי אפשר לממש מחוץ לישראל.')].map(x => h('li', {}, x)))),
+        fold(tr('Deposit or grant — what is the difference?', 'פיקדון או מענק — מה ההבדל?'), h('p', {}, tr('The discharge grant is paid to your bank and is yours for anything. The deposit is only for the 6 uses for 5 years; after that the balance goes to your bank.', 'מענק השחרור מועבר לבנק ומותר לכל דבר. הפיקדון רק ל-6 המטרות במשך 5 שנים; אחרי זה היתרה עוברת לבנק.'))),
+        fold(tr('The amount looks wrong', 'הסכום נראה לא נכון'), h('p', {}, pd.appeal || tr('IDF public inquiries 1111, extension 5.', 'פניות הציבור של צה"ל 1111 שלוחה 5.')), h('a', {class: 'plus-link', href: 'tel:1111'}, tr('Call 1111', 'חיוג ל-1111'))),
+        fold(tr('Changed bank account?', 'החלפת חשבון בנק?'), h('p', {}, tr('Update it in the personal area, so the balance after 5 years reaches the right account.', 'לעדכן באזור האישי, כדי שהיתרה אחרי 5 שנים תגיע לחשבון הנכון.'))),
+        fold(tr('Who can help me plan?', 'מי יכול לעזור לתכנן?'), h('p', {}, tr('The Division for Discharged Soldiers (*5266, also WhatsApp) and the youth centres (מרכזי צעירים) offer free guidance.', 'האגף לחיילים משוחררים (*5266, יש גם וואטסאפ) ומרכזי הצעירים נותנים ליווי חינם.')))), verify());
+      paintPlan(); paintCards();
       return wrap;
     }
 

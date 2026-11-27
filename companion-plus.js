@@ -190,7 +190,9 @@
     if (typeof sendingUserMessage !== 'undefined' && sendingUserMessage) { toast(tr('Please wait for the reply.', 'נא להמתין לסיום התשובה.')); return; }
     if (typeof stopSpeaking === 'function') stopSpeaking();
     const render = PAGES[id]; if (!render) return;
-    if (push) pageStack.push(id);
+    const sameRefresh = !push && pageStack[pageStack.length - 1] === id && !page.hidden;
+    const keepY = sameRefresh ? (document.scrollingElement || document.documentElement).scrollTop : 0;
+    if (push && pageStack[pageStack.length - 1] !== id) pageStack.push(id);
     hideScreens();
     page.replaceChildren();
     const meta = PAGE_HEAD[id] || {};
@@ -203,8 +205,8 @@
     page.append(head, h('div', {class: 'plus-inner'}, body, privacyLine()));
     page.hidden = false;
     page.dir = he() ? 'rtl' : 'ltr';
-    page.scrollTop = 0; try { document.scrollingElement.scrollTop = 0; } catch (_) {}
-    page.focus({preventScroll: true});
+    page.scrollTop = 0; try { document.scrollingElement.scrollTop = keepY; } catch (_) {}
+    if (!sameRefresh) page.focus({preventScroll: true});
     setNav(id === 'help' ? 'help' : 'home');
   }
   // Long information pages: every titled card becomes a tidy fold (icon + title, opens on tap).
@@ -227,7 +229,8 @@
   function hidePage() { page.hidden = true; pageStack = []; }
   function goBack() {
     pageStack.pop();
-    const prev = pageStack.pop();
+    let prev = pageStack.pop();
+    while (prev === 'onboarding' && P.onboarded) prev = pageStack.pop();
     if (prev) showPage(prev); else goHome();
   }
   function goHome() {
@@ -266,6 +269,7 @@
 
   /* Line icons (static markup, no user data). Stroke uses currentColor. */
   const SVG = {
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>', // Lucide chevron-left (ISC)
     // Duotone "illustrated" icons (27 Nov 2026) — filled shapes in the topic colour, used inside soft circles.
     banknote: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="currentColor" opacity=".28"/><rect x="2.5" y="6" width="19" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="6.2" cy="12" r="1" fill="currentColor"/><circle cx="17.8" cy="12" r="1" fill="currentColor"/></svg>',
     piggy: '<svg viewBox="0 0 24 24"><path d="M5 11.5C5 8 8.2 6 12 6c1.5 0 2.9.3 4 .9l2.4-1.4-.5 2.9c1 .9 1.6 2 1.8 3.1H21v3h-1.6c-.5 1.1-1.3 2-2.4 2.6V20h-2.6l-.6-1.4c-.6.1-1.2.2-1.8.2s-1.3-.1-1.9-.2L9.6 20H7v-2.6C5.8 16.3 5 14.4 5 11.5Z" fill="currentColor" opacity=".3"/><path d="M5 11.5C5 8 8.2 6 12 6c1.5 0 2.9.3 4 .9l2.4-1.4-.5 2.9c1 .9 1.6 2 1.8 3.1H21v3h-1.6c-.5 1.1-1.3 2-2.4 2.6V20h-2.6l-.6-1.4c-.6.1-1.2.2-1.8.2s-1.3-.1-1.9-.2L9.6 20H7v-2.6C5.8 16.3 5 14.4 5 11.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="10.5" r="1" fill="currentColor"/><path d="M10 7.8h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 11.5H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
@@ -379,34 +383,84 @@
     s.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#2A2F2A" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="10" r="1" fill="#2A2F2A" stroke="none"/><circle cx="15" cy="10" r="1" fill="#2A2F2A" stroke="none"/><path d="' + m.mouth + '"/>' + (m.brow ? '<path d="M7.5 7.6l2.4.8M16.5 7.6l-2.4.8"/>' : '') + '</svg>';
     return s;
   }
+  let moodOpen = false;
   function moodRow() {
     const t = todayStr(), today = P.moods.find(m => m.d === t);
-    return h('div', {class: 'plus-mood-card', role: 'group', 'aria-label': tr('How do you feel today?', 'איך אתה מרגיש היום?')},
+    const card = h('div', {class: 'plus-mood-card', role: 'group', 'aria-label': tr('How do you feel today?', 'איך אתה מרגיש היום?')},
       MOODS.map(m => h('button', {type: 'button', class: 'plus-mood-item', 'aria-pressed': String(!!today && today.v === m.v), onclick: () => {
-        P.moods = [...P.moods.filter(x => x.d !== t), {d: t, v: m.v}].slice(-90); store();
-        if (m.v <= 2) { showPage('feel'); toast(tr('Thank you for sharing.', 'תודה ששיתפת.')); }
-        else { toast(tr('Saved ✓', 'נשמר ✓')); renderHome(); }
+        P.moods = [...P.moods.filter(x => x.d !== t), {d: t, v: m.v, note: (today && today.note) || ''}].slice(-90); store();
+        moodOpen = true; renderHome();
       }}, face(m), h('span', {class: 'plus-mood-label'}, he() ? m.he : m.en))));
+    return h('div', {class: 'plus-mood-wrap'}, card, today && moodOpen ? moodResponse(today) : (today ? h('button', {type: 'button', class: 'plus-mood-again', onclick: () => { moodOpen = true; renderHome(); }}, tr('What can help today? →', 'מה יכול לעזור היום? ←')) : null));
+  }
+  // A short, practical answer to the check-in, right here — no jump to another page.
+  function moodResponse(today) {
+    const v = today.v, t = todayStr();
+    const recent = P.moods.slice(-7), lowRun = recent.slice(-3).length === 3 && recent.slice(-3).every(m => m.v <= 2);
+    const note = h('input', {type: 'text', maxlength: '140', class: 'plus-mood-note', placeholder: tr('What affected today? (optional, only on your phone)', 'מה השפיע היום? (לא חובה, נשמר רק בטלפון)'), 'aria-label': tr('Note for today', 'הערה להיום')});
+    note.value = today.note || '';
+    note.addEventListener('change', () => { const m = P.moods.find(x => x.d === t); if (m) { m.note = note.value.trim().slice(0, 140); store(); toast(tr('Saved ✓', 'נשמר ✓')); } });
+    const dots = h('div', {class: 'plus-mood-week', 'aria-label': tr('Last 7 check-ins', '7 הבדיקות האחרונות')}, recent.map(m => h('i', {class: 'mv' + m.v, title: m.d})));
+    const action = (ill, title, sub, onclick, href) => {
+      const inner = [illu(ill, 34, 'plus-mood-ill'), h('span', {}, h('b', {}, title), sub ? h('small', {}, sub) : null)];
+      return href ? h('a', {class: 'plus-mood-act', href}, ...inner) : h('button', {type: 'button', class: 'plus-mood-act', onclick}, ...inner);
+    };
+    let title, acts;
+    if (v <= 2) {
+      title = lowRun ? tr('A few hard days in a row. That is a good reason to talk to someone.', 'כמה ימים קשים ברצף. זו סיבה טובה לדבר עם מישהו.') : tr('Thanks for being honest. A hard day is allowed.', 'תודה שאתה כן. מותר שיהיה יום קשה.');
+      acts = [action('phone', tr('Talk to a person now', 'לדבר עם אדם עכשיו'), tr('ERAN 1201 · free, anonymous, 24/7', 'ער"ן 1201 · חינם, אנונימי, 24/7'), null, 'tel:1201'),
+        action('heart', tr('One minute of breathing', 'דקה של נשימה'), tr('In 4 · hold 4 · out 6', 'שאיפה 4 · עצירה 4 · נשיפה 6'), e => breathe(e.currentTarget)),
+        P.infoOnly ? null : action('talk', tr('Write it to the Companion', 'לכתוב למלווה'), tr('Not a person — but it listens', 'לא אדם — אבל מקשיב'), () => openTopic('support')),
+        action('users', tr('More human help', 'עוד עזרה אנושית'), tr('Calm list of who to call', 'רשימה רגועה למי לפנות'), () => showPage('distress'))];
+    } else if (v === 3) {
+      title = tr('An ordinary day — good for one small step.', 'יום רגיל — מתאים לצעד קטן אחד.');
+      acts = [action('footsteps', tr('Pick one small step', 'לבחור צעד קטן אחד'), tr('5–10 minutes is enough', '5–10 דקות זה מספיק'), () => { const el = document.querySelector('.plus-today-row'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); else showPage('rights'); }),
+        action('wallet', tr('Check what I am entitled to', 'לבדוק מה מגיע לי'), null, () => showPage('rights')),
+        action('heart', tr('One minute of breathing', 'דקה של נשימה'), null, e => breathe(e.currentTarget))];
+    } else {
+      title = tr('Good day! Use the energy for something that moves you forward.', 'יום טוב! כדאי לנצל את האנרגיה למשהו שמקדם.');
+      acts = [PAGES.cv ? action('pen', tr('Work on my CV', 'לעבוד על קורות החיים'), tr('About 10 minutes', 'בערך 10 דקות'), () => showPage('cv')) : null,
+        action('calendar', tr('Plan the week', 'לתכנן את השבוע'), tr('In My Journey', 'במסע שלי'), null, './my-journey.html?lang=' + S.lang),
+        action('wallet', tr('Claim something I am owed', 'לממש משהו שמגיע לי'), null, () => showPage('rights'))];
+    }
+    return h('div', {class: 'plus-mood-resp', 'aria-live': 'polite'},
+      h('div', {class: 'plus-mood-resp-top'}, h('p', {}, title), h('button', {type: 'button', class: 'plus-mood-close', 'aria-label': tr('Close', 'סגירה'), onclick: () => { moodOpen = false; renderHome(); }}, '✕')),
+      h('div', {class: 'plus-mood-acts'}, acts.filter(Boolean)), note, recent.length > 1 ? dots : null);
+  }
+  function breathe(el) {
+    if (!el || el.dataset.busy) return; el.dataset.busy = '1';
+    const label = el.querySelector('b'), orig = label.textContent, reduce = document.documentElement.dataset.motion === 'reduce';
+    const phases = [[tr('Breathe in…', 'שאיפה…'), 4], [tr('Hold…', 'עצירה…'), 4], [tr('Breathe out…', 'נשיפה…'), 6]];
+    let round = 0, i = 0;
+    el.classList.add('is-breathing');
+    const next = () => {
+      if (round >= 4) { label.textContent = tr('Well done ✓', 'כל הכבוד ✓'); el.classList.remove('is-breathing'); setTimeout(() => { label.textContent = orig; delete el.dataset.busy; }, 2500); return; }
+      const [txt, sec] = phases[i]; label.textContent = txt; el.style.setProperty('--bdur', sec + 's'); el.dataset.phase = i;
+      i++; if (i === phases.length) { i = 0; round++; }
+      setTimeout(next, reduce ? sec * 1000 : sec * 1000);
+    };
+    next();
   }
 
   /* -------- compact rows: estimate + small step -------- */
   function distressBtn() {
     const b = btn(tr("I'm not feeling okay", 'אני לא מרגיש בסדר'), () => showPage('distress'), 'plus-distress');
-    b.prepend(illu('lifebuoy', 30, 'plus-distress-illu', 'heart'));
     return b;
   }
   function rowCard(cls, iconName, label, value, onclick, note) {
     return h('button', {type: 'button', class: 'plus-row-card ' + cls, onclick},
       ILLU_FOR[iconName] ? illu(ILLU_FOR[iconName], 40, 'plus-row-illu', iconName) : icon(iconName, 'plus-row-ico'), h('span', {class: 'plus-row-text'}, h('small', {}, label, note ? h('em', {}, ' · ' + note) : null), h('strong', {}, value)), icon('chevron', 'plus-row-chev'));
   }
+  function slimRow(ill, title, sub, onclick, cls) { return h('button', {type: 'button', class: 'plus-slim' + (cls ? ' ' + cls : ''), onclick}, illu(ill, 30, 'plus-slim-ill'), h('span', {class: 'plus-slim-t'}, h('b', {}, title), sub ? h('small', {}, sub) : null), icon('chev', 'plus-slim-chev')); }
+  let homeFaqOpen = false;
   function estimateRow() {
     if (!KB) return null;
-    if (!P.service || !P.monthsServed) return rowCard('plus-sage', 'bag', tr('How much might I get?', 'כמה אולי מגיע לי?'), tr('Enter your months of service →', 'הכנס כמה חודשים שירתת ←'), () => showPage('rights'));
+    if (!P.service || !P.monthsServed) return slimRow('piggy', tr('How much might I get?', 'כמה אולי מגיע לי?'), tr('Enter your months of service', 'מכניסים כמה חודשים שירתת'), () => showPage('rights'));
+    if (false) return rowCard('plus-sage', 'bag', tr('How much might I get?', 'כמה אולי מגיע לי?'), tr('Enter your months of service →', 'הכנס כמה חודשים שירתת ←'), () => showPage('rights'));
     const e = KB.estimate(P.service, P.monthsServed, P.gender);
     if (!e || !e.grantRate) return null;
     const value = e.grant !== null ? '≈ ' + money(e.grant) : money(e.grantRate) + tr(' per month served', ' לכל חודש שירות');
-    return rowCard('plus-sage', 'bag', tr('Your personal estimate:', 'הערכה אישית שלך:'), value, () => showPage('rights'),
-      tr('updated ', 'עודכן ') + asOfLabel(e.asOf));
+    return slimRow('piggy', tr('My estimate: ', 'ההערכה שלי: ') + value, tr('Grant and deposit · updated ', 'מענק ופיקדון · עודכן ') + asOfLabel(e.asOf), () => showPage('rights'), 'plus-est-row');
   }
   let todayOpen = false;
   function todayRow() {
@@ -414,7 +468,7 @@
     const step = p && P.todayStep && P.todayStep.date === t && p.actions.find(a => a.id === P.todayStep.id);
     const value = step ? (step.status === 'done' ? '✓ ' : '') + step.title : tr('Choose one small step', 'לבחור צעד קטן אחד');
     const isDone = step && step.status === 'done';
-    const row = rowCard('plus-beige' + (isDone ? ' plus-row-done' : ''), isDone ? 'check' : 'bulb', isDone ? tr('Done today — well done!', 'בוצע היום — כל הכבוד!') : tr('Small step for today:', 'צעד קטן להיום:'), value, () => { todayOpen = !todayOpen; renderHome(); });
+    const row = rowCard('plus-beige plus-today-row' + (isDone ? ' plus-row-done' : ''), isDone ? 'check' : 'bulb', isDone ? tr('Done today — well done!', 'בוצע היום — כל הכבוד!') : tr('Small step for today:', 'צעד קטן להיום:'), value, () => { todayOpen = !todayOpen; renderHome(); });
     row.setAttribute('aria-expanded', String(todayOpen));
     return h('div', {}, row, todayOpen ? todayStepCard() : null);
   }
@@ -424,17 +478,19 @@
   function quickChips() {
     const faq = (KB && KB.data && KB.data.faq) || []; if (!faq.length) return null;
     const answer = openAnswer >= 0 && faq[openAnswer];
-    return h('section', {class: 'plus-quick'}, h('h2', {}, tr('Quick questions', 'שאלות מהירות')),
+    return h('section', {class: 'plus-quick'},
       h('div', {class: 'plus-quick-chips'}, faq.slice(0, 6).map((f, i) => h('button', {type: 'button', class: 'plus-qchip', 'aria-expanded': String(i === openAnswer), onclick: () => { openAnswer = i === openAnswer ? -1 : i; renderHome(); }}, f.question))),
       answer ? h('div', {class: 'plus-qanswer', role: 'status'}, h('strong', {}, answer.question), h('p', {}, answer.answer), btn(tr('All rights & questions', 'כל הזכויות והשאלות'), () => showPage('rights'), 'plus-link')) : null);
   }
 
   function renderHome() {
+    const keepY = (document.scrollingElement || document.documentElement).scrollTop;
+    requestAnimationFrame(() => { try { (document.scrollingElement || document.documentElement).scrollTop = keepY; } catch (_) {} });
     plusHome.replaceChildren();
     plusHome.dir = he() ? 'rtl' : 'ltr';
     $('plusLegacySummary').textContent = tr('More options', 'אפשרויות נוספות');
     plusHome.append(
-      h('h1', {id: 'plusHomeTitle', class: 'plus-hello'}, tr('Hello', 'שלום') + (P.name ? ' ' + P.name : '') + ' 👋'),
+      h('h1', {id: 'plusHomeTitle', class: 'plus-hello'}, tr('Hello', 'שלום') + (P.name ? ' ' + P.name : '')),
       h('p', {class: 'plus-hello-sub'}, tr('How are you feeling today?', 'איך אתה מרגיש היום?')),
       moodRow()
     );
@@ -446,16 +502,20 @@
     });
     plusHome.append(grid);
     if (!P.infoOnly) plusHome.append(h('button', {type: 'button', class: 'plus-chat-entry', onclick: () => goChat()}, h('span', {}, tr('Talk with the Companion', 'דבר עם המלווה')), icon('chat')));
+    // Calm home (progressive disclosure): one "today" item, one short shortcut list, everything else folded.
+    put(plusHome, todayRow());
     const est = P.hidden.includes('home:estimate') ? null : estimateRow();
-    put(plusHome, est, todayRow(), PAGES.cv ? rowCard('plus-beige plus-cv-row', 'cvpen', tr('New · private', 'חדש · פרטי'), tr('Build my CV →', 'בנה קורות חיים ←'), () => showPage('cv')) : null, PAGES.tools ? rowCard('plus-sage plus-tools-row', 'listcheck', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, numbers, scholarships →', 'מועדים, פיקדון, טלפונים, מלגות ←'), () => showPage('tools')) : null, quickChips());
-    plusHome.append(distressBtn());
-    const cards = h('div', {class: 'plus-cards'});
-    const wn = whatsNewCard(); if (wn) cards.append(wn);
-    const rec = recommendationCard(); if (rec) cards.append(rec);
-    const bk = backupCard(); if (bk) cards.append(bk);
-    const tm = timingMessage(); if (tm) cards.append(h('div', {class: 'plus-card plus-soft'}, h('strong', {}, tr('Where you are now', 'איפה אתה עכשיו')), h('p', {}, tm)));
-    const s = streak();
-    plusHome.append(cards, h('p', {class: 'plus-cheer'}, cheer() + (s >= 2 ? '  ·  ' + tr(s + ' days in a row', s + ' ימים ברצף') + ' 🔥' : '')), privacyLine());
+    const slim = slimRow;
+    const shortcuts = h('div', {class: 'plus-slim-list', role: 'list'},
+      est ? est : null,
+      PAGES.cv ? slim('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided, with a clean PDF', 'מודרך, עם PDF נקי'), () => showPage('cv')) : null,
+      PAGES.tools ? slim('checklist', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, phone numbers, scholarships', 'מועדים, פיקדון, טלפונים, מלגות'), () => showPage('tools')) : null);
+    plusHome.append(shortcuts);
+    const faq = quickChips();
+    if (faq) plusHome.append(h('details', {class: 'plus-home-more', open: homeFaqOpen || undefined, ontoggle: e => { homeFaqOpen = e.currentTarget.open; }}, h('summary', {}, h('span', {}, tr('Common questions', 'שאלות נפוצות')), h('span', {class: 'plus-right-chev', 'aria-hidden': 'true'})), faq));
+    const one = backupCard() || recommendationCard();
+    if (one) plusHome.append(h('div', {class: 'plus-cards'}, one));
+    plusHome.append(distressBtn(), privacyLine());
   }
 
   /* -------- small step for today + progress -------- */
@@ -669,9 +729,9 @@
       const row = h('div', {class: 'plus-mood', role: 'group', 'aria-label': tr('Mood from 1 to 5', 'מצב רוח מ-1 עד 5')});
       faces.forEach((f, i) => row.append(h('button', {type: 'button', class: 'plus-mood-btn', 'aria-pressed': String(todays && todays.v === i + 1), 'aria-label': String(i + 1), onclick: () => {
         P.moods = [...P.moods.filter(m => m.d !== t), {d: t, v: i + 1}].slice(-90); store(); showPage('feel', false);
-        if (i === 0) toast(tr('Thank you for sharing. Human help is below.', 'תודה ששיתפת. עזרה אנושית נמצאת למטה.'));
+        if (false) toast(tr('Thank you for sharing. Human help is below.', 'תודה ששיתפת. עזרה אנושית נמצאת למטה.'));
       }}, f)));
-      put(wrap, section(tr('Quick check (optional)', 'בדיקה קצרה (לא חובה)'), row, moodTrend(),
+      put(wrap, section(tr('Quick check (optional)', 'בדיקה קצרה (לא חובה)'), row, todays ? moodResponse(todays) : null, moodTrend(),
         h('p', {class: 'plus-muted'}, tr('This is just for you, not a diagnosis. You can skip it.', 'זה רק בשבילך, לא אבחון. אפשר לדלג.'))));
       if (!P.infoOnly) put(wrap, section(tr('What do you need right now?', 'מה אתה צריך עכשיו?'),
         h('div', {class: 'plus-row'}, btn(tr('I just want to talk', 'אני רק רוצה לדבר'), () => goChat('talk'), 'plus-btn primary'),
@@ -961,6 +1021,7 @@
       P.onboarded = true; store();
       try { S.profile.background = {...(S.profile.background || {}), serviceType: P.service, reserve: P.reservist || !!(S.profile.background || {}).reserve}; save(); } catch (_) {}
       toast(P.name ? tr('Great, ' + P.name + ' ✓', 'מעולה, ' + P.name + ' ✓') : tr('Saved ✓', 'נשמר ✓'));
+      pageStack = [];
       if (P.pressing === 'feelings') showPage('feel'); else if (P.pressing === 'money') showPage('money');
       else if (P.pressing === 'rights') showPage('rights'); else if (P.pressing === 'studies') showPage('studies');
       else if (P.pressing === 'work') showPage('work'); else goHome();
@@ -998,7 +1059,7 @@
     if (P.hidden.length) put(wrap, section(tr('Topics I marked "not relevant"', 'נושאים שסימנתי "לא רלוונטי"'),
       h('ul', {class: 'plus-list'}, P.hidden.map(id => h('li', {}, hiddenLabel(id), ' ', btn(tr('Show again', 'להחזיר'), () => { P.hidden = P.hidden.filter(x => x !== id); store(); showPage('help', false); }, 'plus-link'))))));
     // What's new, invite
-    put(wrap, section(tr("What's new", 'מה חדש'), whatsNewList()));
+    // ("What's new" removed at the owner's request, 27 Nov 2026)
     put(wrap, section(tr('Invite a friend', 'להזמין חבר'), h('p', {class: 'plus-muted'}, tr('Shares only the app link — never your information.', 'משתף רק את הקישור לאפליקציה — אף פעם לא את המידע שלך.')),
       btn(tr('Share the app', 'שיתוף האפליקציה'), invite, 'plus-btn')));
     return wrap;
