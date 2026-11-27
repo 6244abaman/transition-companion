@@ -510,6 +510,7 @@
     const shortcuts = h('div', {class: 'plus-slim-list', role: 'list'},
       est ? est : null,
       PAGES.cv ? slim('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided, with a clean PDF', 'מודרך, עם PDF נקי'), () => showPage('cv')) : null,
+      PAGES.interviewsim ? slim('talk', tr('Interview simulator', 'סימולטור ראיון עבודה'), tr('Practice out loud, get feedback right away', 'מתרגלים בקול, מקבלים משוב מיד'), () => showPage('interviewsim')) : null,
       PAGES.tools ? slim('checklist', tr('My tools', 'הכלים שלי'), tr('Dates, deposit, phone numbers, scholarships', 'מועדים, פיקדון, טלפונים, מלגות'), () => showPage('tools')) : null);
     plusHome.append(shortcuts);
     const faq = quickChips();
@@ -806,7 +807,10 @@
     work() {
       const W = KB.data && KB.data.work_and_career;
       const pw = KB.rightsCards().find(c => c.id === 'preferred_work_grant');
-      const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work & CV', 'עבודה וקורות חיים')), hebrewNote(), disclaimer());
+      const kit = (ill, title, sub, id) => PAGES[id] ? h('button', {type: 'button', class: 'plus-kit', onclick: () => showPage(id)}, illu(ill, 46), h('b', {}, title), h('small', {}, sub)) : null;
+      const wrap = h('div', {}, h('h1', {class: 'plus-title'}, tr('Work & CV', 'עבודה וקורות חיים')),
+        h('div', {class: 'plus-kits'}, kit('pen', tr('Build my CV', 'בנה קורות חיים'), tr('Guided + clean PDF', 'מודרך + PDF נקי'), 'cv'), kit('talk', tr('Interview simulator', 'סימולטור ראיון'), tr('Practice with feedback', 'תרגול עם משוב'), 'interviewsim')),
+        hebrewNote(), disclaimer());
       if (pw && !P.hidden.includes('right:' + pw.id)) put(wrap, rightCard(pw));
       put(wrap, section(tr('Preferred work — examples', 'עבודה מועדפת — דוגמאות'), h('p', {}, tr('Approved sectors often include:', 'ענפים שמאושרים לרוב:')), list((KB.data.rights_and_benefits.preferred_work_grant || {}).sectors),
         h('p', {class: 'plus-muted'}, tr('Check the current list of approved employers on the official site before you start.', 'לפני שמתחילים — לבדוק באתר הרשמי את רשימת המעסיקים המאושרים העדכנית.'))));
@@ -821,11 +825,12 @@
       put(wrap, section(tr('Free counseling', 'ייעוץ חינם'), h('p', {}, W ? W.counseling : '')));
       put(wrap, h('div', {class: 'plus-row'}, askButton('cv', tr('Help me build my CV from my real experience.', 'תעזור לי לבנות קורות חיים מהניסיון האמיתי שלי.')),
         PAGES.cv ? btn(tr('Build my CV', 'בנה קורות חיים'), () => showPage('cv'), 'plus-btn primary') : null,
+        PAGES.interviewsim ? btn(tr('Interview simulator', 'סימולטור ראיון'), () => showPage('interviewsim'), 'plus-btn primary') : null,
         h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + S.lang}, tr('36 skills assessment', 'שאלון 36 הכישורים')),
         h('a', {class: 'plus-btn', href: journeyUrl('cvs')}, tr('My CV drafts', 'טיוטות קורות החיים שלי'))));
       return wrap;
     },
-    interview() { return h('div', {}, h('h1', {class: 'plus-title'}, tr('Talking about your service in a job interview', 'איך לדבר על השירות בראיון עבודה')), interviewSection()); },
+    interview() { return h('div', {}, h('h1', {class: 'plus-title'}, tr('Talking about your service in a job interview', 'איך לדבר על השירות בראיון עבודה')), PAGES.interviewsim ? btn(tr('Practice in the interview simulator →', 'לתרגל בסימולטור הראיון ←'), () => showPage('interviewsim'), 'plus-btn primary') : null, interviewSection()); },
     studies() {
       const cards = KB.rightsCards().filter(c => c.cat === 'studies').filter(c => !P.hidden.includes('right:' + c.id));
       const dep = KB.rightsCards().find(c => c.id === 'personal_deposit');
@@ -1282,7 +1287,7 @@
     return text;
   }
   const TOOL_CTX = {h, btn, tr, he, icon, illu, put, P, store, toast, saveAction, showPage, openTopic, KB, money, section, list, askButton, aiText, Journey, goChat, todayStr};
-  [window.MomentumTools, window.MomentumCV, window.MomentumGuided].forEach(factory => {
+  [window.MomentumTools, window.MomentumCV, window.MomentumInterview, window.MomentumGuided].forEach(factory => {
     if (typeof factory !== 'function') return;
     try { const T = factory(TOOL_CTX); Object.assign(PAGES, T.pages || {}); Object.assign(PAGE_HEAD, T.heads || {}); }
     catch (e) { console.warn('tools', e); }

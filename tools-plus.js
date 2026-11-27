@@ -709,7 +709,7 @@
         ['studypaths', 'bulb', tr('Compare study paths', 'השוואת מסלולי לימוד'), tr('Degree, handasai, course', 'תואר, הנדסאי, קורס')],
         ['scholarships', 'star', tr('Scholarships', 'מלגות'), tr('List + reminders', 'רשימה + תזכורות')],
         ['psychometric', 'calendar', tr('Psychometric planner', 'מתכנן פסיכומטרי'), tr('Countdown + weekly plan', 'ספירה לאחור + תוכנית')],
-        ['interviewprep', 'talk', tr('Interview practice', 'תרגול ראיון'), tr('Question, answer, feedback', 'שאלה, תשובה, משוב')]]],
+        ['interviewsim', 'talk', tr('Interview simulator', 'סימולטור ראיון'), tr('Voice, feedback, follow-up', 'קול, משוב, שאלת המשך')]]],
       [tr('Home and life', 'בית וחיים עצמאיים'), [
         ['apartment', 'home', tr('First apartment', 'דירה ראשונה'), tr('Contract, guarantees, moving in', 'חוזה, ערבויות, כניסה')],
         ['insurance', 'bookmark', tr('Insurance', 'ביטוחים'), tr('What you really need', 'מה באמת צריך')]]],
@@ -718,8 +718,8 @@
         ['lost', 'heart', tr('Lost direction', 'איבדתי כיוון'), tr('Small steps, not a life plan', 'צעדים קטנים, לא תוכנית חיים')],
         ['install', 'logo', tr('App on my phone', 'אפליקציה בטלפון'), tr('Home-screen icon', 'אייקון במסך הבית')]]]
     ];
-    const TOOL_ICON = {deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'file', total: 'calc', afterlist: 'listcheck', contacts: 'phone', explain: 'file', glossary: 'book', letters: 'file', fieldquiz: 'compass', studypaths: 'cap', scholarships: 'award', psychometric: 'book', interviewprep: 'talk', apartment: 'building', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phone', budget: 'calc', links: 'linkic', start: 'map', prefcheck: 'briefcase', missing: 'listcheck', weekly: 'calendar', cv: 'file', coach: 'talk', action: 'flag'};
-    const TOOL_ILLU = {cv: 'pen', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'letter', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
+    const TOOL_ICON = {interviewsim: 'talk', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'file', total: 'calc', afterlist: 'listcheck', contacts: 'phone', explain: 'file', glossary: 'book', letters: 'file', fieldquiz: 'compass', studypaths: 'cap', scholarships: 'award', psychometric: 'book', interviewprep: 'talk', apartment: 'building', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phone', budget: 'calc', links: 'linkic', start: 'map', prefcheck: 'briefcase', missing: 'listcheck', weekly: 'calendar', cv: 'file', coach: 'talk', action: 'flag'};
+    const TOOL_ILLU = {interviewsim: 'talk', cv: 'pen', deadlines: 'calendar', deposit: 'piggy', grantplan: 'banknote', payslip: 'receipt', total: 'calc', afterlist: 'checklist', contacts: 'phone', explain: 'letter', glossary: 'book', letters: 'letter', fieldquiz: 'compass', studypaths: 'signpost', scholarships: 'cap', psychometric: 'pencil', interviewprep: 'talk', apartment: 'house', insurance: 'shield', summary: 'flag', lost: 'heart', install: 'phonecheck'};
     const illu = (name, size, cls) => { const sp = h('span', {class: 'plus-illu ' + (cls || ''), 'aria-hidden': 'true'}); sp.innerHTML = window.MomentumIllu ? window.MomentumIllu(name, size) : ''; return sp; };
     function tools() {
       const wrap = h('div');
