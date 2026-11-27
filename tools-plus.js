@@ -64,12 +64,14 @@
     }
     function deadlines() {
       const wrap = h('div');
-      const input = h('input', {type: 'date', id: 'plusDischargeDate', value: P.dischargeDate || '', 'aria-label': tr('Discharge date', 'תאריך השחרור')});
+      const fromMonth = !P.dischargeDate && /^\d{4}-\d{2}$/.test(P.dischargeMonth || '');
+      const input = h('input', {type: 'date', id: 'plusDischargeDate', value: P.dischargeDate || (fromMonth ? P.dischargeMonth + '-01' : ''), 'aria-label': tr('Discharge date', 'תאריך השחרור')});
       const out = h('div', {id: 'plusDeadlines'});
       const paint = () => {
         out.replaceChildren();
         const v = input.value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { out.append(note(tr('Enter your discharge date (or the expected one) to see your personal dates.', 'הכנס את תאריך השחרור (או התאריך הצפוי) כדי לראות את המועדים שלך.'))); return; }
         const [y, m, d] = v.split('-').map(Number); const D = new Date(y, m - 1, d);
+        if (fromMonth && !P.dischargeDate) out.append(h('p', {class: 'plus-sch-why'}, tr('Using the month you gave at the start — set the exact day for exact dates.', 'לפי החודש שמסרת בהתחלה — כדאי לבחור את היום המדויק כדי שהמועדים יהיו מדויקים.')));
         const items = deadlineItems(D), now = new Date(); now.setHours(0, 0, 0, 0);
         const next = items.find(i => i.date >= now);
         out.append(h('div', {class: 'plus-row'},
@@ -342,7 +344,16 @@
       const q = h('input', {type: 'search', placeholder: tr('Search a scholarship…', 'חיפוש מלגה…'), 'aria-label': tr('Search scholarships', 'חיפוש מלגות')});
       const list = h('div');
       const fmt = d => new Date(d).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'numeric', year: 'numeric'});
-      const card = s => h('article', {class: 'plus-sch'},
+      // Matching uses ONLY what the soldier told the app (service type, lone soldier, periphery, reserves) against the "who" line.
+      const why = s => { if (!s.who) return []; const w = s.who.toLowerCase(), r = [];
+        if (P.service === 'combat' && /combat|לוחמ|קרבי/.test(w)) r.push(tr('combat service', 'שירות קרבי'));
+        if (P.service === 'support' && /תומכי לחימה|combat support/.test(w)) r.push(tr('combat support', 'תומך לחימה'));
+        if (P.lone && /בודד|lone/.test(w)) r.push(tr('lone soldier', 'חייל בודד'));
+        if (P.periphery && (s.group === 'periphery' || /פריפריה|periphery/.test(w))) r.push(tr('periphery', 'פריפריה'));
+        if (P.reservist && /מילואים|reservist/.test(w)) r.push(tr('reserves', 'מילואים'));
+        return r; };
+      const card = s => h('article', {class: 'plus-sch' + (why(s).length ? ' plus-sch-match' : '')},
+        why(s).length ? h('p', {class: 'plus-sch-why'}, tr('Fits your details: ', 'מתאים לפי הפרטים שלך: ') + why(s).join(' · ')) : null,
         h('div', {class: 'plus-sch-top'}, h('strong', {}, s.name), s.url ? h('span', {class: 'plus-badge-ok'}, tr('Official link', 'קישור רשמי')) : h('span', {class: 'plus-badge-check'}, tr('To check', 'לבדיקה'))),
         h('p', {}, s.desc),
         s.who ? h('p', {class: 'plus-sch-meta'}, h('b', {}, tr('Who: ', 'למי: ')), s.who) : null,
@@ -350,17 +361,26 @@
         h('p', {class: 'plus-sch-meta plus-muted'}, tr('Checked: ', 'נבדק: ') + fmt(CHECKED) + (s.src ? ' · ' + tr('Source: ', 'מקור: ') + s.src : '')),
         h('div', {class: 'plus-row'}, s.url ? ext(tr('To the official page', 'לעמוד הרשמי'), s.url) : null,
           btn(tr('Save in My Journey', 'שמור במסע שלי'), () => saveAction(tr('Check scholarship: ', 'לבדוק מלגה: ') + s.name, [s.desc, s.when, s.url].filter(Boolean).join('\n')), 'plus-btn')));
+      const toggle = (key, label) => { const c = h('input', {type: 'checkbox'}); c.checked = !!P[key]; c.addEventListener('change', () => { P[key] = c.checked; store(); paint(); }); return h('label', {class: 'plus-sch-tg'}, c, h('span', {}, label)); };
+      const mine = h('div');
       const paint = () => {
         const t = q.value.trim().toLowerCase();
+        const matches = SCH().filter(s => why(s).length);
+        mine.replaceChildren(h('section', {class: 'plus-card plus-sch-mine'},
+          h('strong', {}, tr('Your details', 'הפרטים שלך')),
+          h('p', {class: 'plus-muted'}, P.service ? tr('Service type: ', 'סוג שירות: ') + (KB && KB.SERVICE_LABEL ? (KB.SERVICE_LABEL[P.service] || P.service) : P.service) : tr('Service type not set — set it in "What am I entitled to".', 'סוג השירות לא הוגדר — אפשר להגדיר ב"מה מגיע לי".')),
+          h('div', {class: 'plus-sch-tgs'}, toggle('lone', tr('Lone soldier', 'חייל בודד')), toggle('periphery', tr('I live in the periphery', 'גר בפריפריה / אזור סיוע')), toggle('reservist', tr('Reservist', 'משרת מילואים'))),
+          matches.length ? h('p', {class: 'plus-sch-count'}, tr(matches.length + ' scholarships match your details (marked in green below).', matches.length + ' מלגות מתאימות לפרטים שלך (מסומנות בירוק למטה).'))
+            : h('p', {class: 'plus-muted'}, tr('No scholarship is specifically for your details — the general ones below are open to many.', 'אין מלגה שמיועדת במיוחד לפרטים שלך — הכלליות למטה פתוחות לרבים.'))));
         list.replaceChildren(...SCH_GROUPS().map(([g, title, ic]) => {
-          const items = SCH().filter(s => s.group === g && (!t || (s.name + ' ' + s.desc + ' ' + s.who).toLowerCase().includes(t)));
+          const items = SCH().filter(s => s.group === g && (!t || (s.name + ' ' + s.desc + ' ' + s.who).toLowerCase().includes(t))).sort((a, b) => why(b).length - why(a).length);
           return items.length ? h('section', {class: 'plus-sch-group'}, h('h2', {class: 'plus-group-title'}, icon(ic, 'plus-ico-dot topic-study'), title), ...items.map(card)) : null;
         }));
       };
       q.addEventListener('input', paint);
       put(wrap, section(tr('Scholarships for discharged soldiers', 'מלגות לחיילים משוחררים'),
         note(tr('Dates and amounts change every year. "To check" means we have not confirmed an official page yet — ask the institution or a youth centre.', 'מועדים וסכומים משתנים כל שנה. "לבדיקה" אומר שעוד לא אימתנו עמוד רשמי — אפשר לשאול במוסד או במרכז הצעירים.')), q),
-        list, h('div', {class: 'plus-row'}, ctx.askButton ? ctx.askButton('study', tr('Which scholarships might fit me?', 'אילו מלגות אולי מתאימות לי?')) : null));
+        mine, list, h('div', {class: 'plus-row'}, ctx.askButton ? ctx.askButton('study', tr('Which scholarships might fit me?', 'אילו מלגות אולי מתאימות לי?')) : null));
       paint();
       return wrap;
     }
@@ -519,8 +539,11 @@
         }
         const score = {}; answers.forEach(k => score[k] = (score[k] || 0) + 1);
         const top = Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 2);
+        // the result feeds the strengths profile (work suggestions, tools) — the soldier can delete it there
+        try { const M = window.MomentumProfile; if (M) { const pr = M.read(); pr.quiz = {tags: top, score, date: new Date().toISOString().slice(0, 10)}; M.write(pr); } } catch (_) {}
         box.append(section(tr('Directions worth checking', 'כיוונים ששווה לבדוק'),
-          ...top.map(k => h('div', {class: 'plus-card plus-soft'}, h('strong', {}, FIELDS[k][0]), h('p', {}, FIELDS[k][1]))),
+          ...top.map(k => h('div', {class: 'plus-card plus-soft'}, h('strong', {}, FIELDS[k][0]), h('p', {}, FIELDS[k][1]), h('small', {class: 'plus-muted'}, tr(score[k] + ' of your ' + answers.length + ' answers pointed here', score[k] + ' מתוך ' + answers.length + ' התשובות שלך הצביעו לכאן')))),
+          h('p', {class: 'plus-sch-why'}, tr('Saved to your strengths profile — it now shapes your work suggestions.', 'נשמר בפרופיל החוזקות — מעכשיו זה משפיע על הצעות העבודה שלך.')),
           note(tr('Just a starting point, not a verdict. A youth centre or the skills questionnaire go deeper.', 'זו רק נקודת התחלה, לא קביעה. מרכז צעירים או שאלון הכישורים מעמיקים יותר.')),
           h('div', {class: 'plus-row'}, btn(tr('Again', 'שוב'), () => { answers.length = 0; paint(); }, 'plus-link'),
             h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('Skills questionnaire', 'שאלון הכישורים')),
@@ -574,7 +597,7 @@
         [J && J.cvs && J.cvs.length, tr('CV started', 'קורות חיים בדרך')],
         [(P.afterChecks || []).includes('tax'), tr('Tax points handled', 'נקודות זיכוי טופלו')],
         [(P.afterChecks || []).includes('deposit'), tr('Deposit checked', 'הפיקדון נבדק')],
-        [P.dischargeDate, tr('Dates in place', 'המועדים מסודרים')],
+        [P.dischargeDate || P.dischargeMonth, tr('Dates in place', 'המועדים מסודרים')],
         [J && (J.skills || []).some(x => x.confirmed), tr('Skills confirmed', 'כישורים אושרו')],
         [doneAll >= 5, tr('5 steps done', '5 צעדים הושלמו')]
       ];

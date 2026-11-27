@@ -461,7 +461,7 @@
       h('span', {}, h('b', {}, kind === 'study' ? tr('Not sure what to study?', 'לא בטוח מה ללמוד?') : tr('Which jobs fit you?', 'איזו עבודה מתאימה לך?')),
         h('small', {}, tr('A short optional questionnaire tailors these suggestions to you', 'שאלון קצר (לא חובה) יתאים את ההמלצות אליך'))));
     return h('section', {class: 'plus-card plus-profile-dirs'}, h('div', {class: 'plus-profile-dirs-head'}, illu('compass', 36), h('div', {}, h('b', {}, kind === 'study' ? tr('Directions to check — from your answers', 'כיוונים לבדוק — לפי התשובות שלך') : tr('Directions that fit your profile', 'כיוונים שמתאימים לפרופיל שלך')),
-        h('small', {}, tr('Ideas to explore, not a verdict. Based only on what you told the app.', 'רעיונות לבדיקה, לא קביעה. רק לפי מה שסיפרת לאפליקציה.')))),
+        h('small', {}, (M.basis(kind) ? tr('Based on ', 'על סמך ') + M.basis(kind) + '. ' : '') + tr('Ideas to explore, not a verdict.', 'רעיונות לבדיקה, לא קביעה.')))),
       h('div', {class: 'pa-chips'}, dirs.map(d => h('button', {type: 'button', class: 'pa-chip', onclick: () => askOrSave(d, kind)}, d))),
       h('div', {class: 'plus-row'}, btn(tr('My profile', 'הפרופיל שלי'), () => showPage('profile'), 'plus-link')));
   }
@@ -580,7 +580,25 @@
     }
     return card;
   }
+  // Step ideas come from the soldier's real situation: time since discharge, what is already done, onboarding answers and the optional profile.
   function stepIdeas() {
+    const m = monthsSinceDischarge(), out = [], add = (en, he_) => out.push(tr(en, he_));
+    const J = journey(), titles = new Set(J ? J.actions.map(a => a.title) : []);
+    if (!P.dischargeMonth && !P.notDischarged) add('Add my discharge month to get my personal dates', 'להוסיף את חודש השחרור כדי לקבל מועדים אישיים');
+    if (m !== null && m < 2) { add('Check the grant reached my account', 'לבדוק שהמענק הגיע לחשבון'); add('Give form 101 to my employer for tax points', 'למסור טופס 101 למעסיק בשביל נקודות זיכוי'); }
+    if (P.lone) add('Check the extra benefits for lone soldiers', 'לבדוק את ההטבות הנוספות לחייל בודד');
+    if (P.pressing === 'studies') add('Check Mimadim eligibility in the personal area', 'לבדוק זכאות לממדים באזור האישי');
+    if (P.pressing === 'work' || (m !== null && m >= 1)) add('Check preferred-work eligibility', 'לבדוק זכאות לעבודה מועדפת');
+    if (J && !(J.cvs || []).length && (P.pressing === 'work' || (window.MomentumProfile && window.MomentumProfile.active()))) add('Build my CV', 'לבנות קורות חיים');
+    const M = window.MomentumProfile;
+    if (M && M.active()) { const w = M.workDirections()[0]; if (w) add('Find out about working in ' + w, 'לברר על עבודה בתחום ' + w); const st = M.studyDirections()[0]; if (st) add('Look into studying ' + st, 'לבדוק לימודי ' + st); }
+    if (m !== null && m >= 2) add('Plan how to use my deposit', 'לתכנן שימוש בפיקדון');
+    add('Write 3 lines about what I did in service', 'לכתוב 3 שורות על מה שעשיתי בשירות');
+    add('Book a talk at a youth center', 'לקבוע שיחה במרכז צעירים');
+    add('Check what I am entitled to', 'לבדוק מה מגיע לי'); add('Check my deposit balance', 'לבדוק כמה יש בפיקדון');
+    return [...new Set(out)].filter(t => !titles.has(t)).slice(0, 6);
+  }
+  function stepIdeasOld() {
     const m = monthsSinceDischarge();
     const early = he() ? ['לבדוק שהמענק הגיע לחשבון', 'לבקש נקודות זיכוי (טופס 101)', 'לבדוק כמה יש בפיקדון', 'לעדכן כתובת רשמית']
       : ['Check the grant reached my account', 'Ask for tax credit points (form 101)', 'Check my deposit balance', 'Update my official address'];
@@ -592,7 +610,8 @@
     const ideas = he()
       ? ['לבדוק את המענק באזור האישי', 'לבדוק כמה יש בפיקדון', 'לשלוח טופס 101 למעסיק', 'לקבוע שיחה במרכז צעירים', 'לכתוב 3 שורות על מה שעשיתי בשירות', 'לצאת להליכה של 20 דקות']
       : ['Check my grant in the personal area', 'Check my deposit balance', 'Give form 101 to my employer', 'Book a talk at a youth center', 'Write 3 lines about what I did in service', 'Take a 20-minute walk'];
-    return btn(tr('Suggest one', 'תציע לי'), () => { input.value = ideas[Math.floor(Math.random() * ideas.length)]; input.focus(); }, 'plus-link');
+    let k = 0; const mineIdeas = stepIdeas().length ? stepIdeas() : ideas;
+    return btn(tr('Suggest one for me', 'תציע לי משהו שמתאים'), () => { input.value = mineIdeas[k++ % mineIdeas.length]; input.focus(); }, 'plus-link');
   }
 
   /* -------- personal recommendation -------- */
@@ -661,6 +680,14 @@
     }, 'plus-link');
   }
 
+  // "For you" only when the soldier's own answers match a specific eligibility label (not for rights that apply to everyone).
+  function forMe(c) {
+    const r = [];
+    if ((c.elig || []).includes('lone') && P.lone) r.push(tr('lone soldier', 'חייל בודד'));
+    if ((c.elig || []).includes('combat') && P.service === 'combat') r.push(tr('combat service', 'שירות קרבי'));
+    if ((c.elig || []).includes('periphery') && P.periphery) r.push(tr('periphery', 'פריפריה'));
+    return r.join(' · ');
+  }
   function rightCard(c) {
     const RIGHT_ILLU = {discharge_grant: 'banknote', personal_deposit: 'piggy', tax_credit_points: 'percent', preferred_work_grant: 'briefcase', public_transport_free: 'bus', arnona: 'house', bituach_leumi_exemption: 'shield', unemployment: 'coins', income_support: 'coins', mimadim_lelimudim: 'cap', lone_soldiers_extra: 'users'};
     const RIGHT_ICON = {discharge_grant: ['banknote', 'money'], personal_deposit: ['piggy', 'money'], tax_credit_points: ['percent', 'money'], preferred_work_grant: ['briefcase', 'work'], public_transport_free: ['bus', 'transport'], arnona: ['building', 'home'], bituach_leumi_exemption: ['shield', 'health'], unemployment: ['handcoins', 'money'], income_support: ['handcoins', 'money'], mimadim_lelimudim: ['cap', 'study'], lone_soldiers_extra: ['users', 'journey']};
@@ -670,7 +697,8 @@
     const first = c.lines[0] || '';
     const details = h('details', {class: 'plus-card plus-right plus-right-fold', 'data-right': c.id},
       h('summary', {class: 'plus-right-sum'}, (RIGHT_ILLU[c.id] ? illu(RIGHT_ILLU[c.id], 44, 'plus-right-illu') : icon((RIGHT_ICON[c.id] || ['info'])[0], 'plus-right-ico topic-' + ((RIGHT_ICON[c.id] || [, 'tasks'])[1]))),
-        h('span', {class: 'plus-right-head'}, h('strong', {}, c.title), h('small', {}, key || (first.length > 70 ? first.slice(0, 68) + '…' : first))),
+        h('span', {class: 'plus-right-head'}, h('strong', {}, c.title), h('small', {}, key || (first.length > 70 ? first.slice(0, 68) + '…' : first)),
+          forMe(c) ? h('span', {class: 'plus-for-me'}, tr('For you: ', 'מתאים לך: ') + forMe(c)) : null),
         icon('chevron', 'plus-right-chev')));
     const box = h('div', {class: 'plus-right-body'});
     details.append(box);

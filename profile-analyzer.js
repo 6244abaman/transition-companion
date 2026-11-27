@@ -86,10 +86,20 @@
     return Object.values(map).map(m => { const strong = m.src.size > 1; return {id: m.id, name: skillName(m.id), tag: SK(m.id)[3], score: Math.round((m.score * (strong ? 1.4 : 1)) * 10) / 10, sources: [...m.src], strong, evidence: [...new Set(m.evidence)].slice(0, 2)}; })
       .sort((a, b) => b.score - a.score);
   }
-  function tags(p) { const t = {}; skills(p).slice(0, 6).forEach(s => { t[s.tag] = (t[s.tag] || 0) + s.score; }); p = p || read(); if (p.school.liked.length) t.study = (t.study || 0) + p.school.liked.length; return Object.entries(t).sort((a, b) => b[1] - a[1]).map(x => x[0]); }
-  const has = p => { p = p || read(); return !!(p.military.roles || p.military.activities.length || p.school.liked.length || p.school.stoodOut || p.feedback.length || p.self.strengths.length || p.deep.values.length || Object.keys(p.chat).length); };
+  function tags(p) { p = p || read(); const t = {}; skills(p).slice(0, 6).forEach(s => { t[s.tag] = (t[s.tag] || 0) + s.score; }); if (p.school.liked.length) t.study = (t.study || 0) + p.school.liked.length;
+    const QT = {people: 'people', tech: 'tech', data: 'tech', care: 'care', field: 'field'}; if (p.quiz && Array.isArray(p.quiz.tags)) p.quiz.tags.forEach((q, i) => { const k = QT[q]; if (k) t[k] = (t[k] || 0) + (i === 0 ? 4 : 2); }); return Object.entries(t).sort((a, b) => b[1] - a[1]).map(x => x[0]); }
+  const has = p => { p = p || read(); return !!((p.quiz && p.quiz.tags && p.quiz.tags.length) || p.military.roles || p.military.activities.length || p.school.liked.length || p.school.stoodOut || p.feedback.length || p.self.strengths.length || p.deep.values.length || Object.keys(p.chat).length); };
   const active = () => { const p = read(); return p.enabled && has(p); };
   function completion(p) { p = p || read(); const parts = [!!(p.military.roles || p.military.activities.length), !!(p.school.liked.length || p.school.stoodOut), p.feedback.length > 0, !!(p.self.strengths.length || p.self.workStyle), !!(p.deep.values.length || p.deep.pace)]; return {done: parts.filter(Boolean).length, of: parts.length, parts}; }
+  const QL = {people: ['People & leadership', 'אנשים והובלה'], tech: ['Technical & hands-on', 'טכני ומעשי'], data: ['Analysis & systems', 'ניתוח ומערכות'], care: ['Care & education', 'טיפול וחינוך'], field: ['Field & action', 'שטח ואקשן']};
+  const quizLabel = k => QL[k] ? T(QL[k][0], QL[k][1]) : k;
+  // What a suggestion is based on — shown next to it, so nothing looks like a guess.
+  function basis(kind) {
+    const p = read(), parts = [];
+    if (kind === 'study') { if (p.school.liked.length) parts.push(T('subjects you liked: ', 'מקצועות שאהבת: ') + p.school.liked.map(s => label(SUBJECTS, s)).join(', ')); }
+    else { const top = skills(p).slice(0, 3).map(s => s.name); if (top.length) parts.push(T('your strengths: ', 'החוזקות שלך: ') + top.join(', ')); if (p.quiz && p.quiz.tags) parts.push(T('your quiz result: ', 'תוצאת השאלון: ') + p.quiz.tags.map(quizLabel).join(', ')); }
+    return parts.join(' · ');
+  }
   const label = (list, id) => { const x = list.find(v => v[0] === id); return x ? T(x[1], x[2]) : ''; };
   /* "About me" — assembled only from the user's own answers (editable). */
   function aboutDraft(p) {
@@ -129,7 +139,7 @@
   const recommendedTools = () => { if (!active()) return []; return [...new Set(tags().slice(0, 2).flatMap(t => TAG_TOOLS[t] || []))]; };
   const cvBullets = () => { const p = read(); if (!p.enabled) return []; return p.military.activities.filter(a => a.what && (Number(a.rating) || 0) >= 5).sort((a, b) => b.rating - a.rating).map(a => clip(a.what, 200)).slice(0, 4); };
 
-  window.MomentumProfile = {read, write, blank, skills, tags, has, active, completion, about, aboutDraft, aiSummary, noteChat, workDirections, studyDirections, recommendedTools, cvBullets, skillName, SKILLS, SUBJECTS, VALUES, WORKSTYLE, LEARN, ENV,
+  window.MomentumProfile = {basis, read, write, blank, skills, tags, has, active, completion, about, aboutDraft, aiSummary, noteChat, workDirections, studyDirections, recommendedTools, cvBullets, skillName, SKILLS, SUBJECTS, VALUES, WORKSTYLE, LEARN, ENV,
     clear() { try { localStorage.removeItem(KEY); } catch (_) {} try { window.dispatchEvent(new CustomEvent('momentum-profile-changed')); } catch (_) {} }};
 
   /* =================== UI =================== */
@@ -221,6 +231,7 @@
           p.school.stoodOut ? row(tr('Stood out in', 'בלטת ב'), p.school.stoodOut, () => { const q = MP.read(); q.school.stoodOut = ''; MP.write(q); paint(); }) : null,
           ...p.feedback.filter(f => f.text).map((f, i) => row(tr('Remark', 'משפט') + ' — ' + label([['friend', 'Friend', 'חבר'], ['family', 'Family', 'משפחה'], ['commander', 'Commander', 'מפקד'], ['other', 'Other', 'אחר']], f.from), f.text, () => { const q = MP.read(); q.feedback.splice(i, 1); MP.write(q); paint(); })),
           p.deep.values.length ? row(tr('Values', 'ערכים'), p.deep.values.map(v => label(VALUES, v)).join(', '), () => { const q = MP.read(); q.deep.values = []; MP.write(q); paint(); }) : null,
+          p.quiz && p.quiz.tags ? row(tr('"Which field fits me?" result', 'תוצאת "איזה תחום מתאים לי?"'), p.quiz.tags.map(quizLabel).join(', ') + (p.quiz.date ? ' · ' + p.quiz.date : ''), () => { const q = MP.read(); delete q.quiz; MP.write(q); paint(); }) : null,
           Object.keys(p.chat).length ? row(tr('Skills noticed in chat', 'כישורים שזוהו בצ\'אט'), Object.keys(p.chat).map(skillName).join(', '), () => { const q = MP.read(); q.chat = {}; MP.write(q); paint(); }) : null),
         aboutBox(p),
         h('div', {class: 'plus-row'}, btn(tr('Edit my answers', 'לערוך את התשובות'), () => { mode = 'form'; part = 0; paint(); }, 'plus-btn'),

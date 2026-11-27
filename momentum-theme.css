@@ -702,3 +702,11 @@ html[data-motion="reduce"] .sim-ai-dot { animation:none; }
 .sim-transcript > summary { cursor:pointer;font-weight:700;color:var(--text-2);font-size:14px; }
 .sim-tr { border-top:1px solid var(--border);padding:8px 0; } .sim-tr p { margin:2px 0;line-height:1.5; }
 .sim-tr-q { font-weight:700;color:#2E6B8A;font-size:14px; } .sim-tr-a { color:var(--text-2);font-size:14px; }
+.plus-for-me { display:inline-block;margin-top:4px;background:#E4F2EA;color:#1E5E3E;border-radius:99px;padding:2px 9px;font-size:12.5px;font-weight:800; }
+.plus-sch-match { border-color:#9BC2AC !important;box-shadow:0 0 0 2px #E4F2EA; }
+.plus-sch-why { margin:0 0 6px;color:#1E5E3E;font-weight:800;font-size:13.5px; }
+.plus-sch-mine { display:flex;flex-direction:column;gap:6px;margin-bottom:12px; }
+.plus-sch-tgs { display:flex;flex-wrap:wrap;gap:8px; }
+.plus-sch-tg { display:flex;align-items:center;gap:6px;background:var(--beige);border-radius:99px;padding:6px 12px;font-weight:700;font-size:14px;cursor:pointer; }
+.plus-sch-tg input { width:18px;height:18px;accent-color:#2F5A46; }
+.plus-sch-count { margin:0;font-weight:700;color:#1E5E3E; }
