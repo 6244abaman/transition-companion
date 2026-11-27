@@ -61,6 +61,8 @@
     ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.3 3.6a1 1 0 0 1 1.4 0l8 7.3c.6.6.2 1.6-.6 1.6H19V19a1.5 1.5 0 0 1-1.5 1.5H15v-5h-6v5H6.5A1.5 1.5 0 0 1 5 19v-6.5H3.9c-.8 0-1.2-1-.6-1.6l8-7.3Z"/></svg>',
     chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-1 0-2-.1-2.9-.4L4.5 20l1.3-3.6C4.4 15 3.5 13.1 3.5 11c0-3.9 3.8-7 8.5-7Z"/><circle cx="8.5" cy="11" r=".9" fill="currentColor"/><circle cx="12" cy="11" r=".9" fill="currentColor"/><circle cx="15.5" cy="11" r=".9" fill="currentColor"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+    chevd: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
     person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6"/></svg>'
   };
   const ico = (name, cls) => { const s = h('span', {class: 'jp-ico ' + (cls || ''), 'aria-hidden': 'true'}); s.innerHTML = ICO[name]; return s; };
@@ -68,11 +70,20 @@
   const top = h('section', {id: 'jpTop', class: 'jp-top'});
   const mainEl = document.querySelector('main');
   mainEl.insertBefore(top, mainEl.firstChild);
+  // Everything detailed (tabs, full lists, backup) lives in one folded "manage" box — the top stays calm.
+  const manage = h('details', {class: 'jp-manage', id: 'jpManage'}, h('summary', {}, h('span', {class: 'jp-manage-t'}, h('b', {id: 'jpManageTitle'}), h('small', {id: 'jpManageSub'})), ico('chevd', 'jp-chevd')));
+  const manageBody = h('div', {class: 'jp-manage-body'});
+  manage.append(manageBody);
+  top.after(manage);
+  ['storageNotice', 'tabs'].forEach(id => { const el = $(id); if (el) manageBody.append(el); });
+  document.querySelectorAll('main > section[data-view], main > section.card[id^="view-"], #journey-rights').forEach(el => manageBody.append(el));
   const bottomNav = h('nav', {class: 'jp-nav', id: 'jpNav'});
   document.body.append(bottomNav);
-  const clickTab = tab => { const b = document.querySelector('[data-tab="' + tab + '"]'); if (b) { b.click(); b.scrollIntoView({behavior: 'smooth', block: 'start'}); } };
+  const clickTab = tab => { manage.open = true; const b = document.querySelector('[data-tab="' + tab + '"]'); if (b) { b.click(); setTimeout(() => manage.scrollIntoView({behavior: 'smooth', block: 'start'}), 30); } };
   const todayKey = (d = new Date()) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   let selectedDay = todayKey();
+  const openFolds = new Set();
+  const keepOpen = el => { if (openFolds.has(el.id)) el.open = true; el.addEventListener('toggle', () => { if (el.open) openFolds.add(el.id); else openFolds.delete(el.id); }); return el; };
 
   // Empty state: add the first step right here, with clear feedback (brief §1.5, §4).
   function quickAdd() {
@@ -122,15 +133,34 @@
     const linksCard = h('div', {class: 'jp-linkcard'}, link ? h('a', {href: link.url, target: '_blank', rel: 'noopener noreferrer', class: 'jp-link'}, h('span', {class: 'jp-link-text'}, h('strong', {}, link.title), h('small', {dir: 'ltr'}, link.url.replace(/^https?:\/\//, '').replace(/\/$/, ''))), ico('ext', 'jp-link-ext')) :
       h('button', {type: 'button', class: 'jp-link', onclick: () => { const el = $('jpLinks'); if (el) el.scrollIntoView({behavior: 'smooth'}); }}, h('span', {class: 'jp-link-text'}, h('strong', {}, tr('Save a useful link', 'שמירת קישור שימושי')), h('small', {}, tr('Official forms, job sites…', 'טפסים רשמיים, אתרי משרות…'))), ico('ext', 'jp-link-ext')));
     const sec = (title, iconName, extra, body) => h('section', {class: 'jp-sec'}, h('div', {class: 'jp-sec-head'}, h('h2', {}, ico(iconName, 'jp-sec-ico'), title), extra || null), body);
+    const weekDone = p.actions.filter(a => a.status === 'done' && a.updatedAt && (Date.now() - Date.parse(a.updatedAt)) < 7 * 864e5).length;
+    const stats = h('div', {class: 'jp-mini-stats'},
+      h('div', {}, h('b', {}, String(open.length)), h('small', {}, tr('open steps', 'צעדים פתוחים'))),
+      h('div', {}, h('b', {}, String(weekDone)), h('small', {}, tr('done this week', 'בוצעו השבוע'))),
+      h('div', {}, h('b', {}, String(p.goals.filter(g => g.status === 'active').length)), h('small', {}, tr('active goals', 'מטרות פעילות'))));
+    const monthBox = keepOpen(h('details', {class: 'jp-fold', id: 'jpMonthFold'}, h('summary', {}, tr('Whole month', 'כל החודש')), calendar));
+    const fold = (id, title, sub, node) => keepOpen(h('details', {class: 'jp-row', id}, h('summary', {}, h('span', {class: 'jp-row-t'}, h('b', {}, title), sub ? h('small', {}, sub) : null), ico('chevd', 'jp-chevd')), h('div', {class: 'jp-row-body'}, node)));
+    const go = (title, sub, onclick, href) => h(href ? 'a' : 'button', href ? {class: 'jp-row jp-row-go', href} : {type: 'button', class: 'jp-row jp-row-go', onclick}, h('span', {class: 'jp-row-t'}, h('b', {}, title), sub ? h('small', {}, sub) : null), ico('chev', 'jp-chev'));
+    const cvCount = (p.cvs || []).length, eduCount = (p.education || []).length, linkCount = (p.links || []).length;
+    const more = h('div', {class: 'jp-rows'},
+      go(tr('My CV', 'קורות החיים שלי'), cvCount ? tr(cvCount + ' saved', cvCount + ' שמורים') : tr('Build one in a few minutes', 'בונים תוך כמה דקות'), null, companionBase() + (he() ? '?page=cv' : '?lang=en&page=cv')),
+      go(tr('Goals and study plans', 'מטרות ותוכניות לימוד'), tr(p.goals.length + ' goals · ' + eduCount + ' study plans', p.goals.length + ' מטרות · ' + eduCount + ' תוכניות לימוד'), () => clickTab('goals')),
+      fold('jpFoldShare', tr('Download PDF or send to a counselor', 'הורדת PDF או שליחה ליועץ/ת'), tr('You choose what goes in', 'אתה בוחר מה נכנס'), tools),
+      fold('jpFoldLinks', tr('Saved links', 'קישורים שמורים'), linkCount ? tr(linkCount + ' saved', linkCount + ' שמורים') : tr('Forms and pages to come back to', 'טפסים ועמודים לחזור אליהם'), links),
+      go(tr('Backup and privacy', 'גיבוי ופרטיות'), tr('Move to a new phone, delete data', 'מעבר לטלפון חדש, מחיקת מידע'), () => clickTab('privacy')));
     top.replaceChildren(
-      h('div', {class: 'jp-head'}, ico('calendar', 'jp-head-ico'), h('h1', {}, tr('My Journey', 'המסע שלי')), h('a', {class: 'jp-back', href: companionBase() + '#home', 'aria-label': tr('Back to Companion', 'חזרה למלווה')}, ico('back'))),
-      goalCard,
-      sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('Show all →', 'הצג הכל ←')), stepsBox),
+      h('div', {class: 'jp-head'}, ico('calendar', 'jp-head-ico'), h('h1', {}, tr('My Journey', 'המסע שלי')),
+        h('button', {type: 'button', class: 'jp-lang', onclick: () => $('language') && $('language').click()}, he() ? 'EN' : 'עב'),
+        h('a', {class: 'jp-back', href: companionBase() + '#home', 'aria-label': tr('Back to Companion', 'חזרה למלווה')}, ico('back'))),
+      goalCard, stats,
+      sec(tr('My week', 'השבוע שלי'), 'calendar', null, h('div', {}, days, detail, monthBox, phoneCalendar(p))),
+      sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', open.length > 3 ? h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('All ' + open.length + ' →', 'כל ה-' + open.length + ' ←')) : null, stepsBox),
       sec(tr('My skills', 'הכישורים שלי'), 'star', null, h('div', {class: 'jp-card'}, skillsBox)),
-      sec(tr('Schedule planning', 'תכנון לוח זמנים'), 'calendar', null, h('div', {}, days, detail)),
-      sec(tr('Saved links', 'קישורים שמורים'), 'link', null, linksCard),
-      h('div', {class: 'jp-more-head'}, h('span', {}, tr('All details', 'כל הפרטים')), h('button', {type: 'button', class: 'jp-lang', onclick: () => $('language') && $('language').click()}, he() ? 'English' : 'עברית'))
+      sec(tr('More in my journey', 'עוד במסע שלי'), 'leaf', null, more)
     );
+    void linksCard;
+    $('jpManageTitle').textContent = tr('Full details', 'פירוט מלא');
+    $('jpManageSub').textContent = tr('All lists, editing and the skills assessment', 'כל הרשימות, עריכה ושאלון הכישורים');
     bottomNav.setAttribute('aria-label', tr('Main navigation', 'ניווט ראשי'));
     bottomNav.replaceChildren(
       h('a', {href: companionBase() + '#home'}, ico('home'), h('span', {}, tr('Home', 'בית'))),
@@ -162,6 +192,41 @@
   }
 
   // One day: its steps (move to another day, mark done) + add a step for this day (brief §1.1, §4.3).
+  /* ---------- phone calendar: .ics file (iPhone / Android / Outlook) + Google Calendar link ---------- */
+  const icsEsc = t => String(t || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/([,;])/g, '\\$1');
+  const ymd = k => k.replace(/-/g, '');
+  const nextDay = k => { const [y, m, d] = k.split('-').map(Number); const x = new Date(y, m - 1, d + 1); return todayKey(x); };
+  function icsFor(list) {
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+    const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Momentum Companion//My Journey//HE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+    list.forEach(a => L.push('BEGIN:VEVENT', 'UID:journey-' + a.id + '@momentum', 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + ymd(a.dueDate), 'DTEND;VALUE=DATE:' + ymd(nextDay(a.dueDate)),
+      'SUMMARY:' + icsEsc(a.title), 'DESCRIPTION:' + icsEsc(tr('From My Journey — Momentum Companion', 'מהמסע שלי — המלווה מומנטום')),
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(a.title), 'TRIGGER:-PT15H', 'END:VALARM', 'END:VEVENT'));
+    L.push('END:VCALENDAR');
+    return L.join('\r\n');
+  }
+  function downloadIcs(list, name) {
+    if (!list.length) { say(tr('No dated steps to add yet.', 'עדיין אין צעדים עם תאריך להוסיף.')); return; }
+    const url = URL.createObjectURL(new Blob([icsFor(list)], {type: 'text/calendar;charset=utf-8'}));
+    const a = h('a', {href: url, download: name}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    say(tr('Calendar file ready — open it and tap "Add".', 'קובץ היומן מוכן — פותחים אותו ולוחצים "הוספה".'));
+  }
+  const googleCal = a => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(a.title) + '&dates=' + ymd(a.dueDate) + '/' + ymd(nextDay(a.dueDate)) + '&details=' + encodeURIComponent(tr('From My Journey', 'מהמסע שלי'));
+  function phoneCalendar(p) {
+    const upcoming = p.actions.filter(a => a.status !== 'done' && a.dueDate && a.dueDate >= todayKey()).sort((x, y) => x.dueDate.localeCompare(y.dueDate));
+    return h('div', {class: 'jp-phonecal'},
+      h('div', {class: 'jp-phonecal-top'}, h('b', {}, tr('Add to my phone calendar', 'הוספה ליומן של הטלפון')),
+        h('small', {}, upcoming.length ? tr(upcoming.length + ' upcoming steps with a date, with a reminder the day before', upcoming.length + ' צעדים קרובים עם תאריך, עם תזכורת יום לפני') : tr('Give a step a date and it can go to your calendar', 'כשיש לצעד תאריך, אפשר להוסיף אותו ליומן'))),
+      h('div', {class: 'jp-phonecal-btns'},
+        h('button', {type: 'button', class: 'button primary', disabled: upcoming.length ? undefined : true, onclick: () => downloadIcs(upcoming, tr('my-journey-steps.ics', 'המסע-שלי-צעדים.ics'))}, tr('iPhone / Android / Outlook', 'אייפון / אנדרואיד / אאוטלוק')),
+        upcoming[0] ? h('a', {class: 'button', href: googleCal(upcoming[0]), target: '_blank', rel: 'noopener noreferrer'}, tr('Next step → Google Calendar', 'הצעד הבא ← יומן גוגל')) : null),
+      h('details', {class: 'jp-how'}, h('summary', {}, tr('How does it work?', 'איך זה עובד?')),
+        h('ul', {}, h('li', {}, tr('iPhone: the file opens in Calendar — tap "Add all".', 'אייפון: הקובץ נפתח ביומן — לוחצים "הוסף הכול".')),
+          h('li', {}, tr('Android: open the file and choose Google Calendar.', 'אנדרואיד: פותחים את הקובץ ובוחרים ביומן Google.')),
+          h('li', {}, tr('This is a one-time copy. If you change a step here, add it again (the same step updates, it does not duplicate in most calendars).', 'זו העתקה חד-פעמית. אם משנים צעד כאן, מוסיפים שוב (ברוב היומנים אותו צעד מתעדכן ולא משתכפל).')),
+          h('li', {}, tr('Nothing is sent anywhere — the file is created on your phone.', 'שום דבר לא נשלח לשום מקום — הקובץ נוצר בטלפון שלך.')))));
+  }
+
   function daySheet(p, k) {
     const items = p.actions.filter(a => a.dueDate === k);
     const nice = (() => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(he() ? 'he-IL' : 'en-GB', {weekday: 'long', day: 'numeric', month: 'long'}); })();
@@ -178,7 +243,7 @@
         move.addEventListener('change', () => { if (!move.value) return; attempt(() => Store.upsert('actions', {...a, dueDate: move.value})); say(tr('Step moved ✓', 'הצעד הועבר ✓')); paintAll(); });
         const cb = h('input', {type: 'checkbox', checked: a.status === 'done' || undefined, 'aria-label': tr('Done', 'בוצע')});
         cb.addEventListener('change', () => { attempt(() => Store.upsert('actions', {...a, status: cb.checked ? 'done' : 'todo'})); say(cb.checked ? tr('Well done ✓', 'כל הכבוד ✓') : tr('Updated', 'עודכן')); paintAll(); });
-        return h('li', {class: a.status === 'done' ? 'is-done' : ''}, h('label', {}, cb, h('span', {}, safeDisplay(a.title))), move);
+        return h('li', {class: a.status === 'done' ? 'is-done' : ''}, h('label', {}, cb, h('span', {}, safeDisplay(a.title))), move, a.dueDate ? h('button', {type: 'button', class: 'jp-tocal', 'aria-label': tr('Add to phone calendar', 'הוספה ליומן הטלפון'), title: tr('Add to phone calendar', 'הוספה ליומן הטלפון'), onclick: () => downloadIcs([a], 'step.ics')}, ico('calendar')) : null);
       })) : h('p', {class: 'muted mini'}, tr('Nothing planned for this day yet.', 'עוד אין צעדים ליום הזה.')),
       h('div', {class: 'jp-dayadd'}, input, h('button', {type: 'button', class: 'button', onclick: add}, tr('Add', 'הוספה'))));
   }
