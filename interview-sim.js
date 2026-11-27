@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   window.MomentumInterview = function (ctx) {
-    const {h, btn, tr, he, illu, P, store, toast, showPage, aiText} = ctx;
+    const {h, btn, tr, he, illu, icon, P, store, toast, showPage, aiText} = ctx;
 
     /* ---------- question bank ---------- */
     const Q = (en, he_, look_en, look_he) => ({en, he: he_, look: [look_en, look_he]});
@@ -85,6 +85,9 @@
         const v = voicesFor(he() ? 'he' : 'en').find(x => x.name === P.simVoice) || voicesFor(he() ? 'he' : 'en')[0]; if (v) u.voice = v; synth.speak(u); } catch (_) {}
     }
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Lucide "mic" (ISC licence)
+    const MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/></svg>';
+    const micLabel = (el, on) => { el.innerHTML = MIC; el.append(document.createTextNode(' ' + (on ? tr('Stop', 'עצירה') : tr('Voice', 'בקול')))); };
 
     /* ---------- state ---------- */
     let st = null; // {track, qs, i, answers: [{q, a, res, ai}], phase}
@@ -138,10 +141,12 @@
       voiceSel.value = P.simVoice || (vs[0] ? vs[0].name : 'off');
       voiceSel.addEventListener('change', () => { P.simVoice = voiceSel.value; store(); speak(tr('Hello, nice to meet you.', 'שלום, נעים להכיר.')); });
       return [
-        h('div', {class: 'sim-hero'}, illu('talk', 64), h('div', {}, h('h1', {}, tr('Interview simulator', 'סימולטור ראיון עבודה')),
-          h('p', {}, tr('A real interview rhythm: the interviewer asks, you answer, you get feedback right away. Private, on your phone.', 'קצב של ראיון אמיתי: המראיין שואל, אתה עונה, ומקבל משוב מיד. פרטי, בטלפון שלך.')))),
+        h('div', {class: 'sim-hero sim-hero-dark'}, h('div', {}, h('small', {class: 'sim-kicker'}, tr('6 questions · about 10 minutes', '6 שאלות · בערך 10 דקות')),
+          h('h2', {}, tr('Walk in to the real interview already practised', 'להגיע לראיון האמיתי כבר אחרי אימון')),
+          h('p', {}, tr('The interviewer asks, you answer in writing or out loud, and get clear feedback right away.', 'המראיין שואל, אתה עונה בכתב או בקול, ומקבל משוב ברור מיד.'))), illu('talk', 72)),
+        (P.simHistory || []).length ? h('p', {class: 'sim-last'}, tr('Last practice: ', 'אימון אחרון: ') + P.simHistory[P.simHistory.length - 1].avg + '%' + tr(' — try to beat it', ' — נסה לשבור את השיא')) : null,
         h('h2', {class: 'sim-h2'}, tr('What kind of job?', 'לאיזה סוג עבודה?')),
-        h('div', {class: 'sim-tracks'}, TRACKS.map(([id, en, he_, ill]) => h('button', {type: 'button', class: 'sim-track' + (P.simTrack === id ? ' on' : ''), onclick: () => start(id)}, illu(ill, 40), h('b', {}, he() ? he_ : en)))),
+        h('div', {class: 'sim-tracks'}, TRACKS.map(([id, en, he_, ill]) => h('button', {type: 'button', class: 'sim-track' + (P.simTrack === id ? ' on' : ''), onclick: () => start(id)}, illu(ill, 42), h('span', {}, h('b', {}, he() ? he_ : en), h('small', {}, tr('Start →', 'להתחיל ←')))))),
         h('div', {class: 'sim-settings'},
           h('label', {}, h('span', {}, tr('Interviewer voice', 'הקול של המראיין')), voiceSel),
           !vs.length && synth ? h('small', {class: 'plus-muted'}, tr('No voice for this language on this device — the questions will be shown as text.', 'אין במכשיר קול לשפה הזו — השאלות יוצגו כטקסט.')) : null),
@@ -158,37 +163,40 @@
       const count = () => { const n = words(ta.value).length; live.textContent = n ? tr(n + ' words', n + ' מילים') + (n < 30 ? tr(' · add a little more', ' · אפשר להוסיף עוד קצת') : n > 170 ? tr(' · try to shorten', ' · כדאי לקצר') : tr(' · good length', ' · אורך טוב')) : ''; };
       ta.addEventListener('input', count); count();
       let rec = null;
-      const mic = SR ? btn(tr('Answer by voice', 'לענות בקול'), () => {
+      const mic = SR ? btn(tr('Voice', 'בקול'), () => {
         if (rec) { rec.stop(); return; }
         try { rec = new SR(); rec.lang = he() ? 'he-IL' : 'en-US'; rec.interimResults = true; rec.continuous = true;
           const base = ta.value ? ta.value + ' ' : '';
           rec.onresult = e => { let txt = ''; for (let k = 0; k < e.results.length; k++) txt += e.results[k][0].transcript; ta.value = base + txt; count(); };
-          rec.onend = () => { rec = null; mic.classList.remove('on'); mic.textContent = tr('Answer by voice', 'לענות בקול'); };
+          rec.onend = () => { rec = null; mic.classList.remove('on'); micLabel(mic, false); };
           rec.onerror = () => toast(tr('The microphone is not available.', 'המיקרופון לא זמין.'));
-          rec.start(); mic.classList.add('on'); mic.textContent = tr('Listening… tap to stop', 'מקשיב… לחיצה לעצירה');
+          rec.start(); mic.classList.add('on'); micLabel(mic, true);
         } catch (_) { toast(tr('Voice is not supported in this browser.', 'הדפדפן לא תומך בדיבור.')); }
-      }, 'plus-btn sim-mic') : null;
+      }, 'sim-mic') : null;
+      if (mic) micLabel(mic, false);
       return [
         h('div', {class: 'sim-top'}, h('span', {}, tr('Question ' + (st.i + 1) + ' of ' + st.qs.length, 'שאלה ' + (st.i + 1) + ' מתוך ' + st.qs.length)),
-          h('div', {class: 'sim-dots'}, st.qs.map((_, k) => h('i', {class: k < st.i ? 'done' : k === st.i ? 'on' : ''})))),
+          h('div', {class: 'sim-prog', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(st.qs.length), 'aria-valuenow': String(st.i + 1)}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.qs.length * 100) + '%'}))),
         h('div', {class: 'sim-bubble'}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
-          synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, '↻') : null),
+          synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, icon('speaker')) : null),
         h('p', {class: 'sim-look'}, h('b', {}, tr('What they look for: ', 'מה מחפשים: ')), q.look[he() ? 1 : 0]),
-        ta, live,
-        h('div', {class: 'plus-row'}, mic,
+        h('div', {class: 'sim-answer-card'}, h('small', {class: 'sim-you'}, tr('Your answer', 'התשובה שלך')), ta, h('div', {class: 'sim-answer-foot'}, live, mic)),
+        h('div', {class: 'sim-actions'},
           btn(tr('Check my answer', 'לבדוק את התשובה'), () => { if (words(ta.value).length < 3) { ta.focus(); toast(tr('Write or say an answer first', 'קודם לכתוב או להגיד תשובה')); return; }
-            if (rec) rec.stop(); st.answers[st.i] = {q: qtext(), a: ta.value.trim(), res: analyse(ta.value)}; st.phase = 'review'; paint(); }, 'plus-btn primary')),
+            if (rec) rec.stop(); st.answers[st.i] = {q: qtext(), a: ta.value.trim(), res: analyse(ta.value)}; st.phase = 'review'; paint(); }, 'plus-btn primary sim-cta')),
         h('button', {type: 'button', class: 'plus-link sim-skip', onclick: () => { st.answers[st.i] = {q: qtext(), a: '', res: null}; next(); }}, tr('Skip this question', 'לדלג על השאלה'))];
     }
     function reviewScreen() {
       const cur = st.answers[st.i], r = cur.res, pct = Math.round(r.score / r.max * 100);
       const aiBox = h('div', {class: 'sim-ai', 'aria-live': 'polite'});
       return [
-        h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback · question ' + (st.i + 1), 'משוב · שאלה ' + (st.i + 1))), h('div', {class: 'sim-dots'}, st.qs.map((_, k) => h('i', {class: k < st.i ? 'done' : k === st.i ? 'on' : ''})))),
+        h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback · question ' + (st.i + 1), 'משוב · שאלה ' + (st.i + 1))), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.qs.length * 100) + '%'}))),
         h('div', {class: 'sim-score'}, h('div', {class: 'sim-ring', style: '--p:' + pct}, h('b', {}, r.score + '/' + r.max)),
           h('div', {}, h('strong', {}, pct >= 85 ? tr('Strong answer!', 'תשובה חזקה!') : pct >= 60 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים קטנים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד')),
             h('small', {}, tr(r.n + ' words', r.n + ' מילים')))),
-        h('ul', {class: 'sim-checks'}, r.items.map(x => h('li', {class: x.ok ? 'ok' : 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, x.ok ? '✓' : '!'), h('div', {}, h('b', {}, x.text), x.fix ? h('small', {}, x.fix) : null)))),
+        r.items.some(x => !x.ok) ? h('h3', {class: 'sim-h3'}, tr('What to fix', 'מה לתקן')) : null,
+        h('ul', {class: 'sim-checks'}, r.items.filter(x => !x.ok).map(x => h('li', {class: 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, '!'), h('div', {}, h('b', {}, x.text), h('small', {}, x.fix))))),
+        r.items.some(x => x.ok) ? h('div', {class: 'sim-passed'}, h('small', {}, tr('Already good:', 'כבר טוב:')), ...r.items.filter(x => x.ok).map(x => h('span', {class: 'sim-pass'}, '✓ ' + x.text))) : null,
         h('details', {class: 'sim-mine'}, h('summary', {}, tr('My answer', 'התשובה שלי')), h('p', {}, cur.a)),
         P.infoOnly ? null : btn(tr('Detailed AI feedback + a stronger version', 'משוב AI מפורט + גרסה חזקה יותר'), () => aiFeedback(aiBox, cur.a), 'plus-btn sim-ai-btn'), aiBox,
         h('div', {class: 'plus-row'},

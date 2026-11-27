@@ -522,3 +522,53 @@ html[data-motion="reduce"] .plus-mood-act.is-breathing .plus-mood-ill { animatio
 .sim-better { background:#F3F0FF;border-radius:14px;padding:10px 12px; } .sim-follow { background:#EEF6F1;border-radius:14px;padding:10px 12px; }
 .sim-good { margin:0; }
 html[data-motion="reduce"] .sim-dots i.on { transform:none; }
+/* ---------- rights cards: fixed structure ---------- */
+.rc-lead { font-size:16px;font-weight:600;line-height:1.5;margin:4px 0 10px; }
+.rc-part { border-top:1px solid var(--border);padding:10px 0 4px; }
+.rc-h { margin:0 0 6px;font-size:13px;letter-spacing:.02em;color:var(--text-3);font-weight:700; }
+.rc-amount { display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px; }
+.rc-amount b { font-size:24px; } .rc-amount small { color:var(--text-3); }
+.rc-tags { display:flex;flex-wrap:wrap;gap:6px; }
+.rc-tag { padding:4px 10px;border-radius:99px;font-size:13px;font-weight:700;background:var(--beige);color:var(--text-2); }
+.rc-combat { background:#FDE8DF;color:#A3401C; } .rc-lone { background:#E8E4FD;color:#4A3BA8; } .rc-oleh { background:#DFF1FB;color:#1C6B92; } .rc-periphery { background:#E4F5EA;color:#2B7A4B; } .rc-all { background:#EEF0EC;color:#3F4A43; }
+.rc-actions { margin-top:10px; }
+.rc-disc { margin:8px 0 0;font-size:12.5px;color:var(--text-3); }
+/* interview simulator — refined */
+.sim-hero-dark { background:linear-gradient(150deg,#1F3A5F 0%,#2A4F7A 100%);color:#fff;border:0;padding:18px 16px;box-shadow:0 10px 26px rgba(31,58,95,.25); }
+.sim-hero-dark h2 { margin:4px 0 6px;font-size:20px;line-height:1.3;color:#fff; }
+.sim-hero-dark p { color:#D7E3F1 !important;margin:0; }
+.sim-kicker { display:inline-block;background:rgba(255,255,255,.14);color:#fff;border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:700; }
+.sim-last { margin:0;text-align:center;font-weight:700;color:#2F8A5B; }
+.sim-track { align-items:center; }
+.sim-track span { display:flex;flex-direction:column;gap:2px; }
+.sim-track small { color:#2E6B8A;font-weight:700;font-size:12.5px; }
+.sim-track:active { transform:scale(.98); }
+.sim-settings { background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:10px 12px; }
+.sim-prog { flex:1;max-width:45%;height:8px;border-radius:99px;background:#E3DED3;overflow:hidden; }
+.sim-prog i { display:block;height:100%;background:linear-gradient(90deg,#2BB3A6,#1F3A5F);border-radius:99px;transition:width .3s; }
+.sim-top { gap:12px; }
+.sim-bubble { background:#fff;border:1px solid #D7E3F1;box-shadow:0 6px 18px rgba(31,58,95,.08);position:relative; }
+.sim-bubble p { font-size:19px; }
+.sim-replay { display:grid;place-items:center;padding:0;background:#F3F7FB; }
+.sim-answer-card { background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:6px; }
+.sim-answer-card:focus-within { border-color:#1F3A5F;box-shadow:0 0 0 3px #DDE8F6; }
+.sim-you { color:var(--text-3);font-weight:700; }
+.sim-answer-card .sim-answer { border:0;padding:4px 0;box-shadow:none;background:transparent;min-height:140px; }
+.sim-answer-card .sim-answer:focus { outline:none; }
+.sim-answer-foot { display:flex;justify-content:space-between;align-items:center;gap:8px; }
+.sim-answer-foot .sim-live { margin:0; }
+.sim-mic { display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--border-strong);background:#fff;font:inherit;font-weight:700;color:var(--text);cursor:pointer; }
+.sim-mic svg { width:18px;height:18px; }
+.sim-mic.on { background:#B3261E;color:#fff;border-color:#B3261E;animation:simPulse 1.2s ease-in-out infinite; }
+@keyframes simPulse { 50% { box-shadow:0 0 0 6px rgba(179,38,30,.18); } }
+html[data-motion="reduce"] .sim-mic.on { animation:none; }
+.sim-actions .sim-cta { width:100%;min-height:54px;font-size:17px; }
+.sim-score { background:linear-gradient(135deg,#FFFFFF,#F3F7FB); }
+.sim-ring { width:78px;height:78px; } .sim-ring b { width:62px;height:62px;font-size:17px; }
+.sim-answer-card .sim-answer { border:0 !important;box-shadow:none !important;outline:none !important;border-radius:0 !important; }
+.sim-prog { display:flex; }
+.sim-replay .plus-ico { width:20px;height:20px;display:inline-flex; }
+.sim-h3 { margin:2px 0 -4px;font-size:16px; }
+.sim-passed { display:flex;flex-wrap:wrap;gap:6px;align-items:center; }
+.sim-passed small { color:var(--text-3);font-weight:700; }
+.sim-pass { background:#DDF3E6;color:#2F8A5B;border-radius:99px;padding:4px 10px;font-size:13px;font-weight:700; }

@@ -648,25 +648,39 @@
         icon('chevron', 'plus-right-chev')));
     const box = h('div', {class: 'plus-right-body'});
     details.append(box);
-    c.lines.forEach(l => box.append(h('p', {}, l)));
+    const ELIG_L = {all: ['Everyone (by the conditions below)', 'כולם (לפי התנאים)'], combat: ['Combat', 'קרבי'], support: ['Combat support', 'תומך לחימה'], national: ['National service', 'שירות לאומי'], lone: ['Lone soldier', 'חייל בודד'], oleh: ['New immigrant', 'עולה'], periphery: ['Periphery', 'פריפריה']};
+    const part = (title, ...kids) => h('div', {class: 'rc-part'}, h('h4', {class: 'rc-h'}, title), ...kids.filter(Boolean));
+    const [lead, ...rest] = c.lines;
+    // 2. one sentence
+    if (lead) box.append(h('p', {class: 'rc-lead'}, lead));
+    // 3. amount + date + source
+    const officialUrl = c.url || (c.link ? KB.officialLink(c.link) : '');
+    const amountKids = [];
+    if (key) amountKids.push(h('div', {class: 'rc-amount'}, h('b', {}, key), e && (c.id === 'discharge_grant' || c.id === 'personal_deposit') ? h('small', {}, tr('estimate for ' + e.countedMonths + ' months', 'הערכה ל-' + e.countedMonths + ' חודשים')) : null));
     if (c.rates && c.rates.length) {
       const mine = KB.SERVICE_RATE_KEY[P.service];
-      const table = h('table', {class: 'plus-table'}, h('caption', {}, tr('You may be entitled to — per month of service, by service type', 'ייתכן שמגיע לך — לכל חודש שירות, לפי סוג שירות')),
-        h('tbody', {}, c.rates.map(r => h('tr', {class: r.key === mine ? 'plus-mine' : ''}, h('th', {scope: 'row'}, r.label + (r.key === mine ? tr(' (you)', ' (אתה)') : '')), h('td', {}, KB.fmtMoney(r.value))))));
-      box.append(table);
-      if (c.examples && c.examples.length) box.append(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
+      amountKids.push(h('table', {class: 'plus-table'}, h('caption', {}, tr('Per month of service, by service type', 'לכל חודש שירות, לפי סוג שירות')),
+        h('tbody', {}, c.rates.map(r => h('tr', {class: r.key === mine ? 'plus-mine' : ''}, h('th', {scope: 'row'}, r.label + (r.key === mine ? tr(' (you)', ' (אתה)') : '')), h('td', {}, KB.fmtMoney(r.value)))))));
+      if (c.examples && c.examples.length) amountKids.push(h('p', {class: 'plus-muted'}, tr('Examples: ', 'דוגמאות: ') + c.examples.join(' · ')));
     }
-    if (c.list && c.list.length) box.append(h('strong', {}, c.listTitle || ''), list(c.list));
+    const src = sourceLine(c.source);
+    if (amountKids.length || src) box.append(part(tr('Amount, date and source', 'סכום, תאריך ומקור'), ...amountKids, src));
+    // 4. eligibility labels
+    if (c.elig && c.elig.length) box.append(part(tr('Who it is for', 'למי זה מתאים'), h('div', {class: 'rc-tags'}, c.elig.map(k => h('span', {class: 'rc-tag rc-' + k}, tr(ELIG_L[k][0], ELIG_L[k][1]))))));
+    if (rest.length || (c.list && c.list.length)) box.append(part(tr('Details and conditions', 'פרטים ותנאים'), ...rest.map(l => h('p', {}, l)), c.list && c.list.length ? h('strong', {}, c.listTitle || '') : null, c.list && c.list.length ? list(c.list) : null));
+    // 5. how to claim
+    box.append(part(tr('How to claim', 'איך מממשים'), c.how ? h('p', {}, c.how) : h('p', {}, tr('Check your details on the official site and follow the steps there.', 'בודקים את הפרטים באתר הרשמי ופועלים לפי השלבים שם.')),
+      officialUrl || (c.extraLinks || []).length ? h('div', {class: 'plus-row'}, officialUrl ? h('a', {class: 'plus-btn', href: officialUrl, target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')) : null,
+        ...(c.extraLinks || []).map(x => h('a', {class: 'plus-btn', href: x.url, target: '_blank', rel: 'noopener noreferrer'}, x.label + ' ↗'))) : null));
     if (c.warning) box.append(h('p', {class: 'plus-warning', role: 'note'}, icon('warn', 'plus-inline-ico'), ' ' + c.warning));
-    const src = sourceLine(c.source); if (src) box.append(src);
-    const row = h('div', {class: 'plus-row'});
-    const officialUrl = c.url || (c.link ? KB.officialLink(c.link) : '');
-    if (officialUrl) row.append(h('a', {class: 'plus-btn primary', href: officialUrl, target: '_blank', rel: 'noopener noreferrer'}, tr('Official site ↗', 'לאתר הרשמי ↗')));
-    (c.extraLinks || []).forEach(x => row.append(h('a', {class: 'plus-btn', href: x.url, target: '_blank', rel: 'noopener noreferrer'}, x.label + ' ↗')));
-    row.append(btn(tr('Save to My Journey', 'לשמור במסע'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (officialUrl ? officialUrl + '\n' : '') + c.lines.join('\n'))));
+    // 6. save as a step
+    const row = h('div', {class: 'plus-row rc-actions'});
+    row.append(btn(tr('Save as a step in My Journey', 'שמור כצעד במסע שלי'), () => saveAction(tr('Check: ', 'לבדוק: ') + c.title, (officialUrl ? officialUrl + '\n' : '') + c.lines.join('\n')), 'plus-btn primary'));
     const ask = askButton('rights', tr('Explain "' + c.title + '" and what I should check.', 'תסביר לי על ' + c.title + ' ומה כדאי לי לבדוק.')); if (ask) row.append(ask);
     row.append(notRelevantButton('right:' + c.id, c.title));
     box.append(row);
+    // 7. disclaimer
+    box.append(h('p', {class: 'rc-disc'}, tr('General information, not a legal decision. The exact entitlement is in your personal area.', 'מידע כללי, לא החלטה משפטית. הזכאות המדויקת מופיעה באזור האישי.')));
     return details;
   }
 

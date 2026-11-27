@@ -220,7 +220,11 @@
       if (s[key]) add(key, 'studies', s[key].name_he, [s[key].description || s[key].notes]);
     const own = {discharge_grant: r.discharge_grant, personal_deposit: r.personal_deposit, tax_credit_points: r.tax_credit_points, bituach_leumi_exemption: r.bituach_leumi_exemption,
       preferred_work_grant: r.preferred_work_grant, public_transport_free: r.public_transport_free, unemployment: r.unemployment, arnona: r.arnona, mimadim_lelimudim: s.mimadim_lelimudim};
-    cards.forEach(c => { const src = own[c.id]; if (src && src.official_url) c.url = src.official_url; });
+    cards.forEach(c => { const src = own[c.id]; if (src && src.official_url) c.url = src.official_url; if (src) c.how = src.how_to_claim || src.how || ''; });
+    // Standard eligibility labels (brief §rights): only where the knowledge base supports them.
+    const ELIG = {discharge_grant: ['all'], personal_deposit: ['all'], tax_credit_points: ['all'], bituach_leumi_exemption: ['all'], preferred_work_grant: ['all'], public_transport_free: ['all'], arnona: ['all'], unemployment: ['all'],
+      mimadim_lelimudim: ['combat', 'lone', 'oleh'], lone_soldiers_extra: ['lone'], periphery_scholarships: ['periphery']};
+    cards.forEach(c => { c.elig = ELIG[c.id] || []; });
     const meta = D().metadata || {};
     cards.forEach(c => { if (c.cat === 'money' || c.cat === 'work') c.source = {asOf: meta.amounts_as_of || meta.last_updated, by: meta.source || ''}; });
     return cards;
