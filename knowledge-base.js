@@ -279,9 +279,9 @@
 
   /* ---------- Context for the AI: only the sections relevant to the message ---------- */
   const TOPIC_PATTERNS = [
-    ['money', /מענק|כסף|פיקדון|פקדון|זיכוי|מס|ביטוח לאומי|אבטלה|ארנונה|grant|deposit|money|tax|unemploy/i],
-    ['studies', /לימוד|תואר|ממדים|מכינה|בגרות|פסיכומטרי|מלגה|הנדסאי|study|studies|degree|scholarship|mechina|psychometric/i],
-    ['work', /עבודה|קורות חיים|ראיון|מועדפת|קריירה|משרה|job|work|cv|resume|interview|career/i],
+    ['money', /מענק|כסף|פיקדון|פקדון|זיכוי|מס|ביטוח לאומי|אבטלה|ארנונה|רב.?קו|תחבורה|אוטובוס|רכבת|נסיעות חינם|זכאי|זכויות|מגיע לי|הטב|הנח|תלוש|101|grant|deposit|money|tax|unemploy|rav.?kav|bus|train|transport|benefit|entitle|rights|discount|payslip/i],
+    ['studies', /לימוד|ללמוד|תואר|ממדים|מכינה|בגרות|פסיכומטרי|מלג|הנדסאי|אוניברסיט|מכללה|קורס|study|studies|degree|scholarship|mechina|psychometric/i],
+    ['work', /עבודה|לעבוד|עובד|קורות חיים|קו"ח|ראיון|מועדפת|נדרשת|קריירה|משרה|מעסיק|job|work|cv|resume|interview|career/i],
     ['travel', /טיול|טיסה|נסיע|חו"ל|ביטוח נסיעות|travel|trip|abroad/i],
     ['emotional', /מרגיש|ריק|בלבול|לחץ|חרדה|בדיד|עצוב|קשה לי|feel|lonely|anxious|empty|stuck|sad/i],
     ['housing', /דירה|שכירות|דיור|ארנונה|apartment|rent|housing/i],
@@ -296,18 +296,22 @@
     if (['cv', 'applications', 'career'].includes(o.topic)) topics.add('work');
     if (o.topic === 'travel') topics.add('travel');
     if (o.topic === 'support' || o.topic === 'family') topics.add('emotional');
-    if (!topics.size) return '';
     const parts = [];
-    if (topics.has('money')) parts.push({rights_and_benefits: D().rights_and_benefits});
-    if (topics.has('studies')) parts.push({studies: D().studies});
-    if (topics.has('work')) parts.push({work_and_career: D().work_and_career, preferred_work_grant: D().rights_and_benefits && D().rights_and_benefits.preferred_work_grant, skills_translation_examples: D().skills_translation_examples});
+    if (topics.has('money')) parts.push({rights_and_benefits: D().rights_and_benefits, grant_vs_deposit: D().grant_vs_deposit});
+    if (topics.has('studies')) parts.push({studies: D().studies, personal_deposit_uses: D().rights_and_benefits && D().rights_and_benefits.personal_deposit && D().rights_and_benefits.personal_deposit.approved_uses});
+    if (topics.has('work')) parts.push({work_and_career: D().work_and_career, preferred_work_grant: D().rights_and_benefits && D().rights_and_benefits.preferred_work_grant, tax_credit_points: D().rights_and_benefits && D().rights_and_benefits.tax_credit_points, skills_translation_examples: D().skills_translation_examples});
     if (topics.has('travel')) parts.push({travel: D().travel});
     if (topics.has('emotional')) parts.push({emotional_support: D().emotional_support});
-    if (topics.has('housing')) parts.push({housing: D().housing});
+    if (topics.has('housing')) parts.push({housing: D().housing, arnona: D().rights_and_benefits && D().rights_and_benefits.arnona});
     if (topics.has('special')) parts.push({special_groups: D().special_groups});
+    // Always: short verified essentials, so general questions are never answered from memory.
+    parts.push({important_warnings: D().important_warnings, faq: D().faq});
     parts.push({practical_guides: D().practical_guides, official_links: D().official_links});
-    let body = JSON.stringify(parts);
-    if (body.length > (o.budget || 3800)) body = body.slice(0, o.budget || 3800);
+    // Keep whole sections (never cut a section in the middle): drop the last optional ones if over budget.
+    const budget = o.budget || 9000;
+    let keep = parts.slice();
+    while (keep.length > 1 && JSON.stringify(keep).length > budget) keep.splice(keep.length - 2, 1);
+    const body = JSON.stringify(keep);
     return 'MOMENTUM KNOWLEDGE BASE (version ' + D().metadata.version + ', updated ' + D().metadata.last_updated + '). ' +
       'Use it for facts about rights, benefits and studies. Amounts and conditions are approximate: whenever you mention an amount, date or eligibility, ' +
       'add that it must be verified on the official site (' + (D().official_links && D().official_links.agaf_keren) + ' and the relevant authority). ' +

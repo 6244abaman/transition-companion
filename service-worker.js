@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v48-light";
+const CACHE = "tc-v49-accurate";
 const APP_FILES = [
   "./",
   "./index.html",

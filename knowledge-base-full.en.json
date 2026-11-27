@@ -2,7 +2,7 @@
   "metadata": {
     "title": "Comprehensive knowledge base for discharged soldiers – Momentum Companion",
     "version": "2.2",
-    "last_updated": "2026-11-26",
+    "last_updated": "2026-11-27",
     "disclaimer": "Amounts and conditions are estimates based on official sources (October–November 2026). Always verify with the Discharged Soldiers Department and Fund, National Insurance (Bituach Leumi) and the Tax Authority.",
     "purpose": "Central knowledge base for the Transition Companion – for the companion, its pages and agents",
     "amounts_as_of": "2026-10",
@@ -116,7 +116,7 @@
         "Gas stations",
         "Care for people with disabilities"
       ],
-      "deadline": "Within 42 months of discharge",
+      "deadline": "The 6 months of work (150 work days) must be completed within 24 months of discharge. The claim is filed with National Insurance up to 42 months after discharge.",
       "amount_2026_number": 11461,
       "work_period": "6 full months (and 150 work days), full-time as usual in the sector — generally 8 hours a day. For lower hours, check eligibility at *6050.",
       "official_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
@@ -131,7 +131,9 @@
       "partial_agriculture_number": 7641,
       "rates_url": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/%D7%A9%D7%99%D7%A2%D7%95%D7%A8%D7%99%20%D7%94%D7%A7%D7%A6%D7%91%D7%94.aspx",
       "checked": "2026-11-27",
-      "partial_note": "Those who worked 4 months (100 work days) in agriculture or packing houses get a partial grant of 7,641 ₪ (from 1 Jan 2026). Anyone who received unemployment benefit in the 11 months before the work gets a reduced grant."
+      "partial_note": "Those who worked 4 months (100 work days) in agriculture or packing houses get a partial grant of 7,641 ₪ (from 1 Jan 2026). Anyone who received unemployment benefit in the 11 months before the work gets a reduced grant.",
+      "work_window_months": 24,
+      "claim_deadline_months": 42
     },
     "public_transport_free": {
       "name_he": "Free public transport",
@@ -319,7 +321,7 @@
     },
     "first_year": [
       "Check what is still valid — free public transport lasts 12 months",
-      "Apply for the preferred work grant within 42 months of discharge",
+      "Preferred work: complete 6 months of work within 24 months of discharge, and file the claim within 42 months of discharge",
       "Plan using the deposit within 5 years",
       "Check that the tax credit points appear on your payslip"
     ]

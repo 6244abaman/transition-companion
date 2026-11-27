@@ -1380,6 +1380,8 @@
      ================================================================ */
   function promptContext(lastUserText) {
     const parts = [];
+    const now = new Date(), iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    parts.push('TODAY: ' + iso(now) + ' (Israel). Use this date for anything time-related ("how long do I have", "is it too late").');
     if (KB) { const k = KB.promptContext(lastUserText, {topic: S.activeTopic || ''}); if (k) parts.push(k); }
     if (window.MomentumProfile) { try { window.MomentumProfile.noteChat(lastUserText); const ps = window.MomentumProfile.aiSummary(); if (ps) parts.push(ps); } catch (_) {} }
     if (PAGES.tools) parts.push('APP TOOLS the soldier can open from Home > My tools: My dates (personal deadlines from the discharge date, add to phone calendar), Deposit planner, Grant planner, After-discharge checklist, Phone numbers & places (tap to call, Waze), Scholarships, Payslip guide, Glossary. Mention the relevant one by name when it helps.');
@@ -1394,6 +1396,12 @@
       if (P.monthsServed) facts.push('about ' + P.monthsServed + ' months of service');
       const m = monthsSinceDischarge(); if (m !== null) facts.push('about ' + m + ' months since discharge'); else if (P.notDischarged) facts.push('not yet discharged');
       if (P.pressing) facts.push('most pressing now: ' + P.pressing);
+      if (/^\d{4}-\d{2}$/.test(P.dischargeMonth || '')) {
+        const [y, m] = P.dischargeMonth.split('-').map(Number), D0 = new Date(y, m - 1, 1);
+        const at = mo => iso(new Date(y, m - 1 + mo, 1)).slice(0, 7);
+        facts.push('discharge month ' + P.dischargeMonth + ' (exact day unknown; month-level dates only): grant expected by about ' + at(2) + '; National Insurance exemption (if not working) ends about end of ' + at(2) + '; arnona exemption until about ' + at(4) + '; free public transport until about ' + at(12) + '; preferred-work: 6 months of work must be completed by about ' + at(24) + ', claim filed by about ' + at(42) + '; tax credit points until about ' + at(36) + '; deposit for approved uses until about ' + at(60));
+        void D0;
+      }
       if (facts.length) parts.push('SOLDIER-PROVIDED BACKGROUND (opted in; self-reported; do not infer eligibility from it): ' + facts.join('; ') + '.');
     }
     return parts.length ? '\n\n' + parts.join('\n\n') : '';
