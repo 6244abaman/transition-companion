@@ -102,7 +102,7 @@
     const p = read(), parts = [];
     if (kind === 'study') { if (p.school.liked.length) parts.push(T('subjects you liked: ', 'מקצועות שאהבת: ') + p.school.liked.map(s => label(SUBJECTS, s)).join(', ')); }
     else { const top = skills(p).slice(0, 3).map(s => s.name); if (top.length) parts.push(T('your strengths: ', 'החוזקות שלך: ') + top.join(', ')); if (p.quiz && p.quiz.tags) parts.push(T('your quiz result: ', 'תוצאת השאלון: ') + p.quiz.tags.map(quizLabel).join(', ')); }
-    return parts.join(' · ');
+    return parts.join('. ');
   }
   const label = (list, id) => { const x = list.find(v => v[0] === id); return x ? T(x[1], x[2]) : ''; };
   /* "About me" — assembled only from the user's own answers (editable). */
@@ -122,7 +122,7 @@
   /* Short context for the AI (chat, interview, CV) — only when the user allows it. */
   function aiSummary() {
     const p = read(); if (!p.enabled || !p.shareWithAI || !has(p)) return '';
-    const sk = skills(p).slice(0, 6).map(s => s.name + (s.strong ? ' (confirmed in several places)' : '') + (s.evidence[0] ? ' — e.g. "' + s.evidence[0] + '"' : ''));
+    const sk = skills(p).slice(0, 6).map(s => s.name + (s.strong ? ' (confirmed in several places)' : '') + (s.evidence[0] ? ', e.g. "' + s.evidence[0] + '"' : ''));
     const L = ['SOLDIER PROFILE (from their own optional questionnaire; use it only when relevant, never invent beyond it, never list it back unprompted):'];
     if (p.military.roles) L.push('Service roles: ' + clip(p.military.roles, 200));
     if (sk.length) L.push('Strongest skills: ' + sk.join('; '));
@@ -168,7 +168,7 @@
         chipSet(skillChoices, a.skills || [], id => { a.skills = (a.skills || []).includes(id) ? a.skills.filter(x => x !== id) : [...(a.skills || []), id]; MP.write(p); paintActs(); }))));
       paintActs();
       return [h('label', {class: 'pa-field'}, h('b', {}, tr('Your roles in service', 'התפקידים שלך בשירות')), txt(p.military.roles, tr('e.g. Combat soldier, then team leader', 'למשל: לוחם, אחר כך ראש צוות'), v => { p.military.roles = v; MP.write(p); })),
-        h('b', {class: 'pa-h'}, tr('Activities — rate each one', 'פעילויות — לדרג כל אחת')), list,
+        h('b', {class: 'pa-h'}, tr('Activities, rate each one', 'פעילויות, לדרג כל אחת')), list,
         btn(tr('+ Add an activity', '+ להוסיף פעילות'), () => { p.military.activities.push({name: '', rating: 0, what: '', skills: []}); MP.write(p); paintActs(); }, 'plus-btn')];
     }
     function schoolForm(p) {
@@ -210,7 +210,7 @@
           P.infoOnly || typeof aiText !== 'function' ? null : btn(tr('Polish the wording with AI', 'ליטוש ניסוח עם AI'), async () => {
             status.textContent = tr('Writing…', 'כותב…');
             try { const out = await aiText('You polish a short "About me" for a discharged Israeli soldier. ' + (he() ? 'Write natural Hebrew, first person, masculine.' : 'Write natural English, first person.') + ' Use ONLY the facts given. Do not add skills, numbers, roles or achievements. 2-3 sentences. Return only the text.', 'Facts:\n' + MP.aiSummary() + '\n\nCurrent text:\n' + ta.value, 300);
-              ta.value = out.trim(); const q = MP.read(); q.about = ta.value; q.aboutEdited = true; MP.write(q); status.textContent = tr('Done — check that every word is true.', 'מוכן — לבדוק שכל מילה נכונה.'); }
+              ta.value = out.trim(); const q = MP.read(); q.about = ta.value; q.aboutEdited = true; MP.write(q); status.textContent = tr('Done, check that every word is true.', 'מוכן, לבדוק שכל מילה נכונה.'); }
             catch (e) { status.textContent = e.canceled ? '' : tr('AI is not available right now.', 'ה-AI לא זמין כרגע.'); } }, 'plus-link')), status);
     }
     /* "What the app knows about me" — see, edit, delete, switch off. */
@@ -221,21 +221,21 @@
       const toggle = (labelTxt, key) => { const c = h('input', {type: 'checkbox'}); c.checked = !!p[key]; c.addEventListener('change', () => { const q = MP.read(); q[key] = c.checked; MP.write(q); paint(); }); return h('label', {class: 'pa-toggle'}, c, h('span', {}, labelTxt)); };
       return [h('div', {class: 'pa-card'}, toggle(tr('Use my profile to personalise the app', 'להשתמש בפרופיל כדי להתאים את האפליקציה'), 'enabled'),
           toggle(tr('Include it when I talk to the AI (chat, interview, CV)', 'לכלול אותו כשאני מדבר עם ה-AI (צ\'אט, ראיון, קורות חיים)'), 'shareWithAI'),
-          h('p', {class: 'plus-muted'}, tr('Everything stays on this phone. Nothing here was guessed — it all comes from what you wrote or chose.', 'הכול נשאר בטלפון הזה. שום דבר כאן לא נוחש — הכול ממה שכתבת או בחרת.'))),
+          h('p', {class: 'plus-muted'}, tr('Everything stays on this phone. Nothing here was guessed, it all comes from what you wrote or chose.', 'הכול נשאר בטלפון הזה. שום דבר כאן לא נוחש, הכול ממה שכתבת או בחרת.'))),
         h('h3', {class: 'pa-h3'}, tr('Skills the app sees', 'כישורים שהאפליקציה רואה')),
-        sk.length ? h('div', {class: 'pa-card'}, ...sk.map(s => row(s.name + (s.strong ? ' ★' : ''), tr('from: ', 'מקור: ') + s.sources.map(x => srcL[x] || x).join(' + ') + (s.strong ? tr(' · seen in more than one place', ' · מופיע ביותר ממקום אחד') : ''),
+        sk.length ? h('div', {class: 'pa-card'}, ...sk.map(s => row(s.name + (s.strong ? ' ★' : ''), tr('from: ', 'מקור: ') + s.sources.map(x => srcL[x] || x).join(' + ') + (s.strong ? tr(', seen in more than one place', ', מופיע ביותר ממקום אחד') : ''),
           () => { const q = MP.read(); q.hidden = [...new Set([...q.hidden, s.id])]; delete q.chat[s.id]; q.self.strengths = q.self.strengths.filter(x => x !== s.id); MP.write(q); paint(); })))
           : h('p', {class: 'plus-muted'}, tr('Nothing yet.', 'עדיין כלום.')),
         p.hidden.length ? btn(tr('Show skills I removed again', 'להחזיר כישורים שמחקתי'), () => { const q = MP.read(); q.hidden = []; MP.write(q); paint(); }, 'plus-link') : null,
         h('h3', {class: 'pa-h3'}, tr('Your answers', 'התשובות שלך')),
         h('div', {class: 'pa-card'},
           p.military.roles ? row(tr('Service roles', 'תפקידים בשירות'), p.military.roles, () => { const q = MP.read(); q.military.roles = ''; MP.write(q); paint(); }) : null,
-          ...p.military.activities.filter(a => a.name || a.what).map((a, i) => row((a.name || tr('Activity', 'פעילות')) + (a.rating ? ' · ' + a.rating + '/7' : ''), a.what, () => { const q = MP.read(); q.military.activities.splice(i, 1); MP.write(q); paint(); })),
+          ...p.military.activities.filter(a => a.name || a.what).map((a, i) => row((a.name || tr('Activity', 'פעילות')) + (a.rating ? ', ' + a.rating + '/7' : ''), a.what, () => { const q = MP.read(); q.military.activities.splice(i, 1); MP.write(q); paint(); })),
           p.school.liked.length ? row(tr('Liked at school', 'אהבת בתיכון'), p.school.liked.map(s => label(SUBJECTS, s)).join(', '), () => { const q = MP.read(); q.school.liked = []; MP.write(q); paint(); }) : null,
           p.school.stoodOut ? row(tr('Stood out in', 'בלטת ב'), p.school.stoodOut, () => { const q = MP.read(); q.school.stoodOut = ''; MP.write(q); paint(); }) : null,
-          ...p.feedback.filter(f => f.text).map((f, i) => row(tr('Remark', 'משפט') + ' — ' + label([['friend', 'Friend', 'חבר'], ['family', 'Family', 'משפחה'], ['commander', 'Commander', 'מפקד'], ['other', 'Other', 'אחר']], f.from), f.text, () => { const q = MP.read(); q.feedback.splice(i, 1); MP.write(q); paint(); })),
+          ...p.feedback.filter(f => f.text).map((f, i) => row(tr('Remark', 'משפט') + ', ' + label([['friend', 'Friend', 'חבר'], ['family', 'Family', 'משפחה'], ['commander', 'Commander', 'מפקד'], ['other', 'Other', 'אחר']], f.from), f.text, () => { const q = MP.read(); q.feedback.splice(i, 1); MP.write(q); paint(); })),
           p.deep.values.length ? row(tr('Values', 'ערכים'), p.deep.values.map(v => label(VALUES, v)).join(', '), () => { const q = MP.read(); q.deep.values = []; MP.write(q); paint(); }) : null,
-          p.quiz && p.quiz.tags ? row(tr('"Which field fits me?" result', 'תוצאת "איזה תחום מתאים לי?"'), p.quiz.tags.map(quizLabel).join(', ') + (p.quiz.date ? ' · ' + p.quiz.date : ''), () => { const q = MP.read(); delete q.quiz; MP.write(q); paint(); }) : null,
+          p.quiz && p.quiz.tags ? row(tr('"Which field fits me?" result', 'תוצאת "איזה תחום מתאים לי?"'), p.quiz.tags.map(quizLabel).join(', ') + (p.quiz.date ? ', ' + p.quiz.date : ''), () => { const q = MP.read(); delete q.quiz; MP.write(q); paint(); }) : null,
           Object.keys(p.chat).length ? row(tr('Skills noticed in chat', 'כישורים שזוהו בצ\'אט'), Object.keys(p.chat).map(skillName).join(', '), () => { const q = MP.read(); q.chat = {}; MP.write(q); paint(); }) : null),
         aboutBox(p),
         h('div', {class: 'plus-row'}, btn(tr('Edit my answers', 'לערוך את התשובות'), () => { mode = 'form'; part = 0; paint(); }, 'plus-btn'),
@@ -243,12 +243,12 @@
     }
     function menu() {
       const p = MP.read(), c = MP.completion(p), sk = MP.skills(p).slice(0, 5), started = MP.has(p);
-      return [h('div', {class: 'pa-hero'}, h('div', {}, h('small', {class: 'sim-kicker'}, tr('Optional · in parts · private', 'לא חובה · בחלקים · פרטי')),
+      return [h('div', {class: 'pa-hero'}, h('div', {}, h('small', {class: 'sim-kicker'}, tr('Optional, in parts, private', 'לא חובה, בחלקים, פרטי')),
           h('h2', {}, tr('Get to know your strengths', 'להכיר את החוזקות שלך')),
           h('p', {}, tr('A few short parts about your service, school and how you work. The app then quietly tailors your CV, interview practice, chat and suggestions.', 'כמה חלקים קצרים על השירות, התיכון ואיך אתה עובד. האפליקציה תתאים בשקט את קורות החיים, תרגול הראיון, הצ\'אט וההמלצות.'))), illu('compass', 66)),
         h('div', {class: 'pa-progress'}, h('span', {}, tr(c.done + ' of ' + c.of + ' parts', c.done + ' מתוך ' + c.of + ' חלקים')), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round(c.done / c.of * 100) + '%'}))),
         h('div', {class: 'pa-parts'}, PARTS.map(([id, en, he_, ill], i) => h('button', {type: 'button', class: 'pa-part' + (c.parts[i] ? ' done' : ''), onclick: () => { mode = 'form'; part = i; paint(); }},
-          illu(ill, 36), h('span', {}, h('b', {}, he() ? he_ : en), h('small', {}, c.parts[i] ? tr('Done — tap to edit', 'מולא — לעריכה') : tr('A minute or two', 'דקה-שתיים'))), h('span', {class: 'pa-tick', 'aria-hidden': 'true'}, c.parts[i] ? '✓' : '')))),
+          illu(ill, 36), h('span', {}, h('b', {}, he() ? he_ : en), h('small', {}, c.parts[i] ? tr('Done, tap to edit', 'מולא, לעריכה') : tr('A minute or two', 'דקה-שתיים'))), h('span', {class: 'pa-tick', 'aria-hidden': 'true'}, c.parts[i] ? '✓' : '')))),
         started ? h('section', {class: 'pa-card'}, h('b', {}, tr('Your top strengths so far', 'החוזקות המובילות שלך עד עכשיו')),
           h('div', {class: 'pa-chips'}, sk.map(s => h('span', {class: 'pa-chip on static'}, s.name + (s.strong ? ' ★' : '')))),
           sk.some(s => s.strong) ? h('small', {class: 'plus-muted'}, tr('★ = appears in more than one place (stronger evidence)', '★ = מופיע ביותר ממקום אחד (ראיה חזקה יותר)')) : null) : null,
@@ -264,7 +264,7 @@
         h('section', {class: 'pa-card pa-form'}, ...body),
         h('div', {class: 'plus-wiz-nav'}, btn(tr('Save and close', 'לשמור ולסגור'), () => { mode = 'menu'; paint(); toast(tr('Saved ✓', 'נשמר ✓')); }, 'plus-wiz-back'),
           part < PARTS.length - 1 ? btn(tr('Next part', 'לחלק הבא'), () => { part++; paint(); }, 'plus-btn primary plus-wiz-next') : btn(tr('Finish', 'סיום'), () => { mode = 'knows'; paint(); toast(tr('Your profile is ready ✓', 'הפרופיל מוכן ✓')); }, 'plus-btn primary plus-wiz-next')),
-        h('p', {class: 'plus-muted pa-skip'}, tr('Every question is optional — skip anything.', 'כל שאלה היא רשות — אפשר לדלג על הכול.'))];
+        h('p', {class: 'plus-muted pa-skip'}, tr('Every question is optional, skip anything.', 'כל שאלה היא רשות, אפשר לדלג על הכול.'))];
     }
     function paint() {
       const scr = mode === 'form' ? form() : mode === 'knows' ? knows() : menu();

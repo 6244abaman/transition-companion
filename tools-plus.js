@@ -51,12 +51,12 @@
       const r = R();
       return [
         {id: 'deposit-open', date: addDays(D, 14), title: tr('Personal deposit opens', 'הפיקדון האישי נפתח לשימוש'), text: tr('From about day 14 you can request deposit money for approved uses in the personal area.', 'בערך מהיום ה-14 אפשר לבקש כסף מהפיקדון למטרות מאושרות, דרך האזור האישי.'), url: HACHVANA},
-        {id: 'grant', date: addDays(D, 60), title: tr('Check the discharge grant arrived', 'לבדוק שמענק השחרור הגיע'), text: tr('The grant is usually paid within 60 days of discharge. If not, contact the Division (*5266).', 'המענק משולם בדרך כלל עד 60 יום מהשחרור. אם לא הגיע — לפנות לאגף (‎*5266).'), url: HACHVANA},
+        {id: 'grant', date: addDays(D, 60), title: tr('Check the discharge grant arrived', 'לבדוק שמענק השחרור הגיע'), text: tr('The grant is usually paid within 60 days of discharge. If not, contact the Division (*5266).', 'המענק משולם בדרך כלל עד 60 יום מהשחרור. אם לא הגיע, לפנות לאגף (‎*5266).'), url: HACHVANA},
         {id: 'btl', date: endOfMonthAfter(D, 2), title: tr('National Insurance exemption ends', 'סוף הפטור מביטוח לאומי'), text: tr('If you are not working, the temporary exemption lasts two months after the discharge month. After that, payments may apply.', 'אם אינך עובד, הפטור הזמני נמשך חודשיים אחרי חודש השחרור. אחרי זה ייתכן חיוב.'), url: (r.bituach_leumi_exemption || {}).official_url || 'https://www.btl.gov.il/'},
         {id: 'arnona', date: addMonths(D, 4), title: tr('Arnona exemption ends', 'סוף הפטור מארנונה'), text: tr('Up to 4 months from discharge, for 70 m² of an apartment you own or rent (90 m² with 5+ residents). Request it from your local authority.', 'עד 4 חודשים מהשחרור, על 70 מ"ר בדירה בבעלותך או בשכירות (90 מ"ר אם גרים 5 ומעלה). מבקשים ברשות המקומית.'), url: 'https://www.kolzchut.org.il/he/פטור_מארנונה_לחיילים_בשירות_חובה_וחיילים_משוחררים'},
         {id: 'transport', date: addMonths(D, 12), title: tr('Free public transport ends', 'סוף הנסיעות החינם בתחבורה הציבורית'), text: tr('12 months from discharge. Remember to validate every ride.', '12 חודשים מהשחרור. חובה לתקף כל נסיעה.'), url: (r.public_transport_free || {}).official_url || HACHVANA},
         {id: 'unemployment', date: addMonths(D, 12), title: tr('First year: unemployment option', 'השנה הראשונה: אפשרות לדמי אבטלה'), text: tr('Discharged soldiers may get unemployment benefit in the first year after working 6 months. Check conditions at National Insurance.', 'משוחררים יכולים לקבל דמי אבטלה בשנה הראשונה אחרי 6 חודשי עבודה. לבדוק תנאים בביטוח לאומי.'), url: 'https://www.btl.gov.il/'},
-        {id: 'tax', date: addMonths(D, 36), title: tr('Extra tax credit points end', 'סוף נקודות הזיכוי של השחרור'), text: tr('The points last 36 months, but only if you ask for them on form 101 at work. Missed months can be refunded later.', 'הנקודות נמשכות 36 חודשים — רק אם ביקשת אותן בטופס 101 בעבודה. חודשים שפוספסו אפשר לקבל בהחזר מס.'), url: (r.tax_credit_points || {}).official_url},
+        {id: 'tax', date: addMonths(D, 36), title: tr('Extra tax credit points end', 'סוף נקודות הזיכוי של השחרור'), text: tr('The points last 36 months, but only if you ask for them on form 101 at work. Missed months can be refunded later.', 'הנקודות נמשכות 36 חודשים, רק אם ביקשת אותן בטופס 101 בעבודה. חודשים שפוספסו אפשר לקבל בהחזר מס.'), url: (r.tax_credit_points || {}).official_url},
         {id: 'preferred-window', date: addMonths(D, 24), title: tr('Preferred work: last month to complete the 6 months', 'עבודה מועדפת: סוף החלון להשלים 6 חודשי עבודה'), text: tr('The 6 full months (150 work days) must be completed within 24 months of discharge. Start early enough.', 'את 6 החודשים המלאים (150 ימי עבודה) צריך להשלים בתוך 24 חודשים מהשחרור. כדאי להתחיל בזמן.'), url: (r.preferred_work_grant || {}).official_url},
         {id: 'preferred', date: addMonths(D, 42), title: tr('Preferred-work grant: last day to file the claim', 'מענק עבודה מועדפת: מועד אחרון להגשת התביעה'), text: tr('File the claim with National Insurance after finishing 6 months of work, and no later than 42 months after discharge.', 'מגישים את התביעה לביטוח לאומי אחרי שמסיימים 6 חודשי עבודה, ולא יאוחר מ-42 חודשים מהשחרור.'), url: (r.preferred_work_grant || {}).official_url},
         {id: 'mimadim', date: addMonths(D, 60), title: tr('Mimadim: first request deadline', 'ממדים ללימודים: מועד אחרון לבקשה ראשונה'), text: tr('First request usually within 5 years of discharge.', 'בקשה ראשונה בדרך כלל עד 5 שנים מהשחרור.'), url: 'https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx'},
@@ -72,17 +72,17 @@
         out.replaceChildren();
         const v = input.value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { out.append(note(tr('Enter your discharge date (or the expected one) to see your personal dates.', 'הכנס את תאריך השחרור (או התאריך הצפוי) כדי לראות את המועדים שלך.'))); return; }
         const [y, m, d] = v.split('-').map(Number); const D = new Date(y, m - 1, d);
-        if (fromMonth && !P.dischargeDate) out.append(h('p', {class: 'plus-sch-why'}, tr('Using the month you gave at the start — set the exact day for exact dates.', 'לפי החודש שמסרת בהתחלה — כדאי לבחור את היום המדויק כדי שהמועדים יהיו מדויקים.')));
+        if (fromMonth && !P.dischargeDate) out.append(h('p', {class: 'plus-sch-why'}, tr('Using the month you gave at the start, set the exact day for exact dates.', 'לפי החודש שמסרת בהתחלה, כדאי לבחור את היום המדויק כדי שהמועדים יהיו מדויקים.')));
         const items = deadlineItems(D), now = new Date(); now.setHours(0, 0, 0, 0);
         const next = items.find(i => i.date >= now);
         out.append(h('div', {class: 'plus-row'},
           btn(tr('Add all to my calendar', 'להוסיף הכול ליומן'), () => download('momentum-dates.ics', 'text/calendar', ics(items.filter(i => i.date >= now))), 'plus-btn primary'),
-          shareBtn(tr('My dates after discharge', 'המועדים שלי אחרי השחרור'), () => items.map(i => fmtDate(i.date) + ' — ' + i.title).join('\n'))));
+          shareBtn(tr('My dates after discharge', 'המועדים שלי אחרי השחרור'), () => items.map(i => fmtDate(i.date) + ', ' + i.title).join('\n'))));
         const ol = h('ol', {class: 'plus-timeline'});
         items.forEach(i => {
           const past = i.date < now;
           ol.append(h('li', {class: 'plus-tl-item' + (past ? ' is-past' : '') + (i === next ? ' is-next' : '')},
-            h('span', {class: 'plus-tl-date'}, fmtDate(i.date) + (past ? tr(' · passed', ' · עבר') : i === next ? tr(' · next', ' · הבא') : '')),
+            h('span', {class: 'plus-tl-date'}, fmtDate(i.date) + (past ? tr(', passed', ', עבר') : i === next ? tr(', next', ', הבא') : '')),
             h('strong', {}, i.title), h('p', {}, i.text),
             h('div', {class: 'plus-row'},
               past ? null : btn(tr('To calendar', 'ליומן'), () => download('momentum-' + i.id + '.ics', 'text/calendar', ics([i])), 'plus-link'),
@@ -139,7 +139,7 @@
       put(wrap, h('section', {class: 'plus-card dp-mine'},
         h('div', {class: 'dp-mine-head'}, illu('piggy', 52), h('div', {},
           h('small', {}, tr('My estimated deposit', 'הפיקדון המשוער שלי')),
-          total ? h('strong', {class: 'dp-amount'}, '≈ ' + money(total)) : btn(tr('Calculate it (1 minute) →', 'לחשב (דקה אחת) ←'), () => showPage('rights'), 'plus-link'),
+          total ? h('strong', {class: 'dp-amount'}, '≈ ' + money(total)) : btn(tr('Calculate it (1 minute)', 'לחשב (דקה אחת)'), () => showPage('rights'), 'plus-link'),
           total ? h('small', {class: 'plus-muted'}, tr('Estimate by the October 2026 rates. The exact sum is in your personal area.', 'הערכה לפי תעריפי אוקטובר 2026. הסכום המדויק באזור האישי.')) : null)),
         windowBox || btn(tr('Add my discharge month to see the 5-year window', 'להוסיף חודש שחרור כדי לראות את חלון 5 השנים'), () => showPage('deadlines'), 'plus-link'),
         h('ul', {class: 'dp-facts'},
@@ -187,15 +187,15 @@
             btn(tr('Save as a step in My Journey', 'שמור כצעד במסע שלי'), () => saveAction(tr('Deposit request: ', 'בקשת פיקדון: ') + title + (plan[u.id] ? ' (' + money(plan[u.id]) + ')' : ''), tip), 'plus-btn'))));
         detail.scrollIntoView({behavior: document.documentElement.dataset.motion === 'reduce' ? 'auto' : 'smooth', block: 'nearest'});
       };
-      put(wrap, section(tr('The 6 approved uses — tap one, and plan amounts', '6 המטרות המאושרות — לוחצים על מטרה, ומתכננים סכומים'),
-        note(tr('Type how much you plan for each goal. It is only a plan on your phone — it does not submit anything.', 'כותבים כמה מתכננים לכל מטרה. זה רק תכנון בטלפון — לא מגיש כלום.')),
+      put(wrap, section(tr('The 6 approved uses, tap one, and plan amounts', '6 המטרות המאושרות, לוחצים על מטרה, ומתכננים סכומים'),
+        note(tr('Type how much you plan for each goal. It is only a plan on your phone, it does not submit anything.', 'כותבים כמה מתכננים לכל מטרה. זה רק תכנון בטלפון, לא מגיש כלום.')),
         cards, planBox), detail);
 
       // 4. good to know (sorted, expandable)
       const fold = (title, ...kids) => h('details', {class: 'plus-card plus-right-fold dp-fold'}, h('summary', {class: 'plus-right-sum'}, h('span', {class: 'plus-right-title'}, title), h('span', {class: 'plus-right-chev', 'aria-hidden': 'true'})), h('div', {class: 'plus-right-body'}, ...kids));
       put(wrap, section(tr('Good to know', 'כדאי לדעת'),
         fold(tr('What is NOT allowed', 'מה אי אפשר'), h('ul', {class: 'plus-list'}, [tr('Rent is not one of the approved uses.', 'שכירות דירה היא לא אחת המטרות המאושרות.'), tr('A trip abroad is not an approved use.', 'טיול לחו"ל הוא לא מטרה מאושרת.'), tr('Use outside Israel is not possible.', 'אי אפשר לממש מחוץ לישראל.')].map(x => h('li', {}, x)))),
-        fold(tr('Deposit or grant — what is the difference?', 'פיקדון או מענק — מה ההבדל?'), h('p', {}, tr('The discharge grant is paid to your bank and is yours for anything. The deposit is only for the 6 uses for 5 years; after that the balance goes to your bank.', 'מענק השחרור מועבר לבנק ומותר לכל דבר. הפיקדון רק ל-6 המטרות במשך 5 שנים; אחרי זה היתרה עוברת לבנק.'))),
+        fold(tr('Deposit or grant, what is the difference?', 'פיקדון או מענק, מה ההבדל?'), h('p', {}, tr('The discharge grant is paid to your bank and is yours for anything. The deposit is only for the 6 uses for 5 years; after that the balance goes to your bank.', 'מענק השחרור מועבר לבנק ומותר לכל דבר. הפיקדון רק ל-6 המטרות במשך 5 שנים; אחרי זה היתרה עוברת לבנק.'))),
         fold(tr('The amount looks wrong', 'הסכום נראה לא נכון'), h('p', {}, pd.appeal || tr('IDF public inquiries 1111, extension 5.', 'פניות הציבור של צה"ל 1111 שלוחה 5.')), h('a', {class: 'plus-link', href: 'tel:1111'}, tr('Call 1111', 'חיוג ל-1111'))),
         fold(tr('Changed bank account?', 'החלפת חשבון בנק?'), h('p', {}, tr('Update it in the personal area, so the balance after 5 years reaches the right account.', 'לעדכן באזור האישי, כדי שהיתרה אחרי 5 שנים תגיע לחשבון הנכון.'))),
         fold(tr('Who can help me plan?', 'מי יכול לעזור לתכנן?'), h('p', {}, tr('The Division for Discharged Soldiers (*5266, also WhatsApp) and the local youth centres offer free guidance.', 'האגף לחיילים משוחררים (*5266, יש גם וואטסאפ) ומרכזי הצעירים נותנים ליווי חינם.')))), verify());
@@ -221,12 +221,12 @@
       function calc() {
         const used = Object.values(G.parts).reduce((a, b) => a + (Number(b) || 0), 0);
         const rest = (Number(G.total) || 0) - used;
-        left.textContent = tr('Planned: ', 'תוכנן: ') + money(used) + ' · ' + (rest >= 0 ? tr('Not yet planned: ', 'עוד לא תוכנן: ') + money(rest) : tr('Over by ', 'חריגה של ') + money(-rest));
+        left.textContent = tr('Planned: ', 'תוכנן: ') + money(used) + ', ' + (rest >= 0 ? tr('Not yet planned: ', 'עוד לא תוכנן: ') + money(rest) : tr('Over by ', 'חריגה של ') + money(-rest));
         left.classList.toggle('is-over', rest < 0);
       }
       total.addEventListener('input', () => { G.total = Number(total.value) || ''; G.totalEdited = !!total.value; store(); calc(); });
       put(wrap, section(tr('Plan your grant your way', 'לתכנן את המענק בדרך שלך'),
-        note(tr('The grant is free money — you decide. Write how much you want for each thing. This is a planning aid, not financial advice.', 'המענק הוא כסף חופשי — אתה מחליט. כתוב כמה תרצה לכל דבר. זה כלי תכנון, לא ייעוץ פיננסי.')),
+        note(tr('The grant is free money, you decide. Write how much you want for each thing. This is a planning aid, not financial advice.', 'המענק הוא כסף חופשי, אתה מחליט. כתוב כמה תרצה לכל דבר. זה כלי תכנון, לא ייעוץ פיננסי.')),
         h('label', {class: 'plus-plan-field plus-plan-total'}, h('span', {}, tr('Grant amount (₪)', 'סכום המענק (₪)')), total),
         e && e.grant ? note(tr('Pre-filled from your estimate. The exact amount is in your personal area.', 'מולא לפי ההערכה שלך. הסכום המדויק באזור האישי.')) : null,
         h('div', {class: 'plus-plan-grid'}, fields), left,
@@ -267,7 +267,7 @@
         bar.firstChild.style.width = Math.round(n / TODO.length * 100) + '%';
         count.textContent = tr(n + ' of ' + TODO.length + ' done', n + ' מתוך ' + TODO.length + ' בוצעו');
       };
-      put(wrap, section(tr('After discharge — one list', 'אחרי השחרור — רשימה אחת'), bar, count, ul,
+      put(wrap, section(tr('After discharge, one list', 'אחרי השחרור, רשימה אחת'), bar, count, ul,
         h('div', {class: 'plus-row'}, shareBtn(tr('My after-discharge list', 'הרשימה שלי אחרי השחרור'), () => TODO.map(([id, l]) => (P.afterChecks.includes(id) ? '✓ ' : '○ ') + l).join('\n')))));
       paint();
       return wrap;
@@ -278,10 +278,10 @@
       {group: 'rights', name: tr('Division for Discharged Soldiers', 'האגף לחיילים משוחררים ומילואים'), tel: '*5266', note: tr('Rights, grant, deposit. WhatsApp too.', 'זכויות, מענק, פיקדון. יש גם וואטסאפ.'), url: HACHVANA},
       {group: 'rights', name: tr('National Insurance', 'ביטוח לאומי'), tel: '*6050', note: tr('Preferred work, unemployment, exemption.', 'עבודה מועדפת, אבטלה, פטור.'), url: 'https://www.btl.gov.il/'},
       {group: 'rights', name: tr('IDF public inquiries (deposit amount appeal)', 'פניות הציבור צה"ל (ערעור על סכום הפיקדון)'), tel: '1111', note: tr('Extension 5.', 'שלוחה 5.')},
-      {group: 'support', name: tr('ERAN — emotional first aid', 'ער"ן — עזרה ראשונה נפשית'), tel: '1201', note: tr('24/7, anonymous.', '24/7, אנונימי.'), url: 'https://www.eran.org.il/'},
-      {group: 'support', name: tr('NATAL — trauma helpline', 'נט"ל — קו סיוע לטראומה'), tel: '1-800-363-363', note: tr('Free helpline.', 'קו סיוע חינמי.'), url: 'https://www.natal.org.il/'},
-      {group: 'support', name: tr('"Nefesh Achat" — support line for veterans', '"נפש אחת" — קו תמיכה ללוחמים ומשוחררים'), tel: '*8944', note: tr('24/7, by the Defense Ministry with NATAL.', '24/7, של משרד הביטחון בשיתוף נט"ל.')},
-      {group: 'support', name: tr('SAHAR — online chat', 'סה"ר — צ\'אט תמיכה ברשת'), tel: '', note: tr('Anonymous written chat, 24/7.', 'צ\'אט כתוב ואנונימי, 24/7.'), url: 'https://sahar.org.il/'},
+      {group: 'support', name: tr('ERAN, emotional first aid', 'ער"ן, עזרה ראשונה נפשית'), tel: '1201', note: tr('24/7, anonymous.', '24/7, אנונימי.'), url: 'https://www.eran.org.il/'},
+      {group: 'support', name: tr('NATAL, trauma helpline', 'נט"ל, קו סיוע לטראומה'), tel: '1-800-363-363', note: tr('Free helpline.', 'קו סיוע חינמי.'), url: 'https://www.natal.org.il/'},
+      {group: 'support', name: tr('"Nefesh Achat", support line for veterans', '"נפש אחת", קו תמיכה ללוחמים ומשוחררים'), tel: '*8944', note: tr('24/7, by the Defense Ministry with NATAL.', '24/7, של משרד הביטחון בשיתוף נט"ל.')},
+      {group: 'support', name: tr('SAHAR, online chat', 'סה"ר, צ\'אט תמיכה ברשת'), tel: '', note: tr('Anonymous written chat, 24/7.', 'צ\'אט כתוב ואנונימי, 24/7.'), url: 'https://sahar.org.il/'},
       {group: 'emergency', name: tr('Magen David Adom', 'מד"א'), tel: '101'},
       {group: 'emergency', name: tr('Police', 'משטרה'), tel: '100'}
     ];
@@ -318,23 +318,23 @@
         desc: tr('Covers up to about 85% of tuition each year, topped up to about 100% in the final year. Since May 2026 it can be combined with Mil-GO.', 'מכסה עד כ-85% משכר הלימוד בכל שנה, ובשנה האחרונה השלמה לכ-100%. ממאי 2026 אפשר לשלב עם מיל-GO.'), who: tr('Combat; lone soldiers, new immigrants, minorities, families receiving family payments', 'לוחמים; חיילים בודדים, עולים, בני מיעוטים, מקבלי תשלומי משפחה'), when: tr('Once a year in the personal area (in 2025-26: November to July)', 'פעם בשנה באזור האישי (בתשפ"ו: מנובמבר עד יולי)')},
       {group: 'gov', name: tr('Mil-GO (Council for Higher Education)', 'מיל-GO (המל"ג)'), url: '', src: tr('CHE / Ministry of Education', 'המל"ג / משרד החינוך'),
         desc: tr('Need-based study grant in several tiers, for degree, mechina or practical-engineer studies.', 'מלגה לפי מצב סוציו-אקונומי, בכמה מדרגות, לתואר, מכינה או הנדסאים.'), who: tr('Students at recognised institutions', 'סטודנטים במוסדות מוכרים'), when: tr('The next round will be announced by the CHE', 'מועד ההרשמה הבא יפורסם על ידי המל"ג')},
-      {group: 'periphery', name: tr('Yiud 44 — studying in the periphery', 'ייעוד 44 — לומדים בפריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%91%D7%90%D7%96%D7%95%D7%A8%D7%99_%D7%A1%D7%99%D7%95%D7%A2_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
+      {group: 'periphery', name: tr('Yiud 44, studying in the periphery', 'ייעוד 44, לומדים בפריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%91%D7%90%D7%96%D7%95%D7%A8%D7%99_%D7%A1%D7%99%D7%95%D7%A2_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
         desc: tr('First-year tuition for a bachelor\'s degree at an institution in a support area. No volunteering.', 'מימון שנה א\' לתואר ראשון במוסד שנמצא באזור סיוע. בלי התנדבות.'), who: tr('Discharged soldiers who completed service; reservists and lone soldiers up to 10 years', 'משוחררים שהשלימו שירות; מילואים ובודדים עד 10 שנים'), when: tr('Through the personal area after the institution reports', 'דרך האזור האישי, אחרי שהמוסד מדווח')},
-      {group: 'periphery', name: tr('Yiud 45 — periphery residents', 'ייעוד 45 — תושבי פריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%95%D7%A1%D7%99%D7%95%D7%A2_%D7%91%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99_%D7%94%D7%9E%D7%AA%D7%92%D7%95%D7%A8%D7%A8%D7%99%D7%9D_%D7%91%D7%A4%D7%A8%D7%99%D7%A4%D7%A8%D7%99%D7%94', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
+      {group: 'periphery', name: tr('Yiud 45, periphery residents', 'ייעוד 45, תושבי פריפריה'), url: 'https://www.kolzchut.org.il/he/%D7%9E%D7%99%D7%9E%D7%95%D7%9F_%D7%95%D7%A1%D7%99%D7%95%D7%A2_%D7%91%D7%9C%D7%99%D7%9E%D7%95%D7%93%D7%99%D7%9D_%D7%9C%D7%97%D7%99%D7%99%D7%9C%D7%99%D7%9D_%D7%9E%D7%A9%D7%95%D7%97%D7%A8%D7%A8%D7%99%D7%9D_%D7%95%D7%9E%D7%A1%D7%99%D7%99%D7%9E%D7%99_%D7%A9%D7%99%D7%A8%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%90%D7%96%D7%A8%D7%97%D7%99_%D7%94%D7%9E%D7%AA%D7%92%D7%95%D7%A8%D7%A8%D7%99%D7%9D_%D7%91%D7%A4%D7%A8%D7%99%D7%A4%D7%A8%D7%99%D7%94', src: tr('Kol Zchut (Division information)', 'כל זכות (מידע של האגף)'),
         desc: tr('Help funding the first year of a degree for those who live in a support area.', 'סיוע במימון שנה א\' לתואר למי שגר באזור סיוע.'), who: tr('Discharged soldiers and national-service graduates living in the periphery', 'משוחררים ומסיימי שירות לאומי שגרים בפריפריה'), when: tr('Registration dates are published each year by the Division', 'מועדי ההרשמה מתפרסמים כל שנה באתר האגף')},
-      {group: 'periphery', name: tr('Yiud 46 — mechina graduates from the periphery', 'ייעוד 46 — בוגרי מכינה מהפריפריה'), url: '', src: tr('Division for Discharged Soldiers', 'האגף לחיילים משוחררים'),
+      {group: 'periphery', name: tr('Yiud 46, mechina graduates from the periphery', 'ייעוד 46, בוגרי מכינה מהפריפריה'), url: '', src: tr('Division for Discharged Soldiers', 'האגף לחיילים משוחררים'),
         desc: tr('For periphery residents who completed a Division-funded pre-academic mechina.', 'לתושבי פריפריה שסיימו מכינה במימון האגף.'), who: tr('Periphery', 'פריפריה'), when: tr('Changes', 'מועד משתנה')},
       {group: 'funds', name: 'IMPACT! (FIDF)', url: 'https://www.fidf.org/impact', src: 'FIDF',
         desc: tr('A scholarship for each study year plus mentoring, with about 130 volunteer hours a year.', 'מלגה לכל שנת לימוד ועוד ליווי, עם כ-130 שעות התנדבות בשנה.'), who: tr('Combat and combat support, by socio-economic need', 'לוחמים ותומכי לחימה, לפי מצב סוציו-אקונומי'), when: tr('Usually 1 March – 31 May', 'בדרך כלל 1 במרץ – 31 במאי')},
       {group: 'funds', name: tr('HESEG Foundation', 'קרן הישג'), url: 'https://www.heseg.com', src: tr('HESEG', 'קרן הישג'),
         desc: tr('Tuition and living support for the whole degree.', 'מלגת שכר לימוד וקיום לאורך התואר.'), who: tr('Lone soldiers (not children of emissaries), usually within 2 years of discharge', 'חיילים בודדים (לא בני שליחים), בדרך כלל עד שנתיים מהשחרור'), when: tr('Usually 1 March – end of June', 'בדרך כלל 1 במרץ – סוף יוני')},
       {group: 'funds', name: tr('Gruss Foundation', 'קרן גרוס'), url: '', src: tr('Gruss Foundation', 'קרן גרוס'),
-        desc: tr('Help for studies; requires having used part of the deposit and no other funding.', 'סיוע ללימודים; צריך לנצל חלק מהפיקדון ולא לקבל מימון אחר.'), who: tr('Lone soldiers, periphery, Ethiopian-Israelis, Haredim, minorities — within 5 years of discharge', 'בודדים, פריפריה, יוצאי אתיופיה, חרדים, בני מיעוטים — עד 5 שנים מהשחרור'), when: tr('For 2026-27: 15 Sep – 15 Dec 2026 (per a scholarship listing)', 'לתשפ"ז: 15.9.26 – 15.12.26 (לפי לוח מלגות)')},
+        desc: tr('Help for studies; requires having used part of the deposit and no other funding.', 'סיוע ללימודים; צריך לנצל חלק מהפיקדון ולא לקבל מימון אחר.'), who: tr('Lone soldiers, periphery, Ethiopian-Israelis, Haredim, minorities, within 5 years of discharge', 'בודדים, פריפריה, יוצאי אתיופיה, חרדים, בני מיעוטים, עד 5 שנים מהשחרור'), when: tr('For 2026-27: 15 Sep – 15 Dec 2026 (per a scholarship listing)', 'לתשפ"ז: 15.9.26 – 15.12.26 (לפי לוח מלגות)')},
       {group: 'funds', name: tr('Mifal HaPais scholarships', 'מלגות מפעל הפיס'), url: 'https://www.pais.co.il', src: tr('Mifal HaPais', 'מפעל הפיס'),
         desc: tr('Matching scholarships run through partner organisations and municipalities, usually with volunteering.', 'מלגות בשיתוף ארגונים ורשויות, בדרך כלל עם התנדבות.'), who: tr('Students at recognised institutions', 'סטודנטים במוסדות מוכרים'), when: tr('Changes', 'מועד משתנה')},
       {group: 'funds', name: tr('"Mashpi\'im BaLimudim" (Rothschild Foundation)', '"משפיעים בלימודים" (קרן רוטשילד)'), url: '', src: tr('Edmond de Rothschild Foundation, Yachad LeMa\'an HaHayal, the Division', 'קרן אדמונד דה רוטשילד, יחד למען החייל, האגף'), desc: tr('A living stipend on top of tuition funding (12,000 ₪ in 5786).', 'מלגת קיום בנוסף למימון שכר הלימוד (12,000 ₪ בתשפ"ו).'), who: tr('Discharged combat soldiers from specific groups: lone soldiers, new immigrants, minorities, Ethiopian-Israelis, Haredim, families on IDF support', 'לוחמים משוחררים מאוכלוסיות ייחודיות: בודדים, עולים, בני מיעוטים, יוצאי אתיופיה, חרדים, מקבלי תשלומי משפחה'), when: tr('Usually closes in spring', 'בדרך כלל נסגרת באביב')},
       {group: 'funds', name: tr('Atidim for Industry & High-Tech', 'עתידים לתעשייה ולהייטק'), url: '', src: tr('Atidim (with the Ministry of Economy and the Division)', 'עמותת עתידים (עם משרד הכלכלה והאגף)'), desc: tr('Support for engineering and computer studies plus a path into industry.', 'ליווי ומלגה ללימודי הנדסה ומחשבים, עם שילוב בתעשייה.'), who: tr('Young people from the social or geographic periphery; priority to lone soldiers and other groups', 'צעירים מהפריפריה החברתית או הגיאוגרפית; עדיפות לבודדים ולאוכלוסיות נוספות'), when: tr('Registration opens yearly', 'הרשמה שנתית')},
-      {group: 'funds', name: tr('"Hazanek LaAkademya" (Hazanek LeAtid)', '"הזנק לאקדמיה" (הזנק לעתיד)'), url: '', src: tr('Hazanek LeAtid', 'עמותת הזנק לעתיד'), desc: tr('Personal mentoring, scholarships and support throughout the degree; can be combined with other scholarships.', 'ליווי אישי, מלגות וסיוע לאורך התואר; אפשר לשלב עם מלגות אחרות.'), who: tr('Students — check the program terms', 'סטודנטים — לבדוק בתנאי התוכנית'), when: tr('Registration opens yearly', 'הרשמה שנתית')},
+      {group: 'funds', name: tr('"Hazanek LaAkademya" (Hazanek LeAtid)', '"הזנק לאקדמיה" (הזנק לעתיד)'), url: '', src: tr('Hazanek LeAtid', 'עמותת הזנק לעתיד'), desc: tr('Personal mentoring, scholarships and support throughout the degree; can be combined with other scholarships.', 'ליווי אישי, מלגות וסיוע לאורך התואר; אפשר לשלב עם מלגות אחרות.'), who: tr('Students, check the program terms', 'סטודנטים, לבדוק בתנאי התוכנית'), when: tr('Registration opens yearly', 'הרשמה שנתית')},
       {group: 'funds', name: tr('ISEF', 'אייסף'), url: 'https://www.isef.org.il', src: 'ISEF', desc: tr('Scholarship plus social-leadership activity for students facing financial difficulty.', 'מלגה בשילוב פעילות חברתית, לסטודנטים שמתמודדים עם קושי כלכלי.'), who: tr('Students from the social and geographic periphery, including new immigrants', 'סטודנטים מהפריפריה החברתית והגיאוגרפית, כולל עולים חדשים'), when: tr('For 5787 registration closed on 31 July 2026', 'לתשפ"ז ההרשמה נסגרה ב-31.7.2026')},
       {group: 'institution', name: tr('Your institution', 'המוסד שבו תלמד'), url: '', src: '', desc: tr('Every university and college has scholarships for discharged and combat soldiers. Ask the Dean of Students.', 'בכל אוניברסיטה ומכללה יש מלגות למשוחררים וללוחמים. שואלים בדקנט הסטודנטים.'), who: tr('Everyone', 'כולם'), when: tr('Each institution sets its own dates', 'כל מוסד קובע מועדים')},
       {group: 'city', name: tr('Your municipality / youth centre', 'העירייה / מרכז הצעירים'), url: '', src: '', desc: tr('Many local authorities give scholarships to young residents. The youth centre can help you apply.', 'הרבה רשויות נותנות מלגות לצעירים תושבי המקום. מרכז הצעירים עוזר להגיש.'), who: tr('Residents', 'תושבים'), when: tr('Each authority sets its own dates', 'כל רשות קובעת מועדים')}
@@ -354,12 +354,12 @@
         if (P.reservist && /מילואים|reservist/.test(w)) r.push(tr('reserves', 'מילואים'));
         return r; };
       const card = s => h('article', {class: 'plus-sch' + (why(s).length ? ' plus-sch-match' : '')},
-        why(s).length ? h('p', {class: 'plus-sch-why'}, tr('Fits your details: ', 'מתאים לפי הפרטים שלך: ') + why(s).join(' · ')) : null,
+        why(s).length ? h('p', {class: 'plus-sch-why'}, tr('Fits your details: ', 'מתאים לפי הפרטים שלך: ') + why(s).join(', ')) : null,
         h('div', {class: 'plus-sch-top'}, h('strong', {}, s.name), s.url ? h('span', {class: 'plus-badge-ok'}, tr('Official link', 'קישור רשמי')) : h('span', {class: 'plus-badge-check'}, tr('To check', 'לבדיקה'))),
         h('p', {}, s.desc),
         s.who ? h('p', {class: 'plus-sch-meta'}, h('b', {}, tr('Who: ', 'למי: ')), s.who) : null,
         s.when ? h('p', {class: 'plus-sch-meta'}, h('b', {}, tr('When: ', 'מתי: ')), s.when) : null,
-        h('p', {class: 'plus-sch-meta plus-muted'}, tr('Checked: ', 'נבדק: ') + fmt(CHECKED) + (s.src ? ' · ' + tr('Source: ', 'מקור: ') + s.src : '')),
+        h('p', {class: 'plus-sch-meta plus-muted'}, tr('Checked: ', 'נבדק: ') + fmt(CHECKED) + (s.src ? ', ' + tr('Source: ', 'מקור: ') + s.src : '')),
         h('div', {class: 'plus-row'}, s.url ? ext(tr('To the official page', 'לעמוד הרשמי'), s.url) : null,
           btn(tr('Save in My Journey', 'שמור במסע שלי'), () => saveAction(tr('Check scholarship: ', 'לבדוק מלגה: ') + s.name, [s.desc, s.when, s.url].filter(Boolean).join('\n')), 'plus-btn')));
       const toggle = (key, label) => { const c = h('input', {type: 'checkbox'}); c.checked = !!P[key]; c.addEventListener('change', () => { P[key] = c.checked; store(); paint(); }); return h('label', {class: 'plus-sch-tg'}, c, h('span', {}, label)); };
@@ -369,10 +369,10 @@
         const matches = SCH().filter(s => why(s).length);
         mine.replaceChildren(h('section', {class: 'plus-card plus-sch-mine'},
           h('strong', {}, tr('Your details', 'הפרטים שלך')),
-          h('p', {class: 'plus-muted'}, P.service ? tr('Service type: ', 'סוג שירות: ') + (KB && KB.SERVICE_LABEL ? (KB.SERVICE_LABEL[P.service] || P.service) : P.service) : tr('Service type not set — set it in "What am I entitled to".', 'סוג השירות לא הוגדר — אפשר להגדיר ב"מה מגיע לי".')),
+          h('p', {class: 'plus-muted'}, P.service ? tr('Service type: ', 'סוג שירות: ') + (KB && KB.SERVICE_LABEL ? (KB.SERVICE_LABEL[P.service] || P.service) : P.service) : tr('Service type not set, set it in "What am I entitled to".', 'סוג השירות לא הוגדר, אפשר להגדיר ב"מה מגיע לי".')),
           h('div', {class: 'plus-sch-tgs'}, toggle('lone', tr('Lone soldier', 'חייל בודד')), toggle('periphery', tr('I live in the periphery', 'גר בפריפריה / אזור סיוע')), toggle('reservist', tr('Reservist', 'משרת מילואים'))),
           matches.length ? h('p', {class: 'plus-sch-count'}, tr(matches.length + ' scholarships match your details (marked in green below).', matches.length + ' מלגות מתאימות לפרטים שלך (מסומנות בירוק למטה).'))
-            : h('p', {class: 'plus-muted'}, tr('No scholarship is specifically for your details — the general ones below are open to many.', 'אין מלגה שמיועדת במיוחד לפרטים שלך — הכלליות למטה פתוחות לרבים.'))));
+            : h('p', {class: 'plus-muted'}, tr('No scholarship is specifically for your details, the general ones below are open to many.', 'אין מלגה שמיועדת במיוחד לפרטים שלך, הכלליות למטה פתוחות לרבים.'))));
         list.replaceChildren(...SCH_GROUPS().map(([g, title, ic]) => {
           const items = SCH().filter(s => s.group === g && (!t || (s.name + ' ' + s.desc + ' ' + s.who).toLowerCase().includes(t))).sort((a, b) => why(b).length - why(a).length);
           return items.length ? h('section', {class: 'plus-sch-group'}, h('h2', {class: 'plus-group-title'}, icon(ic, 'plus-ico-dot topic-study'), title), ...items.map(card)) : null;
@@ -380,7 +380,7 @@
       };
       q.addEventListener('input', paint);
       put(wrap, section(tr('Scholarships for discharged soldiers', 'מלגות לחיילים משוחררים'),
-        note(tr('Dates and amounts change every year. "To check" means we have not confirmed an official page yet — ask the institution or a youth centre.', 'מועדים וסכומים משתנים כל שנה. "לבדיקה" אומר שעוד לא אימתנו עמוד רשמי — אפשר לשאול במוסד או במרכז הצעירים.')), q),
+        note(tr('Dates and amounts change every year. "To check" means we have not confirmed an official page yet, ask the institution or a youth centre.', 'מועדים וסכומים משתנים כל שנה. "לבדיקה" אומר שעוד לא אימתנו עמוד רשמי, אפשר לשאול במוסד או במרכז הצעירים.')), q),
         mine, list, h('div', {class: 'plus-row'}, ctx.askButton ? ctx.askButton('study', tr('Which scholarships might fit me?', 'אילו מלגות אולי מתאימות לי?')) : null));
       paint();
       return wrap;
@@ -391,7 +391,7 @@
       [tr('Base salary', 'שכר בסיס'), tr('Your agreed pay before additions. Check the hourly rate is not below minimum wage.', 'השכר המוסכם לפני תוספות. לבדוק שהתעריף לשעה לא נמוך משכר המינימום.')],
       [tr('Overtime', 'שעות נוספות'), tr('Hours beyond a normal day are paid extra.', 'שעות מעבר ליום רגיל משולמות בתוספת.')],
       [tr('Travel', 'נסיעות'), tr('Travel to work is usually reimbursed.', 'הוצאות נסיעה לעבודה בדרך כלל מוחזרות.')],
-      [tr('Income tax', 'מס הכנסה'), tr('Check your discharge tax credit points appear. If not — form 101.', 'לבדוק שנקודות הזיכוי של השחרור מופיעות. אם לא — טופס 101.')],
+      [tr('Income tax', 'מס הכנסה'), tr('Check your discharge tax credit points appear. If not, form 101.', 'לבדוק שנקודות הזיכוי של השחרור מופיעות. אם לא, טופס 101.')],
       [tr('Credit points', 'נקודות זיכוי'), tr('The number of points; each one lowers your tax.', 'מספר הנקודות; כל נקודה מורידה מס.')],
       [tr('National Insurance + health tax', 'ביטוח לאומי + מס בריאות'), tr('Deducted automatically.', 'מנוכים אוטומטית.')],
       [tr('Pension', 'פנסיה'), tr('By law, pension contributions start after a set period at work. Make sure it appears when it should.', 'לפי החוק הפרשות לפנסיה מתחילות אחרי תקופה מסוימת בעבודה. לוודא שזה מופיע כשצריך.')],
@@ -400,11 +400,11 @@
     ];
     function payslip() {
       const wrap = h('div');
-      wrap.append(section(tr('Your first payslip — line by line', 'התלוש הראשון — שורה אחרי שורה'),
+      wrap.append(section(tr('Your first payslip, line by line', 'התלוש הראשון, שורה אחרי שורה'),
         h('dl', {class: 'plus-glossary'}, SLIP.flatMap(([t, d]) => [h('dt', {}, t), h('dd', {}, d)])),
-        h('p', {class: 'plus-warn'}, icon('warn', 'plus-inline-ico'), ' ' + ((R().tax_credit_points || {}).not_automatic || tr('Tax points are not automatic — ask on form 101.', 'נקודות הזיכוי לא אוטומטיות — מבקשים בטופס 101.'))),
+        h('p', {class: 'plus-warn'}, icon('warn', 'plus-inline-ico'), ' ' + ((R().tax_credit_points || {}).not_automatic || tr('Tax points are not automatic, ask on form 101.', 'נקודות הזיכוי לא אוטומטיות, מבקשים בטופס 101.'))),
         h('div', {class: 'plus-row'}, ext(tr('Workers\' rights (Kol Zchut)', 'זכויות עובדים (כל זכות)'), 'https://www.kolzchut.org.il/'), ext(tr('Tax Authority', 'רשות המסים'), (R().tax_credit_points || {}).official_url || 'https://www.gov.il/'))));
-      if (!P.infoOnly) wrap.append(h('div', {class: 'plus-row'}, btn(tr('Something looks wrong — ask the Companion', 'משהו נראה לא תקין — לשאול את המלווה'), () => openTopic('money', tr('Help me check my payslip. ', 'תעזור לי לבדוק את התלוש שלי. ')), 'plus-btn')));
+      if (!P.infoOnly) wrap.append(h('div', {class: 'plus-row'}, btn(tr('Something looks wrong, ask the Companion', 'משהו נראה לא תקין, לשאול את המלווה'), () => openTopic('money', tr('Help me check my payslip. ', 'תעזור לי לבדוק את התלוש שלי. ')), 'plus-btn')));
       wrap.append(verify());
       return wrap;
     }
@@ -464,8 +464,8 @@
         [tr('Health fund (basic)', 'קופת חולים (בסיסי)'), tr('Required by law', 'חובה לפי חוק'), tr('Make sure you moved from IDF medical care to a health fund.', 'לוודא שעברת מהרפואה הצבאית לקופת חולים.')],
         [tr('Supplementary health', 'ביטוח משלים בקופה'), tr('Optional', 'לבחירה'), tr('Extra services at the health fund. Compare what you actually need.', 'שירותים נוספים בקופה. להשוות מה באמת צריך.')],
         [tr('Private health', 'ביטוח בריאות פרטי'), tr('Optional', 'לבחירה'), tr('Check for double coverage with the supplementary plan.', 'לבדוק כפל ביטוח מול המשלים.')],
-        [tr('Car — compulsory', 'רכב — חובה'), tr('Required if you have a car', 'חובה אם יש רכב'), tr('Covers bodily injury only.', 'מכסה רק נזקי גוף.')],
-        [tr('Car — third party / comprehensive', 'רכב — צד ג\' / מקיף'), tr('Recommended with a car', 'מומלץ עם רכב'), tr('Covers damage to others\' cars (third party) or also your own (comprehensive).', 'מכסה נזק לרכב של אחרים (צד ג\') או גם לרכב שלך (מקיף).')],
+        [tr('Car, compulsory', 'רכב, חובה'), tr('Required if you have a car', 'חובה אם יש רכב'), tr('Covers bodily injury only.', 'מכסה רק נזקי גוף.')],
+        [tr('Car, third party / comprehensive', 'רכב, צד ג\' / מקיף'), tr('Recommended with a car', 'מומלץ עם רכב'), tr('Covers damage to others\' cars (third party) or also your own (comprehensive).', 'מכסה נזק לרכב של אחרים (צד ג\') או גם לרכב שלך (מקיף).')],
         [tr('Apartment contents', 'תכולת דירה'), tr('Optional', 'לבחירה'), tr('Some landlords ask for third-party cover.', 'יש בעלי דירות שמבקשים צד ג\'.')],
         [tr('Travel abroad', 'נסיעות לחו"ל'), tr('Strongly recommended', 'מומלץ מאוד'), tr('Check extreme sports and long-trip cover.', 'לבדוק כיסוי לספורט אתגרי ולטיול ארוך.')]
       ];
@@ -477,10 +477,10 @@
 
     /* Ready-made letters */
     const LETTERS = () => [
-      [tr('Short cover note', 'מכתב מקדים קצר'), tr('Hello [name],\nI am applying for the [role] position. I recently finished my military service as [role in service], where I [one concrete thing you did]. I would be glad to talk.\nThank you,\n[your name] · [phone]',
-        'שלום [שם],\nאני מגיש מועמדות למשרת [תפקיד]. סיימתי לאחרונה שירות צבאי כ[תפקיד בשירות], שם [דבר אחד מוחשי שעשית]. אשמח לשוחח.\nתודה,\n[השם שלך] · [טלפון]')],
-      [tr('Ask for form 106 / payslips', 'בקשת טופס 106 / תלושים'), tr('Hello,\nPlease send me form 106 for [year] and my payslips for [months], for a tax refund request.\nThank you,\n[your name] · ID [number]',
-        'שלום,\nאבקש לקבל טופס 106 לשנת [שנה] ותלושי שכר לחודשים [חודשים], לצורך בקשת החזר מס.\nתודה,\n[השם שלך] · ת"ז [מספר]')],
+      [tr('Short cover note', 'מכתב מקדים קצר'), tr('Hello [name],\nI am applying for the [role] position. I recently finished my military service as [role in service], where I [one concrete thing you did]. I would be glad to talk.\nThank you,\n[your name], [phone]',
+        'שלום [שם],\nאני מגיש מועמדות למשרת [תפקיד]. סיימתי לאחרונה שירות צבאי כ[תפקיד בשירות], שם [דבר אחד מוחשי שעשית]. אשמח לשוחח.\nתודה,\n[השם שלך], [טלפון]')],
+      [tr('Ask for form 106 / payslips', 'בקשת טופס 106 / תלושים'), tr('Hello,\nPlease send me form 106 for [year] and my payslips for [months], for a tax refund request.\nThank you,\n[your name], ID [number]',
+        'שלום,\nאבקש לקבל טופס 106 לשנת [שנה] ותלושי שכר לחודשים [חודשים], לצורך בקשת החזר מס.\nתודה,\n[השם שלך], ת"ז [מספר]')],
       [tr('Ask for a preferred-work confirmation', 'בקשת אישור עבודה מועדפת'), tr('Hello,\nI worked at [workplace] from [date] to [date] as preferred work. Please give me the employer confirmation for National Insurance.\nThank you,\n[your name]',
         'שלום,\nעבדתי ב[מקום העבודה] מ-[תאריך] עד [תאריך] בעבודה מועדפת. אבקש אישור מעסיק עבור ביטוח לאומי.\nתודה,\n[השם שלך]')],
       [tr('Thank you after an interview', 'תודה אחרי ראיון'), tr('Hello [name],\nThank you for the interview today. I enjoyed hearing about [something from the interview] and I am still very interested in the role.\nBest,\n[your name]',
@@ -548,7 +548,7 @@
         try { const M = window.MomentumProfile; if (M) { const pr = M.read(); pr.quiz = {tags: top, score, date: new Date().toISOString().slice(0, 10)}; M.write(pr); } } catch (_) {}
         box.append(section(tr('Directions worth checking', 'כיוונים ששווה לבדוק'),
           ...top.map(k => h('div', {class: 'plus-card plus-soft'}, h('strong', {}, FIELDS[k][0]), h('p', {}, FIELDS[k][1]), h('small', {class: 'plus-muted'}, tr(score[k] + ' of your ' + answers.length + ' answers pointed here', score[k] + ' מתוך ' + answers.length + ' התשובות שלך הצביעו לכאן')))),
-          h('p', {class: 'plus-sch-why'}, tr('Saved to your strengths profile — it now shapes your work suggestions.', 'נשמר בפרופיל החוזקות — מעכשיו זה משפיע על הצעות העבודה שלך.')),
+          h('p', {class: 'plus-sch-why'}, tr('Saved to your strengths profile, it now shapes your work suggestions.', 'נשמר בפרופיל החוזקות, מעכשיו זה משפיע על הצעות העבודה שלך.')),
           note(tr('Just a starting point, not a verdict. A youth centre or the skills questionnaire go deeper.', 'זו רק נקודת התחלה, לא קביעה. מרכז צעירים או שאלון הכישורים מעמיקים יותר.')),
           h('div', {class: 'plus-row'}, btn(tr('Again', 'שוב'), () => { answers.length = 0; paint(); }, 'plus-link'),
             h('a', {class: 'plus-btn', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('Skills questionnaire', 'שאלון הכישורים')),
@@ -573,7 +573,7 @@
         e && e.deposit ? h('p', {class: 'plus-sch-why'}, tr('Your deposit (≈ ' + money(e.deposit) + ') can fund studies, training and psychometric prep.', 'הפיקדון שלך (≈ ' + money(e.deposit) + ') יכול לממן לימודים, הכשרה והכנה לפסיכומטרי.')) : null,
         ...rows.map(([n, len, req, fund]) => h('div', {class: 'plus-card plus-soft plus-compare' + (fits(n) ? ' plus-sch-match' : '')}, fits(n) ? h('p', {class: 'plus-sch-why'}, tr('Matches your profile', 'מתאים לפרופיל שלך')) : null, h('strong', {}, n),
           h('dl', {class: 'plus-glossary'}, h('dt', {}, tr('Length', 'משך')), h('dd', {}, len), h('dt', {}, tr('Entry', 'קבלה')), h('dd', {}, req), h('dt', {}, tr('Funding', 'מימון')), h('dd', {}, fund)))),
-        note(tr('Typical, not exact. Costs change by institution — check before enrolling.', 'טיפוסי, לא מדויק. העלויות משתנות לפי מוסד — לבדוק לפני הרשמה.')),
+        note(tr('Typical, not exact. Costs change by institution, check before enrolling.', 'טיפוסי, לא מדויק. העלויות משתנות לפי מוסד, לבדוק לפני הרשמה.')),
         h('div', {class: 'plus-row'}, btn(tr('Scholarships', 'מלגות'), () => showPage('scholarships'), 'plus-link'), btn(tr('Studies page', 'עמוד הלימודים'), () => showPage('studies'), 'plus-link'))), verify());
     }
 
@@ -581,10 +581,10 @@
     function lostDirection() {
       const S2 = [
         tr('Today: sleep, eat and go outside for 20 minutes. That counts.', 'היום: לישון, לאכול ולצאת החוצה ל-20 דקות. זה נחשב.'),
-        tr('Write 3 things you liked doing — in service or before.', 'לכתוב 3 דברים שנהנית לעשות — בשירות או לפני.'),
+        tr('Write 3 things you liked doing, in service or before.', 'לכתוב 3 דברים שנהנית לעשות, בשירות או לפני.'),
         tr('Pick one small task from "After discharge".', 'לבחור משימה קטנה אחת מ"אחרי השחרור".'),
         tr('Talk with one person: a friend, a youth centre, or the Companion.', 'לדבר עם אדם אחד: חבר, מרכז צעירים או המלווה.'),
-        tr('Try something for a week (a job, a course, volunteering) — it is allowed to change.', 'לנסות משהו לשבוע (עבודה, קורס, התנדבות) — מותר לשנות.')
+        tr('Try something for a week (a job, a course, volunteering), it is allowed to change.', 'לנסות משהו לשבוע (עבודה, קורס, התנדבות), מותר לשנות.')
       ];
       const n = (KB && KB.data && KB.data.emotional_support && KB.data.emotional_support.normalization) || '';
       return h('div', {}, section(tr('Lost direction? That\'s normal.', 'איבדת כיוון? זה נורמלי.'), n ? h('p', {}, n) : null,
@@ -619,7 +619,7 @@
           h('div', {}, h('strong', {}, String(moods.length)), h('small', {}, tr('mood check-ins', 'בדיקות מצב רוח')))),
         h('h3', {}, tr('Calm achievements', 'הישגים שקטים')),
         h('div', {class: 'plus-badges'}, badges.map(([ok, label]) => h('span', {class: 'plus-badge' + (ok ? ' is-on' : '')}, (ok ? '✓ ' : '○ ') + label))),
-        note(tr('No pressure — progress is not a race.', 'בלי לחץ — התקדמות היא לא מרוץ.')),
+        note(tr('No pressure, progress is not a race.', 'בלי לחץ, התקדמות היא לא מרוץ.')),
         h('div', {class: 'plus-row'}, shareBtn(tr('My monthly summary', 'הסיכום החודשי שלי'), text), btn(tr('My steps to calendar', 'הצעדים שלי ליומן'), journeyToCalendar, 'plus-btn'), btn(tr('Open My Journey', 'לפתוח את המסע שלי'), () => { location.href = './my-journey.html?lang=' + (he() ? 'he' : 'en') + '#overview'; }, 'plus-link'))));
     }
 
@@ -657,13 +657,13 @@
       wrap.append(section(tr('Everything together (estimate)', 'הכול ביחד (הערכה)'),
         h('ul', {class: 'plus-contacts'}, rows.map(([n, v, c]) => h('li', {}, h('div', {}, h('strong', {}, n), h('small', {}, c)), h('strong', {}, v ? '≈ ' + money(v) : '—')))),
         h('div', {class: 'plus-stats'}, h('div', {}, h('strong', {}, money(sure)), h('small', {}, tr('grant + deposit', 'מענק + פיקדון'))), h('div', {}, h('strong', {}, money(maybe)), h('small', {}, tr('possible if you work', 'אפשרי אם עובדים'))), h('div', {}, h('strong', {}, money(sure + maybe)), h('small', {}, tr('total, at most', 'סך הכול, לכל היותר')))),
-        note(tr('Plus free public transport for 12 months and an arnona exemption for 4 months. Estimate only — exact amounts are in the personal area.', 'ובנוסף נסיעות חינם 12 חודשים ופטור מארנונה ל-4 חודשים. הערכה בלבד — הסכומים המדויקים באזור האישי.'))));
-      const missed = [['tax', tr('Tax credit points — did you give form 101?', 'נקודות זיכוי — מסרת טופס 101?')], ['ravkav', tr('Free travel — is your Rav-Kav profile updated?', 'נסיעות חינם — עדכנת פרופיל ברב-קו?')],
-        ['arnona', tr('Arnona exemption — did you ask the local authority?', 'פטור מארנונה — ביקשת ברשות המקומית?')], ['deposit', tr('Deposit — did you look at it in the personal area?', 'פיקדון — הצצת באזור האישי?')],
-        ['btl', tr('National Insurance — is your status right?', 'ביטוח לאומי — המצב שלך תקין?')]].filter(([k]) => !(P.afterChecks || []).includes(k));
+        note(tr('Plus free public transport for 12 months and an arnona exemption for 4 months. Estimate only, exact amounts are in the personal area.', 'ובנוסף נסיעות חינם 12 חודשים ופטור מארנונה ל-4 חודשים. הערכה בלבד, הסכומים המדויקים באזור האישי.'))));
+      const missed = [['tax', tr('Tax credit points, did you give form 101?', 'נקודות זיכוי, מסרת טופס 101?')], ['ravkav', tr('Free travel, is your Rav-Kav profile updated?', 'נסיעות חינם, עדכנת פרופיל ברב-קו?')],
+        ['arnona', tr('Arnona exemption, did you ask the local authority?', 'פטור מארנונה, ביקשת ברשות המקומית?')], ['deposit', tr('Deposit, did you look at it in the personal area?', 'פיקדון, הצצת באזור האישי?')],
+        ['btl', tr('National Insurance, is your status right?', 'ביטוח לאומי, המצב שלך תקין?')]].filter(([k]) => !(P.afterChecks || []).includes(k));
       if (missed.length) wrap.append(section(tr('Rights you may have missed', 'זכויות שאולי פספסת'), h('ul', {class: 'plus-list'}, missed.map(([, t]) => h('li', {}, t))),
         btn(tr('Open the after-discharge list', 'לפתוח את הרשימה אחרי השחרור'), () => showPage('afterlist'), 'plus-btn')));
-      else wrap.append(section(tr('Rights you may have missed', 'זכויות שאולי פספסת'), h('p', {}, tr('Nice — you have checked the main ones ✓', 'יפה — בדקת את העיקריות ✓'))));
+      else wrap.append(section(tr('Rights you may have missed', 'זכויות שאולי פספסת'), h('p', {}, tr('Nice, you have checked the main ones ✓', 'יפה, בדקת את העיקריות ✓'))));
       return wrap;
     }
 
@@ -703,7 +703,7 @@
       let i = 0;
       const q = h('p', {class: 'plus-interview-q'});
       const ta = h('textarea', {class: 'plus-letter', rows: '5', 'aria-label': tr('Your answer', 'התשובה שלך')});
-      const paint = () => { q.textContent = (i + 1) + '/' + Qs.length + ' — ' + Qs[i]; ta.value = ''; };
+      const paint = () => { q.textContent = (i + 1) + '/' + Qs.length + ', ' + Qs[i]; ta.value = ''; };
       paint();
       return h('div', {}, section(tr('Practice an interview', 'תרגול ראיון עבודה'),
         note(tr('Answer in writing or out loud. Then the Companion can give feedback (sent only after your approval).', 'עונים בכתב או בקול. אחר כך המלווה יכול לתת משוב (נשלח רק אחרי אישור).')),
@@ -728,22 +728,22 @@
         illu(ill, 36), h('span', {class: 'lh-t'}, h('b', {}, title), h('small', {}, sub)), h('span', {class: 'lh-go', 'aria-hidden': 'true'}, tel ? tel : '↗'));
       const group = (title, ...rows) => h('section', {class: 'lh-group'}, h('h2', {}, title), h('div', {class: 'lh-list'}, ...rows.filter(Boolean)));
       return h('div', {class: 'lh'},
-        note(tr('Only official sites and verified numbers. Bookmark this page — it is the shortest way to the right place.', 'רק אתרים רשמיים ומספרים שנבדקו. כדאי לשמור את הדף — זו הדרך הקצרה למקום הנכון.')),
+        note(tr('Only official sites and verified numbers. Bookmark this page, it is the shortest way to the right place.', 'רק אתרים רשמיים ומספרים שנבדקו. כדאי לשמור את הדף, זו הדרך הקצרה למקום הנכון.')),
         group(tr('Rights and money', 'זכויות וכסף'),
-          row('wallet', tr('Personal area — Division for Discharged Soldiers', 'האזור האישי — האגף לחיילים משוחררים'), tr('Grant, deposit, requests', 'מענק, פיקדון, בקשות'), OL.personal_area || HACHVANA),
+          row('wallet', tr('Personal area, Division for Discharged Soldiers', 'האזור האישי, האגף לחיילים משוחררים'), tr('Grant, deposit, requests', 'מענק, פיקדון, בקשות'), OL.personal_area || HACHVANA),
           row('shield', tr('National Insurance (Bituach Leumi)', 'ביטוח לאומי'), tr('Exemption, unemployment, preferred work', 'פטור, אבטלה, עבודה מועדפת'), OL.bituach_leumi),
-          row('briefcase', tr('Preferred work grant — official page', 'מענק עבודה מועדפת — העמוד הרשמי'), tr('Conditions and list of jobs', 'תנאים ורשימת עבודות'), OL.preferred_work),
+          row('briefcase', tr('Preferred work grant, official page', 'מענק עבודה מועדפת, העמוד הרשמי'), tr('Conditions and list of jobs', 'תנאים ורשימת עבודות'), OL.preferred_work),
           row('percent', tr('Israel Tax Authority', 'רשות המסים'), tr('Tax points and refunds', 'נקודות זיכוי והחזרי מס'), OL.taxes),
           row('bus', tr('Free public transport', 'נסיעות חינם בתחבורה ציבורית'), tr('How to update Rav-Kav', 'איך מעדכנים רב-קו'), OL.transport)),
         group(tr('Studies and work', 'לימודים ועבודה'),
-          row('cap', tr('Mimadim — study funding', 'ממדים ללימודים'), tr('Eligibility and registration', 'זכאות והרשמה'), OL.mimadim),
-          row('pencil', tr('Psychometric test — NITE', 'מבחן פסיכומטרי — מאל"ו'), tr('Dates and registration', 'מועדים והרשמה'), 'https://www.nite.org.il/'),
+          row('cap', tr('Mimadim, study funding', 'ממדים ללימודים'), tr('Eligibility and registration', 'זכאות והרשמה'), OL.mimadim),
+          row('pencil', tr('Psychometric test, NITE', 'מבחן פסיכומטרי, מאל"ו'), tr('Dates and registration', 'מועדים והרשמה'), 'https://www.nite.org.il/'),
           row('compass', tr('Career assessment and guidance', 'אבחון תעסוקתי והכוונה'), tr('Through the Division (subsidised)', 'דרך האגף (בהשתתפות)'), OL.agaf_keren || HACHVANA),
-          row('users', tr('Youth centres — map and list', 'מרכזי צעירים — מפה ורשימה'), tr('Free guidance near you (Kol Zchut)', 'ליווי חינם ליד הבית (כל זכות)'), 'https://www.kolzchut.org.il/he/%D7%9E%D7%A8%D7%9B%D7%96%D7%99_%D7%A6%D7%A2%D7%99%D7%A8%D7%99%D7%9D_%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C')),
+          row('users', tr('Youth centres, map and list', 'מרכזי צעירים, מפה ורשימה'), tr('Free guidance near you (Kol Zchut)', 'ליווי חינם ליד הבית (כל זכות)'), 'https://www.kolzchut.org.il/he/%D7%9E%D7%A8%D7%9B%D7%96%D7%99_%D7%A6%D7%A2%D7%99%D7%A8%D7%99%D7%9D_%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C')),
         group(tr('Someone to talk to', 'מישהו לדבר איתו'),
-          row('phone', tr('ERAN — emotional first aid', 'ער"ן — עזרה ראשונה נפשית'), tr('Free, anonymous, 24/7', 'חינם, אנונימי, 24/7'), null, '1201'),
-          row('heart', tr('NATAL — trauma helpline', 'נט"ל — קו סיוע לטראומה'), tr('For soldiers and their families', 'לחיילים ולבני המשפחה'), null, '1-800-363-363'),
-          row('users', tr('"Amit" programme — Ministry of Defence', 'תכנית "עמית" — משרד הביטחון'), tr('Support for those who served in the war — via the Division', 'תמיכה למי ששירת במלחמה — דרך האגף'), OL.agaf_keren || HACHVANA)),
+          row('phone', tr('ERAN, emotional first aid', 'ער"ן, עזרה ראשונה נפשית'), tr('Free, anonymous, 24/7', 'חינם, אנונימי, 24/7'), null, '1201'),
+          row('heart', tr('NATAL, trauma helpline', 'נט"ל, קו סיוע לטראומה'), tr('For soldiers and their families', 'לחיילים ולבני המשפחה'), null, '1-800-363-363'),
+          row('users', tr('"Amit" programme, Ministry of Defence', 'תכנית "עמית", משרד הביטחון'), tr('Support for those who served in the war, via the Division', 'תמיכה למי ששירת במלחמה, דרך האגף'), OL.agaf_keren || HACHVANA)),
         verify());
     }
 
@@ -785,7 +785,7 @@
       const rec = window.MomentumProfile ? window.MomentumProfile.recommendedTools().filter(id => TOOL_ILLU[id] || id === 'cv' || id === 'interviewsim') : [];
       const allItems = GROUPS().flatMap(g => g[1]);
       const recItems = rec.map(id => allItems.find(x => x[0] === id)).filter(Boolean).slice(0, 4);
-      if (recItems.length) wrap.append(h('section', {class: 'plus-tools-group plus-tools-rec'}, h('h2', {}, icon('star', 'plus-ico-dot'), tr('Recommended for you', 'מומלץ בשבילך'), h('small', {class: 'plus-rec-why'}, tr(' · from your strengths profile', ' · לפי פרופיל החוזקות שלך'))),
+      if (recItems.length) wrap.append(h('section', {class: 'plus-tools-group plus-tools-rec'}, h('h2', {}, icon('star', 'plus-ico-dot'), tr('Recommended for you', 'מומלץ בשבילך'), h('small', {class: 'plus-rec-why'}, tr('Based on your strengths profile', 'לפי פרופיל החוזקות שלך'))),
         h('div', {class: 'plus-tools-grid'}, recItems.map(([id, ic, name, why]) => h('button', {type: 'button', class: 'plus-tool plus-tool-rec', 'data-tool': id, onclick: () => showPage(id)}, illu(TOOL_ILLU[id] || 'star', 44, 'plus-tool-illu'), h('strong', {}, name), h('small', {}, why))))));
       GROUPS().forEach(([title, items], gi) => {
         const topic = ['money', 'tasks', 'study', 'home', 'journey'][gi] || 'tasks';

@@ -104,7 +104,7 @@
     const goal = p.goals.find(g => g.status === 'active') || p.goals.find(g => g.status !== 'achieved');
     const goalCard = h('div', {class: 'jp-goal'},
       ico('target', 'jp-goal-ico'),
-      h('div', {class: 'jp-goal-text'}, h('strong', {}, tr('My goal', 'המטרה שלי')), h('span', {}, goal ? goal.title : tr('Set a goal — anything that matters to you', 'הגדירו מטרה — כל דבר שחשוב לכם'))),
+      h('div', {class: 'jp-goal-text'}, h('strong', {}, tr('My goal', 'המטרה שלי')), h('span', {}, goal ? goal.title : tr('Set a goal, anything that matters to you', 'הגדירו מטרה, כל דבר שחשוב לכם'))),
       h('button', {type: 'button', class: 'jp-goal-edit', 'aria-label': goal ? tr('Edit goals', 'עריכת המטרות') : tr('Add a goal', 'הוספת מטרה'), onclick: () => { if (goal) clickTab('goals'); else { const add = document.querySelector('[data-add="goals"]'); if (add) add.click(); } }}, ico('pencil')));
     const open = p.actions.filter(a => a.status !== 'done');
     const steps = [...open, ...p.actions.filter(a => a.status === 'done')].slice(0, 3);
@@ -146,7 +146,7 @@
       go(tr('My CV', 'קורות החיים שלי'), cvCount ? tr(cvCount + ' saved', cvCount + ' שמורים') : tr('Build one in a few minutes', 'בונים תוך כמה דקות'), null, companionBase() + (he() ? '?page=cv' : '?lang=en&page=cv')),
       (() => { let n = 0; try { n = ((JSON.parse(localStorage.getItem('momentum-companion-plus-v1') || '{}').afterChecks) || []).length; } catch (_) {}
         return go(tr('After-discharge checklist', 'הרשימה אחרי השחרור'), tr(n + ' of 12 done', n + ' מתוך 12 בוצעו'), null, companionBase() + (he() ? '?page=afterlist' : '?lang=en&page=afterlist')); })(),
-      go(tr('Goals and study plans', 'מטרות ותוכניות לימוד'), tr(p.goals.length + ' goals · ' + eduCount + ' study plans', p.goals.length + ' מטרות · ' + eduCount + ' תוכניות לימוד'), () => clickTab('goals')),
+      go(tr('Goals and study plans', 'מטרות ותוכניות לימוד'), tr(p.goals.length + ' goals, ' + eduCount + ' study plans', p.goals.length + ' מטרות, ' + eduCount + ' תוכניות לימוד'), () => clickTab('goals')),
       fold('jpFoldShare', tr('Download PDF or send to a counselor', 'הורדת PDF או שליחה ליועץ/ת'), tr('You choose what goes in', 'אתה בוחר מה נכנס'), tools),
       fold('jpFoldLinks', tr('Saved links', 'קישורים שמורים'), linkCount ? tr(linkCount + ' saved', linkCount + ' שמורים') : tr('Forms and pages to come back to', 'טפסים ועמודים לחזור אליהם'), links),
       go(tr('Backup and privacy', 'גיבוי ופרטיות'), tr('Move to a new phone, delete data', 'מעבר לטלפון חדש, מחיקת מידע'), () => clickTab('privacy')));
@@ -156,7 +156,7 @@
         h('a', {class: 'jp-back', href: companionBase() + '#home', 'aria-label': tr('Back to Companion', 'חזרה למלווה')}, ico('back'))),
       goalCard, stats, profileCard(p),
       sec(tr('My week', 'השבוע שלי'), 'calendar', null, h('div', {}, days, detail, monthBox, phoneCalendar(p))),
-      sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', open.length > 3 ? h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('All ' + open.length + ' →', 'כל ה-' + open.length + ' ←')) : null, stepsBox),
+      sec(tr('Next steps', 'הצעדים הבאים'), 'leaf', open.length > 3 ? h('button', {type: 'button', class: 'jp-all', onclick: () => clickTab('actions')}, tr('All ' + open.length + '', 'כל ה-' + open.length + '')) : null, stepsBox),
       sec(tr('My skills', 'הכישורים שלי'), 'star', null, h('div', {class: 'jp-card'}, skillsBox)),
       sec(tr('More in my journey', 'עוד במסע שלי'), 'leaf', null, more)
     );
@@ -188,7 +188,7 @@
       h('h2', {}, tr('Your progress', 'ההתקדמות שלך')),
       h('div', {class: 'jp-stats'}, stat(activeGoals, tr('active goals', 'מטרות פעילות')), stat(open, tr('open steps', 'צעדים פתוחים')), stat(doneWeek, tr('done this week', 'הושלמו השבוע'))),
       h('div', {class: 'jp-bar', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(pct), 'aria-label': tr('Steps completed', 'צעדים שהושלמו')}, h('div', {class: 'jp-fill', style: 'width:' + pct + '%'})),
-      h('p', {class: 'muted'}, total ? list[(done + total) % list.length] : tr('No steps yet — that is completely fine. One small step is enough to start.', 'עדיין אין צעדים — זה בסדר גמור. מספיק צעד קטן אחד כדי להתחיל.')),
+      h('p', {class: 'muted'}, total ? list[(done + total) % list.length] : tr('No steps yet, that is completely fine. One small step is enough to start.', 'עדיין אין צעדים, זה בסדר גמור. מספיק צעד קטן אחד כדי להתחיל.')),
       h('div', {class: 'actions'}, h('a', {class: 'button', href: companionUrl()}, tr('← Companion home', '→ לבית המלווה')))
     );
   }
@@ -224,7 +224,7 @@
     const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
     const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Momentum Companion//My Journey//HE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
     list.forEach(a => L.push('BEGIN:VEVENT', 'UID:journey-' + a.id + '@momentum', 'DTSTAMP:' + stamp, 'DTSTART;VALUE=DATE:' + ymd(a.dueDate), 'DTEND;VALUE=DATE:' + ymd(nextDay(a.dueDate)),
-      'SUMMARY:' + icsEsc(a.title), 'DESCRIPTION:' + icsEsc(tr('From My Journey — Momentum Companion', 'מהמסע שלי — המלווה מומנטום')),
+      'SUMMARY:' + icsEsc(a.title), 'DESCRIPTION:' + icsEsc(tr('From My Journey, Momentum Companion', 'מהמסע שלי, המלווה מומנטום')),
       'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(a.title), 'TRIGGER:-PT15H', 'END:VALARM', 'END:VEVENT'));
     L.push('END:VCALENDAR');
     return L.join('\r\n');
@@ -233,7 +233,7 @@
     if (!list.length) { say(tr('No dated steps to add yet.', 'עדיין אין צעדים עם תאריך להוסיף.')); return; }
     const url = URL.createObjectURL(new Blob([icsFor(list)], {type: 'text/calendar;charset=utf-8'}));
     const a = h('a', {href: url, download: name}); document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
-    say(tr('Calendar file ready — open it and tap "Add".', 'קובץ היומן מוכן — פותחים אותו ולוחצים "הוספה".'));
+    say(tr('Calendar file ready, open it and tap "Add".', 'קובץ היומן מוכן, פותחים אותו ולוחצים "הוספה".'));
   }
   const googleCal = a => 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(a.title) + '&dates=' + ymd(a.dueDate) + '/' + ymd(nextDay(a.dueDate)) + '&details=' + encodeURIComponent(tr('From My Journey', 'מהמסע שלי'));
   function phoneCalendar(p) {
@@ -245,10 +245,10 @@
         h('button', {type: 'button', class: 'button primary', disabled: upcoming.length ? undefined : true, onclick: () => downloadIcs(upcoming, tr('my-journey-steps.ics', 'המסע-שלי-צעדים.ics'))}, tr('iPhone / Android / Outlook', 'אייפון / אנדרואיד / אאוטלוק')),
         upcoming[0] ? h('a', {class: 'button', href: googleCal(upcoming[0]), target: '_blank', rel: 'noopener noreferrer'}, tr('Next step → Google Calendar', 'הצעד הבא ← יומן גוגל')) : null),
       h('details', {class: 'jp-how'}, h('summary', {}, tr('How does it work?', 'איך זה עובד?')),
-        h('ul', {}, h('li', {}, tr('iPhone: the file opens in Calendar — tap "Add all".', 'אייפון: הקובץ נפתח ביומן — לוחצים "הוסף הכול".')),
+        h('ul', {}, h('li', {}, tr('iPhone: the file opens in Calendar, tap "Add all".', 'אייפון: הקובץ נפתח ביומן, לוחצים "הוסף הכול".')),
           h('li', {}, tr('Android: open the file and choose Google Calendar.', 'אנדרואיד: פותחים את הקובץ ובוחרים ביומן Google.')),
           h('li', {}, tr('This is a one-time copy. If you change a step here, add it again (the same step updates, it does not duplicate in most calendars).', 'זו העתקה חד-פעמית. אם משנים צעד כאן, מוסיפים שוב (ברוב היומנים אותו צעד מתעדכן ולא משתכפל).')),
-          h('li', {}, tr('Nothing is sent anywhere — the file is created on your phone.', 'שום דבר לא נשלח לשום מקום — הקובץ נוצר בטלפון שלך.')))));
+          h('li', {}, tr('Nothing is sent anywhere, the file is created on your phone.', 'שום דבר לא נשלח לשום מקום, הקובץ נוצר בטלפון שלך.')))));
   }
 
   function daySheet(p, k) {
@@ -289,7 +289,7 @@
     for (let d = 1; d <= days; d++) {
       const items = byDay[key(d)] || [];
       const cell = h('button', {type: 'button', class: 'jp-day' + (key(d) === todayKey ? ' jp-today' : '') + (items.length ? ' jp-has' : ''), role: 'gridcell',
-        'aria-label': d + (key(d) === todayKey ? tr(' (today)', ' (היום)') : '') + (items.length ? ' — ' + items.length + tr(' steps', ' צעדים') : ''), 'aria-current': key(d) === todayKey ? 'date' : null, onclick: () => {
+        'aria-label': d + (key(d) === todayKey ? tr(' (today)', ' (היום)') : '') + (items.length ? ', ' + items.length + tr(' steps', ' צעדים') : ''), 'aria-current': key(d) === todayKey ? 'date' : null, onclick: () => {
           calSelected = key(d);
           grid.querySelectorAll('.jp-sel').forEach(x => x.classList.remove('jp-sel')); cell.classList.add('jp-sel');
           detail.replaceChildren(daySheet(p, calSelected));
@@ -323,22 +323,22 @@
     const ev = h('textarea', {maxlength: '1500', rows: '2', placeholder: tr('Your example (optional, no classified details)', 'דוגמה שלך (רשות, בלי פרטים מסווגים)'), 'aria-label': tr('Your example', 'הדוגמה שלך')});
     const p36 = p.skills.filter(x => x.confirmed && x.evidence).length + (p.manualSkills || []).filter(x => x.evidence).length;
     manual.replaceChildren(h('hr'), h('h3', {}, tr('Skills I added myself', 'כישורים שהוספתי בעצמי')),
-      h('p', {class: 'muted'}, tr('Anything beyond the 36 — languages, a craft, a license, a hobby you are good at.', 'כל מה שמעבר ל-36: שפות, מקצוע, רישיון, תחביב שאתם טובים בו.')),
+      h('p', {class: 'muted'}, tr('Anything beyond the 36, languages, a craft, a license, a hobby you are good at.', 'כל מה שמעבר ל-36: שפות, מקצוע, רישיון, תחביב שאתם טובים בו.')),
       ...(p.manualSkills || []).map(s => h('div', {class: 'record'}, h('div', {class: 'heading'}, h('h3', {}, s.name),
         h('button', {type: 'button', class: 'small danger', onclick: () => { if (confirm(tr('Remove this skill?', 'להסיר את הכישור?'))) { attempt(() => Store.removeManualSkill(s.id)); paintAll(); } }}, tr('Remove', 'הסרה'))), s.evidence ? h('p', {}, s.evidence) : null)),
       h('div', {class: 'field'}, name), h('div', {class: 'field'}, ev),
       h('button', {type: 'button', class: 'primary', onclick: () => { if (attempt(() => Store.addManualSkill({name: name.value, evidence: ev.value}))) { say(tr('Saved ✓', 'נשמר ✓')); paintAll(); } }}, tr('Add skill', 'הוספת כישור')),
       p36 ? h('div', {class: 'privacy-note'}, h('strong', {}, tr('Ready for a CV?', 'מוכנים לקורות חיים?')), ' ',
-        tr('You have ' + p36 + ' skills with your own examples. The Companion can draft a CV from them — without inventing anything.', 'יש לך ' + p36 + ' כישורים עם דוגמאות משלך. המלווה יכול להכין מהם טיוטת קורות חיים — בלי להמציא כלום.'), ' ',
+        tr('You have ' + p36 + ' skills with your own examples. The Companion can draft a CV from them, without inventing anything.', 'יש לך ' + p36 + ' כישורים עם דוגמאות משלך. המלווה יכול להכין מהם טיוטת קורות חיים, בלי להמציא כלום.'), ' ',
         h('a', {href: (he() ? './indexH.html?page=cv' : './index.html?lang=en&page=cv'), class: 'button primary'}, tr('Build my CV', 'בנה קורות חיים'))) : null);
   }
 
   function summaryText(p, parts) {
     const L = [];
-    L.push(tr('My Journey — summary', 'המסע שלי — סיכום') + ' (' + new Date().toLocaleDateString(he() ? 'he-IL' : 'en-GB') + ')', '');
-    if (parts.goals && p.goals.length) { L.push(tr('Goals:', 'מטרות:')); p.goals.forEach(g => L.push('• ' + g.title + ' [' + g.status + ']' + (g.targetDate ? ' — ' + g.targetDate : ''))); L.push(''); }
-    if (parts.actions && p.actions.length) { L.push(tr('Steps:', 'צעדים:')); p.actions.forEach(a => L.push((a.status === 'done' ? '✓ ' : '• ') + a.title + (a.dueDate ? ' — ' + a.dueDate : '') + (a.notes && parts.notes ? '\n   ' + a.notes.replace(/\n/g, ' ').slice(0, 200) : ''))); L.push(''); }
-    if (parts.education && p.education.length) { L.push(tr('Study plans:', 'תוכניות לימוד:')); p.education.forEach(e => L.push('• ' + e.title + (e.institution ? ' — ' + e.institution : '') + ' [' + e.status + ']')); L.push(''); }
+    L.push(tr('My Journey, summary', 'המסע שלי, סיכום') + ' (' + new Date().toLocaleDateString(he() ? 'he-IL' : 'en-GB') + ')', '');
+    if (parts.goals && p.goals.length) { L.push(tr('Goals:', 'מטרות:')); p.goals.forEach(g => L.push('• ' + g.title + ' [' + g.status + ']' + (g.targetDate ? ', ' + g.targetDate : ''))); L.push(''); }
+    if (parts.actions && p.actions.length) { L.push(tr('Steps:', 'צעדים:')); p.actions.forEach(a => L.push((a.status === 'done' ? '✓ ' : '• ') + a.title + (a.dueDate ? ', ' + a.dueDate : '') + (a.notes && parts.notes ? '\n   ' + a.notes.replace(/\n/g, ' ').slice(0, 200) : ''))); L.push(''); }
+    if (parts.education && p.education.length) { L.push(tr('Study plans:', 'תוכניות לימוד:')); p.education.forEach(e => L.push('• ' + e.title + (e.institution ? ', ' + e.institution : '') + ' [' + e.status + ']')); L.push(''); }
     if (parts.skills) {
       const sk = p.skills.filter(x => x.confirmed && x.evidence).map(x => (he() ? (x.he || x.en) : (x.en || x.he)) + ' (' + x.rating + '/7)');
       (p.manualSkills || []).forEach(x => sk.push(x.name));
@@ -360,26 +360,26 @@
     await d.ready();
     d.rect(0, d.H - 6, d.W, 6, NAVY);
     d.space(4);
-    d.text(tr('My Journey — summary', 'המסע שלי — סיכום'), {size: 22, bold: true, color: NAVY, dir});
+    d.text(tr('My Journey, summary', 'המסע שלי, סיכום'), {size: 22, bold: true, color: NAVY, dir});
     d.space(2);
-    d.text(tr('Created on ', 'הופק בתאריך ') + new Date().toLocaleDateString(rtl ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric'}) + tr(' · prepared on my own device', ' · הוכן במכשיר שלי'), {size: 10, color: GREY, dir});
+    d.text(tr('Created on ', 'הופק בתאריך ') + new Date().toLocaleDateString(rtl ? 'he-IL' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric'}) + tr(', prepared on my own device', ', הוכן במכשיר שלי'), {size: 10, color: GREY, dir});
     const open = p.actions.filter(a => a.status !== 'done').length, done = p.actions.filter(a => a.status === 'done').length;
     d.space(6);
-    d.text([tr('Goals: ', 'מטרות: ') + p.goals.length, tr('Open steps: ', 'צעדים פתוחים: ') + open, tr('Done: ', 'בוצעו: ') + done].join('   ·   '), {size: 10.5, color: TEAL, bold: true, dir});
+    d.text([tr('Goals: ', 'מטרות: ') + p.goals.length, tr('Open steps: ', 'צעדים פתוחים: ') + open, tr('Done: ', 'בוצעו: ') + done].join(', '), {size: 10.5, color: TEAL, bold: true, dir});
     d.rule({color: NAVY, width: 1.2, gap: 6});
     const head = t => { d.keep(56); d.space(8); d.heading(t, {size: 13, color: NAVY, dir, marker: TEAL}); d.rule({color: '#D5DEE7', width: 0.6, gap: 4}); };
     const body = {size: 10.6, dir, color: '#1C232B', lineHeight: 1.5};
     const meta = {size: 9.6, dir, color: GREY};
     let any = false;
     if (parts.goals && p.goals.length) { any = true; head(tr('Goals', 'מטרות'));
-      p.goals.forEach(g => { d.keep(30); d.twoSided(g.title, stL(g.status) + (g.targetDate ? ' · ' + fmtD(g.targetDate) : ''), {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (g.why && parts.notes) d.text(g.why, meta); d.space(3); }); }
+      p.goals.forEach(g => { d.keep(30); d.twoSided(g.title, stL(g.status) + (g.targetDate ? ', ' + fmtD(g.targetDate) : ''), {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (g.why && parts.notes) d.text(g.why, meta); d.space(3); }); }
     if (parts.actions && p.actions.length) { any = true;
       const sorted = [...p.actions].sort((a, b) => (a.status === 'done') - (b.status === 'done') || String(a.dueDate || '9').localeCompare(String(b.dueDate || '9')));
       head(tr('Steps', 'צעדים'));
-      sorted.forEach(a => { d.keep(24); d.bullet(a.title + (a.dueDate ? '  —  ' + fmtD(a.dueDate) : '') + '  (' + stL(a.status) + ')', {...body, dotColor: a.status === 'done' ? GREEN : TEAL, color: a.status === 'done' ? GREY : '#1C232B'});
+      sorted.forEach(a => { d.keep(24); d.bullet(a.title + (a.dueDate ? ', ' + fmtD(a.dueDate) : '') + '  (' + stL(a.status) + ')', {...body, dotColor: a.status === 'done' ? GREEN : TEAL, color: a.status === 'done' ? GREY : '#1C232B'});
         if (parts.notes && a.notes) d.text(a.notes.replace(/\s+/g, ' ').slice(0, 300), {...meta, indent: 14}); d.space(1.5); }); }
     if (parts.education && p.education.length) { any = true; head(tr('Study plans', 'תוכניות לימוד'));
-      p.education.forEach(e => { d.keep(24); d.twoSided(e.title + (e.institution ? ' — ' + e.institution : ''), stL(e.status), {size: 10.8, bold: true, dir, color: '#1C232B', color2: GREY}); d.space(2); }); }
+      p.education.forEach(e => { d.keep(24); d.twoSided(e.title + (e.institution ? ', ' + e.institution : ''), stL(e.status), {size: 10.8, bold: true, dir, color: '#1C232B', color2: GREY}); d.space(2); }); }
     if (parts.skills) {
       const sk = p.skills.filter(x => x.confirmed && x.evidence).map(x => ({n: he() ? (x.he || x.en) : (x.en || x.he), e: x.evidence}));
       (p.manualSkills || []).forEach(x => sk.push({n: x.name, e: x.evidence}));
@@ -390,7 +390,7 @@
       p.cvs.forEach(c => { d.keep(40); d.twoSided(c.title, stL(c.status), {size: 11, bold: true, dir, color: '#1C232B', color2: GREY}); if (c.summary) d.text(c.summary, body); (c.bullets || []).slice(0, 8).forEach(b => d.bullet(b, {...body, dotColor: TEAL})); d.space(4); }); }
     if (!any) { d.space(10); d.text(tr('Nothing to show yet in the parts you chose. Add a goal or a step and try again.', 'עדיין אין מה להציג בחלקים שבחרת. אפשר להוסיף מטרה או צעד ולנסות שוב.'), body); }
     d.space(14); d.rule({color: '#D5DEE7', width: 0.6, gap: 4});
-    d.text(tr('Personal document — you choose who sees it. Not an official record.', 'מסמך אישי — את/ה בוחר/ת מי רואה אותו. זה לא מסמך רשמי.'), {size: 9, color: GREY, dir});
+    d.text(tr('Personal document, you choose who sees it. Not an official record.', 'מסמך אישי, את/ה בוחר/ת מי רואה אותו. זה לא מסמך רשמי.'), {size: 9, color: GREY, dir});
     return d;
   }
   const pdfName = () => tr('My_Journey_', 'המסע_שלי_') + new Date().toISOString().slice(0, 10) + '.pdf';
@@ -409,10 +409,10 @@
             if (!confirm(tr('You will choose the app and the person. Only the parts you ticked are inside. Continue?', 'את/ה בוחר/ת את האפליקציה ואת האדם. בקובץ יש רק את החלקים שסימנת. להמשיך?'))) { status.textContent = ''; return; }
             await navigator.share({files: [file], title: tr('My Journey', 'המסע שלי')}); status.textContent = tr('Shared ✓', 'שותף ✓'); return;
           }
-          doc.download(pdfName()); status.textContent = tr('This device cannot share files directly — the PDF was downloaded. Attach it to an email or WhatsApp to your counselor.', 'המכשיר לא משתף קבצים ישירות — ה-PDF ירד. אפשר לצרף אותו למייל או לוואטסאפ ליועץ/ת.'); return;
+          doc.download(pdfName()); status.textContent = tr('This device cannot share files directly, the PDF was downloaded. Attach it to an email or WhatsApp to your counselor.', 'המכשיר לא משתף קבצים ישירות, ה-PDF ירד. אפשר לצרף אותו למייל או לוואטסאפ ליועץ/ת.'); return;
         }
         doc.download(pdfName()); status.textContent = tr('Your PDF is downloading ✓', 'ה-PDF יורד ✓');
-      } catch (e) { if (e && e.name === 'AbortError') { status.textContent = ''; return; } status.textContent = tr('Could not create the PDF — opening print instead.', 'לא הצלחתי ליצור PDF — פותח הדפסה במקום.'); printSummary(summaryText(read(), parts())); }
+      } catch (e) { if (e && e.name === 'AbortError') { status.textContent = ''; return; } status.textContent = tr('Could not create the PDF, opening print instead.', 'לא הצלחתי ליצור PDF, פותח הדפסה במקום.'); printSummary(summaryText(read(), parts())); }
     };
     tools.replaceChildren(h('h2', {}, tr('Download or share my journey', 'הורדה או שיתוף של המסע שלי')),
       h('p', {class: 'muted'}, tr('Choose what goes into the PDF. It is created on your phone; nothing is sent automatically.', 'בוחרים מה ייכנס ל-PDF. הוא נוצר בטלפון שלך; שום דבר לא נשלח אוטומטית.')),
@@ -427,8 +427,8 @@
       h('details', {class: 'jp-how'}, h('summary', {}, tr('How does sharing with a counselor work?', 'איך עובד שיתוף עם יועץ/ת?')),
         h('ol', {}, h('li', {}, tr('Tick only what you want them to see (personal notes are off by default).', 'מסמנים רק מה שרוצים שיראו (הערות אישיות כבויות כברירת מחדל).')),
           h('li', {}, tr('Press "Send to a counselor" and pick WhatsApp, email or another app.', 'לוחצים "שליחה ליועץ/ת" ובוחרים וואטסאפ, מייל או אפליקציה אחרת.')),
-          h('li', {}, tr('The counselor gets a PDF copy — not access to your app. Your data stays on your phone.', 'היועץ/ת מקבל/ת עותק PDF — לא גישה לאפליקציה. המידע נשאר בטלפון שלך.')),
-          h('li', {}, tr('To move everything to a new phone, use "Backup" below — that file is for you, not for sharing.', 'כדי להעביר הכול לטלפון חדש משתמשים ב"גיבוי" למטה — הקובץ הזה בשבילך, לא לשיתוף.')))));
+          h('li', {}, tr('The counselor gets a PDF copy, not access to your app. Your data stays on your phone.', 'היועץ/ת מקבל/ת עותק PDF, לא גישה לאפליקציה. המידע נשאר בטלפון שלך.')),
+          h('li', {}, tr('To move everything to a new phone, use "Backup" below, that file is for you, not for sharing.', 'כדי להעביר הכול לטלפון חדש משתמשים ב"גיבוי" למטה, הקובץ הזה בשבילך, לא לשיתוף.')))));
   }
   function paintAll() {
     const p = read(); if (!p) return;

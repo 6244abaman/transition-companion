@@ -55,7 +55,7 @@
       deleteHelp: "You can delete only My Journey, or also delete your saved skills assessment and Companion conversations. Export first if you need a copy.",
       deleteAllText: "Also erase saved skills and both Companion conversation histories",
       deleteButton: "Delete local data",
-      footer: "Momentum Transition Companion · Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.",
+      footer: "Momentum Transition Companion, Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.",
       activeGoals: "Active goals", pendingActions: "Open actions", confirmedSkills: "Confirmed skill examples", savedCVs: "Saved CVs",
       emptySkills: "No skill ratings yet. The assessment will help you find them.",
       emptyGoals: "No goals yet. Add one thing you want to move toward.",
@@ -71,7 +71,7 @@
       notes: "Private notes (not sent as Journey context to AI)", status: "Status", titleField: "Title",
       create: "Add", update: "Edit", save: "Save", cancel: "Cancel",
       noExample: "Confirm at least one real example in your skill assessment first.",
-      cvTitleNew: "CV — my skills", generatedSummary: "Working draft based on my confirmed service examples. Review all statements before use.",
+      cvTitleNew: "CV, my skills", generatedSummary: "Working draft based on my confirmed service examples. Review all statements before use.",
       draftsSaved: "Draft created. Review and edit it before sharing.",
       saved: "Saved to this browser.", deleted: "Deleted from this browser.",
       deleteConfirm: "Delete this entry?", deletionConfirm: "Delete the selected local data? This cannot be undone.",
@@ -90,7 +90,7 @@
       shareChanged: "Your sharing preference was saved.",
       dateUnknown: "Not scheduled", readOnly: "Browser storage is unavailable. Changes may not persist.",
       skillsUsed: "Only skills with a personally confirmed example were used. This is a draft, not a credential.",
-      draftLabel: "Draft — verify every statement",
+      draftLabel: "Draft, verify every statement",
       daysLate: "Due date passed", noData: "Nothing recorded yet.",
       general: "General", statusExploring: "Exploring", statusActive: "Active", statusPaused: "Paused",
       statusAchieved: "Achieved", statusTodo: "To do", statusDoing: "In progress", statusDone: "Done",
@@ -103,8 +103,8 @@
       noAttachment: "The file could not be read."
     },
     he: {
-      back: "חזרה לעוזר המעבר ←", assess: "הערכת מיומנויות", language: "English", title: "המסע שלי",
-      subtitle: "תודה על השירות שלכם. כאן אפשר לשמור מטרות, חוזקות וצעדים להמשך — ואתם מחליטים מה יקרה למידע.",
+      back: "חזרה לעוזר המעבר", assess: "הערכת מיומנויות", language: "English", title: "המסע שלי",
+      subtitle: "תודה על השירות שלכם. כאן אפשר לשמור מטרות, חוזקות וצעדים להמשך, ואתם מחליטים מה יקרה למידע.",
       local: "המידע נשמר בדפדפן במכשיר הזה בלבד. הוא אינו מוצפן כאן ואינו מסתנכרן אוטומטית לטלפון אחר. אתם שולטים בייצוא, במחיקה ובשיתוף עם AI.",
       overview: "תמונת מצב", skills: "מיומנויות", goals: "מטרות", cvs: "קורות חיים",
       education: "לימודים", actions: "צעדים להמשך", privacy: "פרטיות וגיבוי",
@@ -142,7 +142,7 @@
       deleteHelp: "אפשר למחוק רק את 'המסע שלי', או גם את ההערכה והשיחות השמורות בדפדפן. מומלץ לייצא תחילה.",
       deleteAllText: "למחוק גם את הערכת המיומנויות ואת היסטוריות השיחה בשתי השפות",
       deleteButton: "מחיקת המידע המקומי",
-      footer: "מומנטום · עוזר המעבר — המסע שייך לכם. זוהי גרסת ניסיון מקומית, ולא שירות חירום או כספת מסמכים מאובטחת.",
+      footer: "מומנטום, עוזר המעבר, המסע שייך לכם. זוהי גרסת ניסיון מקומית, ולא שירות חירום או כספת מסמכים מאובטחת.",
       activeGoals: "מטרות פעילות", pendingActions: "פעולות פתוחות", confirmedSkills: "דוגמאות מיומנות מאושרות", savedCVs: "טיוטות קורות חיים",
       emptySkills: "עדיין אין דירוגי מיומנויות. אפשר להתחיל בהערכה.",
       emptyGoals: "עדיין אין מטרות. אפשר להגדיר דבר אחד שרוצים להתקדם לקראתו.",
@@ -158,7 +158,7 @@
       notes: "הערות פרטיות (אינן נשלחות כהקשר מהמסע ל-AI)", status: "מצב", titleField: "כותרת",
       create: "הוספה", update: "עריכה", save: "שמירה", cancel: "ביטול",
       noExample: "יש לאשר לפחות דוגמה אחת מהניסיון האישי בהערכת המיומנויות.",
-      cvTitleNew: "קורות חיים — מיומנויות", generatedSummary: "טיוטה על בסיס דוגמאות מהשירות שאישרתי. יש לבדוק את כל הניסוחים לפני שימוש.",
+      cvTitleNew: "קורות חיים, מיומנויות", generatedSummary: "טיוטה על בסיס דוגמאות מהשירות שאישרתי. יש לבדוק את כל הניסוחים לפני שימוש.",
       draftsSaved: "נוצרה טיוטה. בדקו וערכו אותה לפני שיתוף.",
       saved: "נשמר בדפדפן הזה.", deleted: "נמחק מהדפדפן.",
       deleteConfirm: "למחוק את הרשומה?", deletionConfirm: "למחוק את המידע המקומי שנבחר? לא ניתן לבטל פעולה זו.",
@@ -177,7 +177,7 @@
       shareChanged: "העדפת השיתוף נשמרה.",
       dateUnknown: "טרם נקבע", readOnly: "אחסון הדפדפן אינו זמין. ייתכן שהשינויים לא יישמרו.",
       skillsUsed: "נעשה שימוש רק במיומנויות שיש להן דוגמה שאישרתם. זו טיוטה ולא הסמכה.",
-      draftLabel: "טיוטה — יש לבדוק כל ניסוח", daysLate: "מועד היעד עבר",
+      draftLabel: "טיוטה, יש לבדוק כל ניסוח", daysLate: "מועד היעד עבר",
       noData: "טרם נשמר מידע.", general: "כללי",
       statusExploring: "לבדיקה", statusActive: "פעיל", statusPaused: "מושהה", statusAchieved: "הושג",
       statusTodo: "לביצוע", statusDoing: "בתהליך", statusDone: "הושלם",
@@ -219,7 +219,7 @@
   function updateLanguage() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
-    document.title = T().title + " · Momentum";
+    document.title = T().title + ", Momentum";
     [
       ["homeLink","back"],["skillsLink","assess"],["language","language"],
       ["pageTitle","title"],["pageSubtitle","subtitle"],["storageNotice","local"],
@@ -276,7 +276,7 @@
   }
   function byDue(a,b) { return (a.dueDate || "9999").localeCompare(b.dueDate || "9999"); }
   function meta(container, ...parts) {
-    const p = e("div","muted mini",parts.filter(Boolean).join(" · "));
+    const p = e("div","muted mini",parts.filter(Boolean).join(", "));
     container.appendChild(p);
   }
   function renderStats() {
@@ -311,14 +311,14 @@
     const root=$("skillsList");root.replaceChildren();
     if(!profile.skills.length&&!profile.lifeSkills.length)return empty(root,T().emptySkills);
     if(profile.lifeSkills.length){
-      root.append(e("h3",null,lang==="he"?"מיומנויות חיים — מסגרת 63 המיומנויות":"Life skills — the 63-skill framework"));
+      root.append(e("h3",null,lang==="he"?"מיומנויות חיים, מסגרת 63 המיומנויות":"Life skills, the 63-skill framework"));
       profile.lifeSkills.forEach(x=>{
         const card=e("div","record");card.append(e("h3",null,lang==="he"?(x.he||x.en):(x.en||x.he)),e("p",null,x.evidence));
         if(x.level)card.append(e("p","muted mini",(lang==="he"?"רמת ניסיון לפי הדוגמה (1–4): ":"Experience level from the example (1–4): ")+x.level));
         card.append(button(T().erase,()=>{if(confirm(T().deleteConfirm)){Store.removeLifeSkill(x.id);render();}},"small danger"));root.append(card);
       });
     }
-    if(profile.skills.length)root.append(e("h3",null,lang==="he"?"36 מיומנויות לקריירה ולעסקים — דירוג עצמי 1–7":"36 career and business skills — self-rating 1–7"));
+    if(profile.skills.length)root.append(e("h3",null,lang==="he"?"36 מיומנויות לקריירה ולעסקים, דירוג עצמי 1–7":"36 career and business skills, self-rating 1–7"));
     profile.skills.slice().sort((a,b)=>b.rating-a.rating).forEach(x=>{
       const card=e("div","record");
       const name = lang === "he" ? (x.he || x.en) : (x.en || x.he);
@@ -505,7 +505,7 @@
   function openEditor(type,item) {
     editType=type;editItem=item||{};
     const edit=!!(item&&item.id);
-    $("editTitle").textContent=T()[edit?"update":"create"]+" · "+T()[type];
+    $("editTitle").textContent=T()[edit?"update":"create"]+", "+T()[type];
     const root=$("editFields");root.replaceChildren();
     fieldDefs[type].forEach(field=>{
       const container=e("div","field");

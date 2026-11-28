@@ -20,7 +20,7 @@
   async function check(profile,lang,now=new Date()){
     const s=settings(),tasks=due(profile,now), date=today(now);
     if(!s.enabled||!tasks.length||s.notified===date||!root.Notification||root.Notification.permission!=='granted')return tasks;
-    const title=lang==='he'?'המסע שלי — תזכורת':'My Journey — reminder';
+    const title=lang==='he'?'המסע שלי, תזכורת':'My Journey, reminder';
     // Lock screen never shows task titles, notes, goals or personal information.
     const options={body:lang==='he'?'יש צעדים שממתינים לבדיקה במסע שלי.':'You have next steps to review in My Journey.',tag:'momentum-journey-due'};
     try{
@@ -40,7 +40,7 @@
       const end=new Date(date);end.setDate(end.getDate()+1);
       rows.push('BEGIN:VEVENT','UID:'+escape(x.id)+'@momentum-journey','DTSTAMP:'+stamp,
         'DTSTART;VALUE=DATE:'+x.dueDate.replace(/-/g,''),'DTEND;VALUE=DATE:'+today(end).replace(/-/g,''),
-        'SUMMARY:'+escape(privateTitles?'My Journey — review next step':x.title),
+        'SUMMARY:'+escape(privateTitles?'My Journey, review next step':x.title),
         'DESCRIPTION:'+escape(privateTitles?'Open My Journey to review your private action.':x.notes),
         'BEGIN:VALARM','TRIGGER:PT9H','ACTION:DISPLAY','DESCRIPTION:My Journey reminder','END:VALARM','END:VEVENT');
     }

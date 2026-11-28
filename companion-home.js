@@ -79,7 +79,7 @@
     label.append(checkbox, span);$('hubTestTasks').append(label);
   }
   const labels = {
-    hubKicker: ['YOUR NEXT CHAPTER · MOMENTUM', 'הפרק הבא שלך · מומנטום'],
+    hubKicker: ['YOUR NEXT CHAPTER, MOMENTUM', 'הפרק הבא שלך, מומנטום'],
     hubHeading: ['Momentum Companion', 'המלווה של מומנטום'],
     hubLede: ['Reliable information, practical next steps and a place to return to. Your choices stay yours.', 'מידע אמין, צעדים מעשיים ומקום לחזור אליו. ההחלטות נשארות בידיים שלכם.'],
     hubResumeTitle: ['Continue where you left off', 'ממשיכים מאיפה שהפסקנו'],
@@ -109,8 +109,8 @@
       completed = steps.filter(a => a.status === 'done').length;
     } catch (_) { /* This UI also works with browser storage blocked. */ }
     $('hubResumeInfo').textContent = say(
-      count + ' saved conversation(s) · ' + completed + '/' + steps.length + ' follow-up steps completed',
-      count + ' שיחות שמורות · ' + completed + ' מתוך ' + steps.length + ' צעדים הושלמו'
+      count + ' saved conversation(s), ' + completed + '/' + steps.length + ' follow-up steps completed',
+      count + ' שיחות שמורות, ' + completed + ' מתוך ' + steps.length + ' צעדים הושלמו'
     );
     const pathNames = {
       benefit: ['Find a benefit or right', 'חיפוש הטבה או זכות'],
@@ -170,7 +170,7 @@
       return (input.checked ? '[x] ' : '[ ] ') + pair[0] + ' / ' + pair[1];
     });
     const report = [
-      'Momentum Companion — voluntary usability feedback', new Date().toISOString().slice(0,10),
+      'Momentum Companion, voluntary usability feedback', new Date().toISOString().slice(0,10),
       'Tasks completed (self-reported):', ...rows,
       '', 'Where I got stuck:', $('hubStuck').value.trim(),
       '', 'Most useful:', $('hubValue').value.trim(),

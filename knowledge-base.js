@@ -15,7 +15,7 @@
   const isEn = () => lang() === 'en' && !!KB_EN;
   const D = () => isEn() ? KB_EN : KB_HE;
   const L = (he, en) => isEn() ? en : he;
-  const DISCLAIMER_HE = 'הסכומים והתנאים משתנים — יש לאמת תמיד באתר הרשמי לפני שמחליטים.';
+  const DISCLAIMER_HE = 'הסכומים והתנאים משתנים, יש לאמת תמיד באתר הרשמי לפני שמחליטים.';
   const DISCLAIMER_EN = 'Amounts and conditions change. Always verify on the official site before deciding.';
 
   const fmtMoney = n => typeof n === 'number' ? n.toLocaleString('he-IL', {maximumFractionDigits: 2}) + ' ₪' : String(n || '');
@@ -25,12 +25,12 @@
   /* ---------- General guides (no amounts, no eligibility claims) ---------- */
   const GUIDES_HE = {
     savingsTips: [
-      'לפני שמוציאים את המענק — לכתוב רשימה של 3 מטרות (למשל: טיול, לימודים, כרית ביטחון).',
+      'לפני שמוציאים את המענק, לכתוב רשימה של 3 מטרות (למשל: טיול, לימודים, כרית ביטחון).',
       'כדאי להשאיר כרית ביטחון לכמה חודשי מחיה לפני הוצאות גדולות.',
       'חשבון נפרד לחיסכון עוזר לא לגעת בכסף בלי לשים לב.',
-      'לבדוק את הפיקדון לפני שמשלמים מכיס על לימודים, קורס או לימודי נהיגה — ייתכן שאפשר לממן משם.',
+      'לבדוק את הפיקדון לפני שמשלמים מכיס על לימודים, קורס או לימודי נהיגה, ייתכן שאפשר לממן משם.',
       'תקציב חודשי פשוט: הכנסות, הוצאות קבועות, הוצאות משתנות. גם דף אחד מספיק.',
-      'לא להתחייב להלוואה או לעסקה גדולה בשבועות הראשונים אחרי השחרור — אפשר לחכות ולחשוב.'
+      'לא להתחייב להלוואה או לעסקה גדולה בשבועות הראשונים אחרי השחרור, אפשר לחכות ולחשוב.'
     ],
     roleTranslations: [
       {role: 'לוחם/ת', civilian: 'עבודה תחת לחץ, קבלת החלטות מהירה, אחריות, עבודת צוות, עמידה בתנאים קשים', jobs: 'אבטחה ובטיחות, תפעול ולוגיסטיקה, שירותי חירום, הדרכה, עבודת שטח'},
@@ -51,13 +51,13 @@
     ],
     cvNote: 'אלה דוגמאות לכיוון בלבד. כתבו רק מה שבאמת עשיתם, החליפו את [הסוגריים] בפרטים שלכם, ואל תכללו מידע מסווג, שמות או מקומות.',
     interview: {
-      intro: 'בראיון לא צריך לספר הכול — צריך לתרגם. המראיין רוצה להבין מה תביא/י לעבודה.',
+      intro: 'בראיון לא צריך לספר הכול, צריך לתרגם. המראיין רוצה להבין מה תביא/י לעבודה.',
       tips: [
         'לתרגם מונחים צבאיים לשפה אזרחית ("חפ"ק" → "צוות פיקוד ושליטה", "שמ"פ" → "שירות מילואים").',
         'לספר סיפור קצר במבנה: מצב → האחריות שלי → מה עשיתי → מה יצא → מה למדתי.',
         'להדגיש התנהגויות שאפשר להעביר: אחריות, עבודה בצוות, למידה מהירה, התמודדות עם לחץ.',
         'לא לשתף פרטים מבצעיים או מסווגים. מותר ורצוי לומר "את הפרטים אני לא יכול לשתף, אבל..."',
-        'לא חייבים לדבר על חוויות קשות. אם שואלים — אפשר לענות בקצרה ולחזור למה שרלוונטי לתפקיד.',
+        'לא חייבים לדבר על חוויות קשות. אם שואלים, אפשר לענות בקצרה ולחזור למה שרלוונטי לתפקיד.',
         'להכין 2–3 סיפורים מראש ולתרגל אותם בקול (אפשר עם המלווה).'
       ],
       examples: [
@@ -71,38 +71,38 @@
         'זה בסדר להזדקק לזמן ולמרחב לפני שחוזרים לשגרה המשפחתית.',
         'אפשר להגיד לקרובים מה עוזר ומה פחות ("אני צריך קצת זמן לבד אחרי יום ארוך").',
         'לא חייבים לספר הכול על השירות. אפשר לבחור מה לשתף ומתי.',
-        'זוגיות אחרי שחרור משתנה — הרבה זוגות צריכים להתרגל מחדש לזמן משותף ולהחלטות משותפות.',
+        'זוגיות אחרי שחרור משתנה, הרבה זוגות צריכים להתרגל מחדש לזמן משותף ולהחלטות משותפות.',
         'אם הוויכוחים או הריחוק נמשכים, שיחה עם איש/אשת מקצוע יכולה לעזור לשניכם.',
         'גם הורים ואחים עוברים שינוי. לפעמים שיחה פתוחה אחת משנה הרבה.'
       ]
     },
     reservists: [
-      'תחושת "תקיעות" בין סבבי מילואים נפוצה מאוד — קשה לתכנן לימודים או עבודה כשלא יודעים מתי תקראו.',
-      'כדאי לבדוק בכל פעם את ההטבות המעודכנות למשרתי מילואים — הן משתנות ולעיתים מתארכות.',
+      'תחושת "תקיעות" בין סבבי מילואים נפוצה מאוד, קשה לתכנן לימודים או עבודה כשלא יודעים מתי תקראו.',
+      'כדאי לבדוק בכל פעם את ההטבות המעודכנות למשרתי מילואים, הן משתנות ולעיתים מתארכות.',
       'אפשר לבנות תוכנית גמישה: צעד קטן שאפשר לעשות גם בין סבבים (קורס מקוון, שיחת ייעוץ, עדכון קורות חיים).',
-      'אם החזרה מהמילואים קשה רגשית — זה מוכר ונורמלי, ויש למי לפנות.'
+      'אם החזרה מהמילואים קשה רגשית, זה מוכר ונורמלי, ויש למי לפנות.'
     ],
     timeSinceDischarge: {
-      week: 'השתחררת ממש עכשיו. אין צורך להחליט הכול השבוע — מספיק לבדוק שהמענק בדרך ולנוח קצת.',
+      week: 'השתחררת ממש עכשיו. אין צורך להחליט הכול השבוע, מספיק לבדוק שהמענק בדרך ולנוח קצת.',
       months1to3: 'עברו כמה שבועות. זה זמן טוב לבדוק פיקדון, נקודות זיכוי ופטור ביטוח לאומי, ולחשוב על כיוון ראשון.',
-      months3to12: 'עברו כמה חודשים. אם עדיין אין כיוון — זה נורמלי. שיחת ייעוץ במרכז צעירים או צעד קטן אחד יכולים להזיז דברים.',
-      overYear: 'עברה יותר משנה. חלק מההטבות מוגבלות בזמן (למשל נסיעות חינם ועבודה מועדפת) — כדאי לבדוק מה עוד בתוקף.'
+      months3to12: 'עברו כמה חודשים. אם עדיין אין כיוון, זה נורמלי. שיחת ייעוץ במרכז צעירים או צעד קטן אחד יכולים להזיז דברים.',
+      overYear: 'עברה יותר משנה. חלק מההטבות מוגבלות בזמן (למשל נסיעות חינם ועבודה מועדפת), כדאי לבדוק מה עוד בתוקף.'
     },
     officialLinksInfo: [
       {key: 'agaf_keren', title: 'האגף והקרן לחיילים משוחררים', why: 'האזור האישי: מענק שחרור, פיקדון, ממדים ללימודים, עבודה מועדפת.'},
       {key: 'bituach_leumi', title: 'ביטוח לאומי', why: 'פטור זמני מתשלום, דמי אבטלה, עבודה מועדפת/נדרשת.'},
       {key: 'taxes', title: 'רשות המסים', why: 'נקודות זיכוי לחיילים משוחררים ותיאום מס (טופס 101).'},
       {key: 'transport', title: 'נסיעות חינם בתחבורה ציבורית', why: 'איך מעדכנים פרופיל "משוחרר" ברב-קו.'},
-      {key: 'preferred_work', title: 'עבודה מועדפת — ביטוח לאומי', why: 'תנאים, הגשת בקשה ורשימת העבודות המוכרות.'},
+      {key: 'preferred_work', title: 'עבודה מועדפת, ביטוח לאומי', why: 'תנאים, הגשת בקשה ורשימת העבודות המוכרות.'},
       {key: 'mimadim', title: 'ממדים ללימודים', why: 'תנאי הזכאות והרשמה למימון שכר הלימוד.'}
     ],
     humanHelp: [
-      {name: 'ער"ן — עזרה ראשונה נפשית', contact: '1201', tel: '1201', note: 'קו טלפוני 24/7, אנונימי. אפשר גם בצ\'אט באתר ער"ן.'},
-      {name: 'נט"ל — קו סיוע לטראומה', contact: '1-800-363-363', tel: '1800363363', note: 'קו סיוע חינמי לנפגעי טראומה על רקע לאומי.'},
-      {name: '"נפש אחת" — קו תמיכה ללוחמים ומשוחררים', contact: '*8944', tel: '*8944', note: '24/7, של משרד הביטחון בשיתוף נט"ל.'},
-      {name: 'מצב חירום', contact: 'מד"א 101 · משטרה 100', tel: '101', note: 'אם יש סכנה מיידית לך או למישהו אחר.'},
+      {name: 'ער"ן, עזרה ראשונה נפשית', contact: '1201', tel: '1201', note: 'קו טלפוני 24/7, אנונימי. אפשר גם בצ\'אט באתר ער"ן.'},
+      {name: 'נט"ל, קו סיוע לטראומה', contact: '1-800-363-363', tel: '1800363363', note: 'קו סיוע חינמי לנפגעי טראומה על רקע לאומי.'},
+      {name: '"נפש אחת", קו תמיכה ללוחמים ומשוחררים', contact: '*8944', tel: '*8944', note: '24/7, של משרד הביטחון בשיתוף נט"ל.'},
+      {name: 'מצב חירום', contact: 'מד"א 101, משטרה 100', tel: '101', note: 'אם יש סכנה מיידית לך או למישהו אחר.'},
       {name: 'תוכנית עמית', contact: 'אפליקציה', note: 'טיפולים וסדנאות wellness לחיילים משוחררים.'},
-      {name: 'אגף השיקום — משרד הביטחון', contact: 'משרד הביטחון', note: 'טיפול נפשי ותמיכה למי שנפגע בשירות.'},
+      {name: 'אגף השיקום, משרד הביטחון', contact: 'משרד הביטחון', note: 'טיפול נפשי ותמיכה למי שנפגע בשירות.'},
       {name: 'מומנטום', contact: 'סדנאות וליווי', note: 'ליווי במעבר לאזרחות, סדנאות וקהילה.'},
       {name: 'מרכזי צעירים', contact: 'לפי אזור', note: 'ייעוץ והכוונה חינם ללימודים, עבודה וזכויות.'}
     ]
@@ -114,9 +114,9 @@
       'Before spending the grant, write down 3 goals (for example: a trip, studies, a safety cushion).',
       'Keep a safety cushion for a few months of living costs before big expenses.',
       'A separate savings account helps you not touch the money without noticing.',
-      'Check the deposit before paying out of pocket for studies, a course or driving lessons — it may be possible to fund it from there.',
+      'Check the deposit before paying out of pocket for studies, a course or driving lessons, it may be possible to fund it from there.',
       'A simple monthly budget: income, fixed costs, variable costs. One page is enough.',
-      'Do not commit to a loan or a big deal in the first weeks after discharge — you can wait and think.'
+      'Do not commit to a loan or a big deal in the first weeks after discharge, you can wait and think.'
     ],
     roleTranslations: [
       {role: 'Combat soldier', civilian: 'Working under pressure, fast decision-making, responsibility, teamwork, coping with hard conditions', jobs: 'Security and safety, operations and logistics, emergency services, training, field work'},
@@ -137,7 +137,7 @@
     ],
     cvNote: 'These are examples for direction only. Write only what you really did, replace the [brackets] with your details, and do not include classified information, names or places.',
     interview: {
-      intro: 'In an interview you do not need to tell everything — you need to translate. The interviewer wants to understand what you will bring to the job.',
+      intro: 'In an interview you do not need to tell everything, you need to translate. The interviewer wants to understand what you will bring to the job.',
       tips: [
         'Translate military terms into civilian language (say "command and control team", not unit jargon).',
         'Tell a short story: situation → my responsibility → what I did → the result → what I learned.',
@@ -157,38 +157,38 @@
         'It is okay to need time and space before returning to family routine.',
         'You can tell the people close to you what helps and what does not ("I need some time alone after a long day").',
         'You do not have to tell everything about your service. You can choose what to share and when.',
-        'Relationships change after discharge — many couples need to get used to shared time and shared decisions again.',
+        'Relationships change after discharge, many couples need to get used to shared time and shared decisions again.',
         'If arguments or distance continue, talking with a professional can help both of you.',
         'Parents and siblings go through a change too. Sometimes one open conversation changes a lot.'
       ]
     },
     reservists: [
-      'Feeling "stuck" between reserve rotations is very common — it is hard to plan studies or work when you do not know when you will be called.',
-      'Check the updated benefits for reservists each time — they change and are sometimes extended.',
+      'Feeling "stuck" between reserve rotations is very common, it is hard to plan studies or work when you do not know when you will be called.',
+      'Check the updated benefits for reservists each time, they change and are sometimes extended.',
       'You can build a flexible plan: a small step you can take between rotations (an online course, a counseling talk, updating your CV).',
-      'If coming back from reserve duty is emotionally hard — that is familiar and normal, and there is someone to turn to.'
+      'If coming back from reserve duty is emotionally hard, that is familiar and normal, and there is someone to turn to.'
     ],
     timeSinceDischarge: {
-      week: 'You have just been discharged. You do not need to decide everything this week — it is enough to check that the grant is on its way and rest a little.',
+      week: 'You have just been discharged. You do not need to decide everything this week, it is enough to check that the grant is on its way and rest a little.',
       months1to3: 'A few weeks have passed. This is a good time to check the deposit, tax credit points and the National Insurance exemption, and to think about a first direction.',
-      months3to12: 'A few months have passed. If you still have no direction — that is normal. A counseling talk at a youth center or one small step can move things.',
-      overYear: 'More than a year has passed. Some benefits are time-limited (for example free transport and preferred work) — check what is still valid.'
+      months3to12: 'A few months have passed. If you still have no direction, that is normal. A counseling talk at a youth center or one small step can move things.',
+      overYear: 'More than a year has passed. Some benefits are time-limited (for example free transport and preferred work), check what is still valid.'
     },
     officialLinksInfo: [
       {key: 'agaf_keren', title: 'Discharged Soldiers Department and Fund', why: 'Personal area: discharge grant, deposit, Mimadim LeLimudim, preferred work.'},
       {key: 'bituach_leumi', title: 'National Insurance (Bituach Leumi)', why: 'Temporary payment exemption, unemployment benefit, preferred/required work.'},
       {key: 'taxes', title: 'Israel Tax Authority', why: 'Tax credit points for discharged soldiers and tax coordination (Form 101).'},
       {key: 'transport', title: 'Free public transport', why: 'How to set the "discharged soldier" profile on Rav-Kav.'},
-      {key: 'preferred_work', title: 'Preferred work — National Insurance', why: 'Conditions, applying and the list of approved jobs.'},
+      {key: 'preferred_work', title: 'Preferred work, National Insurance', why: 'Conditions, applying and the list of approved jobs.'},
       {key: 'mimadim', title: 'Mimadim LeLimudim', why: 'Eligibility and registration for tuition funding.'}
     ],
     humanHelp: [
-      {name: 'ERAN — emotional first aid', contact: '1201', tel: '1201', note: '24/7 phone line, anonymous. There is also a chat on the ERAN website.'},
-      {name: 'NATAL — trauma helpline', contact: '1-800-363-363', tel: '1800363363', note: 'Free helpline for trauma related to national events.'},
-      {name: '"Nefesh Achat" — support line for veterans', contact: '*8944', tel: '*8944', note: '24/7, by the Defense Ministry with NATAL.'},
-      {name: 'Emergency', contact: 'MDA 101 · Police 100', tel: '101', note: 'If you or someone else is in immediate danger.'},
+      {name: 'ERAN, emotional first aid', contact: '1201', tel: '1201', note: '24/7 phone line, anonymous. There is also a chat on the ERAN website.'},
+      {name: 'NATAL, trauma helpline', contact: '1-800-363-363', tel: '1800363363', note: 'Free helpline for trauma related to national events.'},
+      {name: '"Nefesh Achat", support line for veterans', contact: '*8944', tel: '*8944', note: '24/7, by the Defense Ministry with NATAL.'},
+      {name: 'Emergency', contact: 'MDA 101, Police 100', tel: '101', note: 'If you or someone else is in immediate danger.'},
       {name: 'Amit program', contact: 'App', note: 'Therapy and wellness workshops for discharged soldiers.'},
-      {name: 'Rehabilitation Department — Ministry of Defense', contact: 'Ministry of Defense', note: 'Mental health treatment and support for those injured in service.'},
+      {name: 'Rehabilitation Department, Ministry of Defense', contact: 'Ministry of Defense', note: 'Mental health treatment and support for those injured in service.'},
       {name: 'Momentum', contact: 'Workshops and guidance', note: 'Support in the transition to civilian life, workshops and community.'},
       {name: 'Youth centers', contact: 'By region', note: 'Free counseling and guidance for studies, work and rights.'}
     ]
@@ -215,7 +215,7 @@
     if (r.unemployment) add('unemployment', 'money', r.unemployment.name_he, [r.unemployment.notes], {link: 'bituach_leumi'});
     if (s.mimadim_lelimudim) { const m = s.mimadim_lelimudim; add('mimadim_lelimudim', 'studies', m.name_he, [m.description, L('משך: ','Duration: ') + m.duration, L('מועד: ','Deadline: ') + m.deadline, m.notes], {list: m.eligibility, listTitle: L('מי זכאי','Who is eligible'), link: 'agaf_keren'}); }
     const lone = D().special_groups && D().special_groups.lone_soldiers;
-    if (lone) add('lone_soldiers_extra', 'special', L('חיילים בודדים — הטבות נוספות', 'Lone soldiers — extra benefits'), [lone.official_note ? L('איפה: ', 'Where: ') + lone.official_note : ''], {list: lone.extra, listTitle: L('מה מגיע', 'What you may get'), url: lone.official_url});
+    if (lone) add('lone_soldiers_extra', 'special', L('חיילים בודדים, הטבות נוספות', 'Lone soldiers, extra benefits'), [lone.official_note ? L('איפה: ', 'Where: ') + lone.official_note : ''], {list: lone.extra, listTitle: L('מה מגיע', 'What you may get'), url: lone.official_url});
     for (const key of ['periphery_scholarships', 'mechina_bagrut', 'practical_engineering', 'psychometric'])
       if (s[key]) add(key, 'studies', s[key].name_he, [s[key].description || s[key].notes]);
     const own = {discharge_grant: r.discharge_grant, personal_deposit: r.personal_deposit, tax_credit_points: r.tax_credit_points, bituach_leumi_exemption: r.bituach_leumi_exemption,

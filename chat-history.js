@@ -130,13 +130,13 @@ if (typeof document !== 'undefined') {
         const first = chat.messages.find(m => m.role === 'user') || chat.messages[0];
         const date = chat.updatedAt ? new Date(chat.updatedAt).toLocaleDateString(S.lang) : '';
         const info = ChatHistory.summary(chat);
-        const title = [i === 0 ? label('Current','נוכחית') : '', date, first.text.slice(0,72)].filter(Boolean).join(' · ');
+        const title = [i === 0 ? label('Current','נוכחית') : '', date, first.text.slice(0,72)].filter(Boolean).join(', ');
         const row = document.createElement('div');
         row.className = 'chat-row';
         const item = document.createElement('button');
         item.type = 'button'; item.className = 'chip chat-item';
         item.textContent = title;
-        if (info.last) { const small = document.createElement('small'); small.textContent = label(info.users + ' messages · ', info.users + ' הודעות · ') + info.last; item.append(document.createElement('br'), small); }
+        if (info.last) { const small = document.createElement('small'); small.textContent = label(info.users + ' messages, ', info.users + ' הודעות, ') + info.last; item.append(document.createElement('br'), small); }
         item.onclick = () => resume(i ? ChatHistory.select(S,i-1) : {...S,started:true});
         item.setAttribute('aria-current',String(i === 0));
         const del = document.createElement('button');

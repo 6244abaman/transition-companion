@@ -49,7 +49,7 @@
     const autoLabel=el('label');autoLabel.className='switch-row';const autoBox=el('input');autoBox.type='checkbox';autoBox.id='sync-auto';autoBox.onchange=()=>{auto=autoBox.checked;};autoLabel.append(autoBox,el('span',t().auto));s.append(autoLabel);
     rootNode.append(s);
     const audit=el('details');audit.append(el('summary',t().audit));
-    try{const items=JSON.parse(root.localStorage.getItem('momentum-ai-disclosures-v1')||'[]');for(const item of items.slice(-20).reverse())audit.append(el('p',item.at+' · '+item.event+' · '+item.destination));}catch{}
+    try{const items=JSON.parse(root.localStorage.getItem('momentum-ai-disclosures-v1')||'[]');for(const item of items.slice(-20).reverse())audit.append(el('p',item.at+', '+item.event+', '+item.destination));}catch{}
     rootNode.append(audit);const status=el('p',t().offline);status.id='tools-status';status.setAttribute('aria-live','polite');rootNode.append(status);update();
   }
   mount();

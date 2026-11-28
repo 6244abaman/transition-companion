@@ -45,7 +45,7 @@
   }
   function settings(l=lang()){
     if(document.getElementById('ai-consent-settings'))return;
-    const d=dialog(copy('Settings — external AI consent','הגדרות — הסכמה ל-AI חיצוני',l),l);d.id='ai-consent-settings';
+    const d=dialog(copy('Settings, external AI consent','הגדרות, הסכמה ל-AI חיצוני',l),l);d.id='ai-consent-settings';
     const status=node('p',read()?.status==='granted'?copy('Consent is active.','ההסכמה פעילה.',l):copy('Consent is not active.','ההסכמה אינה פעילה.',l));
     const explanation=node('p',copy('Withdrawing consent stops future sharing of messages and context, including background requests. It does not undo previous transfers.','ביטול ההסכמה מפסיק שיתוף עתידי של הודעות והקשר, כולל בקשות ברקע. הוא אינו מבטל העברות שכבר בוצעו.',l));
     const button=node('button',copy('Withdraw consent','ביטול הסכמה',l));button.id='ai-withdraw';button.type='button';button.onclick=()=>{withdraw();status.textContent=copy('Consent withdrawn. Future sharing has stopped.','ההסכמה בוטלה. השיתוף העתידי הופסק.',l);status.setAttribute('role','status');button.disabled=true;};

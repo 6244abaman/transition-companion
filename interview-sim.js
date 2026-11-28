@@ -15,7 +15,7 @@
         Q('Tell me about yourself.', 'ספר לי על עצמך.', 'A 60–90 second story: who you are, what you did, what you want now.', 'סיפור של דקה-דקה וחצי: מי אתה, מה עשית, מה אתה רוצה עכשיו.'),
         Q('What did you do in the army, and what did you learn there?', 'מה עשית בצבא ומה למדת שם?', 'Civilian words, your own part, one example.', 'מילים אזרחיות, החלק שלך, דוגמה אחת.'),
         Q('Tell me about a difficult situation and how you handled it.', 'ספר על מצב קשה ואיך התמודדת איתו.', 'Situation → what YOU did → result.', 'מצב ← מה אתה עשית ← מה יצא.'),
-        Q('Why do you want this job?', 'למה אתה רוצה את העבודה הזאת?', 'Connect your strengths to the job — not only the salary.', 'לחבר בין החוזקות שלך לתפקיד — לא רק המשכורת.'),
+        Q('Why do you want this job?', 'למה אתה רוצה את העבודה הזאת?', 'Connect your strengths to the job, not only the salary.', 'לחבר בין החוזקות שלך לתפקיד, לא רק המשכורת.'),
         Q('What is a weakness of yours?', 'מה נקודת חולשה שלך?', 'A real one, and what you do to improve it.', 'חולשה אמיתית, ומה אתה עושה כדי להשתפר.'),
         Q('Where do you see yourself in a year?', 'איפה אתה רואה את עצמך בעוד שנה?', 'Honest and relevant: learning, growing in the role.', 'כנה ורלוונטי: ללמוד, להתקדם בתפקיד.'),
         Q('Tell me about a time you worked in a team.', 'ספר על פעם שעבדת בצוות.', 'Your role in the team, not only "we".', 'התפקיד שלך בצוות, לא רק "אנחנו".'),
@@ -44,7 +44,7 @@
       studies: [
         Q('Why did you choose this field of study?', 'למה בחרת בתחום הלימודים הזה?', 'A real reason + what you already did toward it.', 'סיבה אמיתית + מה כבר עשית בכיוון.'),
         Q('How will you manage studies alongside work?', 'איך תשלב לימודים עם עבודה?', 'A realistic plan.', 'תוכנית מציאותית.'),
-        Q('What did your service give you that will help you study?', 'מה השירות נתן לך שיעזור לך בלימודים?', 'Discipline, responsibility — with an example.', 'משמעת, אחריות — עם דוגמה.')
+        Q('What did your service give you that will help you study?', 'מה השירות נתן לך שיעזור לך בלימודים?', 'Discipline, responsibility, with an example.', 'משמעת, אחריות, עם דוגמה.')
       ]
     };
     const TRACKS = [['general', 'Any job', 'כל עבודה', 'briefcase'], ['operations', 'Operations & logistics', 'תפעול ולוגיסטיקה', 'checklist'], ['service', 'Service & sales', 'שירות ומכירות', 'talk'],
@@ -62,15 +62,15 @@
       'What did your service give you that will help you study?': 'army'};
     const kindOf = q => q.kind || KIND_BY_TEXT[q.en] || 'story';
     const PLAN = {
-      intro: [['Who I am, in a few words (where from, what I do now)', 'מי אני בכמה מילים (מאיפה, מה אני עושה עכשיו)'], ['What I did in service — in civilian words', 'מה עשיתי בשירות — במילים אזרחיות'], ['One example I am proud of', 'דוגמה אחת שאני גאה בה'], ['What I am looking for now, and why here', 'מה אני מחפש עכשיו, ולמה כאן']],
+      intro: [['Who I am, in a few words (where from, what I do now)', 'מי אני בכמה מילים (מאיפה, מה אני עושה עכשיו)'], ['What I did in service, in civilian words', 'מה עשיתי בשירות, במילים אזרחיות'], ['One example I am proud of', 'דוגמה אחת שאני גאה בה'], ['What I am looking for now, and why here', 'מה אני מחפש עכשיו, ולמה כאן']],
       army: [['My role, in civilian words', 'התפקיד שלי, במילים אזרחיות'], ['What I was responsible for (a number if true)', 'על מה הייתי אחראי (מספר, אם נכון)'], ['One thing I learned', 'דבר אחד שלמדתי'], ['How it helps in this job', 'איך זה עוזר בעבודה הזו']],
-      story: [['The situation — one sentence', 'המצב — משפט אחד'], ['What I did (I, not we)', 'מה אני עשיתי (אני, לא אנחנו)'], ['What came out of it', 'מה יצא מזה'], ['What I learned', 'מה למדתי']],
+      story: [['The situation, one sentence', 'המצב, משפט אחד'], ['What I did (I, not we)', 'מה אני עשיתי (אני, לא אנחנו)'], ['What came out of it', 'מה יצא מזה'], ['What I learned', 'מה למדתי']],
       motivation: [['What attracts me to this role or field', 'מה מושך אותי בתפקיד או בתחום'], ['A strength of mine that fits', 'חוזקה שלי שמתאימה'], ['An example that shows it', 'דוגמה שמראה את זה']],
       weakness: [['A real weakness (not "perfectionist")', 'חולשה אמיתית (לא "פרפקציוניסט")'], ['A short example', 'דוגמה קצרה'], ['What I do to improve it', 'מה אני עושה כדי להשתפר']],
       future: [['What I want to learn this year', 'מה אני רוצה ללמוד השנה'], ['How I want to grow here', 'איך אני רוצה להתקדם כאן']],
       ask: [['A question about the role or training', 'שאלה על התפקיד או ההכשרה'], ['A question about the team or what success looks like', 'שאלה על הצוות או איך נראית הצלחה']],
-      method: [['My method — the steps', 'השיטה שלי — הצעדים'], ['An example from service or life', 'דוגמה מהשירות או מהחיים'], ['The result', 'התוצאה']],
-      hypo: [['What I would do first', 'מה הייתי עושה קודם'], ['How I would talk to the person', 'איך הייתי מדבר עם האדם'], ['Why — the principle', 'למה — העיקרון']]
+      method: [['My method, the steps', 'השיטה שלי, הצעדים'], ['An example from service or life', 'דוגמה מהשירות או מהחיים'], ['The result', 'התוצאה']],
+      hypo: [['What I would do first', 'מה הייתי עושה קודם'], ['How I would talk to the person', 'איך הייתי מדבר עם האדם'], ['Why, the principle', 'למה, העיקרון']]
     };
     const LEN = {ask: [8, 70], future: [18, 120], weakness: [25, 150]};
 
@@ -109,18 +109,18 @@
       if (kind === 'army') { add(T.action.test(t), 'Your own actions', 'מה אתה עשית', 'Describe what YOU did, with action words: "I led", "I organised".', 'לתאר מה אתה עשית, עם פעלים: "הובלתי", "ארגנתי".', 2); add(/(למדתי|הבנתי|learned|taught me)/i.test(t), 'What you learned', 'מה למדת', 'Add: "From this I learned…".', 'להוסיף: "מזה למדתי…".', 2); }
       if (kind === 'story') { add(T.action.test(t), 'What YOU did (the action)', 'מה אתה עשית (הפעולה)', 'The heart of the story is your action: "I talked to…", "I decided…".', 'לב הסיפור הוא הפעולה שלך: "דיברתי עם…", "החלטתי…".', 2); add(T.result.test(t), 'The result', 'התוצאה', 'Finish with what came out of it or what you learned.', 'לסיים במה שיצא מזה או מה שלמדת.', 2); }
       if (kind === 'motivation') { add(T.company.test(t), 'About this role, not general', 'על התפקיד הזה, לא כללי', 'Say what attracts you to THIS role or field.', 'להגיד מה מושך אותך דווקא בתפקיד או בתחום הזה.', 2); add(!(T.money.test(t) && !T.company.test(t)), 'More than money', 'יותר מכסף', 'Money is fine to want, but lead with interest and fit.', 'מותר לרצות כסף, אבל לפתוח בעניין ובהתאמה.'); }
-      if (kind === 'weakness') { add(!has(t, CLICHE).length, 'A real weakness (no cliché)', 'חולשה אמיתית (בלי קלישאה)', '"Perfectionist" sounds rehearsed — pick something real but not critical for the job.', '"פרפקציוניסט" נשמע משונן — לבחור משהו אמיתי שלא קריטי לתפקיד.', 2); add(T.improve.test(t), 'What you do about it', 'מה אתה עושה עם זה', 'Add how you are improving it — a habit, a tool, asking for feedback.', 'להוסיף איך אתה משתפר — הרגל, כלי, בקשת משוב.', 2); }
+      if (kind === 'weakness') { add(!has(t, CLICHE).length, 'A real weakness (no cliché)', 'חולשה אמיתית (בלי קלישאה)', '"Perfectionist" sounds rehearsed, pick something real but not critical for the job.', '"פרפקציוניסט" נשמע משונן, לבחור משהו אמיתי שלא קריטי לתפקיד.', 2); add(T.improve.test(t), 'What you do about it', 'מה אתה עושה עם זה', 'Add how you are improving it, a habit, a tool, asking for feedback.', 'להוסיף איך אתה משתפר, הרגל, כלי, בקשת משוב.', 2); }
       if (kind === 'future') add(T.learn.test(t), 'Growth, not a vague wish', 'התפתחות, לא משאלה כללית', 'Say what you want to learn or how you want to grow in the role.', 'להגיד מה אתה רוצה ללמוד או איך להתקדם בתפקיד.', 2);
       if (kind === 'ask') add(/\?/.test(t), 'An actual question', 'שאלה אמיתית', 'Ask at least one real question (with a "?"): training, a typical day, success.', 'לשאול לפחות שאלה אחת (עם "?"): הכשרה, יום טיפוסי, הצלחה.', 3);
       if (kind === 'method') { add(T.steps.test(t), 'A clear method (steps)', 'שיטה ברורה (צעדים)', 'Describe your steps: "first… then…".', 'לתאר צעדים: "קודם… ואז…".', 2); add(/(למשל|לדוגמה|פעם|בשירות|for example|once|in the army|when I)/i.test(t), 'An example', 'דוגמה', 'Back the method with one short example.', 'לגבות את השיטה בדוגמה קצרה אחת.', 2); }
       if (kind === 'hypo') { add(T.would.test(t), 'What you would do', 'מה היית עושה', 'Answer directly: "I would first…".', 'לענות ישירות: "קודם הייתי…".', 2); add(/(בטיחות|כבוד|safety|respect|rule|נוהל)/i.test(t), 'The principle behind it', 'העיקרון מאחורי זה', 'Add why: safety first, but with respect.', 'להוסיף למה: בטיחות קודם, אבל בכבוד.'); }
       // 2. general interview habits
-      add(n >= lo && n <= hi, 'Length', 'אורך', n < lo ? 'A bit short — add one concrete detail.' : 'Too long — aim for about one minute.', n < lo ? 'קצר מעט — להוסיף פרט מוחשי אחד.' : 'ארוך מדי — לכוון לבערך דקה.');
+      add(n >= lo && n <= hi, 'Length', 'אורך', n < lo ? 'A bit short, add one concrete detail.' : 'Too long, aim for about one minute.', n < lo ? 'קצר מעט, להוסיף פרט מוחשי אחד.' : 'ארוך מדי, לכוון לבערך דקה.');
       const j = has(t, JARGON); add(!j.length, 'No military jargon', 'בלי ז׳רגון צבאי', 'Replace the marked words above.', 'להחליף את המילים המסומנות למעלה.', 2);
-      if (kind !== 'ask' && kind !== 'future') { const we = has(t, WE).length, me = has(t, I).length; add(!(we > 0 && we >= me), '"I", not only "we"', '"אני", לא רק "אנחנו"', 'Interviewers hire you, not the unit — say what YOU did.', 'מראיינים מקבלים אותך, לא את היחידה — להגיד מה אתה עשית.', 2); }
+      if (kind !== 'ask' && kind !== 'future') { const we = has(t, WE).length, me = has(t, I).length; add(!(we > 0 && we >= me), '"I", not only "we"', '"אני", לא רק "אנחנו"', 'Interviewers hire you, not the unit, say what YOU did.', 'מראיינים מקבלים אותך, לא את היחידה, להגיד מה אתה עשית.', 2); }
       if (['story', 'army', 'method', 'intro'].includes(kind)) add(/\d/.test(t), 'A real number', 'מספר אמיתי', 'Add one number if true: people, hours, how often, a result.', 'להוסיף מספר אחד אם נכון: אנשים, שעות, כמה פעמים, תוצאה.');
       add(!has(t.split(/\s+/).slice(0, 8).join(' '), RANK).length, 'Starts with you, not rank', 'פותח בך, לא בדרגה', 'Open with what you did; the rank later, if at all.', 'לפתוח במה שעשית; הדרגה אחר כך, אם בכלל.');
-      add(!has(t, FORMAL).length, 'Natural tone', 'טון טבעי', 'Too formal — talk, do not write a letter.', 'רשמי מדי — לדבר, לא לכתוב מכתב.');
+      add(!has(t, FORMAL).length, 'Natural tone', 'טון טבעי', 'Too formal, talk, do not write a letter.', 'רשמי מדי, לדבר, לא לכתוב מכתב.');
       add(!has(t, VAGUE).length, 'Specific words', 'מילים ספציפיות', 'Replace the marked vague words with what actually happened.', 'להחליף את המילים הכלליות המסומנות במה שקרה בפועל.');
       const max = out.reduce((s, x) => s + x.w, 0), got = out.filter(x => x.ok).reduce((s, x) => s + x.w, 0);
       return {n, kind, items: out, score: out.filter(x => x.ok).length, max: out.length, pct: Math.round(got / max * 100)};
@@ -169,11 +169,11 @@
       const prof = window.MomentumProfile && window.MomentumProfile.aiSummary();
       if (prof) L.push(prof + '\nUse the profile to (a) ask about real strengths so the candidate can show them, and (b) coach him to present them well. Do not assume anything beyond it.');
       if (st.useCv && P.cv) { const c = P.cv;
-        L.push('Candidate-approved background (from their own CV draft — use only to choose relevant questions, never assume more): ' +
+        L.push('Candidate-approved background (from their own CV draft, use only to choose relevant questions, never assume more): ' +
           [c.milRole && 'service role: ' + clean(c.milRole, 120), c.headline && 'target title: ' + clean(c.headline, 80), (c.bullets || []).length && 'lines: ' + (c.bullets || []).slice(0, 5).map(b => clean(b, 140)).join(' | '), c.education && 'education: ' + clean(c.education, 200)].filter(Boolean).join('; ')); }
       return L.join('\n');
     }
-    const STYLE = {friendly: 'Interview style: friendly and encouraging — a first interview for a junior role.', standard: 'Interview style: a normal professional interview — polite, focused, some follow-ups.', tough: 'Interview style: a demanding interviewer — short, challenging follow-ups, asks for proof, pushes back politely on vague answers (still respectful).'};
+    const STYLE = {friendly: 'Interview style: friendly and encouraging, a first interview for a junior role.', standard: 'Interview style: a normal professional interview, polite, focused, some follow-ups.', tough: 'Interview style: a demanding interviewer, short, challenging follow-ups, asks for proof, pushes back politely on vague answers (still respectful).'};
     const ilang = () => st && st.ilang ? st.ilang : (he() ? 'he' : 'en');
     const SYSTEM = () => [
       STYLE[st.style] || STYLE.standard,
@@ -181,8 +181,8 @@
       ilang() === 'he' || !he() ? '' : '',
       he() ? 'You are an experienced Israeli job interviewer and career coach. You are running a realistic practice interview with a recently discharged IDF soldier. Speak natural, warm, direct spoken Hebrew (not formal, no clichés), addressing the candidate in masculine/neutral singular.'
            : 'You are an experienced job interviewer and career coach running a realistic practice interview with a recently discharged Israeli soldier. Use natural, warm, direct English.',
-      'Interview plan (' + st.total + ' questions): open with a warm opener, then motivation/fit, at least two behavioural questions that ask for a real example, one about turning their service into civilian value, one honest self-awareness question, and a closing. Adapt every next question to what the candidate actually said — dig into a vague answer, move on after a strong one. One question at a time, short like a real interviewer.',
-      'Feedback rules: judge ONLY what the candidate said. Quote their exact words when pointing at a problem. Never invent facts, numbers, units, ranks or achievements — if a number would help, tell them to add one only if true. Turn military jargon into words an HR person understands. Be specific and kind, like a mentor who wants them to get the job. No classified detail.',
+      'Interview plan (' + st.total + ' questions): open with a warm opener, then motivation/fit, at least two behavioural questions that ask for a real example, one about turning their service into civilian value, one honest self-awareness question, and a closing. Adapt every next question to what the candidate actually said, dig into a vague answer, move on after a strong one. One question at a time, short like a real interviewer.',
+      'Feedback rules: judge ONLY what the candidate said. Quote their exact words when pointing at a problem. Never invent facts, numbers, units, ranks or achievements, if a number would help, tell them to add one only if true. Turn military jargon into words an HR person understands. Be specific and kind, like a mentor who wants them to get the job. No classified detail.',
       'Return ONLY valid JSON, no markdown.'].filter(Boolean).join('\n');
     const history = () => st.answers.filter(a => a && a.a).map((a, k) => 'Q' + (k + 1) + ': ' + a.q + '\nA' + (k + 1) + ': ' + clean(a.a, 1200)).join('\n\n');
     async function aiTurn(withAnswer) {
@@ -214,7 +214,7 @@
       store(); paint();
       if (ai) {
         try { const j = await aiTurn(false); if (!pushNext(j.next)) throw new Error('no question'); }
-        catch (e) { st.ai = false; st.notice = e.canceled ? tr('AI was not approved — practising with ready questions and quick checks.', 'ה-AI לא אושר — מתרגלים עם שאלות מוכנות ובדיקות מהירות.') : tr('The AI interviewer is not reachable right now — practising with ready questions and quick checks.', 'המראיין ה-AI לא זמין כרגע — מתרגלים עם שאלות מוכנות ובדיקות מהירות.'); fallbackQuestion(); }
+        catch (e) { st.ai = false; st.notice = e.canceled ? tr('AI was not approved, practising with ready questions and quick checks.', 'ה-AI לא אושר, מתרגלים עם שאלות מוכנות ובדיקות מהירות.') : tr('The AI interviewer is not reachable right now, practising with ready questions and quick checks.', 'המראיין ה-AI לא זמין כרגע, מתרגלים עם שאלות מוכנות ובדיקות מהירות.'); fallbackQuestion(); }
       } else fallbackQuestion();
       st.phase = 'ask'; paint(); setTimeout(() => speak(qtext()), 300);
     }
@@ -267,7 +267,7 @@
       const line = String(text).replace(/\s+/g, ' ').trim();
       const short = line.length > 180 ? line.slice(0, line.lastIndexOf(' ', 175)) + '…' : line;
       P.cv.bullets.push(short); store();
-      toast(tr('Added to your CV draft — edit it there', 'נוסף לטיוטת קורות החיים — אפשר לערוך שם'));
+      toast(tr('Added to your CV draft, edit it there', 'נוסף לטיוטת קורות החיים, אפשר לערוך שם'));
     }
 
     /* ---------- screens ---------- */
@@ -280,13 +280,13 @@
       const target = h('input', {type: 'text', class: 'sim-target', maxlength: '120', placeholder: tr('e.g. Warehouse shift manager, bank teller, junior QA', 'למשל: אחראי משמרת במחסן, טלר בבנק, בודק תוכנה')});
       target.value = P.simTarget || '';
       target.addEventListener('input', () => { P.simTarget = target.value; store(); });
-      const ad = h('textarea', {class: 'sim-ad', rows: '4', placeholder: tr('Paste the job ad here (optional) — the interviewer will ask about what this job needs', 'מדביקים כאן את מודעת הדרושים (לא חובה) — המראיין ישאל על מה שהמשרה הזו דורשת')});
+      const ad = h('textarea', {class: 'sim-ad', rows: '4', placeholder: tr('Paste the job ad here (optional), the interviewer will ask about what this job needs', 'מדביקים כאן את מודעת הדרושים (לא חובה), המראיין ישאל על מה שהמשרה הזו דורשת')});
       ad.value = P.simAd || ''; ad.addEventListener('input', () => { P.simAd = ad.value; store(); });
       const hasCv = P.cv && (P.cv.milRole || (P.cv.bullets || []).length);
       const ai = aiOn();
       return [
-        h('div', {class: 'sim-hero sim-hero-dark'}, h('div', {}, h('small', {class: 'sim-kicker'}, ai ? tr('AI interviewer · 6 questions · ~10 min', 'מראיין AI · 6 שאלות · כ-10 דקות') : tr('6 questions · ~10 min', '6 שאלות · כ-10 דקות')),
-          h('h2', {}, tr('A real interview, before the real one', 'ראיון אמיתי — לפני הראיון האמיתי')),
+        h('div', {class: 'sim-hero sim-hero-dark'}, h('div', {}, h('small', {class: 'sim-kicker'}, ai ? tr('AI interviewer, 6 questions, ~10 min', 'מראיין AI, 6 שאלות, כ-10 דקות') : tr('6 questions, ~10 min', '6 שאלות, כ-10 דקות')),
+          h('h2', {}, tr('A real interview, before the real one', 'ראיון אמיתי, לפני הראיון האמיתי')),
           h('p', {}, ai ? tr('The interviewer builds the questions for the job you want, listens to every answer, digs deeper like a real recruiter and tells you exactly what to change.', 'המראיין בונה שאלות לפי המשרה שאתה רוצה, קורא כל תשובה, מעמיק כמו מגייס אמיתי ואומר לך בדיוק מה לשנות.')
             : tr('Practice with ready questions and quick checks.', 'תרגול עם שאלות מוכנות ובדיקות מהירות.'))), illu('talk', 72)),
         (P.simHistory || []).length ? h('p', {class: 'sim-last'}, tr('Last practice: ', 'אימון אחרון: ') + P.simHistory[P.simHistory.length - 1].avg + '%') : null,
@@ -296,7 +296,7 @@
           h('label', {class: 'sim-field'}, h('b', {}, tr('Which job are you preparing for?', 'לאיזו משרה אתה מתכונן?')), target),
           h('div', {class: 'sim-chips'}, TRACKS.map(([id, en, he_]) => h('button', {type: 'button', class: 'sim-chip' + (P.simTrack === id ? ' on' : ''), onclick: () => { P.simTrack = id; if (!target.value || TRACKS.some(t => t[1] === target.value || t[2] === target.value)) { target.value = he() ? he_ : en; P.simTarget = target.value; } store(); paint(); }}, he() ? he_ : en))),
           ai ? h('details', {class: 'sim-ad-wrap', open: P.simAd ? true : undefined}, h('summary', {}, tr('Have a job ad? Paste it (optional)', 'יש מודעת דרושים? להדביק (לא חובה)')), ad) : null,
-          (() => { let n = 0; try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); n = a && a.answers ? Object.keys(a.answers).length : 0; } catch (_) {} return n ? null : h('a', {class: 'sim-skills-link', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('Tip: do the 5-minute strengths check first — the interviewer will ask about your real strengths →', 'טיפ: שאלון החוזקות (5 דקות) לפני — המראיין ישאל על החוזקות האמיתיות שלך ←')); })(),
+          (() => { let n = 0; try { const a = JSON.parse(localStorage.getItem('momentum-business-skills-v1') || 'null'); n = a && a.answers ? Object.keys(a.answers).length : 0; } catch (_) {} return n ? null : h('a', {class: 'sim-skills-link', href: './skills-business.html?lang=' + (he() ? 'he' : 'en')}, tr('Tip: do the 5-minute strengths check first, the interviewer will ask about your real strengths', 'טיפ: שאלון החוזקות (5 דקות) לפני, המראיין ישאל על החוזקות האמיתיות שלך')); })(),
           ai && hasCv ? h('label', {class: 'sim-usecv'}, (() => { const c = h('input', {type: 'checkbox'}); c.checked = !!P.simUseCv; c.addEventListener('change', () => { P.simUseCv = c.checked; store(); }); return c; })(),
             h('span', {}, tr('Let the interviewer see my CV draft (role and lines) to ask relevant questions', 'לתת למראיין לראות את טיוטת קורות החיים שלי (תפקיד ושורות) כדי לשאול שאלות רלוונטיות'))) : null,
           ai ? h('div', {class: 'sim-opts'},
@@ -307,21 +307,21 @@
           btn(tr('Start the interview', 'להתחיל את הראיון'), () => { if (!target.value.trim() && !P.simTrack) { target.focus(); toast(tr('Write the job, or tap one of the options', 'לכתוב משרה, או לבחור אחת האפשרויות')); return; } start(); }, 'plus-btn primary sim-cta')),
         h('div', {class: 'sim-settings'},
           h('label', {}, h('span', {}, tr('Interviewer voice', 'הקול של המראיין')), voiceSel),
-          !vs.length && synth ? h('small', {class: 'plus-muted'}, tr('No voice for this language on this device — the questions will be shown as text.', 'אין במכשיר קול לשפה הזו — השאלות יוצגו כטקסט.')) : null),
+          !vs.length && synth ? h('small', {class: 'plus-muted'}, tr('No voice for this language on this device, the questions will be shown as text.', 'אין במכשיר קול לשפה הזו, השאלות יוצגו כטקסט.')) : null),
         P.infoOnly ? null : h('label', {class: 'sim-aimode'}, (() => { const c = h('input', {type: 'checkbox'}); c.checked = P.simAI !== false; c.addEventListener('change', () => { P.simAI = c.checked; store(); paint(); }); return c; })(),
           h('span', {}, h('b', {}, tr('Use the AI interviewer', 'להשתמש במראיין ה-AI')), h('small', {}, tr('Your answers are sent to the app\'s AI only after your approval. Turn off to practise offline.', 'התשובות נשלחות ל-AI של האפליקציה רק אחרי אישור שלך. אפשר לכבות ולתרגל בלי חיבור.')))),
         h('div', {class: 'plus-row'}, btn(tr('Tips for talking about your service', 'טיפים לדבר על השירות'), () => showPage('interview'), 'plus-link'))];
     }
     function askScreen() {
       const q = st.qs[st.i], cur = st.answers[st.i] || {a: ''};
-      const ta = h('textarea', {class: 'sim-answer', rows: '6', placeholder: tr('Type your answer — or press the microphone and talk', 'כתוב את התשובה — או לחץ על המיקרופון ודבר'), 'aria-label': tr('Your answer', 'התשובה שלך')});
+      const ta = h('textarea', {class: 'sim-answer', rows: '6', placeholder: tr('Type your answer, or press the microphone and talk', 'כתוב את התשובה, או לחץ על המיקרופון ודבר'), 'aria-label': tr('Your answer', 'התשובה שלך')});
       ta.value = st.prefill || cur.a || ''; st.prefill = '';
       const live = h('p', {class: 'sim-live', 'aria-live': 'polite'});
       const [lo, hi] = LEN[kindOf(q)] || [30, 170];
       let t0 = 0, timer = null;
       const fmt = sec => Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
       const count = () => { const n = words(ta.value).length, sec = t0 ? Math.round((Date.now() - t0) / 1000) : 0;
-        live.textContent = n ? tr(n + ' words', n + ' מילים') + (sec ? ' · ' + fmt(sec) : '') + (n < lo ? tr(' · add a little more', ' · אפשר להוסיף עוד קצת') : n > hi ? tr(' · try to shorten', ' · כדאי לקצר') : tr(' · good length', ' · אורך טוב')) : ''; };
+        live.textContent = n ? tr(n + ' words', n + ' מילים') + (sec ? ', ' + fmt(sec) : '') + (n < lo ? tr(', add a little more', ', אפשר להוסיף עוד קצת') : n > hi ? tr(', try to shorten', ', כדאי לקצר') : tr(', good length', ', אורך טוב')) : ''; };
       const startClock = () => { if (!t0) { t0 = Date.now(); timer = setInterval(() => { if (!ta.isConnected) { clearInterval(timer); return; } count(); }, 1000); } };
       ta.addEventListener('input', () => { startClock(); count(); }); count();
       const plan = PLAN[kindOf(q)] || PLAN.story;
@@ -329,7 +329,7 @@
       const builder = h('details', {class: 'sim-plan'}, h('summary', {}, tr('Build it step by step (' + plan.length + ' short parts)', 'לבנות שלב אחרי שלב (' + plan.length + ' חלקים קצרים)')),
         h('ol', {class: 'sim-plan-list'}, fields.map((f, k) => h('li', {}, h('small', {}, tr(plan[k][0], plan[k][1])), f))),
         btn(tr('Put it together', 'לחבר לתשובה'), () => { const parts = fields.map(f => f.value.trim()).filter(Boolean).map(x => /[.!?]$/.test(x) ? x : x + '.');
-          if (!parts.length) { fields[0].focus(); return; } ta.value = parts.join(' '); startClock(); count(); ta.focus(); toast(tr('Your answer is ready — read it out loud once', 'התשובה מוכנה — כדאי לקרוא אותה בקול פעם אחת')); }, 'plus-btn'));
+          if (!parts.length) { fields[0].focus(); return; } ta.value = parts.join(' '); startClock(); count(); ta.focus(); toast(tr('Your answer is ready, read it out loud once', 'התשובה מוכנה, כדאי לקרוא אותה בקול פעם אחת')); }, 'plus-btn'));
       let rec = null;
       const mic = SR ? btn(tr('Voice', 'בקול'), () => {
         if (rec) { rec.stop(); return; }
@@ -348,7 +348,7 @@
         st.notice ? h('p', {class: 'sim-notice'}, st.notice) : null,
         st.answers.filter(a => a && a.a).length ? h('details', {class: 'sim-transcript'}, h('summary', {}, tr('The interview so far', 'הראיון עד עכשיו') + ' (' + st.answers.filter(a => a && a.a).length + ')'),
           ...st.answers.filter(a => a && a.a).map(a => h('div', {class: 'sim-tr'}, h('p', {class: 'sim-tr-q'}, a.q), h('p', {class: 'sim-tr-a'}, a.a)))) : null,
-        h('div', {class: 'sim-bubble', dir: st.ilang === 'en' ? 'ltr' : undefined}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, q.isFollow ? tr('Interviewer · follow-up', 'המראיין · שאלת המשך') : tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
+        h('div', {class: 'sim-bubble', dir: st.ilang === 'en' ? 'ltr' : undefined}, illu('talk', 40, 'sim-avatar'), h('div', {}, h('small', {}, q.isFollow ? tr('Interviewer, follow-up', 'המראיין, שאלת המשך') : tr('Interviewer', 'המראיין')), h('p', {}, he() ? q.he : q.en)),
           synth && P.simVoice !== 'off' ? h('button', {type: 'button', class: 'sim-replay', 'aria-label': tr('Hear the question again', 'לשמוע שוב'), onclick: () => speak(qtext())}, icon('speaker')) : null),
         q.look && q.look[0] ? h('p', {class: 'sim-look'}, h('b', {}, st.ai ? tr('Why they ask: ', 'למה שואלים: ') : tr('What they look for: ', 'מה מחפשים: ')), q.look[he() ? 1 : 0]) : null,
         h('div', {class: 'sim-answer-card'}, h('small', {class: 'sim-you'}, tr('Your answer', 'התשובה שלך')), ta, h('div', {class: 'sim-answer-foot'}, live, mic)),
@@ -363,7 +363,7 @@
       const sc = j && j.score ? Math.max(1, Math.min(10, Number(j.score) || 1)) : null;
       const pct = sc ? sc * 10 : r.pct;
       const lastQ = st.i >= st.total - 1;
-      const head = h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback · question ' + (st.i + 1), 'משוב · שאלה ' + (st.i + 1))), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.total * 100) + '%'})));
+      const head = h('div', {class: 'sim-top'}, h('span', {}, tr('Feedback, question ' + (st.i + 1), 'משוב, שאלה ' + (st.i + 1))), h('div', {class: 'sim-prog'}, h('i', {style: 'width:' + Math.round((st.i + 1) / st.total * 100) + '%'})));
       const nav = h('div', {class: 'plus-row'},
         btn(tr('Answer again', 'לענות שוב'), () => { st.phase = 'ask'; paint(); }, 'plus-btn'),
         btn(lastQ ? tr('Finish', 'לסיום') : tr('Next question', 'לשאלה הבאה'), next, 'plus-btn primary', ));
@@ -371,8 +371,8 @@
         h('div', {class: 'sim-ai-loading'}, h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {class: 'sim-ai-dot'}), h('span', {}, tr('The interviewer is reading your answer…', 'המראיין קורא את התשובה שלך…')))];
       if (st.ai && j) return [head,
         h('div', {class: 'sim-score'}, h('div', {class: 'sim-ring', style: '--p:' + pct}, h('b', {}, sc + '/10')),
-          h('div', {}, h('strong', {}, sc >= 8 ? tr('Strong answer!', 'תשובה חזקה!') : sc >= 6 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד')),
-            h('small', {}, tr(r.n + ' words', r.n + ' מילים') + (cur.sec ? ' · ' + Math.floor(cur.sec / 60) + ':' + String(cur.sec % 60).padStart(2, '0') : '')))),
+          h('div', {}, h('strong', {}, sc >= 8 ? tr('Strong answer!', 'תשובה חזקה!') : sc >= 6 ? tr('Good, a couple of fixes', 'טוב, כמה תיקונים') : tr('A good start, let us sharpen it', 'התחלה טובה, בוא נחדד')),
+            h('small', {}, tr(r.n + ' words', r.n + ' מילים') + (cur.sec ? ', ' + Math.floor(cur.sec / 60) + ':' + String(cur.sec % 60).padStart(2, '0') : '')))),
         h('details', {class: 'sim-mine-box'}, h('summary', {}, tr('Your answer', 'התשובה שלך')), h('p', {}, cur.a)),
         aiCard(j),
         !lastQ && st.qs[st.i + 1] && st.qs[st.i + 1].isFollow ? h('p', {class: 'sim-next-hint'}, tr('The interviewer wants to dig deeper into this answer.', 'המראיין רוצה להעמיק בתשובה הזו.')) : null,
@@ -380,12 +380,12 @@
       // offline or AI unavailable: quick local checks
       const mk = marked(cur.a), misses = r.items.filter(x => !x.ok);
       return [head,
-        cur.aiError ? h('div', {class: 'sim-ai-off'}, h('p', {}, cur.aiError === 'canceled' ? tr('Not sent to the AI. Here are quick checks instead.', 'לא נשלח ל-AI. הנה בדיקות מהירות במקום.') : tr('The AI interviewer did not answer (connection). Quick checks below — or try again.', 'המראיין ה-AI לא ענה (חיבור). בדיקות מהירות למטה — או לנסות שוב.')),
+        cur.aiError ? h('div', {class: 'sim-ai-off'}, h('p', {}, cur.aiError === 'canceled' ? tr('Not sent to the AI. Here are quick checks instead.', 'לא נשלח ל-AI. הנה בדיקות מהירות במקום.') : tr('The AI interviewer did not answer (connection). Quick checks below, or try again.', 'המראיין ה-AI לא ענה (חיבור). בדיקות מהירות למטה, או לנסות שוב.')),
           btn(tr('Try the AI again', 'לנסות שוב את ה-AI'), () => { cur.aiError = null; submitAnswer(cur.a, cur.sec); }, 'plus-link')) : null,
         h('div', {class: 'sim-score'}, h('div', {class: 'sim-ring', style: '--p:' + pct}, h('b', {}, pct + '%')),
-          h('div', {}, h('strong', {}, pct >= 85 ? tr('Strong answer!', 'תשובה חזקה!') : pct >= 60 ? tr('Good — a couple of fixes', 'טוב — כמה תיקונים קטנים') : tr('A good start — let us sharpen it', 'התחלה טובה — בוא נחדד')),
-            h('small', {}, tr(r.n + ' words', r.n + ' מילים') + ' · ' + tr('quick checks', 'בדיקות מהירות')))),
-        h('div', {class: 'sim-marked'}, h('small', {}, mk.count ? tr('Your answer — marked words to change', 'התשובה שלך — מסומן מה כדאי לשנות') : tr('Your answer', 'התשובה שלך')), h('p', {}, ...mk.nodes)),
+          h('div', {}, h('strong', {}, pct >= 85 ? tr('Strong answer!', 'תשובה חזקה!') : pct >= 60 ? tr('Good, a couple of fixes', 'טוב, כמה תיקונים קטנים') : tr('A good start, let us sharpen it', 'התחלה טובה, בוא נחדד')),
+            h('small', {}, tr(r.n + ' words', r.n + ' מילים') + ', ' + tr('quick checks', 'בדיקות מהירות')))),
+        h('div', {class: 'sim-marked'}, h('small', {}, mk.count ? tr('Your answer, marked words to change', 'התשובה שלך, מסומן מה כדאי לשנות') : tr('Your answer', 'התשובה שלך')), h('p', {}, ...mk.nodes)),
         misses.length ? h('ul', {class: 'sim-checks'}, misses.map(x => h('li', {class: 'no'}, h('span', {class: 'sim-mark', 'aria-hidden': 'true'}, '!'), h('div', {}, h('b', {}, x.text), h('small', {}, x.fix))))) : null,
         r.items.some(x => x.ok) ? h('div', {class: 'sim-passed'}, h('small', {}, tr('Already good:', 'כבר טוב:')), ...r.items.filter(x => x.ok).map(x => h('span', {class: 'sim-pass'}, '✓ ' + x.text))) : null,
         nav];
@@ -401,9 +401,9 @@
       const rep = h('div', {'aria-live': 'polite'}); if (st.ai) setTimeout(() => aiReport(rep));
       P.simHistory = [...(P.simHistory || []), {d: new Date().toISOString().slice(0, 10), track: st.track, avg, n: done.length}].slice(-20); store();
       return [
-        h('div', {class: 'sim-hero'}, illu('award', 64), h('div', {}, h('h1', {}, tr('Interview finished', 'הראיון הסתיים')), h('p', {}, tr(done.length + ' answers · average ' + avg + '%', done.length + ' תשובות · ממוצע ' + avg + '%')))),
+        h('div', {class: 'sim-hero'}, illu('award', 64), h('div', {}, h('h1', {}, tr('Interview finished', 'הראיון הסתיים')), h('p', {}, tr(done.length + ' answers, average ' + avg + '%', done.length + ' תשובות, ממוצע ' + avg + '%')))),
         rep,
-        st.ai ? null : focus.length ? h('div', {class: 'plus-card'}, h('strong', {}, tr('Your focus for next time', 'על מה לעבוד בפעם הבאה')), h('ul', {class: 'plus-list'}, focus.map(f => h('li', {}, f)))) : h('div', {class: 'plus-card'}, h('strong', {}, tr('Excellent — no repeating mistakes.', 'מצוין — אין טעויות שחוזרות על עצמן.'))),
+        st.ai ? null : focus.length ? h('div', {class: 'plus-card'}, h('strong', {}, tr('Your focus for next time', 'על מה לעבוד בפעם הבאה')), h('ul', {class: 'plus-list'}, focus.map(f => h('li', {}, f)))) : h('div', {class: 'plus-card'}, h('strong', {}, tr('Excellent, no repeating mistakes.', 'מצוין, אין טעויות שחוזרות על עצמן.'))),
         best && best.a ? h('div', {class: 'plus-card'}, h('strong', {}, tr('Your strongest answer', 'התשובה הכי חזקה שלך')), h('p', {class: 'plus-muted'}, best.q), h('p', {}, best.ai && best.ai.better ? clean(best.ai.better, 1200) : best.a),
           btn(tr('Save to my CV draft', 'לשמור לטיוטת קורות החיים'), () => saveToCv(best.ai && best.ai.better ? clean(best.ai.better, 1200) : best.a), 'plus-link')) : null,
         h('div', {class: 'plus-row'}, btn(tr('Another interview', 'ראיון נוסף'), () => { st = null; paint(); }, 'plus-btn primary'), PAGES_CV() ? btn(tr('Open my CV', 'לפתוח את קורות החיים'), () => showPage('cv'), 'plus-btn') : null)];
