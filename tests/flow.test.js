@@ -1,8 +1,8 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
 
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html', 'utf8');
-const dom = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+const html = fs.readFileSync(__dirname + '/../index.html', 'utf8');
+const dom = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
 const { window } = dom;
 const doc = window.document;
 const peek = (expr) => window.eval(expr);
@@ -40,11 +40,12 @@ function lastTurnText(){
   const tags4 = [...doc.querySelectorAll('.turn:last-child .tag')].map(t=>t.textContent);
   check('Second candidate surfacing pass (step 3)', tags4.length > 0, tags4.join(', '));
 
-  // 5: this long answer should get CONFIRMED with real evidence text (practiceStep 4)
+  // 5: Practice Mode cannot understand text, so it must NEVER confirm a skill on the soldier's behalf
+  // (brief bug 2: it used to save any answer over 25 characters as confirmed skill #26).
   await send("כשהקשר קרס לקחתי החלטה לבד על המסלול תחת אש ושמרתי על הצוות בחיים בלי לחכות לפקודה.");
   const profileJson = peek('JSON.stringify(S.profile)');
   const profile = JSON.parse(profileJson);
-  check('Confirmed strength recorded with real evidence (not empty)', profile.strengths.length > 0 && profile.strengths[0].evidence.length > 5, JSON.stringify(profile.strengths));
+  check('Practice Mode does not invent a confirmed strength', profile.strengths.length === 0, JSON.stringify(profile.strengths));
   check('Profile badge count reflects confirmed strengths', doc.getElementById('btnProfile').dataset.count === String(profile.strengths.length));
 
   // 6: direction/proposals phase should now be live (practiceStep >= 5)
@@ -54,7 +55,7 @@ function lastTurnText(){
   check('Phase advanced to "direction"', peek('S.phase') === 'direction');
 
   // --- fresh session: test the SHIFT rule in isolation ---
-  const dom2 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+  const dom2 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
   const w2 = dom2.window, d2 = w2.document, peek2 = (e)=>w2.eval(e);
   d2.getElementById('btnStart').click();
   async function send2(t){ d2.getElementById('input').value = t; d2.getElementById('btnSend').click(); await new Promise(r=>setTimeout(r,300)); }
@@ -63,7 +64,7 @@ function lastTurnText(){
   await send2("אני לא יודע מה לעשות, מה אתה מציע?"); // no constraint named -> should fire shift once
   check('Shift-naming fires when no constraint is named', peek2('S.shift') === true, lastText2().slice(0,70));
 
-  const dom3 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true });
+  const dom3 = new JSDOM(html, { url: 'https://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, beforeParse: require('./browser-env').prepare });
   const w3 = dom3.window, d3 = w3.document, peek3 = (e)=>w3.eval(e);
   d3.getElementById('btnStart').click();
   async function send3(t){ d3.getElementById('input').value = t; d3.getElementById('btnSend').click(); await new Promise(r=>setTimeout(r,300)); }

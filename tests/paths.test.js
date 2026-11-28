@@ -1,6 +1,6 @@
 const { JSDOM } = require('jsdom');
 const fs = require('fs');
-const html = fs.readFileSync(__dirname + '/../guided-transition-companion-v2.html','utf8');
+const html = fs.readFileSync(__dirname + '/../index.html','utf8');
 const results = [];
 const check = (n, ok, d) => { results.push(ok); console.log(ok?'✅':'❌', n, d!=null?'— '+d:''); };
 
@@ -8,7 +8,7 @@ function boot(storage){
   // localStorage must exist BEFORE the page scripts run, or the app boots empty
   return new JSDOM(html,{
     url:'https://localhost/', runScripts:'dangerously', pretendToBeVisual:true,
-    beforeParse(win){ if (storage) win.localStorage.setItem('gtc_v2_state', storage); }
+    beforeParse(win){ require('./browser-env').prepare(win); if (storage) win.localStorage.setItem('gtc_v2_state', storage); }
   });
 }
 const wait = ms => new Promise(r=>setTimeout(r,ms));
@@ -21,7 +21,7 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
   check('Language toggles to English before start', w.eval('S.lang')==='en' && d.documentElement.dir==='ltr');
   d.getElementById('btnStart').click();
   const opening = d.getElementById('thread').children[0].textContent;
-  check('Opening line is in English', /First — thank you/.test(opening), opening.slice(0,60));
+  check('Opening line is in English', /I'm here for you/.test(opening), opening.slice(0,60));
 
   const send = async (dd, t) => { dd.getElementById('input').value=t; dd.getElementById('btnSend').click(); await wait(300); };
   await send(d, "I served three years in armor in Gaza, then two more in reserves.");
@@ -56,8 +56,10 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
   await wait(200);
   const w2 = dom2.window, d2 = dom2.window.document;
   check('Reload restores conversation', w2.eval('S.messages.length')===savedMsgs, savedMsgs+' messages restored');
-  check('Reload lands straight in chat, not welcome', d2.getElementById('welcome').hidden===true && d2.getElementById('chat').hidden===false);
-  check('Restored thread actually re-rendered', d2.getElementById('thread').children.length===savedMsgs);
+  // Nov 2026: a returning soldier opens on Home — the chat opens only when they tap it.
+  check('Reload does not open the chat automatically', d2.getElementById('chat').hidden===true);
+  w2.eval('enterChat()');
+  check('Restored thread re-renders when the chat is opened', d2.getElementById('thread').children.length===savedMsgs);
 
   // ---------- CONCERN -> SUPPORT ESCALATION ----------
   const dom3 = boot();

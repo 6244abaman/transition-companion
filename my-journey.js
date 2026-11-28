@@ -55,7 +55,7 @@
       deleteHelp: "You can delete only My Journey, or also delete your saved skills assessment and Companion conversations. Export first if you need a copy.",
       deleteAllText: "Also erase saved skills and both Companion conversation histories",
       deleteButton: "Delete local data",
-      footer: "Momentum Transition Companion · Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.",
+      footer: "Momentum Transition Companion, Your journey belongs to you. This is a local-first prototype, not an emergency service or secure document vault.",
       activeGoals: "Active goals", pendingActions: "Open actions", confirmedSkills: "Confirmed skill examples", savedCVs: "Saved CVs",
       emptySkills: "No skill ratings yet. The assessment will help you find them.",
       emptyGoals: "No goals yet. Add one thing you want to move toward.",
@@ -66,12 +66,12 @@
       selfRating: "Self-rating", edit: "Edit", erase: "Delete", done: "Mark done", undo: "Reopen",
       nextActionForGoal: "Add next action", makeStep: "Create next action", downloadCV: "Download draft",
       copyCV: "Copy draft", goal: "Goal", due: "Due", target: "Target", institution: "Institution",
-      field: "Program / field", nextStep: "Next step", category: "Area", targetRole: "Target role",
+      field: "Program / field", nextStep: "Next step", durationField: "Duration (as stated by school)", costField: "Cost (currency and fees)", sourceField: "Official information source URL", checkedField: "Date verified", category: "Area", targetRole: "Target role",
       languageCV: "CV language", summary: "Profile summary", bullets: "Experience bullets (one per line)",
       notes: "Private notes (not sent as Journey context to AI)", status: "Status", titleField: "Title",
       create: "Add", update: "Edit", save: "Save", cancel: "Cancel",
       noExample: "Confirm at least one real example in your skill assessment first.",
-      cvTitleNew: "CV — my skills", generatedSummary: "Working draft based on my confirmed service examples. Review all statements before use.",
+      cvTitleNew: "CV, my skills", generatedSummary: "Working draft based on my confirmed service examples. Review all statements before use.",
       draftsSaved: "Draft created. Review and edit it before sharing.",
       saved: "Saved to this browser.", deleted: "Deleted from this browser.",
       deleteConfirm: "Delete this entry?", deletionConfirm: "Delete the selected local data? This cannot be undone.",
@@ -90,7 +90,7 @@
       shareChanged: "Your sharing preference was saved.",
       dateUnknown: "Not scheduled", readOnly: "Browser storage is unavailable. Changes may not persist.",
       skillsUsed: "Only skills with a personally confirmed example were used. This is a draft, not a credential.",
-      draftLabel: "Draft — verify every statement",
+      draftLabel: "Draft, verify every statement",
       daysLate: "Due date passed", noData: "Nothing recorded yet.",
       general: "General", statusExploring: "Exploring", statusActive: "Active", statusPaused: "Paused",
       statusAchieved: "Achieved", statusTodo: "To do", statusDoing: "In progress", statusDone: "Done",
@@ -103,8 +103,8 @@
       noAttachment: "The file could not be read."
     },
     he: {
-      back: "חזרה לעוזר המעבר ←", assess: "הערכת מיומנויות", language: "English", title: "המסע שלי",
-      subtitle: "תודה על השירות שלכם. כאן אפשר לשמור מטרות, חוזקות וצעדים להמשך — ואתם מחליטים מה יקרה למידע.",
+      back: "חזרה לעוזר המעבר", assess: "הערכת מיומנויות", language: "English", title: "המסע שלי",
+      subtitle: "תודה על השירות שלכם. כאן אפשר לשמור מטרות, חוזקות וצעדים להמשך, ואתם מחליטים מה יקרה למידע.",
       local: "המידע נשמר בדפדפן במכשיר הזה בלבד. הוא אינו מוצפן כאן ואינו מסתנכרן אוטומטית לטלפון אחר. אתם שולטים בייצוא, במחיקה ובשיתוף עם AI.",
       overview: "תמונת מצב", skills: "מיומנויות", goals: "מטרות", cvs: "קורות חיים",
       education: "לימודים", actions: "צעדים להמשך", privacy: "פרטיות וגיבוי",
@@ -142,7 +142,7 @@
       deleteHelp: "אפשר למחוק רק את 'המסע שלי', או גם את ההערכה והשיחות השמורות בדפדפן. מומלץ לייצא תחילה.",
       deleteAllText: "למחוק גם את הערכת המיומנויות ואת היסטוריות השיחה בשתי השפות",
       deleteButton: "מחיקת המידע המקומי",
-      footer: "מומנטום · עוזר המעבר — המסע שייך לכם. זוהי גרסת ניסיון מקומית, ולא שירות חירום או כספת מסמכים מאובטחת.",
+      footer: "מומנטום, עוזר המעבר, המסע שייך לכם. זוהי גרסת ניסיון מקומית, ולא שירות חירום או כספת מסמכים מאובטחת.",
       activeGoals: "מטרות פעילות", pendingActions: "פעולות פתוחות", confirmedSkills: "דוגמאות מיומנות מאושרות", savedCVs: "טיוטות קורות חיים",
       emptySkills: "עדיין אין דירוגי מיומנויות. אפשר להתחיל בהערכה.",
       emptyGoals: "עדיין אין מטרות. אפשר להגדיר דבר אחד שרוצים להתקדם לקראתו.",
@@ -153,12 +153,12 @@
       selfRating: "דירוג עצמי", edit: "עריכה", erase: "מחיקה", done: "בוצע", undo: "פתיחה מחדש",
       nextActionForGoal: "הוספת צעד", makeStep: "יצירת צעד", downloadCV: "הורדת טיוטה",
       copyCV: "העתקת טיוטה", goal: "מטרה", due: "עד", target: "יעד", institution: "מוסד",
-      field: "מסלול / תחום", nextStep: "הצעד הבא", category: "תחום", targetRole: "תפקיד מבוקש",
+      field: "מסלול / תחום", nextStep: "הצעד הבא", durationField: "משך הלימודים (לפי המוסד)", costField: "עלות (מטבע ועמלות)", sourceField: "קישור למקור רשמי", checkedField: "תאריך בדיקה", category: "תחום", targetRole: "תפקיד מבוקש",
       languageCV: "שפת קורות החיים", summary: "תקציר אישי", bullets: "ניסיון ויכולות (סעיף בכל שורה)",
       notes: "הערות פרטיות (אינן נשלחות כהקשר מהמסע ל-AI)", status: "מצב", titleField: "כותרת",
       create: "הוספה", update: "עריכה", save: "שמירה", cancel: "ביטול",
       noExample: "יש לאשר לפחות דוגמה אחת מהניסיון האישי בהערכת המיומנויות.",
-      cvTitleNew: "קורות חיים — מיומנויות", generatedSummary: "טיוטה על בסיס דוגמאות מהשירות שאישרתי. יש לבדוק את כל הניסוחים לפני שימוש.",
+      cvTitleNew: "קורות חיים, מיומנויות", generatedSummary: "טיוטה על בסיס דוגמאות מהשירות שאישרתי. יש לבדוק את כל הניסוחים לפני שימוש.",
       draftsSaved: "נוצרה טיוטה. בדקו וערכו אותה לפני שיתוף.",
       saved: "נשמר בדפדפן הזה.", deleted: "נמחק מהדפדפן.",
       deleteConfirm: "למחוק את הרשומה?", deletionConfirm: "למחוק את המידע המקומי שנבחר? לא ניתן לבטל פעולה זו.",
@@ -177,7 +177,7 @@
       shareChanged: "העדפת השיתוף נשמרה.",
       dateUnknown: "טרם נקבע", readOnly: "אחסון הדפדפן אינו זמין. ייתכן שהשינויים לא יישמרו.",
       skillsUsed: "נעשה שימוש רק במיומנויות שיש להן דוגמה שאישרתם. זו טיוטה ולא הסמכה.",
-      draftLabel: "טיוטה — יש לבדוק כל ניסוח", daysLate: "מועד היעד עבר",
+      draftLabel: "טיוטה, יש לבדוק כל ניסוח", daysLate: "מועד היעד עבר",
       noData: "טרם נשמר מידע.", general: "כללי",
       statusExploring: "לבדיקה", statusActive: "פעיל", statusPaused: "מושהה", statusAchieved: "הושג",
       statusTodo: "לביצוע", statusDoing: "בתהליך", statusDone: "הושלם",
@@ -219,7 +219,7 @@
   function updateLanguage() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
-    document.title = T().title + " · Momentum";
+    document.title = T().title + ", Momentum";
     [
       ["homeLink","back"],["skillsLink","assess"],["language","language"],
       ["pageTitle","title"],["pageSubtitle","subtitle"],["storageNotice","local"],
@@ -241,7 +241,7 @@
       ["deleteHelp","deleteHelp"],["deleteAllText","deleteAllText"],["deleteButton","deleteButton"],
       ["saveRecord","save"],["cancelRecord","cancel"],["footerText","footer"]
     ].forEach(x => setText(x[0], x[1]));
-    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html");
+    $("homeLink").href = "./" + (lang === "he" ? "indexH.html" : "index.html") + "#home";
     $("skillsLink").href = "./skills-business.html?lang=" + lang;
     $("skillEditLink").href = "./skills-business.html?lang=" + lang;
     $("importMode").options[0].textContent = T().importMerge;
@@ -276,14 +276,14 @@
   }
   function byDue(a,b) { return (a.dueDate || "9999").localeCompare(b.dueDate || "9999"); }
   function meta(container, ...parts) {
-    const p = e("div","muted mini",parts.filter(Boolean).join(" · "));
+    const p = e("div","muted mini",parts.filter(Boolean).join(", "));
     container.appendChild(p);
   }
   function renderStats() {
     const items = [
       [profile.goals.filter(x=>x.status==="active"||x.status==="exploring").length,T().activeGoals],
       [profile.actions.filter(x=>x.status!=="done").length,T().pendingActions],
-      [profile.skills.filter(x=>x.confirmed && x.evidence).length,T().confirmedSkills],
+      [profile.skills.filter(x=>x.confirmed && x.evidence).length+profile.lifeSkills.filter(x=>x.id!==63).length,T().confirmedSkills],
       [profile.cvs.length,T().savedCVs]
     ];
     const root=$("stats");root.replaceChildren();
@@ -309,7 +309,16 @@
   }
   function renderSkills() {
     const root=$("skillsList");root.replaceChildren();
-    if(!profile.skills.length)return empty(root,T().emptySkills);
+    if(!profile.skills.length&&!profile.lifeSkills.length)return empty(root,T().emptySkills);
+    if(profile.lifeSkills.length){
+      root.append(e("h3",null,lang==="he"?"מיומנויות חיים, מסגרת 63 המיומנויות":"Life skills, the 63-skill framework"));
+      profile.lifeSkills.forEach(x=>{
+        const card=e("div","record");card.append(e("h3",null,lang==="he"?(x.he||x.en):(x.en||x.he)),e("p",null,x.evidence));
+        if(x.level)card.append(e("p","muted mini",(lang==="he"?"רמת ניסיון לפי הדוגמה (1–4): ":"Experience level from the example (1–4): ")+x.level));
+        card.append(button(T().erase,()=>{if(confirm(T().deleteConfirm)){Store.removeLifeSkill(x.id);render();}},"small danger"));root.append(card);
+      });
+    }
+    if(profile.skills.length)root.append(e("h3",null,lang==="he"?"36 מיומנויות לקריירה ולעסקים, דירוג עצמי 1–7":"36 career and business skills, self-rating 1–7"));
     profile.skills.slice().sort((a,b)=>b.rating-a.rating).forEach(x=>{
       const card=e("div","record");
       const name = lang === "he" ? (x.he || x.en) : (x.en || x.he);
@@ -333,7 +342,10 @@
     row.append(button(T().edit,()=>openEditor(type,record),"small"));
     if(type==="goals")row.append(button(T().nextActionForGoal,()=>openEditor("actions",{goalId:record.id}),"small"));
     if(type==="education"&&record.nextStep)row.append(button(T().makeStep,()=>{
-      const x=Store.upsert("actions",{title:record.nextStep,goalId:record.goalId||"",notes:record.title,status:"todo"});
+      // One education next step maps to one action: repeated clicks open it instead of duplicating it.
+      const existing=Store.read().actions.find(a=>a.title===record.nextStep&&a.notes===record.title);
+      if(existing){notify(T().saved);view("actions");return;}
+      const x=tryAction(()=>Store.upsert("actions",{title:record.nextStep,goalId:record.goalId||"",notes:record.title,status:"todo"}));
       if(x){notify(T().saved);view("actions")}
     },"small"));
     if(type==="actions")row.append(button(record.status==="done"?T().undo:T().done,
@@ -415,22 +427,72 @@
       root.appendChild(row);
     });
   }
+  function renderEducationCompare() {
+    const root = $("educationCompare");
+    if (!root) return;
+    root.replaceChildren();
+    const plans = profile.education.slice(0, 4);
+    if (!plans.length) {
+      root.append(e("p","education-compare-note",
+        lang === "he" ? "הוסיפו שני מסלולים כדי להשוות זה לצד זה. אין מידע שנשלף אוטומטית מהמוסדות."
+          : "Add two education plans to compare them side by side. No school information is fetched automatically."));
+      return;
+    }
+    root.append(e("h3",null,lang === "he" ? "השוואת מסלולים ששמרתם" : "Compare your saved study options"));
+    root.append(e("p","education-compare-note",lang === "he"
+      ? "הנתונים הוזנו על ידכם ואינם אימות של זכאות, שכר לימוד או מועדים. יש לבדוק כל מסלול באתר המוסד."
+      : "Information is user-entered, not verified prices, eligibility or deadlines. Check the official institution source before deciding."));
+    const scroll = e("div","education-compare-scroll");
+    const table = e("table","education-compare-table");
+    const caption = e("caption",null,lang === "he" ? "השוואת מסלולי לימוד" : "Study options comparison");
+    caption.style.cssText = "padding:8px;font-weight:650;text-align:start";
+    table.append(caption);
+    const head = e("thead"), tr = e("tr"), lead = e("th",null,lang === "he" ? "נתון" : "Detail");
+    lead.scope = "col";tr.append(lead);
+    plans.forEach(plan => {
+      const th = e("th",null,plan.title);th.scope = "col";tr.append(th);
+    });
+    head.append(tr);table.append(head);
+    const body = e("tbody");
+    const rows = [
+      ["institution","Institution","מוסד"],
+      ["field","Program","מסלול"],
+      ["duration","Duration","משך"],
+      ["cost","Cost","עלות"],
+      ["targetDate","Target date","מועד יעד"],
+      ["status","Status","מצב"],
+      ["nextStep","Next step","הצעד הבא"],
+      ["sourceUrl","Source to verify","מקור לבדיקה"],
+      ["checkedOn","Checked on","נבדק בתאריך"]
+    ];
+    rows.forEach(([key,en,he]) => {
+      const r = e("tr"), th = e("th",null,lang === "he" ? he : en);
+      th.scope = "row";r.append(th);
+      plans.forEach(plan => r.append(e("td",null,String(plan[key] || "—"))));
+      body.append(r);
+    });
+    table.append(body);scroll.append(table);root.append(scroll);
+    if (profile.education.length > plans.length) root.append(e("p","education-compare-note",
+      lang === "he" ? "מוצגים ארבעת המסלולים הראשונים. השאר מופיעים למטה."
+        : "Showing the first four plans; other saved plans appear below."));
+  }
   function render() {
     profile=tryAction(()=>Store.read())||Store.blank();
     renderStats();renderSkills();
     ["goals","actions","education","cvs"].forEach(renderRecords);
+    renderEducationCompare();
     renderPrivacy();
   }
   const fieldDefs = {
     goals: ["title","category","status","targetDate","notes"],
     actions: ["title","goalId","status","dueDate","notes"],
-    education: ["title","goalId","field","institution","status","targetDate","nextStep","notes"],
+    education: ["title","goalId","field","institution","duration","cost","status","targetDate","nextStep","sourceUrl","checkedOn","notes"],
     cvs: ["title","targetRole","language","status","summary","bullets","notes"]
   };
   function labelFor(name){return {
     title:"titleField",category:"category",status:"status",targetDate:"target",
     dueDate:"due",notes:"notes",goalId:"goal",field:"field",institution:"institution",
-    nextStep:"nextStep",targetRole:"targetRole",language:"languageCV",
+    nextStep:"nextStep",duration:"durationField",cost:"costField",sourceUrl:"sourceField",checkedOn:"checkedField",targetRole:"targetRole",language:"languageCV",
     summary:"summary",bullets:"bullets"
   }[name]||name;}
   function selectOptions(name,type) {
@@ -443,7 +505,7 @@
   function openEditor(type,item) {
     editType=type;editItem=item||{};
     const edit=!!(item&&item.id);
-    $("editTitle").textContent=T()[edit?"update":"create"]+" · "+T()[type];
+    $("editTitle").textContent=T()[edit?"update":"create"]+", "+T()[type];
     const root=$("editFields");root.replaceChildren();
     fieldDefs[type].forEach(field=>{
       const container=e("div","field");
@@ -452,9 +514,11 @@
       let control;
       if(["notes","summary","bullets"].includes(field))control=e("textarea");
       else if(["status","category","language","goalId"].includes(field))control=e("select");
-      else { control=e("input");control.type=["targetDate","dueDate"].includes(field)?"date":"text"; }
+      else { control=e("input");control.type=["targetDate","dueDate","checkedOn"].includes(field)?"date":"text"; }
       control.id=label.htmlFor;control.name=field;
       if(field==="title"){control.required=true;control.maxLength=160;}
+      if(field==="duration"||field==="cost") control.maxLength=80;
+      if(field==="sourceUrl") control.maxLength=500;
       if(field==="goalId"||field==="status"||field==="category"||field==="language"){
         selectOptions(field,type).forEach(([val,txt])=>{
           const opt=e("option",null,txt);opt.value=val;control.append(opt);
@@ -491,7 +555,10 @@
     tryAction(()=>{Store.upsert("actions",{...item,status});notify(T().saved);render()});
   }
   function makeDraft() {
-    const good=profile.skills.filter(x=>x.confirmed&&x.evidence).sort((a,b)=>b.rating-a.rating).slice(0,8);
+    const combined=profile.skills.filter(x=>x.confirmed&&x.evidence).sort((a,b)=>b.rating-a.rating)
+      .concat(profile.lifeSkills.filter(x=>x.confirmed&&x.evidence&&x.id!==63));
+    const seen=new Set();
+    const good=combined.filter(x=>{const key=x.evidence.toLowerCase();if(seen.has(key))return false;seen.add(key);return true;}).slice(0,12);
     if(!good.length){alert(T().noExample);view("skills");return;}
     const bullets=good.map(x=>{
       const name=lang==="he"?(x.he||x.en):(x.en||x.he);
@@ -589,12 +656,17 @@
       Store.updatePrivacy({shareWithAI:false});
       notify(T().imported);render();
       $("importFile").value="";
-    }catch(e){notify(T().error+e.message,true)}
+    }catch(e){
+      // WebCrypto reports a wrong password as an OperationError with no message.
+      const wrongPassword=e&&(e.name==="OperationError"||!e.message);
+      notify(T().error+(wrongPassword?(lang==="he"?"הסיסמה שגויה או שהקובץ פגום.":"Wrong password or damaged file."):e.message),true);
+    }
   }
   function deleteData(){
     if(!confirm(T().deletionConfirm))return;
     tryAction(()=>{
       const all=$("deleteAll").checked;
+      if(window.MomentumJourneySync)window.MomentumJourneySync.lock();
       Store.erase({assessment:all,companion:all});
       // A partial erase should not silently seed old skills back into Journey.
 
@@ -604,7 +676,8 @@
   }
   function wire(){
     if(!Store){$("storageNotice").textContent="My Journey could not load. Please refresh.";return;}
-    $("language").onclick=()=>{lang=lang==="he"?"en":"he";updateLanguage();render()};
+    $("language").onclick=()=>{lang=lang==="he"?"en":"he";updateLanguage();render();
+      try{const u=new URL(location.href);u.searchParams.set("lang",lang);history.replaceState(null,"",u)}catch(_){}};
     document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>view(b.dataset.tab));
     document.querySelectorAll("[data-switch]").forEach(b=>b.onclick=()=>view(b.dataset.switch));
     document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>openEditor(b.dataset.add));
@@ -627,5 +700,6 @@
     if(!["overview","skills","goals","cvs","education","actions","privacy"].includes(tab))tab="overview";
     updateLanguage();view(tab);
   }
+  document.addEventListener("journey-updated",render);
   wire();
 })();

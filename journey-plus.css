@@ -1,0 +1,192 @@
+/* My Journey additions + a friendlier, less "admin" look. */
+.card { border-radius:18px; }
+#tabs button { border-radius:999px; }
+.stat { border-radius:16px; }
+.record { border-radius:14px; }
+.jp-progress { background:linear-gradient(135deg,#eaf5ef,#fff); border-color:#b5d6c8; }
+.jp-big { font-size:1.6rem; font-weight:800; color:#175c4f; margin:4px 0; }
+.jp-bar { height:14px; border-radius:999px; background:#dfece6; overflow:hidden; margin:8px 0; }
+.jp-fill { height:100%; background:#1f7a66; border-radius:999px; transition:width .4s ease; }
+.jp-cal { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin:10px 0; }
+.jp-wd { text-align:center; font-size:.8rem; color:var(--sub); font-weight:700; }
+.jp-day { position:relative; min-height:44px; padding:4px; border:1px solid var(--line); border-radius:10px; background:#fff; font-weight:600; }
+.jp-empty { border:0; background:none; }
+.jp-today { border:2px solid #116a7f; }
+.jp-has { background:#e8f3f3; }
+.jp-dot { position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:7px; height:7px; border-radius:50%; background:#116a7f; }
+.jp-cal-detail p { margin:4px 0; }
+.jp-links { padding-inline-start:18px; line-height:1.9; }
+.jp-form input { width:100%; }
+#jpManualSkills input, #jpManualSkills textarea { width:100%; border:1px solid #a8c3cf; padding:10px; border-radius:9px; font:inherit; }
+#jpPrint { display:none; }
+@media print {
+  body > *:not(#jpPrint) { display:none !important; }
+  #jpPrint { display:block !important; }
+  #jpPrint pre { white-space:pre-wrap; font:14px/1.6 system-ui, Arial, sans-serif; }
+}
+html[data-text="large"] body { zoom:1.12; }
+html[data-text="xl"] body { zoom:1.25; }
+html[data-motion="reduce"] * { animation:none !important; transition:none !important; }
+html[data-theme="dark"] { color-scheme:dark; --ink:#e7ece9; --sub:#b4bfb9; --line:#374146; --pale:#121618; --white:#1b2124; --soft:#1f3530; }
+html[data-theme="dark"] body { background:#121618; color:var(--ink); }
+html[data-theme="dark"] :is(.card,.stat,.record,.jp-day,button,.button,.field input,.field textarea,.field select,#jpManualSkills input,#jpManualSkills textarea,dialog) { background:#1b2124; color:var(--ink); border-color:#374146; }
+html[data-theme="dark"] :is(button.primary,.button.primary) { background:#2a8a73; color:#fff; }
+html[data-theme="dark"] :is(.privacy-note,.jp-progress,.jp-has) { background:#1f3530; color:var(--ink); }
+html[data-theme="dark"] a { color:#8fd3e6; }
+
+/* =====================================================================
+   REFERENCE MOCKUP — My Journey
+   ===================================================================== */
+body { background:#F5F1E9 !important;font-family:'Heebo',system-ui,-apple-system,sans-serif;color:#1F2A24;padding-bottom:calc(72px + env(safe-area-inset-bottom)); }
+body > header { display:none !important; }
+main { padding:0 12px 30px;max-width:640px; }
+#storageNotice { font-size:12.5px;background:#EFEADF;border:0;border-radius:12px;color:#4E534C; }
+.jp-ico { display:inline-flex;line-height:0; } .jp-ico svg { width:100%;height:100%; }
+.jp-head { position:sticky;top:0;z-index:6;display:grid;grid-template-columns:44px 1fr auto 44px;gap:6px;align-items:center;padding:12px 2px 10px;background:#F5F1E9; }
+.jp-head-ico { width:30px;height:30px;color:#2F5A46;grid-column:1; }
+.jp-head h1 { grid-column:2;text-align:center;font-size:19px;font-weight:800;margin:0; }
+.jp-back { grid-column:4;justify-self:end;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:#3F443E; }
+.jp-back .jp-ico { width:24px;height:24px; }
+.jp-goal { display:flex;align-items:center;gap:14px;min-height:100px;padding:16px 18px;border-radius:18px;color:#fff;background:linear-gradient(135deg,#3E6B55,#24493A);box-shadow:0 6px 18px rgba(36,73,58,.25);margin:4px 0 18px; }
+.jp-goal-ico { width:46px;height:46px;color:#fff;order:0; }
+.jp-goal-text { flex:1;display:flex;flex-direction:column;gap:4px;order:1; }
+.jp-goal-text strong { font-size:16px;font-weight:800; }
+.jp-goal-text span { font-size:14px;opacity:.95; }
+.jp-goal-edit { order:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer; }
+.jp-goal-edit .jp-ico { width:20px;height:20px; }
+.jp-sec { margin:0 0 16px; }
+.jp-sec-head { display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px; }
+.jp-sec-head h2 { display:flex;align-items:center;gap:6px;font-size:16px;font-weight:800;margin:0; }
+.jp-sec-ico { width:20px;height:20px;color:#2F5A46; }
+.jp-all { background:none;border:0;padding:4px;font:inherit;font-size:13px;color:#3F443E;cursor:pointer; }
+.jp-steps { background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(30,40,30,.07);overflow:hidden; }
+.jp-step { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:10px 16px;border-bottom:1px solid #EFEAE0;font-size:15px;cursor:pointer;width:100%;background:#fff;border-left:0;border-right:0;border-top:0;font-family:inherit;color:inherit;text-align:start; }
+.jp-step:last-child { border-bottom:0; }
+.jp-step input { appearance:none;-webkit-appearance:none;width:26px;height:26px;border-radius:50%;border:2px solid #C9CEC5;margin:0;flex:0 0 auto;display:grid;place-items:center;cursor:pointer; }
+.jp-step input:checked { background:#2F5A46;border-color:#2F5A46; }
+.jp-step input:checked::after { content:"";width:7px;height:12px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px); }
+.jp-step-done .jp-step-title { color:#6B6F68; }
+.jp-step-add { color:#2F5A46;font-weight:700;justify-content:center; }
+.jp-card { background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(30,40,30,.07);padding:14px; }
+.jp-chips { display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start; }
+.jp-chip { display:inline-flex;align-items:center;min-height:36px;padding:6px 16px;border-radius:999px;background:#EEF1EA;color:#2A302B;font-size:14px;text-decoration:none; }
+.jp-chip-add { color:#2F5A46;font-weight:700; }
+.jp-week { display:grid;grid-template-columns:repeat(5,1fr);gap:8px; }
+.jp-wday { display:flex;flex-direction:column;align-items:center;gap:2px;min-height:70px;padding:8px 2px;border:0;border-radius:14px;background:#fff;box-shadow:0 2px 10px rgba(30,40,30,.07);font:inherit;color:#1F2A24;cursor:pointer; }
+.jp-wday span { font-size:13px;font-weight:600; }
+.jp-wday strong { font-size:17px;font-weight:800; }
+.jp-wdot { width:6px;height:6px;border-radius:50%;background:#2F5A46;display:block; }
+.jp-wdot-empty { background:transparent; }
+.jp-wday-on { background:#2F5A46;color:#fff; }
+.jp-wday-on .jp-wdot { background:#fff; }
+.jp-week-detail { margin:8px 2px 0;font-size:14px; }
+.jp-week-detail p { margin:3px 0; }
+.jp-link { display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:62px;padding:12px 16px;background:#fff;border:0;border-radius:16px;box-shadow:0 2px 10px rgba(30,40,30,.07);text-decoration:none;color:#1F2A24;font:inherit;text-align:start;cursor:pointer; }
+.jp-link-text { display:flex;flex-direction:column;gap:2px;min-width:0; }
+.jp-link-text strong { font-size:15px;font-weight:700; }
+.jp-link-text small { font-size:12.5px;color:#6B6F68;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.jp-link-ext { width:24px;height:24px;color:#2F5A46;flex:0 0 auto; }
+.jp-more-head { display:flex;align-items:center;justify-content:space-between;margin:26px 2px 6px;padding-top:14px;border-top:1px solid #E4DFD4;font-weight:800; }
+.jp-lang { min-height:36px;padding:4px 14px;border-radius:999px;border:1px solid #D9DFD3;background:#fff;font:inherit;font-size:13px;cursor:pointer; }
+/* existing detailed sections in the same calm style */
+#tabs button { border-color:#D9DFD3;color:#2F5A46;background:#fff; }
+#tabs button[aria-selected=true] { background:#2F5A46;border-color:#2F5A46;color:#fff; }
+.card,.stat { border:0;box-shadow:0 2px 10px rgba(30,40,30,.07); }
+button.primary,.button.primary { background:#2F5A46;border-color:#2F5A46; }
+.jp-progress { background:#fff; }
+.jp-big { color:#2F5A46; }
+.jp-fill { background:#2F5A46; }
+/* bottom navigation (same as the Companion) */
+.jp-nav { position:fixed;inset-inline:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid #EEE9DF;box-shadow:0 -2px 12px rgba(30,40,30,.06); }
+.jp-nav a { position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;color:#7A7F78;text-decoration:none;isolation:isolate; }
+.jp-nav .jp-ico { width:24px;height:24px; }
+.jp-nav a[aria-current="page"] { color:#2F5A46;font-weight:800; }
+.jp-nav a[aria-current="page"]::before { content:"";position:absolute;inset:6px 10%;background:#E3EBDD;border-radius:14px;z-index:-1; }
+@media (min-width:900px) { .jp-nav { inset-inline:auto;left:50%;transform:translateX(-50%);width:min(560px,96vw);border-radius:18px 18px 0 0; } }
+@media print { .jp-nav,#jpTop { display:none !important; } }
+/* 27 Nov 2026 — calendar day sheet, today, progress stats, empty state */
+.jp-today { border:2px solid var(--accent, #2E4A40) !important; background:#DFE7D3 !important; color:#17201B; }
+.jp-sel { outline:3px solid #C9A227; outline-offset:1px; }
+.jp-dot { position:absolute; inset-inline-end:4px; bottom:4px; min-width:8px; height:8px; border-radius:999px; background:#2E4A40; color:#fff; font-size:9px; line-height:8px; padding:0 2px; }
+.jp-dot:not(:empty) { height:14px; line-height:14px; min-width:14px; font-size:10px; }
+.jp-daysheet { margin-top:12px; padding:12px 14px; border:1px solid #DDD3C0; border-radius:16px; background:#FFF; }
+.jp-daysheet-title { display:block; margin-bottom:6px; color:#2E4A40; }
+.jp-daylist { list-style:none; margin:0 0 8px; padding:0; }
+.jp-daylist li { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid #EDE6D8; }
+.jp-daylist li label { display:flex; align-items:center; gap:8px; flex:1; }
+.jp-daylist li.is-done span { text-decoration:line-through; color:#525B54; }
+.jp-daylist input[type=date] { max-width:150px; padding:6px 8px; border:1px solid #B9AD95; border-radius:10px; font:inherit; font-size:13px; }
+.jp-dayadd { display:flex; gap:8px; margin-top:6px; }
+.jp-dayadd input { flex:1; min-width:0; padding:10px 12px; border:1px solid #B9AD95; border-radius:12px; font:inherit; }
+.jp-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:8px 0 10px; }
+.jp-stat { background:#DFE7D3; border-radius:14px; padding:10px 6px; text-align:center; }
+.jp-stat strong { display:block; font-size:22px; color:#2E4A40; }
+.jp-stat span { font-size:12.5px; color:#3A433D; }
+.jp-quickadd { display:grid; gap:8px; }
+.jp-empty-msg { margin:0; color:#3A433D; }
+html[data-theme="dark"] :is(.jp-daysheet,.jp-stat) { background:#1b2124; color:var(--ink); border-color:#374146; }
+html[data-theme="dark"] .jp-today { background:#1f3530 !important; color:var(--ink); }
+/* Overview tidy-up: the new top section already shows goal, next steps and counts — hide the duplicate legacy blocks */
+#view-overview > .stats, #view-overview > .grid { display:none !important; }
+#view-overview > .card:has(#introHeading) { display:none !important; }
+.jp-parts { display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:8px 0 12px; }
+.jp-part { display:flex;align-items:center;gap:8px; }
+.jp-count { margin-inline-start:auto;min-width:22px;text-align:center;border-radius:99px;background:var(--beige, #F3EEE4);padding:1px 7px;font-weight:700;color:#5E6873; }
+.jp-how { margin-top:10px;background:var(--beige, #F6F2EA);border-radius:12px;padding:8px 12px; }
+.jp-how summary { cursor:pointer;font-weight:700; }
+.jp-how ol { margin:6px 0 2px;padding-inline-start:20px;line-height:1.6; }
+/* ---------- calm My Journey (27 Nov 2026) ---------- */
+#jpProgress { display:none !important; }
+#view-overview > .stats, #view-overview > .grid { display:none !important; }
+.jp-mini-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px; }
+.jp-mini-stats > div { background:#fff;border:1px solid #E6E0D4;border-radius:14px;padding:10px 6px;text-align:center; }
+.jp-mini-stats b { display:block;font-size:22px;line-height:1.1;color:#1E3B2F; }
+.jp-mini-stats small { color:#6B7069;font-size:12.5px; }
+.jp-fold { margin-top:10px; }
+.jp-fold > summary { cursor:pointer;font-weight:700;color:#2F5A46;padding:8px 2px;list-style:none; }
+.jp-fold > summary::-webkit-details-marker, .jp-row > summary::-webkit-details-marker, .jp-manage > summary::-webkit-details-marker { display:none; }
+.jp-fold > summary::before { content:'+ '; }
+.jp-fold[open] > summary::before { content:'− '; }
+.jp-fold #jpCalendar { margin-top:6px; }
+.jp-rows { background:#fff;border:1px solid #E6E0D4;border-radius:18px;overflow:hidden; }
+.jp-row { display:block;border:0;background:none;width:100%;text-align:start;font:inherit;color:inherit;text-decoration:none; }
+.jp-row + .jp-row { border-top:1px solid #EEE8DC; }
+.jp-row-go, .jp-row > summary { display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;list-style:none;min-height:58px;box-sizing:border-box; }
+.jp-row-t { flex:1;min-width:0; }
+.jp-row-t b { display:block;font-size:16px; }
+.jp-row-t small { display:block;color:#6B7069;font-size:13px;margin-top:2px; }
+.jp-manage-chev { width:9px;height:9px;border-top:2px solid #8A8F87;border-inline-start:2px solid #8A8F87;transform:rotate(-45deg);flex:0 0 auto;transition:transform .2s; }
+[dir="rtl"] .jp-manage-chev { transform:rotate(-45deg) scaleX(-1) rotate(90deg); }
+details[open] > summary .jp-manage-chev { transform:rotate(45deg); }
+.jp-row-body { padding:0 10px 12px; }
+.jp-row-body > .card { margin:0;box-shadow:none;border:0;padding:4px; }
+.jp-manage { margin:16px 0;background:#fff;border:1px solid #E6E0D4;border-radius:18px; }
+.jp-manage > summary { display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;list-style:none; }
+.jp-manage-t { flex:1; }
+.jp-manage-t b { display:block;font-size:16px; }
+.jp-manage-t small { color:#6B7069;font-size:13px; }
+.jp-manage-body { padding:0 8px 10px; }
+.jp-head .jp-lang { grid-column:3;padding:4px 10px;border-radius:99px;border:1px solid #D9D2C4;background:#fff;font:inherit;font-weight:700;font-size:13px;cursor:pointer; }
+html[data-motion="reduce"] .jp-manage-chev { transition:none; }
+
+.jp-chev, .jp-chevd { width:18px;height:18px;color:#8A8F87;flex:0 0 auto;display:inline-flex;transition:transform .2s; }
+.jp-chev svg, .jp-chevd svg { width:100%;height:100%; }
+[dir="ltr"] .jp-chev { transform:scaleX(-1); }
+details[open] > summary .jp-chevd { transform:rotate(180deg); }
+html[data-motion="reduce"] .jp-chevd { transition:none; }
+.jp-rows .jp-row-go { border:0;border-radius:0;box-shadow:none;background:none;margin:0;width:100%; }
+.jp-rows .jp-row + .jp-row { border-top:1px solid #EEE8DC; }
+.jp-phonecal { margin-top:10px;background:#fff;border:1px solid #E6E0D4;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px; }
+.jp-phonecal-top b { display:block;font-size:15.5px; }
+.jp-phonecal-top small { color:#6B7069;font-size:13px; }
+.jp-phonecal-btns { display:flex;flex-wrap:wrap;gap:8px; }
+.jp-phonecal-btns .button { flex:1 1 auto;text-align:center; }
+.jp-tocal { width:36px;height:36px;border-radius:10px;border:1px solid #E6E0D4;background:#F7F3EC;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#2F5A46;flex:0 0 auto;padding:0; }
+.jp-tocal .jp-ico { width:18px;height:18px; }
+.jp-prof { background:#fff;border:1px solid #E6E0D4;border-radius:18px;padding:12px 14px;margin:10px 0;display:flex;flex-direction:column;gap:8px; }
+.jp-prof-head { display:flex;justify-content:space-between;align-items:center; } .jp-prof-edit { color:#2F5A46;font-weight:700;font-size:14px; }
+.jp-prof-about { margin:0;line-height:1.55;color:#3F4A43; }
+.jp-prof-skills { display:flex;flex-wrap:wrap;gap:6px; } .jp-prof-skills span { background:#E4F2EA;color:#1E5E3E;border-radius:99px;padding:4px 10px;font-weight:700;font-size:13px; }
+.jp-prof-next small { display:block;color:#6B7069;font-weight:700;margin-bottom:4px; }
+.jp-prof-step { display:block;width:100%;text-align:start;border:1px dashed #9BC2AC;background:#F7FBF8;border-radius:12px;padding:9px 12px;font:inherit;cursor:pointer;margin-top:6px;color:#1E3B2F; }
+.jp-prof-invite { display:block;margin:10px 0;padding:12px 14px;border-radius:16px;border:1.5px dashed #9BC2AC;background:#F2F8F4;color:#1E3B2F;text-decoration:none; } .jp-prof-invite b { display:block; } .jp-prof-invite small { color:#4F5A53; }

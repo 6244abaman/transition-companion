@@ -31,7 +31,8 @@
   function blank() {
     const t = iso();
     return { schema: SCHEMA, version: VERSION, createdAt: t, updatedAt: t,
-      goals: [], actions: [], education: [], cvs: [], skills: [],
+      goals: [], actions: [], education: [], cvs: [], skills: [], lifeSkills: [],
+      links: [], manualSkills: [],
       privacy: { shareWithAI: false, shareSkills: true, shareGoals: true,
         shareEducation: true, shareActions: true, shareCVs: false },
       meta: { skillsImported: false } };
@@ -42,7 +43,7 @@
         Number(v.id) > 36 || !Number.isInteger(rating) || rating < 1 || rating > 7) return null;
     const evidence = str(v.evidence, 1500);
     return { id: Number(v.id), en: str(v.en, 120), he: str(v.he, 120),
-      rating, evidence, confirmed: !!v.confirmed && !!evidence };
+      rating, evidence, confirmed: v.confirmed === true && !!evidence }; // strict, same rule as next/business-skills.js
   }
   function cleanItem(type, v) {
     if (!v || typeof v !== "object") return null;
@@ -55,10 +56,31 @@
     if (type === "actions") return { ...common, goalId: str(v.goalId, 90), dueDate: date(v.dueDate),
       completedAt: common.status === "done" ? str(v.completedAt, 40) || iso() : "" };
     if (type === "education") return { ...common, goalId: str(v.goalId, 90), field: str(v.field, 180), institution: str(v.institution, 180),
-      targetDate: date(v.targetDate), nextStep: str(v.nextStep, 400) };
+      targetDate: date(v.targetDate), nextStep: str(v.nextStep, 400),
+      duration: str(v.duration, 80), cost: str(v.cost, 80), sourceUrl: str(v.sourceUrl, 500), checkedOn: date(v.checkedOn) };
     return { ...common, targetRole: str(v.targetRole, 180),
       language: v.language === "he" ? "he" : "en", summary: str(v.summary, 4000),
       bullets: arr(v.bullets).slice(0, 50).map(x => str(x, 1000)).filter(Boolean) };
+  }
+  function cleanLifeSkill(v) {
+    if(!v || !Number.isInteger(Number(v.id)) || Number(v.id)<1 || Number(v.id)>63)return null;
+    const evidence=str(v.evidence,1500);
+    if(!evidence || v.confirmed!==true)return null;
+    return {id:Number(v.id),en:str(v.en,120),he:str(v.he,120),evidence,confirmed:true,
+      level:Number.isInteger(Number(v.level)) && Number(v.level)>=1 && Number(v.level)<=4 ? Number(v.level):0};
+  }
+  // Saved external links and skills the soldier adds beyond the 36 (optional, additive fields).
+  function cleanLink(v) {
+    if (!v || typeof v !== "object") return null;
+    const url = str(v.url, 500);
+    if (!/^https?:\/\//i.test(url)) return null;
+    return { id: str(v.id, 90) || id(), title: str(v.title, 160) || url, url, note: str(v.note, 600), createdAt: str(v.createdAt, 40) || iso() };
+  }
+  function cleanManualSkill(v) {
+    if (!v || typeof v !== "object") return null;
+    const name = str(v.name, 120);
+    if (!name) return null;
+    return { id: str(v.id, 90) || id(), name, evidence: str(v.evidence, 1500), createdAt: str(v.createdAt, 40) || iso() };
   }
   function normalize(raw) {
     if (!raw || raw.schema !== SCHEMA || raw.version !== VERSION) throw new Error("Unsupported Journey profile format");
@@ -73,6 +95,13 @@
     const seenSkills = new Set();
     result.skills = arr(raw.skills).slice(0, LIMIT.skills).map(cleanSkill)
       .filter(v => { if (!v || seenSkills.has(v.id)) return false; seenSkills.add(v.id); return true; });
+    const seenLife = new Set();
+    result.lifeSkills=arr(raw.lifeSkills).slice(0,63).map(cleanLifeSkill).filter(v=>{
+      if(!v||seenLife.has(v.id))return false;seenLife.add(v.id);return true;
+    });
+    const uniq = (list, clean, max) => { const seen = new Set(); return arr(list).slice(0, max).map(clean).filter(v => { if (!v || seen.has(v.id)) return false; seen.add(v.id); return true; }); };
+    result.links = uniq(raw.links, cleanLink, 200);
+    result.manualSkills = uniq(raw.manualSkills, cleanManualSkill, 100);
     const p = raw.privacy || {};
     result.privacy = {
       shareWithAI: p.shareWithAI === true,
@@ -180,7 +209,7 @@
     if (!TYPES.includes(type)) throw new Error("Unknown Journey record type");
     return write(p => {
       p[type] = p[type].filter(x => x.id !== recordId);
-      if (type === "goals") p.actions.forEach(a => { if (a.goalId === recordId) a.goalId = ""; });
+      if (type === "goals") ["actions","education"].forEach(t=>p[t].forEach(a => { if (a.goalId === recordId) a.goalId = ""; }));
       return p;
     });
   }
@@ -191,6 +220,20 @@
       return p;
     });
   }
+  function saveLifeSkills(values) {
+    return write(p=>{
+      const map=new Map(p.lifeSkills.map(x=>[x.id,x]));
+      arr(values).map(cleanLifeSkill).filter(Boolean).forEach(x=>map.set(x.id,x));
+      p.lifeSkills=[...map.values()];return p;
+    });
+  }
+  function addLink(value) { const v = cleanLink(value); if (!v) throw new Error("Enter a link that starts with http:// or https://");
+    return write(p => { if (p.links.length >= 200) throw new Error("Too many records"); p.links.push(v); return p; }); }
+  function removeLink(linkId) { return write(p => { p.links = p.links.filter(x => x.id !== linkId); return p; }); }
+  function addManualSkill(value) { const v = cleanManualSkill(value); if (!v) throw new Error("A skill name is required");
+    return write(p => { if (p.manualSkills.length >= 100) throw new Error("Too many records"); p.manualSkills.push(v); return p; }); }
+  function removeManualSkill(skillId) { return write(p => { p.manualSkills = p.manualSkills.filter(x => x.id !== skillId); return p; }); }
+  function removeLifeSkill(id){return write(p=>{p.lifeSkills=p.lifeSkills.filter(x=>x.id!==Number(id));return p;});}
   function syncAssessment() {
     const assessment = getRaw(SKILLS_KEY);
     if (!assessment) return read();
@@ -206,6 +249,10 @@
         .forEach(x => lines.push("Skill (soldier-confirmed example, self-rated " + x.rating + "/7): " +
           (he ? (x.he || x.en) : (x.en || x.he)) + " — " + str(x.evidence, 260)));
     }
+    if(p.privacy.shareSkills) arr(p.lifeSkills).filter(x=>x.confirmed&&x.evidence&&x.id!==63).slice(0,8)
+      .forEach(x=>lines.push("Life skill (soldier-confirmed example): "+(he?(x.he||x.en):(x.en||x.he))+" — "+str(x.evidence,260)));
+    if (p.privacy.shareSkills) arr(p.manualSkills).filter(x => x.evidence).slice(0, 6)
+      .forEach(x => lines.push("Skill added by the soldier (own example): " + x.name + " — " + str(x.evidence, 260)));
     if (p.privacy.shareGoals) p.goals.filter(x => x.status !== "achieved").slice(0, 6)
       .forEach(x => lines.push("Goal: " + x.title + " [" + x.status + "]" +
         (x.targetDate ? " target " + x.targetDate : "")));
@@ -226,6 +273,7 @@
   }
   function exportData() { return JSON.stringify(read(), null, 2); }
   function importData(raw, mode) {
+    if (!raw || typeof raw !== "object") throw new Error("The backup file is empty or not a valid Journey backup");
     if (JSON.stringify(raw).length > 1048576) throw new Error("Backup exceeds 1 MB");
     const incoming = normalize(raw);
     if (mode !== "merge" && mode !== "replace") throw new Error("Choose merge or replace");
@@ -239,6 +287,13 @@
       const skills = new Map(current.skills.map(x => [x.id, x]));
       incoming.skills.forEach(x => skills.set(x.id, x));
       current.skills = [...skills.values()].slice(0, 36);
+      const lifeSkills=new Map(current.lifeSkills.map(x=>[x.id,x]));
+      incoming.lifeSkills.forEach(x=>lifeSkills.set(x.id,x));current.lifeSkills=[...lifeSkills.values()].slice(0,63);
+      for (const [key, max] of [["links", 200], ["manualSkills", 100]]) {
+        const map = new Map(arr(current[key]).map(x => [x.id, x]));
+        arr(incoming[key]).forEach(x => map.set(x.id, x));
+        current[key] = [...map.values()].slice(0, max);
+      }
       // Never implicitly enable AI sharing through a merged backup.
       return current;
     });
@@ -252,10 +307,15 @@
       const fresh = blank(); fresh.meta.skillsImported = true; persist(fresh);
     } else ls.removeItem(KEY);
     if (options && options.companion) {
+      ls.removeItem("momentum-ai-disclosures-v1");
+      ls.removeItem("momentum-reminder-settings-v1");
+      ls.removeItem("tc-benefits-preparation-v1");
       ls.removeItem("gtc_v2_state");
       ls.removeItem("gtc_H_state");
+      ls.removeItem("momentum-companion-plus-v1");
     }
   }
   return { KEY, VERSION, read, write, upsert, remove, updatePrivacy, syncAssessment,
-    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels };
+    aiContext, exportData, importData, erase, normalize, blank, assessmentLabels, saveLifeSkills, removeLifeSkill,
+    addLink, removeLink, addManualSkill, removeManualSkill };
 });

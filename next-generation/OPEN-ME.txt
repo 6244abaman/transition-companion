@@ -1,0 +1,55 @@
+MOMENTUM NEXT GENERATION — SEPARATE DEVELOPMENT APP
+
+STAFF KNOWLEDGE: Double-click Start-Knowledge-Desk.cmd in the repository root for
+http://127.0.0.1:43129/staff/. First staff setup: Setup-Knowledge-Staff.cmd.
+Stop-Knowledge-Desk.cmd stops that separate service. Read KNOWLEDGE-DESK.txt.
+Only independently approved, unexpired items enter companion answers or sources.
+The starter set is loaded as four bilingual drafts awaiting professional review.
+
+1. Install Node.js 24 LTS from https://nodejs.org/ once.
+2. In the repository folder, double-click Start-Next-Generation.cmd.
+3. Use http://127.0.0.1:43128/ in the same browser each time.
+4. Double-click Stop-Next-Generation.cmd when finished.
+
+Your existing Start.cmd app uses 43127 and remains separate.
+Next Generation opens directly into Hebrew chat. English is in the header.
+Human help, My Journey, Benefits sources and Privacy & memory are available.
+No Codex or Claude is needed to start or operate it.
+
+Without AI setup, replies are a small local guided prototype, NOT a live LLM.
+No internet, npm install or credentials are needed for this local mode after
+Node.js is installed. Do not mistake this foundation for the full older app.
+
+PRIVATE MEMORY
+The session is temporary until you create encrypted memory in Privacy & memory.
+Use a passphrase of at least 12 characters; it cannot be recovered if forgotten.
+Unlock saved memory when you return. Download an encrypted backup yourself.
+Import replaces the current Next Generation memory only after password validation.
+Lock before sharing the computer. Delete removes this app's local memory; backups
+you downloaded must be deleted separately. Browser clearing can erase local data.
+The old app's memories are not imported, changed or deleted.
+
+OPTIONAL AI SETUP (INSTALLATION OWNER)
+In next-generation, copy .env.example to .env. Set OPENAI_API_KEY,
+OPENAI_MODEL (a model supporting Responses structured output), and a random
+GATEWAY_ACCESS_TOKEN at least 24 characters long. Restart the app.
+Enter the gateway access code in Privacy & memory, NOT your OpenAI API key.
+Each request shows exactly which personal packet you approve for transmission.
+Extra context starts OFF. No automatic AI calls or background sharing.
+AI requires internet and provider credentials/billing. No paid resource is created
+by this repository. Provider retention terms still apply. This is not public auth.
+
+VOICE AND LINKS
+Voice depends on browser support, permissions, internet and possibly its external
+speech provider. A disclosure appears before each voice action. Typing always works.
+Official sources and human-help links require internet; telephone links need a
+calling-capable device. This app does not contact a person on your behalf.
+
+DEVELOPMENT
+cd next-generation
+npm ci --ignore-scripts
+npm test
+Only the optional PostgreSQL adapter needs npm production dependencies at runtime.
+The default launcher is loopback-only and never exposes .env or server source.
+No new hosted deployment was made for this branch. Existing review stays at:
+https://transition-companion-review.onrender.com/

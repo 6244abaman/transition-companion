@@ -1,0 +1,82 @@
+MOMENTUM KNOWLEDGE DESK — LOCAL STAFF WORKFLOW
+
+Folder: C:\Users\abama\OneDrive\Documents\ChatGPT\Repos and apps\transition-companion-next-generation
+
+EVERYDAY OPENING
+Double-click Start-Knowledge-Desk.cmd in the repository root.
+Open http://127.0.0.1:43129/staff/ in your normal browser.
+Double-click Stop-Knowledge-Desk.cmd when finished.
+No Codex, Claude, OpenAI key, Docker or paid service is needed.
+Node.js 24 is required. The launcher installs pinned dependencies on first use
+if missing; that first setup needs internet. Daily local use works offline.
+Opening official source pages requires internet.
+
+FIRST STAFF SETUP
+Double-click Setup-Knowledge-Staff.cmd. Choose add, then enter the person's
+username, name, professional review responsibility and access role.
+Choose editor for the person preparing content, reviewer for a different person
+responsible for verifying the information and both languages. Each sets a private
+passphrase of at least 14 characters. Password entry is hidden and is not put
+in command history or source files. Only a salted hash is stored.
+Run setup again for the second person. No default accounts/passwords exist.
+To disable a departed person's account, run setup and choose disable.
+This is local development authentication. It does not verify qualifications or
+replace organizational SSO/MFA; those are required before a public staff portal.
+
+EDIT AND REVIEW
+1. Sign in as the editor. Open a draft. Check the official page and both texts.
+   Save any corrections and the real source-check date. Then Submit for review.
+2. The independent reviewer signs in and opens Awaiting review. Open the source,
+   check Hebrew, English, eligibility caveats and scope. Tick all four checks,
+   write a meaningful review note and choose an expiry within 90 days.
+3. Approve both languages. They become available together. A contributor cannot
+   approve their own revision. Submitted content cannot be edited in place.
+4. Request changes returns the item for a new revision. Create a new revision to
+   update an approved item; the old approval remains active until replacement.
+5. Withdraw immediately removes the item from companion answers. Expired items
+   also disappear automatically. No stale cached publication is used.
+
+THE FIRST SET
+Four topics / eight language versions are loaded: career guidance, academic
+deposit checks, vocational deposit checks, and permitted deposit use.
+Their official Hebrew sources were checked on 25 November 2026. English text is
+a companion translation, not an official government translation. These are
+SOURCE-CHECKED DRAFTS awaiting a named professional reviewer; they have not been
+professionally approved. No money amounts or personal eligibility decisions.
+Reopening or updating the app never approves or overwrites these drafts.
+
+USE APPROVED KNOWLEDGE IN THE COMPANION
+Keep the desk running. Start the companion with Start-Next-Generation.cmd
+and open http://127.0.0.1:43128/. Benefits sources shows approved current knowledge
+without an AI key. Consented AI requests can retrieve the same public knowledge.
+If the desk is stopped, drafts are pending, or approval has expired, the companion
+keeps the official links and says no verified knowledge is available.
+No soldier messages, history, identity or goals are sent to the knowledge desk.
+
+STORAGE, BACKUP AND UPDATES
+Knowledge and staff records are local in next-generation\.local\knowledge.snapshot.
+It contains public content and private staff names/password hashes; protect it.
+It contains no soldier memory. Approval is acknowledged only after an atomic,
+flushed snapshot write. A storage failure blocks reads until safely restarted.
+Stop the desk before copying the snapshot to a private backup. Keep the exact app
+version with a backup. Do not commit/share the snapshot, owner files or .env.
+Restore only while stopped and after reviewing whether old approvals/withdrawals
+would be reinstated. No automatic rollback or silent backup restoration occurs.
+
+Before updating: stop both Next Generation apps, keep private backups, then pull
+development/next-generation (or download that branch). Keep the .local folder.
+Restart the apps. Seeds load once and do not overwrite staff work. Automated tests
+run on GitHub. Existing production/review hosting is separate and unchanged.
+
+TROUBLESHOOTING
+Check next-generation\.local\knowledge-error.log for a safe startup error.
+If port 43129 is occupied, stop its app rather than using another origin.
+After an abnormal crash, knowledge.lock can remain. Stop the desk, verify the PID
+listed in that file is no longer running, and remove only that stale lock file.
+Never delete knowledge.snapshot to repair a lock. A corrupt snapshot fails closed;
+recover deliberately from a private backup rather than silently restoring old facts.
+
+Public existing app: https://transition-companion-review.onrender.com/
+Render dashboard: https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0
+The Knowledge Desk is not deployed to Render. Keep the working service on its
+established branch. Do not expose this local development desk publicly.

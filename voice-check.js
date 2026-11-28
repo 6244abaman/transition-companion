@@ -2,6 +2,7 @@ const {JSDOM}=require('jsdom');
 const fs=require('fs'), assert=require('node:assert/strict');
 let spoken=[], recognizer;
 const dom=new JSDOM(fs.readFileSync('index.html','utf8'),{url:'https://localhost/',runScripts:'dangerously',beforeParse(w){
+  require("./tests/browser-env").prepare(w);
   w.isSecureContext=true;
   w.SpeechSynthesisUtterance=class {constructor(text){this.text=text;}};
   w.speechSynthesis={getVoices:()=>[{name:'English',lang:'en-US',voiceURI:'en'},{name:'Hebrew',lang:'he-IL',voiceURI:'he'}],cancel(){},speak(u){spoken.push(u);}};
@@ -20,7 +21,7 @@ d.getElementById('input').value='unsent draft';
 recognizer.onerror({error:'not-allowed'}); recognizer.onend();
 assert.match(d.getElementById('hint').textContent,/נדחתה/); assert.equal(w.eval('S.messages.length'),count);
 d.getElementById('btnLang').click();
-assert.equal(d.getElementById('btnAI').textContent,'Ask an AI'); assert.equal(d.documentElement.dir,'ltr');
+assert.equal(d.getElementById('btnAI').textContent,'Ask AI'); assert.equal(d.documentElement.dir,'ltr');
 d.getElementById('btnMic').click(); recognizer.start=()=>{throw Error('failed');};
 recognizer.onerror({error:'network'}); recognizer.onend(); assert.match(d.getElementById('hint').textContent,/internet/);
 d.getElementById('btnMic').click();

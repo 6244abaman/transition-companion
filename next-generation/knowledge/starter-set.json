@@ -1,0 +1,95 @@
+{
+  "schema": "momentum-editorial-seed-v1",
+  "sourceCheckedAt": "2026-11-25",
+  "reviewStatus": "pending-professional-review",
+  "items": [
+    {
+      "topicId": "career-guidance",
+      "domain": "employment",
+      "title": {
+        "he": "ייעוץ ללימודים ולעבודה",
+        "en": "Education and career guidance"
+      },
+      "body": {
+        "he": "האגף מציע לזכאים ייעוץ ללא תשלום בנושאי לימודים ותעסוקה, דרך יועצי המחוזות ורכזים במרכזי הצעירים. בדקו בעמוד הרשמי את תנאי הזכאות ותאמו פגישה מראש.",
+        "en": "The division offers eligible users free education and employment guidance through district advisers and youth-centre coordinators. Check the official page for eligibility and book an appointment in advance."
+      },
+      "scope": {
+        "he": "זהו מידע כללי על שירות. אין כאן קביעה שאתה זכאי, ולא נקבעה עבורך פגישה.",
+        "en": "This describes a service. It does not determine your eligibility or book an appointment for you."
+      },
+      "source": {
+        "url": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/Consultation/Pages/default.aspx",
+        "publisher": "Discharged Soldiers and Reservists Division — Ministry of Defense",
+        "checkedAt": "2026-11-25",
+        "evidence": "Official counselling page describes free guidance, district/youth-centre routes, eligibility and advance booking. Personal eligibility windows are deliberately not restated."
+      }
+    },
+    {
+      "topicId": "academic-deposit-check",
+      "domain": "education",
+      "title": {
+        "he": "בדיקה לפני שימוש בפיקדון ללימודים",
+        "en": "Check before using a deposit for study"
+      },
+      "body": {
+        "he": "לפני בקשה למימון לימודים מהפיקדון, בדקו מול המוסד שהוא מוכר למימוש הפיקדון. העמוד הרשמי מפרט את בדיקת היתרה ושובר התשלום ואת אופן הגשת הבקשה באזור האישי.",
+        "en": "Before applying to use your deposit for study, check with the institution that it is recognised for deposit use. The official page explains balance and payment-voucher checks and the application in the official personal area."
+      },
+      "scope": {
+        "he": "אין כאן בדיקת יתרה או אישור מוסד מסוים. הזינו מסמכים ופרטים אישיים רק באתר הרשמי.",
+        "en": "This does not check your balance or approve a particular institution. Enter documents and personal details only on the official site."
+      },
+      "source": {
+        "url": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/education.aspx",
+        "publisher": "Discharged Soldiers and Reservists Division — Ministry of Defense",
+        "checkedAt": "2026-11-25",
+        "evidence": "Official academic-study deposit instructions require recognition checks, a suitable voucher and sufficient balance. No amounts or processing-time promises are imported."
+      }
+    },
+    {
+      "topicId": "vocational-deposit-check",
+      "domain": "education",
+      "title": {
+        "he": "בדיקת הכשרה מקצועית לפני מימוש פיקדון",
+        "en": "Check vocational training before deposit use"
+      },
+      "body": {
+        "he": "בבחירת קורס מקצועי, בדקו עם מוסד ההכשרה שהמסלול מוכר למימוש הפיקדון. עיינו בהנחיות הרשמיות לגבי המסמכים, השובר והתהליך לפני התחייבות לתשלום.",
+        "en": "When choosing a vocational course, check with the training provider that the programme is recognised for deposit use. Read the official document, voucher and application instructions before committing to payment."
+      },
+      "scope": {
+        "he": "אין כאן המלצה על ספק או הבטחת מימון לקורס. בדקו את ההכרה במסלול המסוים.",
+        "en": "This does not recommend a provider or guarantee course funding. Verify recognition of the specific programme."
+      },
+      "source": {
+        "url": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/ProfessionalTraining.aspx",
+        "publisher": "Discharged Soldiers and Reservists Division — Ministry of Defense",
+        "checkedAt": "2026-11-25",
+        "evidence": "Official vocational and technological training deposit page describes recognised training and the voucher/application process. No funding amount or individual entitlement is asserted."
+      }
+    },
+    {
+      "topicId": "deposit-permitted-use",
+      "domain": "benefits",
+      "title": {
+        "he": "מה לבדוק לפני מימוש הפיקדון",
+        "en": "What to check before using a deposit"
+      },
+      "body": {
+        "he": "לפיקדון האישי יש מטרות שימוש מוגדרות בתקופה הראשונה לאחר השירות. בדקו בעמוד הרשמי את מטרת השימוש, הזכאות, ההנחיות והיתרה באזור האישי לפני בקשה.",
+        "en": "The personal deposit has specified permitted uses during the initial period after service. Check the official page for the purpose, eligibility and instructions, and check your balance in the official personal area before applying."
+      },
+      "scope": {
+        "he": "אין כאן חישוב סכום, החלטת זכאות או אישור משיכה. אל תשתפו כאן סיסמה לאזור האישי או מסמכי זיהוי.",
+        "en": "This does not calculate an amount, decide eligibility or authorise a withdrawal. Do not share your personal-area password or identity documents here."
+      },
+      "source": {
+        "url": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/default.aspx",
+        "publisher": "Discharged Soldiers and Reservists Division — Ministry of Defense",
+        "checkedAt": "2026-11-25",
+        "evidence": "Official deposit overview lists permitted uses and directs users to their personal information and application routes. Changing monetary rates and individual eligibility details are excluded."
+      }
+    }
+  ]
+}

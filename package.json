@@ -3,16 +3,30 @@
   "version": "2.0.0",
   "description": "Guided Transition Companion — dialogue-first support for Israelis finishing IDF service",
   "private": true,
-  "engines": { "node": ">=22.5.0" },
   "scripts": {
-    "test": "node tests/journey.test.js && node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
-    "inspect": "node inspector.test.js",
+    "test": "npm run test:legacy && npm run test:integration && npm run test:next && npm run test:review && npm run test:home",
+    "test:home": "node --test tests/home-pathways.test.js",
+    "build:review": "node scripts/build-review.cjs",
+    "test:review": "node --test tests/review-build.test.js",
+    "test:legacy": "node tests/flow.test.js && node tests/paths.test.js && node tests/journey.test.js && node voice-check.js",
+    "test:flow": "node tests/flow.test.js",
+    "test:paths": "node tests/paths.test.js",
+    "inspect": "node tests/inspector.test.js",
     "test:journey": "node tests/journey.test.js",
+    "start": "node server/sync-server.js",
+    "test:integration": "node --test tests/chat-experience.test.js tests/ai-consent.test.js tests/sync.test.js tests/reminders.test.js tests/safety-rights.test.js tests/integration-ui.test.js tests/offline.test.js tests/topic-switching.test.js tests/benefits-updates.test.js",
+    "test:live": "node tests/live-ai-smoke.js",
+    "test:next": "node tests/business-skills.test.js && node tests/knowledge-store.test.js && node tests/sync-client.test.js && node tests/sync-service.test.js",
     "test:business-skills": "node tests/business-skills.test.js",
     "test:sync": "node tests/sync-client.test.js && node tests/sync-service.test.js",
-    "test:knowledge": "node tests/knowledge-store.test.js"
+    "test:knowledge": "node tests/knowledge-store.test.js",
+    "test:nextgen": "npm --prefix next-generation test",
+    "dev:nextgen": "npm --prefix next-generation start"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=24 <25"
   }
 }

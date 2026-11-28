@@ -1,0 +1,24 @@
+{
+  "name": "momentum-next-generation",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/main.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "db:migrate": "node --env-file-if-exists=.env server/migrate.mjs",
+    "start:desk": "node server/desk-main.mjs",
+    "staff:setup": "node server/staff-cli.mjs"
+  },
+  "dependencies": {
+    "pg": "8.23.1",
+    "@electric-sql/pglite": "0.6.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.8",
+    "jsdom": "24.1.3"
+  }
+}

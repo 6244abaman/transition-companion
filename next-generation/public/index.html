@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#143b3a" />
+    <title>Momentum — Next Generation</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip" href="#message">לשיחה / To chat</a>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">m</span
+          ><strong>Momentum</strong>
+        </div>
+        <div class="header-actions">
+          <button id="language" type="button">English</button
+          ><button id="help" class="help" type="button">עזרה אנושית</button>
+        </div>
+      </header>
+      <nav aria-label="Companion">
+        <button id="journey" type="button">המסע שלי</button
+        ><button id="benefits" type="button">מקורות זכויות</button
+        ><button id="privacy" type="button">פרטיות וזיכרון</button>
+      </nav>
+      <main id="thread" aria-label="Conversation" tabindex="0">
+        <div
+          class="thread-inner"
+          id="messages"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions text"
+        ></div>
+      </main>
+      <section class="composer-area" aria-label="Message composer">
+        <p id="mode" role="status"></p>
+        <form id="compose">
+          <label class="sr-only" id="message-label" for="message">הודעה</label
+          ><textarea
+            id="message"
+            rows="1"
+            maxlength="3000"
+            placeholder="מה מעסיק אותך היום?"
+          ></textarea
+          ><button id="mic" type="button" class="icon" aria-label="הכתבה קולית">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="12" rx="3" />
+              <path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3M9 21h6" />
+            </svg></button
+          ><button id="send" type="submit" class="primary">שליחה</button>
+        </form>
+      </section>
+      <footer id="footer">במכשיר שלך • ללא שיתוף אוטומטי</footer>
+    </div>
+    <dialog id="panel" aria-labelledby="panel-title">
+      <div class="dialog-top">
+        <h2 id="panel-title"></h2>
+        <button id="close-panel" type="button" aria-label="סגירה">×</button>
+      </div>
+      <div id="panel-content"></div>
+    </dialog>
+  </body>
+</html>

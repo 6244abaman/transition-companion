@@ -1,44 +1,115 @@
-# Soldier Transition Companion — Continuous Journey Profile (October 2026)
+# Soldier Transition Companion — continuity and follow-up
 
-## Open the current development review
-
-**[Open Transition Companion](https://transition-companion-review.onrender.com/)**
-· [Permanent links to both apps](LIVE-APPS.md)
+**[Open and share the review app](https://transition-companion-review.onrender.com/)**
 · [Render dashboard](https://dashboard.render.com/static/srv-dbsb37jl550s73fvm5t0)
+· [Permanent links to both apps](https://github.com/6244abaman/transition-companion/blob/main/LIVE-APPS.md)
 
-The latest review build is hosted separately on Render. The [owner's hosting guide](https://github.com/6244abaman/transition-companion/blob/complete/continuity-and-followup/HOSTING.txt) explains opening, sharing and updates without a coding assistant.
+## Next Generation — separate development foundation
 
+The new **[Knowledge Desk](docs/KNOWLEDGE_REVIEW_GUIDE.md)** provides staff editing,
+independent bilingual review, approval, withdrawal and audit. Double-click
+**Start-Knowledge-Desk.cmd** for **http://127.0.0.1:43129/staff/**. First enrol actual
+staff using **Setup-Knowledge-Staff.cmd**; finish with **Stop-Knowledge-Desk.cmd**.
+Four official-source topics (eight language versions) are loaded as drafts awaiting
+professional sign-off. [Plain opening/review instructions](next-generation/KNOWLEDGE-DESK.txt).
 
-The Companion offers dialogue-first support in Hebrew and English. **My Journey** now adds a soldier-owned, continuous local profile across service skills, personal goals, CV drafts, education or training plans, and follow-up actions.
+On `development/next-generation`, see the [new app and Windows opening guide](next-generation/README.md)
+and [master architecture](docs/MASTER_ARCHITECTURE.md). Double-click
+**Start-Next-Generation.cmd** for **http://127.0.0.1:43128/** and
+**Stop-Next-Generation.cmd** to stop it. Node.js 24 is the only prerequisite for
+local guided mode; optional live AI needs server-side credentials and explicit
+per-request consent. This is a tested Phase 1 foundation, not the full finished
+next-generation companion. The existing app and hosted review above are preserved;
+no Next Generation deployment or production release has been made.
 
-## Try the current pages
+## Home, follow-through and soldier testing (24 November 2026)
 
-- **English Companion**: `index.html`
-- **Hebrew Companion**: `indexH.html`
-- **My Journey**: `my-journey.html` (switch languages or use `?lang=he`)
-- **36 career and business skills**: `skills-business.html`
-- **Shared local data model**: `journey-store.js`
-- **Optional protected backup**: `journey-backup.js`
-- **Dashboard interface**: `my-journey.js`
+The **Home / בית** button works from an open conversation or the profile/settings drawer.
+It returns to a small hub **without deleting chats, consent, profile details, Journey
+records or an unsent message draft**. Choose *Continue conversation* to return to the
+same thread. My Journey and the 36-skill assessment also have a Home return path;
+the language is preserved. No username or password is needed for this browser-local
+feature. The separate, optional encrypted Journey sync has its own credentials.
 
-The homepages, assessment and dashboard share `localStorage` **on the same browser and site origin**. The two older conversation transcripts are still separate; My Journey unifies the reusable plans and skill records, not their entire chat histories.
+The Home hub makes five existing tasks discoverable:
 
-## How the ongoing profile works
+1. **Find a benefit:** open Updated Information and Benefits with dated
+   sources and verification cautions. This is not an eligibility decision.
+2. **Prepare a resume:** open My Journey → CV drafts; review before sharing.
+3. **Resume an earlier conversation:** open the private chat-history drawer,
+   choose a past chat, or use the existing separate-language backup tools.
+4. **Compare education choices:** record up to four plans with school,
+   duration, cost, source URL and verification date for a side-by-side
+   comparison. Values are entered by the soldier, not verified by the app.
+5. **Save a follow-up:** use My Journey → Next actions to record and
+   complete a task. Browser/calendar reminders remain optional.
 
-1. The soldier rates one of the 36 career skills and supplies a non-sensitive personal example. A rating of 1–7 is **self-reported**, not a confirmed proficiency score. Examples are used in CV drafts only when the soldier ticks the confirmation box.
-2. A goal can be added and linked to education plans and to concrete actions. Actions can be marked in progress or completed. Goal or study dates help the soldier plan next steps; **no automated reminders are currently sent**.
-3. A CV can be written or edited in My Journey or generated as a **draft** from confirmed skill examples. A CV produced during a Companion conversation can be saved after an explicit click. The soldier must check every sentence before sending it to an employer.
-4. The Companion can reuse Journey information in later conversations, but **profile-context sharing with its external AI is off by default**. The Privacy & backup tab lets the soldier choose which categories to share and preview the short text that would be added to AI requests. Private notes are excluded from this context. A live chat question and recent conversation messages may still be sent to the configured AI service as part of the existing chat operation.
-5. **Export and import**: download a password-protected AES-GCM backup and import it on another device. The backup passphrase is neither stored nor recoverable. An unencrypted JSON export is also available with an explicit warning. Restoring a backup never automatically enables AI-profile sharing.
-6. Soldier-controlled deletion: erase only My Journey, or explicitly choose also to erase the assessment and both language-edition conversation histories. Browser clearing/private browsing can also remove saved information.
+The toolbar now shows Home, My Journey and More, with existing AI, voice, profile
+and support controls in More. On mobile and desktop, topic selection and chat
+history can be collapsed to give the conversation more room. Basic bold and
+inline-code output is rendered using text nodes rather than untrusted HTML.
 
-**Limitations:** Browser `localStorage` is not an encrypted personal vault. Other people using the same browser profile could access it, and a browser reset can erase it. Encrypted export protects the *backup file*, not browser storage. The current implementation does **not** provide an account, automatic cross-device synchronization, cloud backup, emergency monitoring or a secure personal document repository. Future production service requires independent privacy/security review, authenticated encrypted synchronization with conflict handling, device security testing, Hebrew review and accessibility testing before use with soldiers.
+An optional **Help test these five tasks** section on Home lets a volunteer
+mark steps, write where they became confused and download feedback. Nothing is
+collected or uploaded automatically. Do not include names, health or sensitive
+service information. For supervised testing, use the observer worksheet
+in [SOLDIER-UX-TEST.md](SOLDIER-UX-TEST.md).
 
-The Service Worker precaches the core pages for offline access once the site is loaded online. Live AI replies remain dependent on network/server availability.
+Run `npm test` (including `npm run test:home`) and `npm run build:review`.
+This update does **not** enable automatic follow-up notifications, accounts,
+encrypted localStorage, cross-language or cross-device chat sync, PDF/DOCX CV
+generation, a live job feed, verified school price lookup or clinical support.
+Retain the existing review/pilot release restrictions.
 
-## Testing
+## Share the hosted review build
 
-Run `npm install && npm test`. The Journey regression suite is `npm run test:journey`. It tests local profile persistence, skills migration, CV edits, linked goals and actions, privacy defaults, backup imports, deletion, valid inline JS and encrypted backup round-trips. Physical device, voice, browser-permission and production AI tests are still necessary.
+The Render review site serves this development branch independently of Aba's
+computer and Codex. See [HOSTING.txt](HOSTING.txt) for the Render dashboard,
+sharing, automatic updates and manual deployment instructions. `npm run
+build:review` packages only the public frontend into `dist`; the existing AI
+backend remains separate. Hosting does not activate cross-device sync.
+
+## Open on Windows
+
+Double-click `Start.cmd` for Hebrew or `Start-English.cmd` for English. Use
+`Stop.cmd` to stop the background server. Install Node.js 24 once if needed;
+daily use needs no development commands or open Codex session.
+The fixed local address is `http://127.0.0.1:43127/`.
+
+See [OPEN-ME.txt](OPEN-ME.txt) for opening, backup, internet requirements and
+updates. Keep the launcher files with the app when updating this repository.
+Live AI uses the existing external backend with the app's sharing controls.
+
+The existing Hebrew and English Companion now connects the soldier-owned Journey profile to both the original Momentum 63 life skills and the separate 36 business skills. Goals, CV drafts, education and actions remain editable in the same local profile.
+
+## Current entry points
+
+- `index.html` / `indexH.html`: dialogue, optional browser voice, persistent external AI consent with Settings withdrawal, and offline safety cues.
+- `my-journey.html` / `?lang=he`: goals, actions, CVs, education, confirmed skills, application preparation, reminders, backup and optional encrypted synchronization.
+- `skills-business.html`: the 36-skill, 1–7 self-assessment. This is a self-report scale, distinct from evidence-based experience levels.
+- `server/sync-server.js`: ciphertext-only continuity service, separately deployed. See [deployment and participant instructions](server/README.md).
+
+## What is implemented
+
+- Explicit consent before the first external AI request, remembered until withdrawal or a provider/sharing-scope change. Cancel sends nothing. Recent conversation context and separately enabled Journey categories are disclosed before agreement. Settings stops future sharing, including background requests. A non-blocking reminder appears every 100 user messages sent. Requests retain timeouts, schema-constrained output, local validation and retry controls.
+- Canonical 63-skill English names and the research role/rank matrix are extracted from the supplied mapping workbook. Source #63 duplicates Professionalism (#55); it remains documented and is not counted as a separate CV skill. Hebrew labels are interface translations pending human review. Role and rank prioritize a few evidence questions; they never award a skill or proficiency score.
+- Soldiers explicitly confirm a non-sensitive example to save a life skill. Saved examples can be reused in editable CV drafts alongside confirmed 36-skill examples. Existing chat-derived strengths need a separate user confirmation before entering Journey.
+- Password-encrypted, invitation-gated online snapshots with private connection codes, two-device download/review, opt-in synchronization while unlocked, atomic conflict detection, tombstones on online deletion and local export/reset controls. Conversations and documents are excluded from this service.
+- Generic opt-in browser reminders while Journey is open; calendar export provides alarms when the app is closed after the soldier imports the file. Calendar titles/notes are omitted unless selected. Calendar providers may receive exported data.
+- Three dated official-source guides for personal deposit, discharge grant and reserve compensation claim routes. They prepare local checklists and drafts; they do not calculate or determine eligibility, fill a signed official form, or submit anything. Source summaries expire for review and link to the responsible authority. Program-owner/language review is still pending.
+- On-device urgent safety cue handling before external AI, text access to human support, and an explicit statement that the app has not notified anyone and is not monitored. This is a narrow safeguard, not a clinical assessment.
+
+## Verification
+
+`npm ci && npm test` runs offline regression and HTTP integration tests on Node 24. `npm run test:live` is a separate, explicit network smoke test against the configured AI service with invented Hebrew/English scenarios. It incurs small provider usage; it never loads real soldier data. GitHub Actions runs the offline suite on pull requests and main.
+
+See [the current verification report](TEST_REPORT.md) for measured results and remaining deployment checks.
+
+## Release limits
+
+This is not yet a production-approved soldier deployment. The sync service must be deployed to the confirmed Render workspace with persistent storage, an exact origin allowlist and a privately configured enrollment invitation. The existing AI proxy remains separate. Its production access controls, credential handling and retention/logging need review.
+
+Browser-local profiles and conversations remain in unencrypted localStorage; encrypted exports and online snapshots do not encrypt that local store. The two language editions still retain their older separate chat histories, while Journey shares selected reusable facts. This update does not provide encrypted document storage, identity/account recovery, closed-app push scheduling, clinical monitoring or an authenticated Momentum staff dashboard. Physical microphone/playback, offline installation, accessibility, Hebrew quality, clinical safety and independent security review remain required before a soldier pilot. Human contact routing still needs a real Momentum coordinator destination.
 
 ---
 
@@ -149,7 +220,7 @@ real browser, a microphone, and a working proxy.
 
 Conversation histories and Journey records are saved in the browser's localStorage only. Message text is sent to the AI
 service to generate replies. Speech is handled by the browser, which on most browsers means
-audio goes to the browser vendor's servers. Nothing is stored on our server. Clearing browser
+audio goes to the browser vendor's servers. The application cannot establish the external service or provider's retention policy; that policy must be reviewed before deployment. Clearing browser
 data deletes everything. On a shared device, others using that browser can open it.
 
 ---
@@ -161,3 +232,70 @@ data deletes everything. On a shared device, others using that browser can open 
 3. Should the growth profile be exportable — for a Momentum coordinator, or for the person's CV?
 4. Who is the Momentum contact in `CONFIG.SUPPORT`, and is it a phone number or a form?
 5. Automatic cross-device continuity remains a future decision: secure account and encrypted sync, user consent, conflict handling and independent security review are prerequisites.
+
+## Updated Information and Benefits
+
+Open the separate sidebar topic or [open directly in English](https://transition-companion-review.onrender.com/app/index.html?lang=en&section=updates). Government rights remain under Rights and benefits; My Journey includes application preparation. The updates section adds a dated public feed for rights, shows, discounts, career events, training and private/nonprofit offers. The chat receives these source notes for relevant questions only while external AI consent is active. A scheduled research task checks sources and publishes an edition every three days. Stale reviews and restricted sources are clearly labelled. See [BENEFITS-UPDATES.md](BENEFITS-UPDATES.md) for the publishing workflow and limitations.
+
+## External AI consent
+
+Before the first provider request, Agree and continue enables sharing of messages, recent conversation context, system instructions and separately enabled Journey categories with Anthropic (Claude). Cancel sends no request. Consent is remembered in this browser until withdrawn, or until the configured provider/endpoint or data-sharing scope changes. Settings → Withdraw consent blocks future chat and background AI requests and aborts in-flight fetches; it cannot undo transfers already made. Every 100 user messages dispatched shows a non-blocking reminder with Manage consent. History messages, lines, diagnostics and background calls do not increment this counter.
+
+All new AI request paths must use `MomentumAIConsent.request`. Background calls must omit `interactive` and `userMessageId`; they fail closed without matching consent. Interactive user sends provide a stable unique message ID. Provider changes must update the `provider` option, and changes to shared data categories must update the scope version in `ai-consent.js`. Consent is local to the browser/origin; unavailable browser storage makes it session-only.
+
+Fresh version: Transition Companion V2
+https://transition-companion-review.onrender.com/companion-v2/indexH.html
+English: https://transition-companion-review.onrender.com/companion-v2/index.html
+All frontend assets have new paths to bypass older cached copies. Saved browser data
+and consent stay on the same origin. Use this new link for testing.
+
+## Previous conversations and private transfer
+
+Open **Previous conversations / שיחות קודמות** below the toolbar. Select a
+conversation to continue it or start a new one. Each original edition's
+message stream appears as one conversation. Older messages have no reliable
+session dates. The link inside the list opens the other edition's history.
+Changing interface language preserves the selected conversation.
+
+Chat history is readable by anyone using the same browser profile and site.
+A different browser, profile, device, or site origin has its own storage.
+Clearing site data or ending private browsing can erase it. To transfer chats,
+download a backup from each edition you used, move it privately, and restore
+it in the desired edition. The file contains readable message text, including
+any sensitive details or document text typed into chat. Restore adds missing
+transcripts. Topic controls, profile data, attachments and consent settings
+are outside this text backup. Keep the file somewhere you control.
+
+A username and password alone cannot recover browser data. Optional automatic
+cross-device recovery would require explicit opt-in, encrypted transcript
+storage, device authentication, a key or recovery code held by the soldier,
+and deletion and lost-key procedures. Existing Journey sync excludes chats.
+
+## Compact chat experience — November 19, 2026
+
+The welcome and conversation panels take less vertical space. Hebrew chat guidance
+can be expanded when wanted. Listen reads only the current reply when tapped;
+choosing voice input, changing language or receiving another reply never enables
+automatic read-aloud, including for returning users with old voice preferences.
+
+Previous conversations appear in a persistent desktop sidebar. On smaller screens,
+Previous conversations opens a side drawer with New chat and saved conversations;
+selecting one or pressing Escape closes it. Backups and privacy information remain
+available in its expandable section. The existing language-specific browser stores
+are preserved. New replies scroll into view after layout, beginning at the start
+of long answers so their opening lines are not skipped.
+
+## Simplified background and topic resumption
+
+The optional background step asks for phone/email, a general unit or branch,
+service role and reserve-service status, in that order, with Continue and Skip.
+Contact details remain in the existing browser-local profile and are not included
+in AI requests or used to send a contact request. Removed questions do not erase
+previously saved background answers.
+
+Selecting the same topic again, or returning to an earlier topic, resumes its
+conversation rather than inserting another introductory question. Duplicate
+legacy topic introductions are hidden in the displayed conversation and AI
+context; the original saved transcript and user messages are preserved. The
+single-interest onboarding path also produces only one introduction. Help stays
+above the compact chat heading, with the navigation hint and readable topic chips.

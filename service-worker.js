@@ -17,7 +17,7 @@
    in CACHE (tc-v1 → tc-v2) so phones pick up the new list.
    ============================================================ */
 
-const CACHE = "tc-v6-journey-profile";
+const CACHE = "tc-v52-hallmark";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -27,6 +27,20 @@ const APP_FILES = [
   "./my-journey.js",
   "./journey-store.js",
   "./journey-backup.js",
+  "./journey-sync.js",
+  "./journey-reminders.js",
+  "./journey-tools-ui.js",
+  "./journey-rights.js",
+  "./onboarding.js", "./onboarding.css", "./chat-history.js", "./companion-home.js", "./companion-home.css",
+  "./companion-plus.js", "./tools-plus.js", "./safe-dom.js", "./illustrations.js", "./pdf-maker.js", "./cv-builder.js", "./interview-sim.js", "./profile-analyzer.js", "./momentum-sans-regular.ttf", "./momentum-sans-bold.ttf", "./companion-plus.css", "./knowledge-base.js", "./knowledge-base-data.js", "./knowledge-base-full.json", "./journey-plus.js", "./journey-plus.css", "./momentum-theme.css",
+  "./benefits-updates.js",
+  "./benefits-updates.css",
+  "./benefits-updates.json",
+  "./ai-consent.js",
+  "./response-schema.js",
+  "./skills-source.js",
+  "./companion-safety.js",
+  "./life-skills-ui.js",
   "./companion-mentor.jpeg",
   "./manifest.json",
   "./icon-192.png",
@@ -34,10 +48,12 @@ const APP_FILES = [
   "./apple-touch-icon.png"
 ];
 
+const APP_PATHS = new Set(APP_FILES.map(file => new URL(file, self.location.href).pathname));
+
 // Install: save the app files.
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(APP_FILES)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(APP_FILES.map(file => new Request(new URL(file, self.location.href), {cache: "reload"})))).then(() => self.skipWaiting())
   );
 });
 
@@ -45,7 +61,7 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k.startsWith("tc-") && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -70,20 +86,30 @@ self.addEventListener("fetch", event => {
 
   // Anything else from another website (including the proxy): left alone.
   if (url.origin !== self.location.origin) return;
+  // Cache only named public assets, never same-origin API responses or private data.
+  if (!APP_PATHS.has(url.pathname)) return;
 
-  // The app's own files: internet first, saved copy if offline.
-  event.respondWith(
-    fetch(req)
-      .then(res => {
-        if (res.ok) {
-          const copy = res.clone();   // copy now, before the page reads it
-          caches.open(CACHE).then(cache => cache.put(req, copy));
-        }
-        return res;
-      })
-      .catch(() =>
-        caches.match(req, { ignoreSearch: true })
-          .then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : undefined))
-      )
-  );
+  // The app's own files: internet first, but never hang. If the network is slow (over 2.5 s)
+  // and a saved copy exists, show the saved copy at once; the fresh copy still updates the cache.
+  const network = fetch(req, {cache: "no-cache"}).then(res => {
+    if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(cache => cache.put(req, copy)); }
+    return res;
+  });
+  const saved = () => caches.match(req, { ignoreSearch: true }).then(hit => hit || (req.mode === "navigate" ? caches.match("./index.html") : undefined));
+  event.respondWith(new Promise(resolve => {
+    let done = false;
+    const finish = r => { if (!done && r) { done = true; resolve(r); } };
+    const hasTimer = typeof setTimeout === 'function';
+    const timer = hasTimer ? setTimeout(() => saved().then(finish), 2500) : 0;
+    const stop = () => { if (hasTimer) clearTimeout(timer); };
+    network.then(r => { stop(); finish(r); })
+      .catch(() => { stop(); saved().then(r => { if (r) finish(r); else if (!done) { done = true; resolve(typeof Response === 'function' ? Response.error() : undefined); } }); });
+  }));
+  if (event.waitUntil) event.waitUntil(network.catch(() => {}));
+});
+
+// Generic notification click opens the private local action list.
+self.addEventListener("notificationclick",event=>{
+  event.notification.close();
+  event.waitUntil(clients.openWindow(new URL("./my-journey.html#actions",self.location.href).href));
 });
