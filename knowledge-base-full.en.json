@@ -8,7 +8,8 @@
     "amounts_as_of": "2026-10",
     "source": "Discharged Soldiers Department and Fund, National Insurance, Israel Tax Authority",
     "language": "en",
-    "translated_from": "knowledge-base-full.json (Hebrew)"
+    "translated_from": "knowledge-base-full.json (Hebrew)",
+    "checked": "2026-11-27"
   },
   "categories": {
     "money": "Money and financial rights",
@@ -102,7 +103,8 @@
       "name_he": "Temporary exemption from National Insurance and health tax",
       "duration": "Two months after the month of discharge",
       "condition": "If you are not working",
-      "official_url": "https://www.btl.gov.il/"
+      "official_url": "https://www.btl.gov.il/",
+      "after": "After the two months: if you are not working and not getting unemployment benefit, you pay minimum contributions yourself — about 266 ₪ a month, or about 171 ₪ for a non-working student (National Insurance 2026 booklet). Employees have it deducted from their salary."
     },
     "preferred_work_grant": {
       "name_he": "Preferred / required work grant",
@@ -150,14 +152,14 @@
     },
     "unemployment": {
       "name_he": "Unemployment benefit",
-      "notes": "Possible unemployment benefit in the first year, provided you worked at least 6 months (up to 6 months of service can be counted).",
-      "official_url": "https://www.btl.gov.il/"
+      "notes": "In the first year after discharge you need 12 months of work out of 18, and up to 6 months of service count, so in practice about 6 months of work. The amount depends on your wage, and is at least ₪144.62 a day for a discharged soldier (per National Insurance), for up to 70 days. If you start vocational training through the Employment Service in the first year, no qualifying period is needed. Receiving unemployment before preferred work can reduce the preferred-work grant.",
+      "official_url": "https://www.btl.gov.il/English Homepage/Benefits/Unemployment Insurance/Pages/standing-army.aspx"
     }
   },
   "studies": {
     "mimadim_lelimudim": {
       "name_he": "Mimadim LeLimudim (studies grant)",
-      "description": "Funding of up to 100% of university tuition for a first degree or certificate studies in the arts.",
+      "description": "A tuition scholarship for a first degree or art certificate studies: covers up to about 85% of tuition each year, with a top-up to about 100% in the final year.",
       "eligibility": [
         "Combat soldiers with an honourable ('gold') discharge",
         "Lone soldiers",
@@ -166,9 +168,10 @@
         "Eligible for Tashmash parents"
       ],
       "duration": "3 years (4 in engineering, medicine, architecture)",
-      "deadline": "First application within 5 years of discharge (sometimes longer)",
-      "notes": "No volunteering hours required. Registration opens every year.",
-      "official_url": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx"
+      "deadline": "First request usually within 5 years of discharge; a pre-academic programme, psychometric course or career service can extend the window (up to about 8 years). Check your exact eligibility in the personal area.",
+      "notes": "No volunteering hours required. Registration opens every year in the personal area on the Division website. Since May 2026 the Mil-GO scholarship can be received in parallel (no offsetting) — check the scholarship terms.",
+      "official_url": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx",
+      "registration": "Registration opens once a year in the personal area (in 2025-26: November to July). Register as soon as it opens."
     },
     "periphery_scholarships": {
       "name_he": "Periphery scholarships",
@@ -276,8 +279,8 @@
         "Enhanced housing rights",
         "Longer validity for some benefits (up to 10 years)",
         "Additional support",
-        "Rent assistance: up to 1,200 ₪ a month in the first year",
-        "Full funding of the psychometric exam registration"
+        "Help with rent in the first year after discharge (amount and conditions in the personal area; months in a soldiers' home after discharge shorten the period)",
+        "Help funding the psychometric exam — check the terms in the Division guide for discharged lone soldiers"
       ],
       "official_url": "https://www.hachvana.mod.gov.il/",
       "official_note": "Personal area → Benefits"
