@@ -1,93 +1,96 @@
 {
   "schemaVersion": 1,
-  "reviewedAt": "2026-11-25T06:59:26Z",
-  "nextReviewDue": "2026-11-28T06:59:26Z",
+  "reviewedAt": "2026-11-28T07:03:51Z",
+  "nextReviewDue": "2026-12-01T07:03:51Z",
   "reviewIntervalDays": 3,
   "items": [
     {
       "id": "grant",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/GrantAndDeposit/Pages/Grant.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/CalculatorOfDeposit.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Discharge grant — bank payment",
-        "summary": "Generally unrestricted grant, normally paid to your service bank account within 60 days of discharge. The lone-soldier advance within 14 days is a separate timing rule, not the personal deposit.",
+        "summary": "Awaiting re-verification (28 November): Generally unrestricted grant, normally paid to your service bank account within 60 days of discharge. The lone-soldier advance within 14 days is a separate timing rule, not the personal deposit.",
         "eligibility": "At least 12 eligible service months, or discharge for health reasons. Amount depends on official month-by-month service classification.",
         "nextStep": "Use the calculator for estimates only; confirm actual classification and amounts in the Ministry personal area. Keep your bank account active."
       },
       "he": {
         "title": "מענק שחרור — תשלום לבנק",
-        "summary": "מענק לכל מטרה, המועבר בדרך כלל לחשבון השירות בתוך 60 יום מהשחרור. מקדמת המענק לבודדים בתוך 14 יום היא כלל נפרד, ואינה הפיקדון האישי.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): מענק לכל מטרה, המועבר בדרך כלל לחשבון השירות בתוך 60 יום מהשחרור. מקדמת המענק לבודדים בתוך 14 יום היא כלל נפרד, ואינה הפיקדון האישי.",
         "eligibility": "לפחות 12 חודשי שירות מזכים או שחרור מטעמי בריאות. הסכום תלוי בסיווג הרשמי של חודשי השירות.",
         "nextStep": "המחשבון מספק אומדן בלבד; בדקו סיווג וסכומים בפועל באזור האישי של המשרד ושמרו על חשבון בנק פעיל."
-      }
+      },
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. "
     },
     {
       "id": "deposit",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/default.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/GrantAndDeposit/DepositUpTo5/Pages/CalculatorOfDeposit.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Personal deposit — restricted uses",
-        "summary": "Separate from the bank grant. Available from day 14; during the first five years, limited to studies, vocational training, business, driving lessons, marriage and buying a home/building land.",
+        "summary": "Awaiting re-verification (28 November): Separate from the bank grant. Available from day 14; during the first five years, limited to studies, vocational training, business, driving lessons, marriage and buying a home/building land.",
         "eligibility": "At least 12 eligible service months, or the health-discharge exception. Official service classification determines the amount.",
         "nextStep": "Estimate with the calculator, then check actual balance/classification in the personal area and the instructions for your chosen use."
       },
       "he": {
         "title": "פיקדון אישי — מטרות מוגדרות",
-        "summary": "נפרד מהמענק לבנק. זמין מהיום ה־14; בחמש השנים הראשונות מיועד ללימודים, הכשרה מקצועית, עסק, נהיגה, נישואין ורכישת דירה או קרקע לבנייה.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): נפרד מהמענק לבנק. זמין מהיום ה־14; בחמש השנים הראשונות מיועד ללימודים, הכשרה מקצועית, עסק, נהיגה, נישואין ורכישת דירה או קרקע לבנייה.",
         "eligibility": "לפחות 12 חודשי שירות מזכים או חריג שחרור מטעמי בריאות. הסיווג הרשמי קובע את הסכום.",
         "nextStep": "היעזרו במחשבון לאומדן, ואז בדקו יתרה וסיווג בפועל באזור האישי והנחיות למטרה שבחרתם."
-      }
+      },
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. "
     },
     {
       "id": "transport",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/PublicRights/Pages/transport.aspx",
       "actionUrl": null,
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Public transport after discharge",
-        "summary": "The official page describes free public transport during the first year after discharge, with the appropriate profile activated.",
+        "summary": "Awaiting re-verification (28 November): The official page describes free public transport during the first year after discharge, with the appropriate profile activated.",
         "eligibility": "Discharged soldiers and qualifying national/civil service graduates; confirm your dates.",
         "nextStep": "Activate the discharged-service profile in the travel app or Rav-Kav. Validate every journey."
       },
       "he": {
         "title": "תחבורה ציבורית אחרי השחרור",
-        "summary": "העמוד הרשמי מציג נסיעה חינם בשנה הראשונה לשחרור לאחר הפעלת הפרופיל המתאים.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): העמוד הרשמי מציג נסיעה חינם בשנה הראשונה לשחרור לאחר הפעלת הפרופיל המתאים.",
         "eligibility": "חיילים משוחררים ומסיימי שירות לאומי־אזרחי מתאימים; בדקו את התאריכים שלכם.",
         "nextStep": "עדכנו פרופיל משתחרר ביישומון או ברב־קו ותקפו כל נסיעה."
-      }
+      },
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. "
     },
     {
       "id": "tax",
       "category": "rights",
-      "status": "restricted",
+      "status": "ongoing",
       "sourceType": "government",
-      "sourceUrl": "https://www.hachvana.mod.gov.il/Benefits/migufey/Pages/kitsbat.aspx",
-      "actionUrl": null,
-      "checkedAt": "2026-11-16T20:18:16Z",
+      "sourceUrl": "https://www.gov.il/BlobFolder/guide/guide-to-discharged-soldier/he/Guides_misim-alon-2026-toda-lahyal.pdf",
+      "actionUrl": "https://www.gov.il/BlobFolder/guide/guide-to-discharged-soldier/he/Guides_misim-alon-2026-toda-lahyal.pdf",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Income-tax relief",
-        "summary": "Discharged service members may qualify for tax credit points. The Tax Authority guide was unreadable on 25 November; direct current verification is pending.",
-        "eligibility": "Service length, discharge date and tax circumstances affect the entitlement.",
-        "nextStep": "Check the Tax Authority instructions and ask payroll which documents it needs. Do not assume a fixed number of points."
+        "summary": "The Tax Authority’s 2026 guide confirms service-length-dependent tax credit on earned income during the 36-month post-discharge period. Not everyone receives two points; no personal amount is promised.",
+        "eligibility": "Credit depends on eligible service length, discharge timing and taxable earned income. The detailed Ministry page could not be reread today; confirm exact month counting with payroll.",
+        "nextStep": "Employee: complete Form 101 box H.14, attach either the certificate of appreciation or official military-service record, and check the credit on your payslip. Use the linked official 2026 PDF."
       },
       "he": {
         "title": "הקלות במס הכנסה",
-        "summary": "משוחררים עשויים להיות זכאים לנקודות זיכוי במס. מדריך רשות המסים לא היה קריא ב־25 בנובמבר; האימות הישיר העדכני ממתין.",
-        "eligibility": "משך השירות, מועד השחרור ונסיבות המס משפיעים על הזכאות.",
-        "nextStep": "בדקו הנחיות ברשות המסים ובררו עם חשבות השכר אילו מסמכים נדרשים. אין להניח מספר קבוע של נקודות."
+        "summary": "מדריך רשות המסים לשנת 2026 מאשר זיכוי על הכנסה מיגיעה אישית בתקופת 36 החודשים שלאחר השחרור, בהתאם למשך השירות. לא כולם זכאים לשתי נקודות; אין הבטחת סכום אישי.",
+        "eligibility": "הזיכוי תלוי במשך השירות המזכה, מועד השחרור ובהכנסה חייבת מיגיעה אישית. עמוד המשרד המפורט לא היה קריא היום; ודאו ספירת חודשים מדויקת עם חשבות השכר.",
+        "nextStep": "שכירים: מלאו טופס 101 בסעיף ח.14, צרפו תעודת הערכה או אישור על מהלך השירות הצבאי ובדקו את הזיכוי בתלוש. ראו PDF רשמי לשנת 2026 בקישור."
       },
-      "reviewNotes": "2026-11-25: Tax Authority guide unreadable; Ministry overview read. Previous checkedAt retained."
+      "reviewNotes": "2026-11-28: Both pages of Tax Authority PDF read. MOD detailed page https://www.hachvana.mod.gov.il/Benefits/migufey/Pages/kitsbat.aspx failed repeatedly; exact after-discharge-month counting not reverified. Primary source and action now use verified PDF, not inaccessible guide wrapper."
     },
     {
       "id": "preferred-work",
@@ -96,7 +99,7 @@
       "sourceType": "government",
       "sourceUrl": "https://www.btl.gov.il/benefits/Demobilized_Soldier/Pages/default.aspx",
       "actionUrl": null,
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Preferred / required work grant",
         "summary": "National Insurance offers a grant for qualifying work after discharge.",
@@ -108,7 +111,8 @@
         "summary": "ביטוח לאומי מעניק מענק עבור עבודה מתאימה לאחר השחרור.",
         "eligibility": "סוג העבודה, היקף המשרה, תקופת העבודה ונסיבות השירות חייבים לעמוד בתנאים.",
         "nextStep": "לפני בחירת עבודה לצורך המענק, ודאו שהתפקיד המסוים מוכר ושמרו אישורי העסקה."
-      }
+      },
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. "
     },
     {
       "id": "behatsdaa-shows",
@@ -120,17 +124,17 @@
       "checkedAt": "2026-11-16T20:18:16Z",
       "en": {
         "title": "Behatsdaa: shows, cinema and culture",
-        "summary": "The Ministry lists subsidized culture and leisure offers through Behatsdaa. Individual shows, prices and ticket availability could not be verified from the provider site.",
+        "summary": "Awaiting re-verification (28 November): The Ministry lists subsidized culture and leisure offers through Behatsdaa. Individual shows, prices and ticket availability could not be verified from the provider site.",
         "eligibility": "Eligible honorably discharged soldiers and active reservists; membership rules apply.",
         "nextStep": "Open the club yourself to see current dates and stock. The Companion does not need your login."
       },
       "he": {
         "title": "בהצדעה: הופעות, קולנוע ותרבות",
-        "summary": "משרד הביטחון מפנה להטבות תרבות ופנאי דרך בהצדעה. לא ניתן היה לאמת באתר הספק הופעות מסוימות, מחירים או זמינות כרטיסים.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): משרד הביטחון מפנה להטבות תרבות ופנאי דרך בהצדעה. לא ניתן היה לאמת באתר הספק הופעות מסוימות, מחירים או זמינות כרטיסים.",
         "eligibility": "משוחררים בכבוד ומשרתי מילואים פעילים הזכאים לחברות, לפי תנאי המועדון.",
         "nextStep": "פתחו בעצמכם את אתר המועדון לבדיקת מועדים ומלאי. אין צורך למסור למלווה פרטי כניסה."
       },
-      "reviewNotes": "2026-11-25: Official club link returned 403; no inventory or prices verified. Previous checkedAt retained."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Official club link returned 403; no inventory or prices verified. Previous checkedAt retained."
     },
     {
       "id": "behatsdaa-discounts",
@@ -142,17 +146,17 @@
       "checkedAt": "2026-11-16T20:18:16Z",
       "en": {
         "title": "Behatsdaa: shopping and leisure discounts",
-        "summary": "The Ministry describes club discounts for shopping and leisure. No specific discount price is verified in this edition.",
+        "summary": "Awaiting re-verification (28 November): The Ministry describes club discounts for shopping and leisure. No specific discount price is verified in this edition.",
         "eligibility": "The official guide describes membership for honorably discharged soldiers within three years of discharge and active reservists. Confirm membership and payment conditions.",
         "nextStep": "Compare the final provider price and terms before buying."
       },
       "he": {
         "title": "בהצדעה: הנחות בקניות ובפנאי",
-        "summary": "המשרד מציג הטבות מועדון בקניות ובפנאי. במהדורה זו לא אומת מחיר של הנחה מסוימת.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): המשרד מציג הטבות מועדון בקניות ובפנאי. במהדורה זו לא אומת מחיר של הנחה מסוימת.",
         "eligibility": "המדריך הרשמי מתאר חברות למשוחררים בכבוד עד שלוש שנים מהשחרור ולמשרתי מילואים פעילים. בדקו תנאי חברות ותשלום.",
         "nextStep": "השוו מחיר סופי ותנאים אצל הספק לפני רכישה."
       },
-      "reviewNotes": "2026-11-25: Official club link returned 403; no inventory or prices verified. Previous checkedAt retained."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Official club link returned 403; no inventory or prices verified. Previous checkedAt retained."
     },
     {
       "id": "discharge-fair",
@@ -161,7 +165,7 @@
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/AboutUs/Pages/Discharge_Conference.aspx",
       "actionUrl": null,
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Next discharge conference and career fair",
         "summary": "The official page says the 2026 conference has ended. The next date and location have not been announced on this page.",
@@ -173,7 +177,8 @@
         "summary": "העמוד הרשמי מציין שכנס 2026 הסתיים. מועד ומיקום הכנס הבא טרם פורסמו בעמוד.",
         "eligibility": "לקראת שחרור ולאחר השחרור.",
         "nextStep": "עקבו בעמוד הרשמי אחר האירוע הבא ופתיחת הרשמה. במהדורה זו אין מועד עתידי מאומת."
-      }
+      },
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. "
     },
     {
       "id": "jobs",
@@ -182,7 +187,7 @@
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/Employment/Pages/default.aspx",
       "actionUrl": null,
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Job opportunities for discharged soldiers",
         "summary": "The Ministry maintains a route to selected employer vacancies for discharged service members.",
@@ -195,7 +200,7 @@
         "eligibility": "לכל משרה תנאי קבלה משלה. משרות עשויות להיסגר ללא הודעה מוקדמת.",
         "nextStep": "פתחו את ההצעות ובררו עם המעסיק שהמשרה עדיין פנויה לפני הכנת מועמדות."
       },
-      "reviewNotes": "Directory introduction verified; dynamically rendered individual listings were not readable. No individual vacancy inferred."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. Directory introduction verified; dynamically rendered individual listings were not readable. No individual vacancy inferred."
     },
     {
       "id": "training",
@@ -204,7 +209,7 @@
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/MainEducation/ProfessionalTraining/Pages/AboutTraining.aspx",
       "actionUrl": null,
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Subsidized vocational training",
         "summary": "The Ministry describes training routes with different funding and support arrangements. Courses change over time.",
@@ -216,7 +221,8 @@
         "summary": "המשרד מציג הכשרות עם מסלולי מימון וסיוע שונים. רשימת הקורסים משתנה.",
         "eligibility": "לכל הכשרה תנאי כניסה ושירות משלה.",
         "nextStep": "בדקו קורס עדכני, מועד פתיחה, תנאי מימון והאם התשלום משתמש בפיקדון לפני הרשמה."
-      }
+      },
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. "
     },
     {
       "id": "scholarships",
@@ -225,7 +231,7 @@
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/default.aspx",
       "actionUrl": null,
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Government study scholarships",
         "summary": "The Ministry scholarship hub includes academic funding routes, including Mimadim and regional study assistance.",
@@ -237,7 +243,8 @@
         "summary": "עמוד המלגות מרכז מסלולי מימון אקדמיים, ובהם ממדים וסיוע ללימודים בפריפריה.",
         "eligibility": "לכל תוכנית תנאי שירות, לימודים והגשה נפרדים.",
         "nextStep": "בחרו תוכנית ובדקו בעמוד הרשמי את שנת הלימודים ואת המועד האחרון העדכני."
-      }
+      },
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. "
     },
     {
       "id": "impact",
@@ -246,7 +253,7 @@
       "sourceType": "nonprofit",
       "sourceUrl": "https://fidfimpact.org/אודות/",
       "actionUrl": "https://fidfimpact.org/הרשמה-למלגה/",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "FIDF IMPACT! scholarship — next cycle",
         "summary": "The provider describes a scholarship for combat and combat-support veterans and an annual March–May application window. The next cycle’s opening has not been independently confirmed in this edition.",
@@ -258,94 +265,97 @@
         "summary": "הספק מציג מלגה ללוחמים ולתומכי לחימה משוחררים וחלון הגשה שנתי במרץ–מאי. פתיחת המחזור הבא לא אומתה באופן עצמאי במהדורה זו.",
         "eligibility": "לוחמים ותומכי לחימה משוחררים העומדים בתנאי השירות, המצב הכלכלי והלימודים של התוכנית.",
         "nextStep": "קראו כעת את תנאי הזכאות ואמתו מול IMPACT את מועד הפתיחה לפני הגשה."
-      }
+      },
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. "
     },
     {
       "id": "youth-centres",
       "category": "career",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/Consultation/Pages/YouthCenters.aspx",
       "actionUrl": null,
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Local young-adult centres",
-        "summary": "Ministry advisers provide study and career guidance through local young-adult centres.",
+        "summary": "Awaiting re-verification (28 November): Ministry advisers provide study and career guidance through local young-adult centres.",
         "eligibility": "Discharged soldiers and national/civil service graduates.",
         "nextStep": "Contact the centre near you for current appointment times and ask about upcoming local career events. No local event date is verified here."
       },
       "he": {
         "title": "מרכזי צעירים באזור שלכם",
-        "summary": "יועצי האגף מעניקים הכוונה ללימודים ולקריירה במרכזי הצעירים ברשויות.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): יועצי האגף מעניקים הכוונה ללימודים ולקריירה במרכזי הצעירים ברשויות.",
         "eligibility": "חיילים משוחררים ומסיימי שירות לאומי־אזרחי.",
         "nextStep": "בררו במרכז הקרוב שעות ייעוץ עדכניות ושאלו על אירועי קריירה קרובים. אין כאן מועד מאומת לאירוע מקומי."
-      }
+      },
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. "
     },
     {
       "id": "lone-soldiers",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/ContactUsSingleSoldiers.aspx",
       "actionUrl": null,
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Support for discharged lone soldiers",
-        "summary": "The Ministry provides a dedicated information route covering support such as study, training and housing assistance.",
+        "summary": "Awaiting re-verification (28 November): The Ministry provides a dedicated information route covering support such as study, training and housing assistance.",
         "eligibility": "Discharged lone soldiers; each assistance route has its own conditions.",
         "nextStep": "Contact the dedicated Ministry route and ask which current programs apply to your situation."
       },
       "he": {
         "title": "סיוע לחיילים בודדים משוחררים",
-        "summary": "המשרד מציע מסלול מידע ייעודי בנושאים כגון לימודים, הכשרה וסיוע בדיור.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): המשרד מציע מסלול מידע ייעודי בנושאים כגון לימודים, הכשרה וסיוע בדיור.",
         "eligibility": "חיילים בודדים משוחררים; לכל מסלול סיוע תנאים משלו.",
         "nextStep": "פנו למסלול הייעודי במשרד ובררו אילו תוכניות עדכניות רלוונטיות לנסיבות שלכם."
-      }
+      },
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. "
     },
     {
       "id": "focused-hadera-2026-11",
       "category": "training",
-      "status": "upcoming",
+      "status": "closed",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/MainEducation/ProfessionalTraining/Pages/FOCUSED-Program-for-fighters.aspx",
       "actionUrl": "https://www.gavla.org.il/עמוד-תכנית-focused/",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
-        "title": "FOCUSED: Hadera transition course, 25 November",
-        "summary": "Starts 25 November 2026, Wednesdays 17:00–21:00, HaNasi 15, Hadera. Twelve meetings over 2½ months including an overnight seminar; personal mentoring. Participation ₪200, payable from the deposit. Registration until opening day, subject to space; availability not confirmed.",
+        "title": "FOCUSED Hadera — November intake closed",
+        "summary": "The listed cohort opened on 25 November 2026 at 17:00 in Hadera. Registration was only through opening day, subject to space. This intake is no longer an upcoming offer.",
         "eligibility": "Discharged combat soldiers and discharged lone soldiers within five years of discharge; interview and attendance commitment required.",
-        "nextStep": "Read the Ministry terms, then use Gav LaLochem’s linked application page. Confirm a place before paying."
+        "nextStep": "Watch the Ministry and provider for a newly dated cohort. A generic interest form does not establish a new intake or a place."
       },
       "he": {
-        "title": "FOCUSED: הכנה לאזרחות בחדרה, 25 בנובמבר",
-        "summary": "פתיחה ב־25.11.2026, ימי רביעי 17:00–21:00, הנשיא 15 בחדרה. 12 מפגשים במשך כחודשיים וחצי, כולל סמינר לינה ומנטור אישי. השתתפות: 200 ₪, אפשר מהפיקדון. הרשמה עד יום הפתיחה על בסיס מקום פנוי; זמינות לא אושרה.",
+        "title": "FOCUSED חדרה — ההרשמה למחזור נובמבר נסגרה",
+        "summary": "המחזור שפורסם נפתח ב־25.11.2026 בשעה 17:00 בחדרה. ההרשמה הייתה עד יום הפתיחה בלבד ועל בסיס מקום פנוי. מחזור זה אינו הצעה עתידית.",
         "eligibility": "לוחמות ולוחמים וחיילות וחיילים בודדים משוחררים עד חמש שנים מהשחרור; ריאיון והתחייבות לנוכחות.",
-        "nextStep": "קראו את תנאי המשרד ועברו לעמוד ההרשמה של גב ללוחם. אשרו מקום לפני תשלום."
+        "nextStep": "עקבו אחר פרסום מחזור חדש עם תאריך במשרד ואצל הספק. טופס התעניינות כללי אינו אישור למחזור חדש או למקום."
       },
       "eventAt": "2026-11-25T17:00:00+02:00",
-      "reviewNotes": "Ministry dated cohort and linked organizer page read. Organizer has a public interest form; no submission made. No precise registration closing hour published, so no deadline timestamp inferred."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. Ministry dated cohort and linked organizer page read. Organizer has a public interest form; no submission made. No precise registration closing hour published, so no deadline timestamp inferred."
     },
     {
       "id": "netivot-guidance",
       "category": "career",
-      "status": "restricted",
+      "status": "ongoing",
       "sourceType": "government",
       "sourceUrl": "https://www.netivot.muni.il/חיילים-משוחררים/",
       "actionUrl": "https://www.netivot.muni.il/חיילים-משוחררים/",
-      "checkedAt": "2026-11-22T07:01:03Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Netivot: local discharge and career guidance",
-        "summary": "Awaiting re-verification: the municipal page was blocked on 25 November. Municipal young-adult centre guidance on rights, career and employment at 185 Jerusalem Boulevard, Netivot. This is an ongoing service, not a dated fair; fees and appointment availability are not stated.",
+        "summary": "Municipal young-adult centre guidance on rights, career and employment at 185 Jerusalem Boulevard, Netivot. This is an ongoing service, not a dated fair; fees and appointment availability are not stated.",
         "eligibility": "Discharged soldiers seeking local transition guidance; confirm local access conditions.",
         "nextStep": "Use the centre contact details to check appointment times and relevant programs."
       },
       "he": {
         "title": "נתיבות: הכוונה למשוחררים ולקריירה",
-        "summary": "ממתין לאימות מחדש: העמוד העירוני נחסם ב־25 בנובמבר. מרכז הצעירים מציע הכוונה לזכויות, קריירה ותעסוקה בשדרות ירושלים 185, נתיבות. שירות מתמשך, לא יריד מתוארך; עלות וזמינות תורים אינן מפורטות.",
+        "summary": "מרכז הצעירים מציע הכוונה לזכויות, קריירה ותעסוקה בשדרות ירושלים 185, נתיבות. שירות מתמשך, לא יריד מתוארך; עלות וזמינות תורים אינן מפורטות.",
         "eligibility": "חיילות וחיילים משוחררים המבקשים הכוונה מקומית; יש לברר תנאי שירות מקומיים.",
         "nextStep": "בדקו מול המרכז שעות קבלה ותוכניות מתאימות באמצעות פרטי הקשר בעמוד."
       },
-      "reviewNotes": "2026-11-25: Municipality page returned an access-verification challenge, not readable service content. Previous checkedAt retained."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. 2026-11-25: Municipality page returned an access-verification challenge, not readable service content. Previous checkedAt retained."
     },
     {
       "id": "amit-laderech",
@@ -354,7 +364,7 @@
       "sourceType": "nonprofit",
       "sourceUrl": "https://www.amitladerech.org/?lang=en",
       "actionUrl": "https://www.amitladerech.org/?lang=en",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Amit La’Derech: mentoring after discharge",
         "summary": "Nonprofit mentoring and guidance for employment, education and civilian life. This is a program information route; current intake dates, locations and costs were not verified.",
@@ -367,7 +377,7 @@
         "eligibility": "משוחררי צה״ל מרקע מוחלש, לפי תיאור העמותה; הקבלה טעונה אישור שלה.",
         "nextStep": "קראו את המבוא הציבורי ובררו התאמה ומחזור קבלה. עמוד ההצטרפות המפורט לא היה קריא בבדיקה."
       },
-      "reviewNotes": "Public English overview read. Detailed joining page exceeded reader limits; no intake or price claim verified."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. Public English overview read. Detailed joining page exceeded reader limits; no intake or price claim verified."
     },
     {
       "id": "cameri-ushers",
@@ -376,7 +386,7 @@
       "sourceType": "provider",
       "sourceUrl": "https://www.cameri.co.il/דרושים/",
       "actionUrl": "https://www.cameri.co.il/דרושים/",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Cameri Theatre: usher recruitment listing",
         "summary": "Employer lists usher work suitable for discharged soldiers: evenings, plus mornings on weekends and holidays. Theatre address: 19 Shaul HaMelech Boulevard, Tel Aviv. No pay figure or closing date stated; confirm the vacancy remains available.",
@@ -389,7 +399,7 @@
         "eligibility": "משוחררים ואחרים בעלי גישה שירותית וזמינות לשעות הנדרשות.",
         "nextStep": "קראו את מודעת הסדרנות והנחיות ההגשה. הכינו קורות חיים בעצמכם אם מתאים."
       },
-      "reviewNotes": "Specific role read on original employer page; undated recruitment listing, not a career fair or guarantee of current headcount."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. Specific role read on original employer page; undated recruitment listing, not a career fair or guarantee of current headcount."
     },
     {
       "id": "isrotel-security",
@@ -398,7 +408,7 @@
       "sourceType": "provider",
       "sourceUrl": "https://www.isrotel.co.il/careers/job-res/jobs-in-security/allsecurity/",
       "actionUrl": "https://www.isrotel.co.il/careers/job-res/jobs-in-security/allsecurity/",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Isrotel: hotel security recruitment, role 34602",
         "summary": "Employer lists security roles in Eilat, Tel Aviv, Mitzpe Ramon, Sde Boker, Dead Sea and Jerusalem, with paid training and some housing options. Pay, housing charges and closing date are unspecified. Its preferred-work grant figure differs from National Insurance; check BTL, not the advert, for entitlement.",
@@ -411,7 +421,7 @@
         "eligibility": "שירות צבאי מלא, נכונות למשמרות, עבודת צוות ותפקוד בלחץ; בכפוף לרישוי ולמיון המעסיק.",
         "nextStep": "בדקו את המודעה ואמתו מלון מסוים, משרה ותנאי העסקה. בדקו זכאות למועדפת מול ביטוח לאומי."
       },
-      "reviewNotes": "Employer page read; advertised grant NIS 11,192 conflicts with BTL NIS 11,461 effective 2026-01-01. No outdated amount reproduced as entitlement."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. Employer page read; advertised grant NIS 11,192 conflicts with BTL NIS 11,461 effective 2026-01-01. No outdated amount reproduced as entitlement."
     },
     {
       "id": "gruss-scholarship-2026",
@@ -420,7 +430,7 @@
       "sourceType": "nonprofit",
       "sourceUrl": "https://www.gruss.org.il/blank",
       "actionUrl": "https://www.gruss.org.il/blank",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Gruss scholarships: registration through 15 December",
         "summary": "For 2026–27 studies in Israel: register 15 September–15 December 2026; registered applicants submit documents by 31 December. No closing hour stated. The displayed amount is labelled for the prior academic year, so no current amount is asserted.",
@@ -433,56 +443,56 @@
         "eligibility": "אוכלוסיות יעד: פריפריה, בודדים, יוצאי אתיופיה, חרדים ובני מיעוטים. לפחות שנת שירות, פחות מחמש שנים מהשחרור ולימודים בהיקף 12 שעות שבועיות לפחות. חלות מגבלות פיקדון ומימון נוסף; מסלולי המכינה וההנדסאים המפורטים מוחרגים.",
         "nextStep": "קראו תנאי מסלול והגישו באתר הקרן ממחשב; לפי הספק אין הגשה בנייד ואין קבלת מסמכים בדוא״ל."
       },
-      "reviewNotes": "2026-11-22: Provider scholarship and eligibility pages read. Eligibility page has malformed date 25.10.206; not normalized or used. Date-only closing dates retained in prose; no closing hour invented. Recheck/retire after registration closes."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. 2026-11-22: Provider scholarship and eligibility pages read. Eligibility page has malformed date 25.10.206; not normalized or used. Date-only closing dates retained in prose; no closing hour invented. Recheck/retire after registration closes."
     },
     {
       "id": "mashpiim-living-scholarship-2026",
       "category": "training",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/mashpim.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/mashpim.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Mashpi’im: ₪12,000 living-cost scholarship",
-        "summary": "2026–27: ₪12,000 for 90 community-service hours plus 10 training hours. Registration 3 November–31 December 2026; closing hour unstated. Payments depend on completed activity and start no earlier than March 2027. The separate reserve-service supplement is not a general entitlement.",
+        "summary": "Awaiting re-verification (28 November): 2026–27: ₪12,000 for 90 community-service hours plus 10 training hours. Registration 3 November–31 December 2026; closing hour unstated. Payments depend on completed activity and start no earlier than March 2027. The separate reserve-service supplement is not a general entitlement.",
         "eligibility": "Discharged combat/combat-support soldiers with qualifying gold/silver honorable-discharge certificates, belonging to the listed special populations and studying at approved academic, technological or art institutions.",
         "nextStep": "Use the Ministry personal area yourself. If approved, upload proof of studies and bank-account ownership, then follow the community-activity instructions."
       },
       "he": {
         "title": "משפיעים בלימודים: מלגת קיום בסך 12,000 ₪",
-        "summary": "תשפ״ז: 12,000 ₪ כנגד 90 שעות פעילות חברתית ו־10 שעות הכשרה. הרשמה 3.11–31.12.2026; שעת הסגירה לא פורסמה. התשלום מותנה בפעילות ולא יחל לפני מרץ 2027. תוספת המילואים הנפרדת אינה זכאות כללית.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): תשפ״ז: 12,000 ₪ כנגד 90 שעות פעילות חברתית ו־10 שעות הכשרה. הרשמה 3.11–31.12.2026; שעת הסגירה לא פורסמה. התשלום מותנה בפעילות ולא יחל לפני מרץ 2027. תוספת המילואים הנפרדת אינה זכאות כללית.",
         "eligibility": "לוחמים ותומכי לחימה משוחררים בעלי תעודת שחרור בכבוד זהב/כסף מתאימה, מאוכלוסיות היעד המפורטות, הלומדים במוסדות אקדמיים, טכנולוגיים או לאמנות המאושרים למלגה.",
         "nextStep": "היכנסו בעצמכם לאזור האישי של המשרד. לאחר אישור זכאות העלו אישור לימודים ואישור ניהול חשבון בנק ופעלו לפי הוראות הפעילות החברתית."
       },
-      "reviewNotes": "2026-11-22: Administering MOD page read. Its 3 Nov–31 Dec dates supersede the conflicting Ono listing (26 Oct–28 Dec); no assumed closing hour. Public criteria verified; personal login/application not accessed. Reserve supplement requires separate 2027 frontline reserve service conditions."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-22: Administering MOD page read. Its 3 Nov–31 Dec dates supersede the conflicting Ono listing (26 Oct–28 Dec); no assumed closing hour. Public criteria verified; personal login/application not accessed. Reserve supplement requires separate 2027 frontline reserve service conditions."
     },
     {
       "id": "afula-discharge-guidance",
       "category": "career",
-      "status": "restricted",
+      "status": "ongoing",
       "sourceType": "government",
       "sourceUrl": "https://www.afula.muni.il/he/240/",
       "actionUrl": "https://www.afula.muni.il/he/240/",
-      "checkedAt": "2026-11-22T07:01:03Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Afula Focus young-adult centre: discharge guidance",
-        "summary": "Awaiting re-verification: the municipal page was blocked on 25 November. Ongoing municipal guidance on grants, deposit, preferred work, scholarships and career preparation. No dated fair, fee or appointment availability is published on this page.",
+        "summary": "Ongoing municipal guidance on grants, deposit, preferred work, scholarships and career preparation. No dated fair, fee or appointment availability is published on this page.",
         "eligibility": "Discharged soldiers and national-service graduates; ask the centre about local access conditions.",
         "nextStep": "Call the coordinator at 04-6484282 to check guidance appointments, CV/interview help and current events."
       },
       "he": {
         "title": "פוקוס עפולה: הכוונה למשוחררים",
-        "summary": "ממתין לאימות מחדש: העמוד העירוני נחסם ב־25 בנובמבר. ייעוץ עירוני מתמשך בנושא מענק, פיקדון, עבודה מועדפת, מלגות והכנה לתעסוקה. בעמוד אין יריד מתוארך, מחיר או זמינות תורים.",
+        "summary": "ייעוץ עירוני מתמשך בנושא מענק, פיקדון, עבודה מועדפת, מלגות והכנה לתעסוקה. בעמוד אין יריד מתוארך, מחיר או זמינות תורים.",
         "eligibility": "חיילים משוחררים ומסיימי שירות לאומי; בררו במרכז תנאי קבלה מקומיים.",
         "nextStep": "בררו עם הרכזת בטלפון 04-6484282 על תורי ייעוץ, סיוע בקורות חיים וראיונות ואירועים עדכניים."
       },
-      "reviewNotes": "2026-11-25: Municipality page returned an access-verification challenge, not readable service content. Previous checkedAt retained."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. 2026-11-25: Municipality page returned an access-verification challenge, not readable service content. Previous checkedAt retained."
     },
     {
       "id": "achim-haredi-fair-2026-11-30",
       "category": "career",
-      "status": "upcoming",
+      "status": "restricted",
       "sourceType": "nonprofit",
       "sourceUrl": "https://bogreynetzach.org/discharge/kenes-mishtachrerim/",
       "actionUrl": "https://tickchak.co.il/117054",
@@ -490,61 +500,61 @@
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Achim: Haredi-track discharge fair, 30 November",
-        "summary": "Career and study fair at Hebrew University, Givat Ram, Jerusalem, 30 November 2026 at 12:00. End time conflicts: organizer text says 16:00; linked registration page says 18:00. Price, registration deadline and places are not confirmed.",
+        "summary": "Registration route awaiting re-verification. Career and study fair at Hebrew University, Givat Ram, Jerusalem, 30 November 2026 at 12:00. End time conflicts: organizer text says 16:00; linked registration page says 18:00. Price, registration deadline and places are not confirmed.",
         "eligibility": "Soldiers and graduates of Haredi IDF tracks; this is a targeted event, not a general discharged-soldier entitlement.",
         "nextStep": "Read the organizer and linked registration page. Confirm finishing time and admission conditions before travelling."
       },
       "he": {
         "title": "אחים: יריד משתחררים למסלולים החרדיים, 30 בנובמבר",
-        "summary": "יריד תעסוקה ולימודים באוניברסיטה העברית, גבעת רם בירושלים, 30.11.2026 בשעה 12:00. שעת הסיום סותרת: בטקסט המארגן 16:00 ובעמוד ההרשמה 18:00. מחיר, מועד סגירת הרשמה ומקומות פנויים לא אושרו.",
+        "summary": "מסלול ההרשמה ממתין לאימות מחדש. יריד תעסוקה ולימודים באוניברסיטה העברית, גבעת רם בירושלים, 30.11.2026 בשעה 12:00. שעת הסיום סותרת: בטקסט המארגן 16:00 ובעמוד ההרשמה 18:00. מחיר, מועד סגירת הרשמה ומקומות פנויים לא אושרו.",
         "eligibility": "חיילים ובוגרי המסלולים החרדיים בצה״ל; אירוע לקהל מוגדר ולא זכאות כללית למשוחררים.",
         "nextStep": "קראו את עמוד המארגן ואת קישור ההרשמה. אשרו שעת סיום ותנאי כניסה לפני ההגעה."
       },
-      "reviewNotes": "2026-11-22: Original Achim organizer and its linked Tickchak event page read. Date, noon start and Givat Ram agree; end-time contradiction explicitly retained. No registration, ticket availability or fee verified."
+      "reviewNotes": "2026-11-28: Organizer still lists November 30 noon, but registration page unreadable; full location/admission/end-time reconciliation failed. Old checkedAt retained."
     },
     {
       "id": "lone-soldier-rent",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/Rent.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/DocLib2/מסמך%20חליף%20חוזה-הטבת%20שכד.pdf",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Lone-soldier rent assistance",
-        "summary": "From November 2026: actual rent, capped at ₪1,200/month, 12 months/₪14,400; two installments up to six months/₪7,200 each. Bills excluded. Document review: seven business days; transfer: within 14 business days after approval SMS.",
+        "summary": "Awaiting re-verification (28 November): From November 2026: actual rent, capped at ₪1,200/month, 12 months/₪14,400; two installments up to six months/₪7,200 each. Bills excluded. Document review: seven business days; transfer: within 14 business days after approval SMS.",
         "eligibility": "Eligible discharged lone soldiers: apply in the first year after compulsory service. No personal payment or combination with immigrant assistance is assured.",
-        "nextStep": "Upload the tenant/landlord-signed declaration under “סיוע בשכר דירה לחיילים בודדים משוחררים שנת 2026”. For installment two use the FIRST application’s year, within four months after the first covered period. Late first request after six months? Call *5266 immediately for the second request. See the separate retroactive-top-up card."
+        "nextStep": "Upload the tenant/landlord-signed declaration under “סיוע בשכר דירה לחיילים בודדים משוחררים שנת 2026” (rent assistance for discharged lone soldiers, 2026). For installment two use the FIRST application’s year, within four months after the first covered period. Late first request after six months? Call *5266 immediately for the second request. See the separate retroactive-top-up card."
       },
       "he": {
         "title": "סיוע בשכר דירה לבודדים משוחררים",
-        "summary": "מנובמבר 2026: שכירות בפועל עד 1,200 ₪ לחודש, 12 חודשים/14,400 ₪; שני תשלומים עד שישה חודשים/7,200 ₪ כל אחד. ללא חשבונות. בדיקת מסמכים: שבעה ימי עסקים; העברה בתוך 14 ימי עסקים ממסרון האישור.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): מנובמבר 2026: שכירות בפועל עד 1,200 ₪ לחודש, 12 חודשים/14,400 ₪; שני תשלומים עד שישה חודשים/7,200 ₪ כל אחד. ללא חשבונות. בדיקת מסמכים: שבעה ימי עסקים; העברה בתוך 14 ימי עסקים ממסרון האישור.",
         "eligibility": "בודדים משוחררים זכאים: הגשה בשנה הראשונה מהשחרור מחובה. אין הבטחת תשלום אישי או שילוב עם סיוע לעולים.",
         "nextStep": "העלו הצהרה בחתימת השוכר והמשכיר תחת ״סיוע בשכר דירה לחיילים בודדים משוחררים שנת 2026״. לתשלום שני בחרו בשנת הבקשה הראשונה, עד ארבעה חודשים מסיום התקופה הראשונה. בקשה ראשונה אחרי שישה חודשים? פנו מיד ל־*5266 להגשת השנייה. ראו כרטיס השלמה רטרואקטיבית נפרד."
       },
-      "reviewNotes": "2026-11-25: Rent page and linked signed-declaration PDF read. Portal category: סיוע בשכר דירה לחיילים בודדים משוחררים שנת 2026; second request uses first-request year. Seven review business days exclude Fridays and holidays. Changed lease needs a new signed declaration; follow full source conditions. No account accessed or mixed-rate outcome calculated."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Rent page and linked signed-declaration PDF read. Portal category: סיוע בשכר דירה לחיילים בודדים משוחררים שנת 2026; second request uses first-request year. Seven review business days exclude Fridays and holidays. Changed lease needs a new signed declaration; follow full source conditions. No account accessed or mixed-rate outcome calculated."
     },
     {
       "id": "lone-soldier-rent-topup-2026",
       "category": "rights",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/rent-retroactive-2026.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/Rent.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Rent top-up: separate from installment two",
-        "summary": "The Ministry says eligible previously paid rental months from July 2026 onward may receive an automatic November bank top-up, up to ₪200/month. Actual-rent cap applies: rent below ₪1,200 does not imply a flat ₪200 extra.",
+        "summary": "Awaiting re-verification (28 November): The Ministry says eligible previously paid rental months from July 2026 onward may receive an automatic November bank top-up, up to ₪200/month. Actual-rent cap applies: rent below ₪1,200 does not imply a flat ₪200 extra.",
         "eligibility": "Discharged lone soldiers with already-assisted eligible months in the submitted/declared lease and actual monthly rent above ₪1,000.",
         "nextStep": "No extra application for this top-up. The regular second installment still requires its own request; use the linked rent instructions. Check with *5266 if payment is unclear; no personal bank receipt is confirmed."
       },
       "he": {
         "title": "השלמת שכר דירה: נפרדת מהתשלום השני",
-        "summary": "לפי המשרד, חודשי שכירות זכאים מיולי 2026 שכבר שולמו עשויים לזכות בהשלמה אוטומטית לבנק בנובמבר, עד 200 ₪ לחודש. חלה תקרת השכירות בפועל: שכירות מתחת ל־1,200 ₪ אינה מבטיחה תוספת קבועה של 200 ₪.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): לפי המשרד, חודשי שכירות זכאים מיולי 2026 שכבר שולמו עשויים לזכות בהשלמה אוטומטית לבנק בנובמבר, עד 200 ₪ לחודש. חלה תקרת השכירות בפועל: שכירות מתחת ל־1,200 ₪ אינה מבטיחה תוספת קבועה של 200 ₪.",
         "eligibility": "בודדים משוחררים שקיבלו סיוע לחודשים זכאים בחוזה שהוגש או הוצהר, ושכר הדירה בפועל מעל 1,000 ₪ לחודש.",
         "nextStep": "אין בקשה נוספת להשלמה זו. התשלום השני הרגיל עדיין מחייב בקשה משלו; ראו הוראות השכירות בקישור. לבירור תשלום פנו ל־*5266; אין כאן אישור כניסה לחשבון אישי."
       },
-      "reviewNotes": "2026-11-25: Specific retroactive FAQ and rent page checked together. FAQ wording says 200; actual-rent ceiling prevents promising a flat 200 below 1200. No account, stacking or mixed-rate inference."
+      "reviewNotes": "2026-11-28: Retroactive FAQ read and November timetable unchanged; detailed rent page failed. Combined cap/rent verification remains incomplete; previous checkedAt retained. No personal receipt claimed."
     },
     {
       "id": "lone-soldier-temporary-lodging",
@@ -553,12 +563,12 @@
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/sleepingArraingment.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/ExtraBenefits/SingleSolders/Pages/sleepingArraingment.aspx",
-      "checkedAt": "2026-11-25T06:59:26Z",
+      "checkedAt": "2026-11-28T07:03:51Z",
       "en": {
         "title": "Temporary Soldier’s House lodging",
         "summary": "For a temporary housing gap, including before signing a lease: apply within six months of compulsory-service discharge for up to three months. Ministry states approval email within 48 hours; no particular facility or bed is guaranteed.",
         "eligibility": "IDF-recognized discharged lone soldiers needing temporary lodging, including those needing to extend a service-time Soldier’s House stay.",
-        "nextStep": "In the personal area choose the lodging benefit under benefit/scholarship applications (אישור הלנה בבית החייל-חיילים בודדים). Follow up at *5266 ext. 5. Immediate welfare guidance: free 24/7 118 in Israel, not guaranteed same-night accommodation."
+        "nextStep": "In the personal area choose the lodging benefit under benefit/scholarship applications (אישור הלנה בבית החייל-חיילים בודדים — “lodging approval at Beit HaChayal for lone soldiers”). Follow up at *5266 ext. 5. Immediate welfare guidance: free 24/7 118 in Israel, not guaranteed same-night accommodation."
       },
       "he": {
         "title": "לינה זמנית בבית החייל",
@@ -566,75 +576,75 @@
         "eligibility": "משוחררים שהוכרו בצה״ל כבודדים וזקוקים ללינה זמנית, כולל הארכת שהות בבית החייל מתקופת השירות.",
         "nextStep": "באזור האישי בחרו בבקשה להטבה או מלגה: אישור הלנה בבית החייל-חיילים בודדים. למעקב: *5266 שלוחה 5. להכוונת רווחה מיידית בישראל: 118 חינם 24/7, ללא הבטחת לינה באותו לילה."
       },
-      "reviewNotes": "2026-11-25: MOD lodging page and https://www.gov.il/en/Departments/Units/molsa-wing-of-external-relations-and-spokesperson read. 118 is general welfare guidance/referral, not a booking or guaranteed placement."
+      "reviewNotes": "2026-11-28: Original public source content read; no account, submission, seats or personal eligibility checked. 2026-11-25: MOD lodging page and https://www.gov.il/en/Departments/Units/molsa-wing-of-external-relations-and-spokesperson read. 118 is general welfare guidance/referral, not a booking or guaranteed placement."
     },
     {
       "id": "avchunet-career-guidance",
       "category": "career",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/Pages/Education-and-Career-Guidance.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/ConsultationAndDirection/Consultation/Pages/default.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Free assessment and career guidance",
-        "summary": "Complete free Avchunet first. Zman Diyuk is a one-hour online group consultation on Wednesdays at noon Israel time for people who completed it. Check the Ministry-linked form for the next session; no seat or registration guarantee.",
+        "summary": "Awaiting re-verification (28 November): Complete free Avchunet first. Zman Diyuk is a one-hour online group consultation on Wednesdays at noon Israel time for people who completed it. Check the Ministry-linked form for the next session; no seat or registration guarantee.",
         "eligibility": "Discharged soldiers and national/civil-service graduates. Individual extended guidance generally within five years; discharged lone soldiers within ten years.",
         "nextStep": "If the group is closed, unverified or unsuitable, use the linked free individual-appointment route (in person, telephone or Zoom). Bring assessment results; *5266 if booking fails."
       },
       "he": {
         "title": "אבחונט והכוונה לקריירה ללא עלות",
-        "summary": "התחילו באבחונט החינמי. זמן דיוק הוא ייעוץ קבוצתי מקוון בן כשעה בימי רביעי ב־12:00 שעון ישראל, למי שהשלימו אבחונט. בדקו בטופס המקושר מהמשרד את המפגש הבא; אין הבטחת הרשמה או מקום.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): התחילו באבחונט החינמי. זמן דיוק הוא ייעוץ קבוצתי מקוון בן כשעה בימי רביעי ב־12:00 שעון ישראל, למי שהשלימו אבחונט. בדקו בטופס המקושר מהמשרד את המפגש הבא; אין הבטחת הרשמה או מקום.",
         "eligibility": "משוחררים ומסיימי שירות לאומי־אזרחי. ייעוץ אישי מורחב בדרך כלל עד חמש שנים; לבודדים משוחררים עד עשר שנים.",
         "nextStep": "אם הקבוצה סגורה, לא מאומתת או לא מתאימה, השתמשו במסלול הייעוץ האישי החינמי המקושר, פנים אל פנים, בטלפון או בזום. הביאו תוצאות אבחון; *5266 אם הזימון נכשל."
       },
-      "reviewNotes": "2026-11-25: Both Ministry routes and linked public form read. Form names 25 November; no soon-expired date promoted. Future sessions require checking that form; no submission or availability test."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Both Ministry routes and linked public form read. Form names 25 November; no soon-expired date promoted. Future sessions require checking that form; no submission or availability test."
     },
     {
       "id": "mimadim-2026-27",
       "category": "training",
-      "status": "ongoing",
+      "status": "restricted",
       "sourceType": "government",
       "sourceUrl": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx",
       "actionUrl": "https://www.hachvana.mod.gov.il/MainEducation/HachvanaScholarship/Pages/UniformToStudies.aspx",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "M’madim tuition scholarship, 2026–27",
-        "summary": "Applications and documents due 31 August 2027; no closing hour stated. Example: ₪12,203 eligible tuition yields up to ₪10,372.55 earlier, with ₪1,830.45 deferred to the final-year top-up—not 100% upfront. Actual eligible tuition and rules govern.",
+        "summary": "Awaiting re-verification (28 November): Applications and documents due 31 August 2027; no closing hour stated. Example: ₪12,203 eligible tuition yields up to ₪10,372.55 earlier, with ₪1,830.45 deferred to the final-year top-up—not 100% upfront. Actual eligible tuition and rules govern.",
         "eligibility": "Full, proper service: gold-certificate combat veterans or qualifying special populations with honorable discharge. First application normally within five years; listed extensions and recognized-study conditions apply.",
         "nextStep": "Use the Ministry personal area. Upload current enrollment confirmation and detailed tuition/payment statement, not receipts; final-year applicants need documents for prior funded years too."
       },
       "he": {
         "title": "ממדים ללימודים תשפ״ז",
-        "summary": "הרשמה ומסמכים עד 31.8.2027; לא פורסמה שעת סגירה. דוגמה: שכר לימוד מזכה 12,203 ₪, עד 10,372.55 ₪ בשנה מוקדמת והשלמת 1,830.45 ₪ בשנה האחרונה — לא 100% מראש. הסכום תלוי בשכר המזכה ובכללים.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): הרשמה ומסמכים עד 31.8.2027; לא פורסמה שעת סגירה. דוגמה: שכר לימוד מזכה 12,203 ₪, עד 10,372.55 ₪ בשנה מוקדמת והשלמת 1,830.45 ₪ בשנה האחרונה — לא 100% מראש. הסכום תלוי בשכר המזכה ובכללים.",
         "eligibility": "שירות מלא ותקין: לוחמים עם תעודת זהב או אוכלוסיות ייחודיות זכאיות עם שחרור בכבוד. הגשה ראשונה לרוב עד חמש שנים; בכפוף להארכות ולתנאי לימודים מוכרים.",
         "nextStep": "הגישו באזור האישי: אישור לימודים עדכני וגיליון מפורט של שכר לימוד ותשלומים, לא קבלות. בשנה האחרונה נדרשים מסמכים גם לשנים קודמות שמומנו."
       },
-      "reviewNotes": "2026-11-25: Full administering page read. Date-only deadlines retained without invented hour. Example is conditional, not personal entitlement; government-scholarship offsets and extension rules require source review."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Full administering page read. Date-only deadlines retained without invented hour. Example is conditional, not personal entitlement; government-scholarship offsets and extension rules require source review."
     },
     {
       "id": "hadera-discharge-fair-2026-12-27",
       "category": "career",
-      "status": "upcoming",
+      "status": "restricted",
       "sourceType": "nonprofit",
       "sourceUrl": "https://www.pnay.org.il/page.php?type=event&id=35498",
       "actionUrl": "https://www.pnay.org.il/page.php?type=orederTickit&id=35498",
       "checkedAt": "2026-11-25T06:59:26Z",
       "en": {
         "title": "Hadera discharge fair — 27 December",
-        "summary": "27 December 2026, 09:30–12:00, Enerbox Hall, Mishmar HaGvul 1, Hadera. Free; advance registration required and capacity limited. Education/employer stands and rights guidance. Places not confirmed.",
+        "summary": "Awaiting re-verification (28 November): 27 December 2026, 09:30–12:00, Enerbox Hall, Mishmar HaGvul 1, Hadera. Free; advance registration required and capacity limited. Education/employer stands and rights guidance. Places not confirmed.",
         "eligibility": "People leaving military or national/civil service; confirm any local admission conditions with the organizer.",
         "nextStep": "Use the organizer’s linked registration page; check admission before travelling. No booking has been made."
       },
       "he": {
         "title": "כנס משתחררים חדרה — 27 בדצמבר",
-        "summary": "27.12.2026, 09:30–12:00, היכל אנרבוקס, משמר הגבול 1 בחדרה. ללא עלות, בהרשמה מראש ובמספר מקומות מוגבל. דוכני לימודים ומעסיקים והכוונת זכויות. זמינות לא אושרה.",
+        "summary": "ממתין לאימות מחדש (28 בנובמבר): 27.12.2026, 09:30–12:00, היכל אנרבוקס, משמר הגבול 1 בחדרה. ללא עלות, בהרשמה מראש ובמספר מקומות מוגבל. דוכני לימודים ומעסיקים והכוונת זכויות. זמינות לא אושרה.",
         "eligibility": "משתחררים משירות צבאי או לאומי־אזרחי; בררו תנאי כניסה מקומיים אצל המארגן.",
         "nextStep": "השתמשו בעמוד ההרשמה המקושר מהמארגן ובדקו תנאי כניסה לפני ההגעה. לא בוצעה הזמנה."
       },
       "eventAt": "2026-12-27T09:30:00+02:00",
-      "reviewNotes": "2026-11-25: Original municipal organizer and its public ticket-selection page read; no selection or submission. Gregorian date used; source Hebrew date appears inconsistent."
+      "reviewNotes": "2026-11-28: Direct source failed or full combined-source verification incomplete. Previous checkedAt retained; search snippets not accepted as verification. 2026-11-25: Original municipal organizer and its public ticket-selection page read; no selection or submission. Gregorian date used; source Hebrew date appears inconsistent."
     }
   ],
-  "reviewNotes": "Completed Hebrew-first/English research 2026-11-25. Rent, retroactive FAQ, declaration, lodging, grant/deposit, career guidance and Mimadim verified. Rechecked original records; tax guide, Behatsdaa and Netivot/Afula inaccessible, old checkedAt retained. New provider discovery: Hadera fair added; HESEG 2026 applications closed and contradictory stale open wording, not promoted. No verified discharged-soldier culture inventory. No new expired existing event at review time: FOCUSED starts today 17:00 and becomes ended automatically then; seats unconfirmed. Achim finishing-time contradiction remains. Momentum editorial proposals remain unapproved. No personal data, account access, AI calls or applications."
+  "reviewNotes": "2026-11-28 completed Hebrew-first/English research pass with material access failures recorded per item. Tax Authority PDF verified; detailed MOD tax/rent pages unavailable. FOCUSED November intake retired. Municipal pages readable through web retrieval; direct fetch blocked. New discovery: MOD AMIRNET January 3 lead and Kidum callback form examined; provider did not confirm cohort/places, so not published as actionable. Automotive and MOD Amit pages failed; no new claim. Amit LaDerech nonprofit is distinct from MOD Amit. Culture search produced no verified discharged-only stock. Momentum proposals remain for editor approval. No external AI, soldier data, applications or outreach."
 }

@@ -62,3 +62,25 @@ Content QA only: both languages and distinct grant/deposit action links are
 checked in JSON. The fictional S13 20-combat/4-support-month estimates remain
 QA arithmetic, not a new card or universal payment. This does not establish live
 chat behavior, language switching or soldier follow-through; no external AI used.
+
+
+## Recheck: 28 November 2026
+
+Public Momentum program, interview and degree-choice pages reread. Existing
+December 27–29 workshop proposal and eligibility contradiction remain pending
+editor review. No substantive Momentum-authored claims were published.
+Tax PDF verified; detailed Ministry tax/rent pages failed. FOCUSED November
+intake retired. The Ministry AMIRNET preparation page lists January 3, 2027,
+₪250/₪200 and a placement assessment; linked Kidum page is only a callback
+form and does not confirm that cohort or places. Automotive source failed;
+neither lead promoted as actionable. NITE's original English pages confirm
+separate AMIRNET booking from December 2026 and ₪315 test fee, distinct from
+preparation tuition. Proposed editorial guidance: before paying, confirm the
+chosen degree/intake's psychometric requirement and acceptance of an existing
+English score; no reimbursement assumption.
+הצעה לעורכים: לפני תשלום יש לברר אם המסלול ומועד הקבלה דורשים פסיכומטרי
+ואם ציון אנגלית קיים מתקבל. מחיר הכנה אינו מחיר הבחינה; אין להניח החזר.
+Sources: https://www.hachvana.mod.gov.il/MainEducation/ProfessionalTraining/Pages/AMIRNET-English-Course.aspx
+https://llp.kidum.com/misbit
+https://www.nite.org.il/other-tests/amirnet/?lang=en
+https://www.nite.org.il/news/notice-081026/?lang=en
